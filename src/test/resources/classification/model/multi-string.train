@@ -1,0 +1,5 @@
+sunny 0:bright 1:dry 2:bright
+rainy 0:dark 1:wet
+cloudy 0:dark 1:dry
+rainy 2:bright
+cloudy 2:dark
