@@ -13,28 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.component.morphology;
-
-import com.clearnlp.dependency.DEPNode;
-import com.clearnlp.dependency.DEPTree;
-import com.clearnlp.util.PatternUtils;
+package com.clearnlp.tokenization;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class EnglishMPAnalyzer extends AbstractMPAnalyzer
+public class TOKNode
 {
-	@Override
-	public void process(DEPTree tree)
+	private String  s_wordForm;
+	private String  s_posTag;
+	private boolean b_protect;
+	
+	public String getWordForm()
 	{
-		for (DEPNode node : tree)
-			analyze(node);
+		return s_wordForm;
 	}
 	
-	@Override
-	public void analyze(DEPNode node)
+	public String getPOSTag()
 	{
-		node.setLemma(PatternUtils.getSimplifiedLowercaseWordForm(node.getWordForm()));
+		return s_posTag;
+	}
+	
+	public boolean isProtect()
+	{
+		return b_protect;
+	}
+	
+	public void setWordForm(String form)
+	{
+		s_wordForm = form;
+	}
+	
+	public void setPOSTag(String tag)
+	{
+		s_posTag = tag;
+	}
+	
+	public void setProtect(boolean protect)
+	{
+		b_protect = protect;
 	}
 }

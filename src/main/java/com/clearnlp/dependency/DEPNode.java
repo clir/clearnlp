@@ -41,7 +41,7 @@ public class DEPNode implements Comparable<DEPNode>
 	/** The ID of this node (default: {@link DEPLib#NULL_ID}). */
 	private int		n_id;
 	/** The word-form of this node. */
-	private String	s_form;
+	private String	s_wordForm;
 	/** The lemma of the word-form. */
 	private String	s_lemma;
 	/** The part-of-speech tag of the word-form. */
@@ -94,7 +94,7 @@ public class DEPNode implements Comparable<DEPNode>
 	 */
 	public DEPNode(DEPNode node)
 	{
-		init(node.n_id, node.s_form, node.s_lemma, node.s_posTag, node.s_namedEntityTag, new DEPFeat(node.d_feats));
+		init(node.n_id, node.s_wordForm, node.s_lemma, node.s_posTag, node.s_namedEntityTag, new DEPFeat(node.d_feats));
 	}
 	
 //	====================================== Initialization ======================================
@@ -102,7 +102,7 @@ public class DEPNode implements Comparable<DEPNode>
 	public void init(int id, String form, String lemma, String posTag, String namedEntityTag, DEPFeat feats)
 	{
 		setID(id);
-		setForm(form);
+		setWordForm(form);
 		setLemma(lemma);
 		setPOSTag(posTag);
 		setNamedEntityTag(namedEntityTag);
@@ -136,9 +136,9 @@ public class DEPNode implements Comparable<DEPNode>
 		return n_id;
 	}
 	
-	public String getForm()
+	public String getWordForm()
 	{
-		return s_form;
+		return s_wordForm;
 	}
 	
 	public String getLemma()
@@ -172,9 +172,9 @@ public class DEPNode implements Comparable<DEPNode>
 		n_id = id;
 	}
 	
-	public void setForm(String form)
+	public void setWordForm(String form)
 	{
-		s_form = form;
+		s_wordForm = form;
 	}
 	
 	public void setLemma(String lemma)
@@ -689,7 +689,7 @@ public class DEPNode implements Comparable<DEPNode>
 	
 	public boolean isForm(String form)
 	{
-		return form.equals(s_form);
+		return form.equals(s_wordForm);
 	}
 	
 	public boolean isLemma(String lemma)
@@ -1036,7 +1036,7 @@ public class DEPNode implements Comparable<DEPNode>
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(s_form);	build.append(DEPReader.DELIM_COLUMN);
+		build.append(s_wordForm);	build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_posTag);	build.append(DEPReader.DELIM_COLUMN);
 		build.append(d_feats.toString());
 		
@@ -1047,7 +1047,7 @@ public class DEPNode implements Comparable<DEPNode>
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(s_form);	build.append(DEPReader.DELIM_COLUMN);
+		build.append(s_wordForm);	build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_lemma);	build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_posTag);	build.append(DEPReader.DELIM_COLUMN);
 		build.append(d_feats.toString());
@@ -1060,7 +1060,7 @@ public class DEPNode implements Comparable<DEPNode>
 		StringBuilder build = new StringBuilder();
 		
 		build.append(n_id);					build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_form);				build.append(DEPReader.DELIM_COLUMN);
+		build.append(s_wordForm);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_lemma);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(d_feats.toString());	build.append(DEPReader.DELIM_COLUMN);
@@ -1074,7 +1074,7 @@ public class DEPNode implements Comparable<DEPNode>
 		StringBuilder build = new StringBuilder();
 		
 		build.append(n_id);					build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_form);				build.append(DEPReader.DELIM_COLUMN);
+		build.append(s_wordForm);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_lemma);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(d_feats.toString());	build.append(DEPReader.DELIM_COLUMN);
@@ -1089,7 +1089,7 @@ public class DEPNode implements Comparable<DEPNode>
 		StringBuilder build = new StringBuilder();
 		
 		build.append(n_id);					build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_form);				build.append(DEPReader.DELIM_COLUMN);
+		build.append(s_wordForm);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_lemma);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(d_feats.toString());	build.append(DEPReader.DELIM_COLUMN);
@@ -1104,7 +1104,7 @@ public class DEPNode implements Comparable<DEPNode>
 		StringBuilder build = new StringBuilder();
 		
 		build.append(n_id);					build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_form);				build.append(DEPReader.DELIM_COLUMN);
+		build.append(s_wordForm);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_lemma);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
@@ -1120,7 +1120,7 @@ public class DEPNode implements Comparable<DEPNode>
 		StringBuilder build = new StringBuilder();
 		
 		build.append(n_id);					build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_form);				build.append(DEPReader.DELIM_COLUMN);
+		build.append(s_wordForm);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_lemma);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
 		build.append(s_namedEntityTag);		build.append(DEPReader.DELIM_COLUMN);

@@ -15,6 +15,7 @@
  */
 package com.clearnlp.util;
 
+import com.carrotsearch.hppc.CharCharOpenHashMap;
 import com.clearnlp.constant.StringConst;
 
 /**
@@ -123,5 +124,20 @@ public class StringUtils
 		}
 		
 		return false;
+	}
+	
+	/** Replaces all keys to values in the specific map. */
+	static public String replaceAll(String str, CharCharOpenHashMap map)
+	{
+		 char[] array = str.toCharArray();
+		 int i, size = array.length;
+		 
+		 for (i=0; i<size; i++)
+		 {
+			 if (map.containsKey(array[i]))
+				 array[i] = map.get(array[i]);
+		 }
+		 
+		 return new String(array);
 	}
 }

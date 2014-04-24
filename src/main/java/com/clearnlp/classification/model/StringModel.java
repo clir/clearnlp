@@ -46,13 +46,6 @@ public class StringModel extends AbstractModel<StringInstance,StringFeatureVecto
 		m_features = new FeatureMap(1);
 	}
 	
-	public StringModel(boolean binary, int featureBeginIndex)
-	{
-		super(binary);
-		init();
-		m_features = new FeatureMap(featureBeginIndex);
-	}
-	
 	public StringModel(ObjectInputStream in)
 	{
 		super(in);

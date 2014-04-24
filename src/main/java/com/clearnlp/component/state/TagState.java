@@ -82,7 +82,8 @@ public class TagState extends AbstractState
 	/** @return {@code true} if the current node is the last node in the tree. */
 	public boolean isInputLastNode()
 	{
-		return i_input + 1 == t_size;
+		return false;
+//		return i_input + 1 == t_size;
 	}
 	
 //	====================================== TRANSITION ======================================
@@ -102,7 +103,8 @@ public class TagState extends AbstractState
 	/** @return {@code true} if the tagging should be terminated. */
 	public boolean isTerminate()
 	{
-		return i_input >= t_size;
+		return false;
+//		return i_input >= t_size;
 	}
 	
 //	====================================== NODES ======================================

@@ -21,21 +21,22 @@ import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.clearnlp.util.XmlUtils;
 import com.google.common.collect.Lists;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractFeatureTemplates<FeatreTokenType> implements Serializable, FeatureXml
+abstract public class AbstractFeatureExtractor<FeatreTemplateType> implements Serializable, FeatureXml
 {
 	private static final long serialVersionUID = 1558293248573950051L;
 	
-	protected List<AbstractFeatureTemplate<FeatreTokenType>> g_templates;
-	protected List<AbstractFeatureTemplate<FeatreTokenType>> s_templates;
-	protected List<AbstractFeatureTemplate<FeatreTokenType>> b_templates;
+	protected List<FeatreTemplateType> b_templates;
+	protected List<FeatreTemplateType> g_templates;
+	protected List<FeatreTemplateType> s_templates;
 
-	public AbstractFeatureTemplates(Element eRoot)
+	public AbstractFeatureExtractor(Element eRoot)
 	{
 		try
 		{
@@ -46,46 +47,45 @@ abstract public class AbstractFeatureTemplates<FeatreTokenType> implements Seria
 	
 	public void init(Element eRoot) throws Exception
 	{
-		AbstractFeatureTemplate<FeatreTokenType> template;
 		NodeList eList = eRoot.getElementsByTagName(E_FEATURE);
 		int i, size = eList.getLength();
+		FeatreTemplateType template;
 		Element eFeature;
+		String type;
 
+		b_templates = Lists.newArrayList();
 		g_templates = Lists.newArrayList();
 		s_templates = Lists.newArrayList();
-		b_templates = Lists.newArrayList();
 		
 		for (i=0; i<size; i++)
 		{
 			eFeature = (Element)eList.item(i);
-			template = createFeatureTemplate(eFeature);
 			
-			if (template.isVisible())
+			if (isVisible(eFeature))
 			{
-				switch (template.getType())
+				template = createFeatureTemplate(eFeature);
+				type = getType(eFeature);
+				
+				switch (type)
 				{
-				case V_SET : s_templates.add(template); break;
 				case V_BOOL: b_templates.add(template); break;
+				case V_SET : s_templates.add(template); break;
 				default    : g_templates.add(template); break;
 				}
 			}
 		}
 	}
 	
-	abstract protected AbstractFeatureTemplate<FeatreTokenType> createFeatureTemplate(Element eFeature);
-	
-	public List<AbstractFeatureTemplate<FeatreTokenType>> getGeneralFeatureTemplates()
+	private boolean isVisible(Element eFeature)
 	{
-		return g_templates;
+		String tmp = XmlUtils.getTrimmedAttribute(eFeature, A_VISIBLE);
+		return tmp.isEmpty() || Boolean.parseBoolean(tmp);
 	}
 	
-	public List<AbstractFeatureTemplate<FeatreTokenType>> getSetFeatureTemplates()
+	private String getType(Element eFeature)
 	{
-		return s_templates;
+		return XmlUtils.getTrimmedAttribute(eFeature, A_TYPE);
 	}
 	
-	public List<AbstractFeatureTemplate<FeatreTokenType>> getBooleanFeatureTemplates()
-	{
-		return b_templates;
-	}
+	abstract protected FeatreTemplateType createFeatureTemplate(Element eFeature);
 }

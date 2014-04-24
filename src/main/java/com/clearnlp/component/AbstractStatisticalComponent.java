@@ -13,28 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.component.morphology;
+package com.clearnlp.component;
 
-import com.clearnlp.dependency.DEPNode;
-import com.clearnlp.dependency.DEPTree;
-import com.clearnlp.util.PatternUtils;
+
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class EnglishMPAnalyzer extends AbstractMPAnalyzer
+abstract public class AbstractStatisticalComponent extends AbstractComponent
 {
-	@Override
-	public void process(DEPTree tree)
-	{
-		for (DEPNode node : tree)
-			analyze(node);
-	}
 	
-	@Override
-	public void analyze(DEPNode node)
-	{
-		node.setLemma(PatternUtils.getSimplifiedLowercaseWordForm(node.getWordForm()));
-	}
 }

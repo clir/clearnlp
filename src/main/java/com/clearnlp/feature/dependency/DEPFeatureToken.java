@@ -17,29 +17,16 @@ package com.clearnlp.feature.dependency;
 
 import com.clearnlp.feature.FeatureToken;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class DEPFeatureToken.
- *
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  * @since 3.0.0
  */
-public class DEPFeatureToken extends FeatureToken<DEPSourceType, DEPRelationType, DEPFieldType>
+public class DEPFeatureToken<ValueType> extends FeatureToken<DEPSourceType,DEPRelationType,DEPFieldType,ValueType>
 {
-	
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -4611193578450290459L;
 
-	/**
-	 * Instantiates a new DEP feature token.
-	 *
-	 * @param source the source
-	 * @param relation the relation
-	 * @param field the field
-	 * @param offset the offset
-	 */
-	public DEPFeatureToken(DEPSourceType source, DEPRelationType relation, DEPFieldType field, int offset)
+	public DEPFeatureToken(DEPSourceType source, DEPRelationType relation, DEPFieldType field, ValueType value, int offset)
 	{
-		super(source, relation, field, offset);
+		super(source, relation, field, value, offset);
 	}
 }

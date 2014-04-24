@@ -16,17 +16,13 @@
 package com.clearnlp.feature;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import com.clearnlp.collection.list.SortedArrayList;
-import com.clearnlp.util.XmlUtils;
-import com.clearnlp.util.pair.ObjectIntPair;
 import com.clearnlp.util.regex.Splitter;
 import com.google.common.collect.Lists;
 
@@ -34,14 +30,12 @@ import com.google.common.collect.Lists;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractFeatureTemplate<FeatreTokenType> implements Serializable, FeatureXml
+abstract public class AbstractFeatureTemplate<FeatureTokenType> implements Serializable
 {
 	private static final long serialVersionUID = 6926688863000363869L;
-	private static final Pattern FIELD = Pattern.compile("^f(\\d+)$");
+	private static final String FIELD = "f";
 	
-	private List<FeatreTokenType> l_tokens;
-	private boolean b_visible;
-	private String  s_type;
+	private ArrayList<FeatureTokenType> l_tokens;
 	
 	public AbstractFeatureTemplate(Element eFeature)
 	{
@@ -50,66 +44,48 @@ abstract public class AbstractFeatureTemplate<FeatreTokenType> implements Serial
 	
 	private void init(Element eFeature)
 	{
-		String tmp = XmlUtils.getTrimmedAttribute(eFeature, A_VISIBLE);
-		setVisible(tmp.isEmpty() || Boolean.parseBoolean(tmp));
-		setType(XmlUtils.getTrimmedAttribute(eFeature, A_TYPE));
 		l_tokens = Lists.newArrayList();
 		
-		for (ObjectIntPair<String> p : getFields(eFeature))
-			l_tokens.add(getFeatureToken(p.o));
+		for (String p : getFields(eFeature))
+			l_tokens.add(getFeatureToken(p));
+		
+		l_tokens.trimToSize();
 	}
 	
-	public List<FeatreTokenType> getFeatureTokens()
+	public List<FeatureTokenType> getFeatureTokens()
 	{
 		return l_tokens;
 	}
 	
-	public String getType()
+	public FeatureTokenType getFeatureToken(int index)
 	{
-		return s_type;
+		return l_tokens.get(index);
 	}
 	
-	public void addFeatureToken(FeatreTokenType token)
+	public void addFeatureToken(FeatureTokenType token)
 	{
 		l_tokens.add(token);
 	}
 
-	public void setVisible(boolean visible)
+	private List<String> getFields(Element element)
 	{
-		b_visible = visible;
-	}
-	
-	public void setType(String type)
-	{
-		s_type = type;
-	}
-	
-	public boolean isVisible()
-	{
-		return b_visible;
-	}
-
-	private List<ObjectIntPair<String>> getFields(Element element)
-	{
-		List<ObjectIntPair<String>> attributes = new SortedArrayList<>();
+		List<String> attributes = Lists.newArrayList();
 		NamedNodeMap nodes = element.getAttributes();
 		int i, size = nodes.getLength();
-		Matcher m;
 		Node node;
 		
 		for (i=0; i<size; i++)
 		{
 		    node = nodes.item(i);
-		    m = FIELD.matcher(node.getNodeName());
 		    
-		    if (m.find())
-		    	attributes.add(new ObjectIntPair<String>(node.getNodeValue(), Integer.parseInt(m.group(1))));
+		    if (FIELD.equals(node.getNodeName()))
+		    	attributes.add(node.getNodeValue());
 		}
 
 		return attributes;
 	}
 	
-	private FeatreTokenType getFeatureToken(String str)
+	private FeatureTokenType getFeatureToken(String str)
 	{
 		String[] t0 = Splitter.splitColons(str);		// "l-1_hd:p" -> {"l-1_hd", "p"}
 		String[] t1 = Splitter.splitUnderscore(t0[0]);	// "l-1_hd"   -> {"l-1", "hd"} 
@@ -127,5 +103,5 @@ abstract public class AbstractFeatureTemplate<FeatreTokenType> implements Serial
 		return createFeatureToken(source, relation, field, offset);
 	}
 	
-	abstract protected FeatreTokenType createFeatureToken(String source, String relation, String field, int offset);
+	abstract protected FeatureTokenType createFeatureToken(String source, String relation, String field, int offset);
 }

@@ -17,10 +17,6 @@ package com.clearnlp.component.state;
 
 import com.clearnlp.dependency.DEPNode;
 import com.clearnlp.dependency.DEPTree;
-import com.clearnlp.feature.FeatureToken;
-import com.clearnlp.feature.dependency.DEPFieldType;
-import com.clearnlp.feature.dependency.DEPRelationType;
-import com.clearnlp.feature.dependency.DEPSourceType;
 
 /**
  * @since 3.0.0
@@ -29,7 +25,6 @@ import com.clearnlp.feature.dependency.DEPSourceType;
 abstract public class AbstractState
 {
 	protected DEPTree d_tree;
-	protected int     t_size;
 	
 	public AbstractState(DEPTree tree)
 	{
@@ -62,52 +57,50 @@ abstract public class AbstractState
 	{
 		return d_tree.get(id);
 	}
-	
-	/**
-	 * @param leftBound the leftmost ID (exclusive).
-	 * @param rightBound the rightmost ID (exclusive).
-	 */
-	protected DEPNode getNode(FeatureToken<DEPSourceType,DEPRelationType,DEPFieldType> token, int nodeID, int leftBound, int rightBound)
-	{
-		DEPNode node = getNodeAux(token, nodeID, leftBound, rightBound);
-		if (node == null)	return null;
-		
-		if (token.hasRelation())
-		{
-			switch (token.getRelation())
-			{
-			case h   : return node.getHead();
-			case lmd : return node.getLeftMostDependent();
-			case rmd : return node.getRightMostDependent();
-			case lnd : return node.getLeftNearestDependent();
-			case rnd : return node.getRightNearestDependent();
-			case lns : return node.getLeftNearestSibling();
-			case rns : return node.getRightNearestSibling();
-			
-			case h2   : return node.getGrandHead();
-			case lmd2 : return node.getLeftMostDependent(1);
-			case rmd2 : return node.getRightMostDependent(1);
-			case lnd2 : return node.getLeftNearestDependent(1);
-			case rnd2 : return node.getRightNearestDependent(1);
-			case lns2 : return node.getLeftNearestSibling(1);
-			case rns2 : return node.getRightNearestSibling(1);
-			}
-		}
-		
-		return node;
-	}
-	
-	/** Called by {@link #getNode(FeatureToken, int, int, int)} */
-	private DEPNode getNodeAux(FeatureToken<DEPSourceType,DEPRelationType,DEPFieldType> token, int nodeID, int leftBound, int rightBound)
-	{
-		if (token.getOffset() == 0)
-			return d_tree.get(nodeID);
-
-		nodeID += token.getOffset();
-		
-		if (leftBound < nodeID && nodeID < rightBound)
-			return getNode(nodeID);
-		
-		return null;
-	}
 }
+
+//case a : break;
+//case f1: break;
+//case f2: break;
+//case prefix: break;
+//case suffix: break;
+//case subcat: break;
+//case path: break;
+//case argn: break;
+
+//@SuppressWarnings("incomplete-switch")
+//private String getPathAux(DEPNode top, DEPNode bottom, DEPFieldType type, String delim, boolean includeTop)
+//{
+//	StringBuilder build = new StringBuilder();
+//	DEPNode head = bottom;
+//	int dist = 0;
+//	
+//	do
+//	{
+//		switch (type)
+//		{
+//		case p: build.append(delim); build.append(head.getPOSTag()); break;
+//		case d: build.append(delim); build.append(head.getLabel());  break;
+//		case t: dist++; break;
+//		}
+//		
+//		head = head.getHead();
+//	}
+//	while (head != top && head != null);
+//	
+//	switch (type)
+//	{
+//	case p:
+//		if (includeTop)
+//		{
+//			build.append(delim);
+//			build.append(top.getPOSTag());	
+//		}	break;
+//	case t:
+//		build.append(delim);
+//		build.append(dist);
+//		break;
+//	}
+//	
+//	return build.length() == 0 ? null : build.toString();
+//}

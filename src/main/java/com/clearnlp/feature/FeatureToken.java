@@ -21,25 +21,27 @@ import java.io.Serializable;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class FeatureToken<SourceType,RelationType,FieldType> implements Serializable
+public class FeatureToken<SourceType,RelationType,FieldType,ValueType> implements Serializable
 {
 	static private final long serialVersionUID  = 4470851888237339877L;
 	
 	private SourceType		t_source;
 	private RelationType	t_relation;
 	private FieldType		t_field;
+	private ValueType		t_value;
 	private int             i_offset;
 	
-	public FeatureToken(SourceType source, RelationType relation, FieldType field, int offset)
+	public FeatureToken(SourceType source, RelationType relation, FieldType field, ValueType value, int offset)
 	{
-		set(source, relation, field, offset);
+		set(source, relation, field, value, offset);
 	}
 	
-	public void set(SourceType source, RelationType relation, FieldType field, int offset)
+	public void set(SourceType source, RelationType relation, FieldType field, ValueType value, int offset)
 	{
 		setSource(source);
 		setRelation(relation);
 		setField(field);
+		setValue(value);
 		setOffset(offset);
 	}
 	
@@ -56,6 +58,11 @@ public class FeatureToken<SourceType,RelationType,FieldType> implements Serializ
 	public FieldType getField()
 	{
 		return t_field;
+	}
+	
+	public ValueType getValue()
+	{
+		return t_value;
 	}
 	
 	public int getOffset()
@@ -76,6 +83,11 @@ public class FeatureToken<SourceType,RelationType,FieldType> implements Serializ
 	public void setField(FieldType field)
 	{
 		t_field = field;
+	}
+	
+	public void setValue(ValueType value)
+	{
+		t_value = value;
 	}
 	
 	public void setOffset(int offset)

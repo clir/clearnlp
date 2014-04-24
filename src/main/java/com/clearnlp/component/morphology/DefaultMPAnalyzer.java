@@ -35,6 +35,6 @@ public class DefaultMPAnalyzer extends AbstractMPAnalyzer
 	@Override
 	public void analyze(DEPNode node)
 	{
-		node.setLemma(PatternUtils.getSimplifiedLowercaseWordForm(node.getForm()));
+		node.setLemma(PatternUtils.getSimplifiedLowercaseWordForm(node.getWordForm()));
 	}
 }

@@ -17,12 +17,13 @@ package com.clearnlp.experiment;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import com.carrotsearch.hppc.CharCharOpenHashMap;
 import com.carrotsearch.hppc.ObjectIntOpenHashMap;
 import com.clearnlp.collection.list.DoubleArrayList;
 import com.clearnlp.collection.map.ObjectIntHashMap;
 import com.clearnlp.util.DSUtils;
+import com.clearnlp.util.StringUtils;
 import com.clearnlp.util.pair.ObjectIntPair;
 import com.clearnlp.util.pair.Pair;
 import com.clearnlp.util.triple.ObjectIntIntTriple;
@@ -40,30 +41,13 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-	}
-	
-	public void testFeatureMap(Set<String> set, int size) throws Exception
-	{
-		ObjectIntHashMap<String> map = new ObjectIntHashMap<String>();
-		long st, et;
-		int i;
+		CharCharOpenHashMap map = new CharCharOpenHashMap();
+		map.put('\u02BA', '"');
+		map.put('\u2016', '|');
 		
-		st = System.currentTimeMillis();
-		int index = 1;
-		
-		for (String s : set)
-			for (i=0; i<size; i++)
-				map.put(i+s, index++);
-		
-		et = System.currentTimeMillis();
-		System.out.println("Add: "+(et-st));
-		
-		st = System.currentTimeMillis();
-		for (String s : set)
-			for (i=0; i<size; i++)
-				map.get(i+s);
-		et = System.currentTimeMillis();
-		System.out.println("Get: "+(et-st));
+		String s = "a\u02BAb\u2016c";
+		System.out.println(s);
+		System.out.println(StringUtils.replaceAll(s, map));
 	}
 	
 	public double getWeight(DoubleArrayList weight, int index)

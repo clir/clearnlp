@@ -39,7 +39,7 @@ public class DEPNodeTest
 		node.initRoot();
 		
 		assertEquals(DEPLib.ROOT_ID , node.getID());
-		assertEquals(DEPLib.ROOT_TAG, node.getForm());
+		assertEquals(DEPLib.ROOT_TAG, node.getWordForm());
 		assertEquals(DEPLib.ROOT_TAG, node.getLemma());
 		assertEquals(DEPLib.ROOT_TAG, node.getPOSTag());
 		assertEquals(DEPLib.ROOT_TAG, node.getNamedEntityTag());
@@ -53,7 +53,7 @@ public class DEPNodeTest
 		DEPNode node = new DEPNode(1, "Jinho", "jinho", "NNP", "PERSON", new DEPFeat("fst=jinho|lst=choi"));
 		
 		assertEquals(1       , node.getID());
-		assertEquals("Jinho" , node.getForm());
+		assertEquals("Jinho" , node.getWordForm());
 		assertEquals("jinho" , node.getLemma());
 		assertEquals("NNP"   , node.getPOSTag());
 		assertEquals("PERSON", node.getNamedEntityTag());
@@ -63,12 +63,12 @@ public class DEPNodeTest
 		node = new DEPNode(1, "Jinho");
 		
 		assertEquals(1      , node.getID());
-		assertEquals("Jinho", node.getForm());
+		assertEquals("Jinho", node.getWordForm());
 		
 		node = new DEPNode(1, "Jinho", "jinho", "NNP", new DEPFeat("fst=jinho|lst=choi"));
 		
 		assertEquals(1       , node.getID());
-		assertEquals("Jinho" , node.getForm());
+		assertEquals("Jinho" , node.getWordForm());
 		assertEquals("jinho" , node.getLemma());
 		assertEquals("NNP"   , node.getPOSTag());
 		

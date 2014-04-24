@@ -52,7 +52,7 @@ public class DEPLibEn implements DEPTagEn
 
 		for (DEPNode node : tree)
 		{
-			if (node.isLabel(DEP_ADVMOD) && UtilEn.isNegation(node.getForm()))
+			if (node.isLabel(DEP_ADVMOD) && UtilEn.isNegation(node.getWordForm()))
 				node.setLabel(DEP_NEG);
 			
 			if (node.containsDependent(DEPLibEn.DEP_AUXPASS))
