@@ -21,9 +21,6 @@ package com.clearnlp.pos;
  */
 public interface POSTagEn
 {
-
-	/** The pos tag for emails. */
-	String POS_ADD	= "ADD";
 	/** The pos tag for affixes. */
 	String POS_AFX	= "AFX";
 	/** The pos tag for coordinating conjunctions. */
@@ -74,8 +71,6 @@ public interface POSTagEn
 	String POS_NNS	= "NNS";
 	/** The pos tag for predeterminers. */
 	String POS_PDT	= "PDT";
-	/** The pos tag for periods. */
-	String POS_PERIOD	= ".";
 	/** The pos tag for possessive endings. */
 	String POS_POS	= "POS";
 	/** The pos tag for personal pronouns. */
@@ -124,4 +119,9 @@ public interface POSTagEn
 	String POS_WRB	= "WRB";
 	/** The pos tag for unknown tokens. */
 	String POS_XX	= "XX";
+
+	/** The pos tag for periods. */
+	String POS_PERIOD = ".";
+	/** The pos tag for emails and urls. */
+	String POS_ADD = "ADD";
 }

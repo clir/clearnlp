@@ -16,6 +16,8 @@
 package com.clearnlp.headrule;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -36,19 +38,19 @@ public class HeadTagSetTest
 		CTNode node;
 		
 		node = new CTNode("NN", null);
-		assertEquals(true, set.matches(node));
+		assertTrue(set.matches(node));
 		
 		node.setConstituentTag("NNS");
-		assertEquals(true, set.matches(node));
+		assertTrue(set.matches(node));
 		
 		node.setConstituentTag("NP");
-		assertEquals(true, set.matches(node));
+		assertTrue(set.matches(node));
 		
 		node.setConstituentTag("S");
-		assertEquals(false, set.matches(node));
+		assertFalse(set.matches(node));
 		
 		node.addFunctionTag("SBJ");
-		assertEquals(true, set.matches(node));
+		assertTrue(set.matches(node));
 		
 		assertEquals(tags, set.toString());
 	}

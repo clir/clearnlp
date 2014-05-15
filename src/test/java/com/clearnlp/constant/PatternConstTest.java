@@ -16,10 +16,14 @@
 package com.clearnlp.constant;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
 
 import org.junit.Test;
+
+import com.clearnlp.util.regex.Joiner;
 
 /**
  * @since 3.0.0
@@ -35,5 +39,44 @@ public class PatternConstTest
 		assertEquals("[a, b]", Arrays.toString(PatternConst.HYPHEN.split("a-b")));
 		assertEquals("[a, b]", Arrays.toString(PatternConst.SEMICOLON.split("a;b")));
 		assertEquals("[a, b]", Arrays.toString(PatternConst.UNDERSCORE.split("a_b")));
+	}
+	
+	@Test
+	public void testEndingMarkers()
+	{
+		Matcher m;
+		
+		m = PatternConst.PUNCT_FINALS.matcher("a.?!b.c...d??e!!f");
+		
+		m.find();
+		assertEquals(".?!", m.group());
+		
+		m.find();
+		assertEquals("...", m.group());
+		
+		m.find();
+		assertEquals("??", m.group());
+		
+		m.find();
+		assertEquals("!!", m.group());
+	}
+	
+	@Test
+	public void testSeparators()
+	{
+		Matcher m;
+		
+		m = PatternConst.PUNCT_SEPARATORS.matcher("-*=~,`'");
+		assertFalse(m.find());
+
+		String[] s = {"--","***","==","~~~",",,","```","''"};
+		m = PatternConst.PUNCT_SEPARATORS.matcher(Joiner.join(s, ""));
+		int i, size = s.length;
+		
+		for (i=0; i<size; i++)
+		{
+			m.find();
+			assertEquals(s[i], m.group());
+		}
 	}
 }

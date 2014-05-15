@@ -15,7 +15,8 @@
  */
 package com.clearnlp.verbnet;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ public class VNTagTest
 	@Test
 	public void test()
 	{
-		assertEquals(true , VNTag.contains(VNTag.VN_AGENT));
-		assertEquals(false, VNTag.contains("Hello"));
+		assertTrue(VNTag.contains(VNTag.VN_AGENT));
+		assertFalse(VNTag.contains("Hello"));
 	}
 }

@@ -16,6 +16,8 @@
 package com.clearnlp.collection.set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -54,10 +56,10 @@ public class IntHashSetTest
 		in.close();
 		
 		assertEquals(len, set.size());
-		assertEquals(true , set.contains(1));
-		assertEquals(true , set.contains(2));
-		assertEquals(true , set.contains(3));
-		assertEquals(false, set.contains(0));
-		assertEquals(false, set.contains(4));
+		assertTrue(set.contains(1));
+		assertTrue(set.contains(2));
+		assertTrue(set.contains(3));
+		assertFalse(set.contains(0));
+		assertFalse(set.contains(4));
 	}
 }

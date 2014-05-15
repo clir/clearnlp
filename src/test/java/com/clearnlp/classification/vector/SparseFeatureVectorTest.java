@@ -16,6 +16,7 @@
 package com.clearnlp.classification.vector;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -46,7 +47,7 @@ public class SparseFeatureVectorTest
 		vector.addFeature(1, 0.2);
 		
 		assertEquals(0, vector.getIndex(0));
-		assertEquals(true, 0.2 == vector.getWeight(1));
+		assertTrue(0.2 == vector.getWeight(1));
 		assertEquals(2, vector.size());
 		assertEquals("0:0.1 1:0.2", vector.toString());
 		assertEquals("0.05", String.format("%4.2f", vector.sumOfSquares()));

@@ -16,6 +16,8 @@
 package com.clearnlp.propbank;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -33,11 +35,11 @@ public class PBLocationTest
 		
 		assertEquals( "0:1", loc1.toString());
 		assertEquals("*0:1", loc2.toString());
-		assertEquals(true  , loc1.matches(loc2.getTerminalID(), loc2.getHeight()));
-		assertEquals(false , loc1.equals(loc2));
+		assertTrue(loc1.matches(loc2.getTerminalID(), loc2.getHeight()));
+		assertFalse(loc1.equals(loc2));
 		
 		loc1.set(0, 2);
-		assertEquals(false, loc1.matches(loc2.getTerminalID(), loc2.getHeight()));
+		assertFalse(loc1.matches(loc2.getTerminalID(), loc2.getHeight()));
 		
 		loc2 = new PBLocation("0:3", ",");
 		assertEquals(",0:3", loc2.toString());

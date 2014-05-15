@@ -26,7 +26,7 @@ import com.google.common.collect.Sets;
  */
 public class POSLibEn implements POSTagEn
 {
-	static private final Set<String> S_PUNCTUATION = Sets.newHashSet(POS_COLON, POS_COMMA, POS_PERIOD, POS_LQ, POS_RQ, POS_LRB, POS_RRB, POS_HYPH, POS_NFP, POS_SYM, POS_PUNC);
+	static private final Set<String> S_PUNCTUATION = Sets.newHashSet(POS_COLON, POS_COMMA, POSTagEn.POS_PERIOD, POS_LQ, POS_RQ, POS_LRB, POS_RRB, POS_HYPH, POS_NFP, POS_SYM, POS_PUNC);
 	static private final Set<String> S_RELATIVIZER = Sets.newHashSet(POS_WDT, POS_WP, POS_WPS, POS_WRB);
 	
 	private POSLibEn() {}

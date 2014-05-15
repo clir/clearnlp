@@ -16,6 +16,8 @@
 package com.clearnlp.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -60,10 +62,10 @@ public class DSUtilsTest
 		Set<String> s1 = Sets.newHashSet("A","B");
 		Set<String> s2 = Sets.newHashSet("C");
 		
-		assertEquals(false, DSUtils.hasIntersection(s1, s2));
+		assertFalse(DSUtils.hasIntersection(s1, s2));
 		
 		s2.add("A");
-		assertEquals(true, DSUtils.hasIntersection(s1, s2));
+		assertTrue(DSUtils.hasIntersection(s1, s2));
 	}
 	
 	@Test

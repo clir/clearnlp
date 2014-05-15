@@ -20,11 +20,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jregex.MatchResult;
-import jregex.Replacer;
-import jregex.Substitution;
-import jregex.TextBuffer;
-
 import com.clearnlp.constant.PatternConst;
 import com.clearnlp.util.pair.Pair;
 
@@ -73,18 +68,22 @@ public class PatternUtils implements PatternConst
 		return m.find() ? m.group(index) : null;
 	}
 	
-//	====================================== Contains ======================================
+//	====================================== Booleans ======================================
 	
-	/** @return {@code true} if the specific string contains only digits. */
-	static public boolean containsOnlyDigits(String s)
+	static public boolean containsHyperlink(String s)
 	{
-		return DIGITS_ONLY.matcher(s).find();
+		return HYPERLINK.matcher(s).find();
+	}
+	
+	static public boolean containsEmoticon(String s)
+	{
+		return EMOTICON.matcher(s).find();
 	}
 	
 	/** @return {@code true} if the specific string contains only digits. */
 	static public boolean containsPunctuation(String s)
 	{
-		return PUNCTUATION.matcher(s).find();
+		return PUNCT.matcher(s).find();
 	}
 
 //	====================================== Digits ======================================
@@ -98,22 +97,22 @@ public class PatternUtils implements PatternConst
 	
 //	====================================== Punctuation ======================================
 	
-	/** Collapses redundant punctuation in the specific word-form (e.g., {@code "!!!" -> "!!"}). */
-	static public String collapsePunctuation(String form)
-	{
-		return R_PUNCT2.replace(form);
-	}
-	
-	/** Called by {@link #collapsePunctuation(String)}. */
-	static final private Replacer R_PUNCT2 = new jregex.Pattern("\\.{2,}|\\!{2,}|\\?{2,}|\\-{2,}|\\*{2,}|\\={2,}|\\~{2,}|\\,{2,}").replacer(new Substitution()
-	{
-		public void appendSubstitution(MatchResult match, TextBuffer dest)
-		{
-			char c = match.group(0).charAt(0);
-			dest.append(c);
-			dest.append(c);
-		}
-	});
+//	/** Collapses redundant punctuation in the specific word-form (e.g., {@code "!!!" -> "!!"}). */
+//	static public String collapsePunctuation(String form)
+//	{
+//		return R_PUNCT2.replace(form);
+//	}
+//	
+//	/** Called by {@link #collapsePunctuation(String)}. */
+//	static final private Replacer R_PUNCT2 = new jregex.Pattern("\\.{2,}|\\!{2,}|\\?{2,}|\\-{2,}|\\*{2,}|\\={2,}|\\~{2,}|\\,{2,}").replacer(new Substitution()
+//	{
+//		public void appendSubstitution(MatchResult match, TextBuffer dest)
+//		{
+//			char c = match.group(0).charAt(0);
+//			dest.append(c);
+//			dest.append(c);
+//		}
+//	});
 
 	/** Reverts coded brackets to their original forms (e.g., from {@code "-LBR-"} to {@code "("}). */
 	static public String revertBrackets(String form)
@@ -140,7 +139,7 @@ public class PatternUtils implements PatternConst
 
 	static public boolean containsURL(String str)
 	{
-		return URL.matcher(str).find();
+		return HYPERLINK.matcher(str).find();
 	}
 	
 //	====================================== Simplify ======================================
@@ -156,7 +155,7 @@ public class PatternUtils implements PatternConst
 		if (containsURL(form))	return META_URL;
 		
 		form = collapseDigits(form);
-		form = collapsePunctuation(form);
+//		form = collapsePunctuation(form);
 		
 		return form;
 	}

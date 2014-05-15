@@ -16,6 +16,8 @@
 package com.clearnlp.classification.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -67,7 +69,7 @@ public class StringModelTest
 		assertEquals(   1, model.getLabelSize());
 		assertEquals(   4, model.getFeatureSize());
 		assertEquals(   4, vector.size());
-		assertEquals(true, vector.isBinaryLabel());
+		assertTrue(vector.isBinaryLabel());
 		
 		for (StringInstance inst : instances)
 			model.addInstance(inst);
@@ -77,7 +79,7 @@ public class StringModelTest
 		assertEquals(   2, model.getLabelSize());
 		assertEquals(  13, model.getFeatureSize());
 		assertEquals(  13, vector.size());
-		assertEquals(true, vector.isBinaryLabel());
+		assertTrue(vector.isBinaryLabel());
 		
 		String[] sparse = {"1 5 2 11", "0 6 2 10", "1 4 7 3", "0 1 9 12", "0 1 8 3"};
 		int i, size = sparse.length;
@@ -186,7 +188,7 @@ public class StringModelTest
 		assertEquals(2, model.getLabelSize());
 		assertEquals(4, model.getFeatureSize());
 		assertEquals(8, vector.size());
-		assertEquals(false, vector.isBinaryLabel());
+		assertFalse(vector.isBinaryLabel());
 		
 		for (StringInstance inst : instances)
 			model.addInstance(inst);

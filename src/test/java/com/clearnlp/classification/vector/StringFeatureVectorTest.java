@@ -16,6 +16,7 @@
 package com.clearnlp.classification.vector;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -50,7 +51,7 @@ public class StringFeatureVectorTest
 		
 		assertEquals(0, vector.getType(0));
 		assertEquals("B", vector.getValue(1));
-		assertEquals(true, 0.2 == vector.getWeight(1));
+		assertTrue(0.2 == vector.getWeight(1));
 		assertEquals(2, vector.size());
 		assertEquals("0:A:0.1 1:B:0.2", vector.toString());
 	}

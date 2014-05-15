@@ -16,6 +16,8 @@
 package com.clearnlp.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -51,21 +53,21 @@ public class StringUtilsTest
 	{
 		String[] suffixes = {"ab","cd","ef"};
 
-		assertEquals(true, StringUtils.startsWithAny("ab", suffixes));
-		assertEquals(true, StringUtils.startsWithAny("cd", suffixes));
-		assertEquals(true, StringUtils.startsWithAny("ef", suffixes));
+		assertTrue(StringUtils.startsWithAny("ab", suffixes));
+		assertTrue(StringUtils.startsWithAny("cd", suffixes));
+		assertTrue(StringUtils.startsWithAny("ef", suffixes));
 		
-		assertEquals(true, StringUtils.startsWithAny("ab0", suffixes));
-		assertEquals(true, StringUtils.startsWithAny("cd0", suffixes));
-		assertEquals(true, StringUtils.startsWithAny("ef0", suffixes));
+		assertTrue(StringUtils.startsWithAny("ab0", suffixes));
+		assertTrue(StringUtils.startsWithAny("cd0", suffixes));
+		assertTrue(StringUtils.startsWithAny("ef0", suffixes));
 		
-		assertEquals(false, StringUtils.startsWithAny("0ab", suffixes));
-		assertEquals(false, StringUtils.startsWithAny("0cd", suffixes));
-		assertEquals(false, StringUtils.startsWithAny("0ef", suffixes));
+		assertFalse(StringUtils.startsWithAny("0ab", suffixes));
+		assertFalse(StringUtils.startsWithAny("0cd", suffixes));
+		assertFalse(StringUtils.startsWithAny("0ef", suffixes));
 		
-		assertEquals(false, StringUtils.startsWithAny("a", suffixes));
-		assertEquals(false, StringUtils.startsWithAny("c", suffixes));
-		assertEquals(false, StringUtils.startsWithAny("e", suffixes));
+		assertFalse(StringUtils.startsWithAny("a", suffixes));
+		assertFalse(StringUtils.startsWithAny("c", suffixes));
+		assertFalse(StringUtils.startsWithAny("e", suffixes));
 	}
 	
 	@Test
@@ -73,20 +75,32 @@ public class StringUtilsTest
 	{
 		String[] suffixes = {"ab","cd","ef"};
 
-		assertEquals(true, StringUtils.endsWithAny("ab", suffixes));
-		assertEquals(true, StringUtils.endsWithAny("cd", suffixes));
-		assertEquals(true, StringUtils.endsWithAny("ef", suffixes));
+		assertTrue(StringUtils.endsWithAny("ab", suffixes));
+		assertTrue(StringUtils.endsWithAny("cd", suffixes));
+		assertTrue(StringUtils.endsWithAny("ef", suffixes));
 		
-		assertEquals(true, StringUtils.endsWithAny("0ab", suffixes));
-		assertEquals(true, StringUtils.endsWithAny("0cd", suffixes));
-		assertEquals(true, StringUtils.endsWithAny("0ef", suffixes));
+		assertTrue(StringUtils.endsWithAny("0ab", suffixes));
+		assertTrue(StringUtils.endsWithAny("0cd", suffixes));
+		assertTrue(StringUtils.endsWithAny("0ef", suffixes));
 		
-		assertEquals(false, StringUtils.endsWithAny("ab0", suffixes));
-		assertEquals(false, StringUtils.endsWithAny("cd0", suffixes));
-		assertEquals(false, StringUtils.endsWithAny("ef0", suffixes));
+		assertFalse(StringUtils.endsWithAny("ab0", suffixes));
+		assertFalse(StringUtils.endsWithAny("cd0", suffixes));
+		assertFalse(StringUtils.endsWithAny("ef0", suffixes));
 		
-		assertEquals(false, StringUtils.endsWithAny("b", suffixes));
-		assertEquals(false, StringUtils.endsWithAny("d", suffixes));
-		assertEquals(false, StringUtils.endsWithAny("f", suffixes));
+		assertFalse(StringUtils.endsWithAny("b", suffixes));
+		assertFalse(StringUtils.endsWithAny("d", suffixes));
+		assertFalse(StringUtils.endsWithAny("f", suffixes));
+	}
+	
+	@Test
+	public void testRegionMatches()
+	{
+		char[] c = "abcd".toCharArray();
+		char[] d = "bc".toCharArray();
+		
+		assertFalse(CharUtils.regionMatches(c, d, 0));
+		assertTrue (CharUtils.regionMatches(c, d, 1));
+		assertFalse(CharUtils.regionMatches(c, d, 2));
+		assertFalse(CharUtils.regionMatches(c, d, 3));	
 	}
 }

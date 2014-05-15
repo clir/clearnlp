@@ -45,4 +45,17 @@ public class Joiner
 		
 		return collection.isEmpty() ? StringConst.EMPTY : build.substring(delim.length());
 	}
+	
+	static public <T>String join(T[] array, String delim)
+	{
+		StringBuilder build = new StringBuilder();
+		
+		for (T item : array)
+		{
+			build.append(delim);
+			build.append(item.toString());
+		}
+		
+		return array.length == 0 ? StringConst.EMPTY : build.substring(delim.length());
+	}
 }

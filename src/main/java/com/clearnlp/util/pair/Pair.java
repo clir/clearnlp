@@ -19,8 +19,7 @@ import java.io.Serializable;
 
 
 /**
- * Genetic object and object pair.
- * @since v0.1
+ * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
 public class Pair<T1, T2> implements Serializable

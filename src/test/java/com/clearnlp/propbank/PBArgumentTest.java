@@ -16,6 +16,7 @@
 package com.clearnlp.propbank;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -43,7 +44,7 @@ public class PBArgumentTest
 		
 		arg = new PBArgument(gold);
 		assertEquals(gold, arg.toString());
-		assertEquals(true, arg.isLabel("ARGM-TMP"));
+		assertTrue(arg.isLabel("ARGM-TMP"));
 		
 		assertEquals( "0:0", arg.getLocation(0).toString());
 		assertEquals("*0:1", arg.getLocation(1).toString());

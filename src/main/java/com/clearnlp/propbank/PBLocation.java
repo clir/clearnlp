@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 import com.clearnlp.constant.PatternConst;
 import com.clearnlp.constant.StringConst;
-import com.clearnlp.util.PatternUtils;
+import com.clearnlp.util.CharUtils;
 import com.sun.xml.internal.txw2.IllegalAnnotationException;
 
 /**
@@ -56,7 +56,7 @@ public class PBLocation implements Serializable, Comparable<PBLocation>
 	{
 		String[] loc = SPLIT.split(str);
 		
-		if (!PatternUtils.containsOnlyDigits(loc[0]) || !PatternUtils.containsOnlyDigits(loc[1]))
+		if (!CharUtils.containsOnlyDigits(loc[0]) || !CharUtils.containsOnlyDigits(loc[1]))
 			throw new IllegalAnnotationException(str);
 		
 		i_terminalID = Integer.parseInt(loc[0]);

@@ -16,6 +16,8 @@
 package com.clearnlp.constituent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -44,8 +46,8 @@ public class CTTreeTest
 		assertEquals(tree.toString(), root.toString());
 		
 		node = tree.getNode(0, 1);
-		assertEquals(true, node.isConstituentTag("NP"));
-		assertEquals(true, node.hasFunctionTag("SBJ"));
+		assertTrue(node.isConstituentTag("NP"));
+		assertTrue(node.hasFunctionTag("SBJ"));
 		
 		node = tree.getTerminal(7);
 		assertEquals("*-1", node.getWordForm());
@@ -59,8 +61,8 @@ public class CTTreeTest
 		nodes = tree.getEmptyCategoryList(1);
 		assertEquals("[(-NONE- *-1)]", nodes.toString());
 
-		assertEquals(true , tree.isRange(0, 3));
-		assertEquals(false, tree.isRange(0, 4));
+		assertTrue(tree.isRange(0, 3));
+		assertFalse(tree.isRange(0, 4));
 		
 		reader.close();
 	}

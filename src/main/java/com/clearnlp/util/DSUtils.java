@@ -23,12 +23,14 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
 import com.clearnlp.collection.list.FloatArrayList;
 import com.clearnlp.util.pair.DoubleIntPair;
 import com.clearnlp.util.pair.Pair;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -43,7 +45,7 @@ public class DSUtils
 	 * @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}.
 	 * The file that the input-stream is created from consists of one entry per line. 
 	 */
-	static public Set<String> createStringSet(InputStream in)
+	static public Set<String> createStringHashSet(InputStream in, boolean trim)
 	{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		Set<String> set = Sets.newHashSet();
@@ -53,8 +55,13 @@ public class DSUtils
 		{
 			while ((line = reader.readLine()) != null)
 			{
-				line = line.trim();
-				if (!line.isEmpty()) set.add(line);
+				if (trim)
+				{
+					line = line.trim();
+					if (line.isEmpty()) continue;
+				}
+				
+				set.add(line);
 			}			
 		}
 		catch (IOException e) {e.printStackTrace();}
@@ -62,11 +69,36 @@ public class DSUtils
 		return set;
 	}
 	
-	static public Set<String> createStringSetFromClasspath(String path)
+	/**
+	 * @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}.
+	 * The file that the input-stream is created from consists of one entry per line ("key"<delim>"value").
+	 */
+	static public Map<String,String> createStringHashMap(InputStream in, CharTokenizer tokenizer, boolean trim)
 	{
-		return createStringSet(IOUtils.getInputStreamsFromClasspath(path));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		Map<String,String> map = Maps.newHashMap();
+		List<String> t;
+		String line;
+		
+		try
+		{
+			while ((line = reader.readLine()) != null)
+			{
+				if (trim)
+				{
+					line = line.trim();
+					if (line.isEmpty()) continue;
+				}
+				
+				t = tokenizer.tokenize(line);
+				map.put(t.get(0), t.get(1));
+			}			
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return map;
 	}
-	
+
 	static public <T extends Comparable<? extends T>>void sortReverseOrder(List<T> list)
 	{
 		Collections.sort(list, Collections.reverseOrder());

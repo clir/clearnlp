@@ -16,6 +16,8 @@
 package com.clearnlp.constituent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -79,10 +81,10 @@ public class CTLibEnTest
 	@Test
 	public void testPassiveNullPattern()
 	{
-		assertEquals(true , CTLibEn.P_PASSIVE_NULL.matcher("*").find());
-		assertEquals(true , CTLibEn.P_PASSIVE_NULL.matcher("*-12").find());
-		assertEquals(false, CTLibEn.P_PASSIVE_NULL.matcher("*-a").find());
-		assertEquals(false, CTLibEn.P_PASSIVE_NULL.matcher("*T*").find());
-		assertEquals(false, CTLibEn.P_PASSIVE_NULL.matcher("-*").find());
+		assertTrue(CTLibEn.P_PASSIVE_NULL.matcher("*").find());
+		assertTrue(CTLibEn.P_PASSIVE_NULL.matcher("*-12").find());
+		assertFalse(CTLibEn.P_PASSIVE_NULL.matcher("*-a").find());
+		assertFalse(CTLibEn.P_PASSIVE_NULL.matcher("*T*").find());
+		assertFalse(CTLibEn.P_PASSIVE_NULL.matcher("-*").find());
 	}
 }

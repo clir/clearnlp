@@ -16,6 +16,8 @@
 package com.clearnlp.propbank;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.util.List;
@@ -114,37 +116,37 @@ public class PBLibTest
 		String label;
 		
 		label = "ARG0";
-		assertEquals(true, PBLib.isNumberedArgument(label));
+		assertTrue(PBLib.isNumberedArgument(label));
 		
 		label = "ARGA";
-		assertEquals(true, PBLib.isNumberedArgument(label));
+		assertTrue(PBLib.isNumberedArgument(label));
 
 		label = "ARG1-DSP";
-		assertEquals(true, PBLib.isNumberedArgument(label));
+		assertTrue(PBLib.isNumberedArgument(label));
 		
 		label = "ARG";
-		assertEquals(false, PBLib.isNumberedArgument(label));
+		assertFalse(PBLib.isNumberedArgument(label));
 		
 		label = "ARGM-LOC";
-		assertEquals(false, PBLib.isNumberedArgument(label));
+		assertFalse(PBLib.isNumberedArgument(label));
 
 		label = "A0";
-		assertEquals(true, PBLib.isNumberedArgument(label));
+		assertTrue(PBLib.isNumberedArgument(label));
 		
 		label = "C-A0";
-		assertEquals(true, PBLib.isNumberedArgument(label));
+		assertTrue(PBLib.isNumberedArgument(label));
 		
 		label = "R-A0";
-		assertEquals(true, PBLib.isNumberedArgument(label));
+		assertTrue(PBLib.isNumberedArgument(label));
 		
 		label = "AA";
-		assertEquals(true, PBLib.isNumberedArgument(label));
+		assertTrue(PBLib.isNumberedArgument(label));
 
 		label = "A1-DSP";
-		assertEquals(true, PBLib.isNumberedArgument(label));
+		assertTrue(PBLib.isNumberedArgument(label));
 		
 		label = "AM-LOC";
-		assertEquals(false, PBLib.isNumberedArgument(label));
+		assertFalse(PBLib.isNumberedArgument(label));
 	}
 	
 	@Test
@@ -153,37 +155,37 @@ public class PBLibTest
 		String label;
 		
 		label = "ARG0";
-		assertEquals(true, PBLib.isCoreNumberedArgument(label));
+		assertTrue(PBLib.isCoreNumberedArgument(label));
 		
 		label = "ARGA";
-		assertEquals(true, PBLib.isCoreNumberedArgument(label));
+		assertTrue(PBLib.isCoreNumberedArgument(label));
 
 		label = "ARG1-DSP";
-		assertEquals(true, PBLib.isCoreNumberedArgument(label));
+		assertTrue(PBLib.isCoreNumberedArgument(label));
 		
 		label = "ARG";
-		assertEquals(false, PBLib.isCoreNumberedArgument(label));
+		assertFalse(PBLib.isCoreNumberedArgument(label));
 		
 		label = "ARGM-LOC";
-		assertEquals(false, PBLib.isCoreNumberedArgument(label));
+		assertFalse(PBLib.isCoreNumberedArgument(label));
 
 		label = "A0";
-		assertEquals(true, PBLib.isCoreNumberedArgument(label));
+		assertTrue(PBLib.isCoreNumberedArgument(label));
 		
 		label = "AA";
-		assertEquals(true, PBLib.isCoreNumberedArgument(label));
+		assertTrue(PBLib.isCoreNumberedArgument(label));
 
 		label = "A1-DSP";
-		assertEquals(true, PBLib.isCoreNumberedArgument(label));
+		assertTrue(PBLib.isCoreNumberedArgument(label));
 		
 		label = "C-A0";
-		assertEquals(false, PBLib.isCoreNumberedArgument(label));
+		assertFalse(PBLib.isCoreNumberedArgument(label));
 		
 		label = "R-A0";
-		assertEquals(false, PBLib.isCoreNumberedArgument(label));
+		assertFalse(PBLib.isCoreNumberedArgument(label));
 		
 		label = "AM-LOC";
-		assertEquals(false, PBLib.isCoreNumberedArgument(label));
+		assertFalse(PBLib.isCoreNumberedArgument(label));
 	}
 	
 	@Test
@@ -192,15 +194,15 @@ public class PBLibTest
 		String label;
 		
 		label = "ARG0";
-		assertEquals(false, PBLib.isModifier(label));
+		assertFalse(PBLib.isModifier(label));
 		
 		label = "ARGA";
-		assertEquals(false, PBLib.isModifier(label));
+		assertFalse(PBLib.isModifier(label));
 
 		label = "ARG1-DSP";
-		assertEquals(false, PBLib.isModifier(label));
+		assertFalse(PBLib.isModifier(label));
 		
 		label = "ARGM-LOC";
-		assertEquals(true, PBLib.isModifier(label));
+		assertTrue(PBLib.isModifier(label));
 	}
 }

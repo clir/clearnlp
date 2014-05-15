@@ -15,9 +15,15 @@
  */
 package com.clearnlp.util.regex;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.clearnlp.constant.PatternConst;
+import com.clearnlp.util.CharTokenizer;
+import com.clearnlp.util.CharUtils;
+import com.google.common.collect.Lists;
 
 /**
  * @since 3.0.0
@@ -25,43 +31,69 @@ import com.clearnlp.constant.PatternConst;
  */
 public class Splitter implements PatternConst
 {
+	static public CharTokenizer T_UNDERSCORE  = new CharTokenizer('_');
+	static public CharTokenizer T_HYPHEN      = new CharTokenizer('-');
+	static public CharTokenizer T_SPACE       = new CharTokenizer(' ');
+	static public CharTokenizer T_COMMA       = new CharTokenizer(',');
+	static public CharTokenizer T_COLON       = new CharTokenizer(':');
+	static public CharTokenizer T_TAB         = new CharTokenizer('\t');
+	
 	static public String[] split(String s, Pattern p)
 	{
 		return p.split(s);
 	}
 	
-	static public String[] splitSpace(String s)
+	static public List<String> splitSpace(String s)
 	{
-		return split(s, SPACE);
+		return T_SPACE.tokenize(s);
 	}
 	
-	static public String[] splitUnderscore(String s)
+	static public List<String> splitTabs(String s)
 	{
-		return split(s, UNDERSCORE);
+		return T_TAB.tokenize(s);
+	}
+	
+	static public List<String> splitUnderscore(String s)
+	{
+		return T_UNDERSCORE.tokenize(s);
 	}
 
-	static public String[] splitWhiteSpaces(String s)
+	static public List<String> splitHyphens(String s)
 	{
-		return split(s, WHITESPACES);
+		return T_HYPHEN.tokenize(s);
 	}
 	
-	static public String[] splitTabs(String s)
+	static public List<String> splitCommas(String s)
 	{
-		return split(s, TAB);
+		return T_COMMA.tokenize(s);
 	}
 	
-	static public String[] splitHyphens(String s)
+	static public List<String> splitColons(String s)
 	{
-		return split(s, HYPHEN);
+		return T_COLON.tokenize(s);
 	}
 	
-	static public String[] splitCommas(String s)
+	static public List<String> splitIncludingMatches(Pattern p, String s)
 	{
-		return split(s, COMMA);
-	}
-	
-	static public String[] splitColons(String s)
-	{
-		return split(s, COLON);
+		ArrayList<String> list = Lists.newArrayList();
+		Matcher m = p.matcher(s);
+		int last = 0, curr;
+		
+		while (m.find())
+		{
+			curr = m.start();
+			
+			if (last < curr)
+				list.add(s.substring(last, curr));
+			
+			last = m.end();
+			list.add(m.group());
+		}
+		
+		if (last < s.length())
+			list.add(s.substring(last));
+		
+		list.trimToSize();
+		return list;
 	}
 }

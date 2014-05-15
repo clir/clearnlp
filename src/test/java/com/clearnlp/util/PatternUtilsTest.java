@@ -16,12 +16,12 @@
 package com.clearnlp.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Pattern;
 
 import org.junit.Test;
-
-import com.clearnlp.util.PatternUtils;
 
 /**
  * @since 3.0.0
@@ -35,35 +35,26 @@ public class PatternUtilsTest
 		Pattern p; 
 		
 		p = PatternUtils.createORPattern("A", "B");
-		assertEquals(true, p.matcher("A").find());
-		assertEquals(true, p.matcher("B").find());
-		assertEquals(true, p.matcher("aA").find());
-		assertEquals(true, p.matcher("Bb").find());
+		assertTrue(p.matcher("A").find());
+		assertTrue(p.matcher("B").find());
+		assertTrue(p.matcher("aA").find());
+		assertTrue(p.matcher("Bb").find());
 		
 		p = PatternUtils.createClosedORPattern("A", "B");
-		assertEquals(true , p.matcher("A").find());
-		assertEquals(true , p.matcher("B").find());
-		assertEquals(false, p.matcher("aA").find());
-		assertEquals(false, p.matcher("Bb").find());
-	}
-	
-	@Test
-	public void testContainsOnlyDigits()
-	{
-		assertEquals(true , PatternUtils.containsOnlyDigits("12"));
-		assertEquals(false, PatternUtils.containsOnlyDigits("a1"));
-		assertEquals(false, PatternUtils.containsOnlyDigits("1b"));
-		assertEquals(false, PatternUtils.containsOnlyDigits("1-2"));
+		assertTrue(p.matcher("A").find());
+		assertTrue(p.matcher("B").find());
+		assertFalse(p.matcher("aA").find());
+		assertFalse(p.matcher("Bb").find());
 	}
 	
 	@Test
 	public void testContainsPunctuation()
 	{
-		assertEquals(false, PatternUtils.containsPunctuation("ab"));
-		assertEquals(true , PatternUtils.containsPunctuation("$ab"));
-		assertEquals(true , PatternUtils.containsPunctuation("a-b"));
-		assertEquals(true , PatternUtils.containsPunctuation("ab#"));
-		assertEquals(true , PatternUtils.containsPunctuation("$-#"));
+		assertFalse(PatternUtils.containsPunctuation("ab"));
+		assertTrue(PatternUtils.containsPunctuation("$ab"));
+		assertTrue(PatternUtils.containsPunctuation("a-b"));
+		assertTrue(PatternUtils.containsPunctuation("ab#"));
+		assertTrue(PatternUtils.containsPunctuation("$-#"));
 	}
 	
 	@Test
@@ -82,16 +73,16 @@ public class PatternUtilsTest
 		assertEquals("%A0", PatternUtils.collapseDigits("%A12"));
 	}
 	
-	@Test
-	public void testCollapsePunctuation()
-	{
-		String[] org = {"...","!!!","???","---","***","===","~~~",",,,",".!?-*=~,","..!!??--**==~~,,","....!!!!????----****====~~~~,,,,"};
-		String[] rep = {"..","!!","??","--","**","==","~~",",,",".!?-*=~,","..!!??--**==~~,,","..!!??--**==~~,,"};
-		int i, size = org.length;
-		
-		for (i=0; i<size; i++)
-			assertEquals(rep[i], PatternUtils.collapsePunctuation(org[i]));
-	}
+//	@Test
+//	public void testCollapsePunctuation()
+//	{
+//		String[] org = {"...","!!!","???","---","***","===","~~~",",,,",".!?-*=~,","..!!??--**==~~,,","....!!!!????----****====~~~~,,,,"};
+//		String[] rep = {"..","!!","??","--","**","==","~~",",,",".!?-*=~,","..!!??--**==~~,,","..!!??--**==~~,,"};
+//		int i, size = org.length;
+//		
+//		for (i=0; i<size; i++)
+//			assertEquals(rep[i], PatternUtils.collapsePunctuation(org[i]));
+//	}
 	
 	@Test
 	public void testRevertBrackets()
@@ -103,16 +94,76 @@ public class PatternUtilsTest
 		for (i=0; i<size; i++)
 			assertEquals(rep[i], PatternUtils.revertBrackets(org[i]));
 	}
-
+	
+	
+	
+	
+	
+	
+	
+	
 	@Test
-	public void test()
+	public void testContainsURL()
 	{
-		assertEquals(true, PatternUtils.containsURL("http://www.clearnlp.com"));
-		assertEquals(true, PatternUtils.containsURL("www.clearnlp.com"));
-		assertEquals(true, PatternUtils.containsURL("clearnlp.com"));
-		assertEquals(true, PatternUtils.containsURL("mailto:jinho@clearnlp.com"));
-		assertEquals(true, PatternUtils.containsURL("jinho@clearnlp.com"));
+		String s;
 		
-		assertEquals(false, PatternUtils.containsURL("index.html"));
+		s = "http://www.clearnlp.com";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "https://www-01.clearnlp.com";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "www.clearnlp.com";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "wiki.clearnlp.com";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "clearnlp.com";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "clearnlp.com:8080";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "clearnlp.co.kr";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "www.clearnlp.com/wiki";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "www.clearnlp.com:8080/wiki";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "id@clearnlp.com";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "id:pw@clearnlp.com";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "id:@clearnlp.com";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "mailto:support@clearnlp.com";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "255.248.27.1";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "http://127.0.0.1";
+		assertTrue(PatternUtils.containsHyperlink(s));
+		
+		s = "http://www.clearnlp.com/watch?v=IAaDVOd2sRQ";
+		assertTrue(PatternUtils.containsHyperlink(s));
+	}
+	
+	@Test
+	public void testContainsEmoticon()
+	{
+		assertTrue(PatternUtils.containsEmoticon(":)"));
+		assertTrue(PatternUtils.containsEmoticon(":-)"));
+		assertTrue(PatternUtils.containsEmoticon(":--)"));
+		assertTrue(PatternUtils.containsEmoticon(":P"));
+		assertTrue(PatternUtils.containsEmoticon(":p"));
+		assertFalse(PatternUtils.containsEmoticon("p"));
 	}
 }

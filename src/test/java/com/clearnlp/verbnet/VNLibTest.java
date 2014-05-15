@@ -16,6 +16,7 @@
 package com.clearnlp.verbnet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +46,7 @@ public class VNLibTest
 		VNClass vn;
 		
 		vn = map.get("13.6");
-		assertEquals(true, vn != null);
+		assertTrue(vn != null);
 		
 		frame = vn.getFrame(0);
 		assertEquals("agent co-theme theme", frame.getSyntax().toString());
@@ -68,7 +69,7 @@ public class VNLibTest
 		assertEquals("transfer(during(E),theme) cause(agent,E)", frame.getSemantics().toString(" "));
 		
 		vn = map.get("13.6-1");
-		assertEquals(true, vn != null);
+		assertTrue(vn != null);
 		
 		frame = vn.getFrame(0);
 		assertEquals("co-theme location theme", frame.getSyntax().toString());
@@ -79,7 +80,7 @@ public class VNLibTest
 		assertEquals("location(start(E),theme_i,location_i) location(end(E),theme_i,location_j) location(start(E),theme_j,location_j) location(end(E),theme_j,location_i)", frame.getSemantics().toString(" "));
 		
 		vn = map.get("13.6-1-1");
-		assertEquals(true, vn != null);
+		assertTrue(vn != null);
 		
 		frame = vn.getFrame(0);
 		assertEquals("co-theme theme", frame.getSyntax().toString());
@@ -92,7 +93,7 @@ public class VNLibTest
 		VNClass vn;
 		
 		vn = map.get("26.7-1");
-		assertEquals(true, vn != null);
+		assertTrue(vn != null);
 		
 		frame = vn.getFrame(0);
 		assertEquals("agent theme", frame.getSyntax().toString());
@@ -107,14 +108,14 @@ public class VNLibTest
 		assertEquals("perform(during(E),agent,theme) benefit(E,beneficiary)", frame.getSemantics().toString(" "));
 		
 		vn = map.get("26.7-1-1");
-		assertEquals(true, vn != null);
+		assertTrue(vn != null);
 		
 		frame = vn.getFrame(0);
 		assertEquals("agent beneficiary theme", frame.getSyntax().toString());
 		assertEquals("perform(during(E),agent,theme) benefit(E,beneficiary)", frame.getSemantics().toString(" "));
 		
 		vn = map.get("26.7-2");
-		assertEquals(true, vn != null);
+		assertTrue(vn != null);
 		
 		frame = vn.getFrame(0);
 		assertEquals("agent theme", frame.getSyntax().toString());
@@ -129,7 +130,7 @@ public class VNLibTest
 		assertEquals("not(exist(start(E),theme)) exist(result(E),theme) cause(agent,E) benefit(E,beneficiary)", frame.getSemantics().toString(" "));
 		
 		vn = map.get("26.7-2-1");
-		assertEquals(true, vn != null);
+		assertTrue(vn != null);
 
 		frame = vn.getFrame(0);
 		assertEquals("agent beneficiary theme", frame.getSyntax().toString());

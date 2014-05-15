@@ -77,7 +77,7 @@ public class WNSynset
 	{
 		int i, count, idx = 0;
 		WNPointer pointer;
-		String[] t;
+		List<String> t;
 		
 		i = line.indexOf(StringConst.PIPE);
 		
@@ -94,30 +94,30 @@ public class WNSynset
 		
 		t = Splitter.splitSpace(line);
 		
-		setSynsetOffset(Integer.parseInt(t[idx++]));
-		setLexicographerFileNumber(t[idx++]);
-		setPOSTag(t[idx++].charAt(0));
+		setSynsetOffset(Integer.parseInt(t.get(idx++)));
+		setLexicographerFileNumber(t.get(idx++));
+		setPOSTag(t.get(idx++).charAt(0));
 		
-		count = Integer.parseInt(t[idx++], 16);
+		count = Integer.parseInt(t.get(idx++), 16);
 		s_words = new ArrayList<String>(count);
 		
 		for (i=0; i<count; i++)
 		{
-			addWord(t[idx++]);
+			addWord(t.get(idx++));
 			idx++;	// skip lexical ID
 		}
 
-		count = Integer.parseInt(t[idx++]);
+		count = Integer.parseInt(t.get(idx++));
 		a_pointers = new WNPointer[count];
 		
 		for (i=0; i<count; i++)
 		{
 			pointer = new WNPointer();
-			pointer.setPointerSymbol(t[idx++]);
-			pointer.setSynsetOffset(Integer.parseInt(t[idx++]));
-			pointer.setPOSTag(t[idx++].charAt(0));
-			pointer.setSource((short)(Short.parseShort(t[idx].substring(0,2), 16) - 1));
-			pointer.setTarget((short)(Short.parseShort(t[idx++].substring(2), 16) - 1));
+			pointer.setPointerSymbol(t.get(idx++));
+			pointer.setSynsetOffset(Integer.parseInt(t.get(idx++)));
+			pointer.setPOSTag(t.get(idx++).charAt(0));
+			pointer.setSource((short)(Short.parseShort(t.get(idx).substring(0,2), 16) - 1));
+			pointer.setTarget((short)(Short.parseShort(t.get(idx++).substring(2), 16) - 1));
 			a_pointers[i] = pointer;
 		}
 		

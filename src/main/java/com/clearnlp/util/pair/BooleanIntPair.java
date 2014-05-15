@@ -13,34 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.dictionary;
+package com.clearnlp.util.pair;
 
-import java.util.Set;
-
-import com.clearnlp.util.DSUtils;
+import java.io.Serializable;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DTNumberEn
+public class BooleanIntPair implements Serializable
 {
-	protected final Set<String> SET_CARDINALS;
-	protected final Set<String> SET_ORDINALS;
-
-	public DTNumberEn()
+	private static final long serialVersionUID = -3606845926289267380L;
+	public boolean b;
+	public int i;
+	
+	public BooleanIntPair(boolean b, int i)
 	{
-		SET_CARDINALS = DSUtils.createStringSetFromClasspath("com/clearnlp/dictionary/english/cardinals.txt");
-		SET_ORDINALS  = DSUtils.createStringSetFromClasspath("com/clearnlp/dictionary/english/ordinals.txt");
-	}
-
-	public boolean isCardinal(String lower)
-	{
-		return SET_CARDINALS.contains(lower);
+		set(b, i);
 	}
 	
-	public boolean isOrdinal(String lower)
+	public void set(boolean b, int i)
 	{
-		return SET_ORDINALS.contains(lower);
+		this.b = b;
+		this.i = i;
 	}
 }

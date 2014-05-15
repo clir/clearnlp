@@ -26,8 +26,8 @@ import com.clearnlp.constant.StringConst;
 import com.clearnlp.constituent.matcher.CTNodeMatcher;
 import com.clearnlp.conversion.C2DInfo;
 import com.clearnlp.propbank.PBLocation;
+import com.clearnlp.util.CharUtils;
 import com.clearnlp.util.DSUtils;
-import com.clearnlp.util.PatternUtils;
 import com.clearnlp.util.StringUtils;
 import com.clearnlp.util.arc.PBArc;
 import com.google.common.collect.Lists;
@@ -514,7 +514,7 @@ public class CTNode implements Comparable<CTNode>
 			
 			if (delim.equals(DELIM_FUNCTION_TAG))
 			{
-				if (PatternUtils.containsOnlyDigits(tag))
+				if (CharUtils.containsOnlyDigits(tag))
 				{
 					if (i_emptyCategoryIndex == -1)
 						setEmptyCategoryIndex(Integer.parseInt(tag));

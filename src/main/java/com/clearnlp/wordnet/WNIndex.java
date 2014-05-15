@@ -44,22 +44,22 @@ public class WNIndex
 	 */
 	public WNIndex(WNDataMap map, String line)
 	{
-		String[] t = Splitter.splitSpace(line);
+		List<String> t = Splitter.splitSpace(line);
 		int i, count, offset, idx = 0;
 		
-		setLemma(t[idx++]);
-		setPOSTag(t[idx++].charAt(0));
-		count = Integer.parseInt(t[idx++]);
+		setLemma(t.get(idx++));
+		setPOSTag(t.get(idx++).charAt(0));
+		count = Integer.parseInt(t.get(idx++));
 		
-		idx += Integer.parseInt(t[idx]) + 1;	// skip pointers
+		idx += Integer.parseInt(t.get(idx)) + 1;	// skip pointers
 		idx++;	// skip sense count (redundant to synsetCount)
-		setTagsenseCount(Byte.parseByte(t[idx++]));
+		setTagsenseCount(Byte.parseByte(t.get(idx++)));
 
 		w_synsets = new ArrayList<WNSynset>(count); 
 		
 		for (i=0; i<count; i++)
 		{
-			offset = Integer.parseInt(t[idx++]);
+			offset = Integer.parseInt(t.get(idx++));
 			addSynset(map.getSynset(offset));
 		}
 	}

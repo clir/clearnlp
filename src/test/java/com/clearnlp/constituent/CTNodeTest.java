@@ -16,6 +16,8 @@
 package com.clearnlp.constituent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -240,13 +242,13 @@ public class CTNodeTest
 		assertEquals(null, D.getRightSibling());
 		assertEquals("(NP (C null) (A null) (E null) (B null) (D null))", curr.toStringLine());
 		
-		assertEquals(true , A.isLeftSiblingOf(B));
-		assertEquals(true , A.isLeftSiblingOf(D));
-		assertEquals(false, A.isLeftSiblingOf(C));
+		assertTrue(A.isLeftSiblingOf(B));
+		assertTrue(A.isLeftSiblingOf(D));
+		assertFalse(A.isLeftSiblingOf(C));
 		
-		assertEquals(true , B.isRightSiblingOf(A));
-		assertEquals(true , D.isRightSiblingOf(A));
-		assertEquals(false, C.isRightSiblingOf(A));
+		assertTrue(B.isRightSiblingOf(A));
+		assertTrue(D.isRightSiblingOf(A));
+		assertFalse(C.isRightSiblingOf(A));
 
 		// set child
 		curr.setChild(0, CC);
@@ -291,12 +293,12 @@ public class CTNodeTest
 		node.addChild(none);
 		node.addChild(np2);
 		
-		assertEquals(true, none.isTerminal());
-		assertEquals(true, none.isEmptyCategory());
-		assertEquals(false, np2.isEmptyCategory());
-		assertEquals(false, np2.isEmptyCategoryTerminal());
+		assertTrue(none.isTerminal());
+		assertTrue(none.isEmptyCategory());
+		assertFalse(np2.isEmptyCategory());
+		assertFalse(np2.isEmptyCategoryTerminal());
 		
 		np2.addChild(new CTNode(CTTagEn.NONE));
-		assertEquals(true, np2.isEmptyCategoryTerminal());
+		assertTrue(np2.isEmptyCategoryTerminal());
 	}
 }

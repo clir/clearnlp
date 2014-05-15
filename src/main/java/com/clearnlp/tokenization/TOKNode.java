@@ -21,37 +21,20 @@ package com.clearnlp.tokenization;
  */
 public class TOKNode
 {
-	private String  s_wordForm;
-	private String  s_posTag;
-	private boolean b_protect;
+	private String s_wordForm;
+	
+	public TOKNode(String form)
+	{
+		setWordForm(form);
+	}
 	
 	public String getWordForm()
 	{
 		return s_wordForm;
 	}
 	
-	public String getPOSTag()
-	{
-		return s_posTag;
-	}
-	
-	public boolean isProtect()
-	{
-		return b_protect;
-	}
-	
 	public void setWordForm(String form)
 	{
 		s_wordForm = form;
-	}
-	
-	public void setPOSTag(String tag)
-	{
-		s_posTag = tag;
-	}
-	
-	public void setProtect(boolean protect)
-	{
-		b_protect = protect;
 	}
 }

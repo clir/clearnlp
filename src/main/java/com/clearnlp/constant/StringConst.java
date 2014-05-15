@@ -15,6 +15,7 @@
  */
 package com.clearnlp.constant;
 
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
@@ -36,6 +37,7 @@ public interface StringConst
 	String QUESTION		= "?";
 	String EXCLAMATION	= "!";
 	String PERCENT		= "%";
+	String POUND		= "#";
 	
 	/** Left round bracket. */
 	String LRB			= "(";

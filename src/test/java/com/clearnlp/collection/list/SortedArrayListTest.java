@@ -16,6 +16,7 @@
 package com.clearnlp.collection.list;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -44,7 +45,7 @@ public class SortedArrayListTest
 		assertEquals(-3, list.remove("D"));
 		
 		assertEquals(   1, list.indexOf ("C"));
-		assertEquals(true, list.contains("C"));
+		assertTrue(list.contains("C"));
 		assertEquals( "A", list.get(0));
 		assertEquals( "E", list.get(2));
 	}
@@ -68,7 +69,7 @@ public class SortedArrayListTest
 		assertEquals(-3, list.remove("B"));
 		
 		assertEquals(   1, list.indexOf ("C"));
-		assertEquals(true, list.contains("C"));
+		assertTrue(list.contains("C"));
 		assertEquals( "E", list.get(0));
 		assertEquals( "A", list.get(2));
 	}

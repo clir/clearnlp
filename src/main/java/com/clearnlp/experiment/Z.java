@@ -17,13 +17,19 @@ package com.clearnlp.experiment;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.carrotsearch.hppc.CharCharOpenHashMap;
 import com.carrotsearch.hppc.ObjectIntOpenHashMap;
 import com.clearnlp.collection.list.DoubleArrayList;
 import com.clearnlp.collection.map.ObjectIntHashMap;
+import com.clearnlp.constant.StringConst;
+import com.clearnlp.constituent.CTNode;
+import com.clearnlp.constituent.CTReader;
+import com.clearnlp.constituent.CTTree;
 import com.clearnlp.util.DSUtils;
-import com.clearnlp.util.StringUtils;
+import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.pair.ObjectIntPair;
 import com.clearnlp.util.pair.Pair;
 import com.clearnlp.util.triple.ObjectIntIntTriple;
@@ -31,6 +37,7 @@ import com.clearnlp.wordnet.WNMap;
 import com.clearnlp.wordnet.WNPOSTag;
 import com.clearnlp.wordnet.WNSynset;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 
 /**
@@ -41,13 +48,124 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		CharCharOpenHashMap map = new CharCharOpenHashMap();
-		map.put('\u02BA', '"');
-		map.put('\u2016', '|');
+		int i = 1000;
+		System.out.println(i/0);
 		
-		String s = "a\u02BAb\u2016c";
-		System.out.println(s);
-		System.out.println(StringUtils.replaceAll(s, map));
+//		int i, size = 1000000;
+//		String s = "1234567";
+//		long st, et;
+//		
+//		st = System.currentTimeMillis();
+//		for (i=0; i<size; i++)
+//		{
+//			CharUtils.containsOnlyDigits(s.toCharArray());
+//		}
+//		et = System.currentTimeMillis();
+//		System.out.println(et-st);
+	}
+	
+	void printPattern0(Pattern pattern, int index, String s)
+	{
+		StringBuffer sb = new StringBuffer();
+		Matcher m = pattern.matcher(s);
+		int i, size = m.groupCount();
+		String t;
+		
+		m.find();
+
+		for (i=1; i<index; i++)
+		{
+			t = m.group(i);
+			if (t != null) sb.append(t);
+		}
+		
+		m.appendReplacement(sb, StringConst.SPACE);
+		
+		for (i=index; i<=size; i++)
+		{
+			t = m.group(i);
+			if (t != null) sb.append(t);
+		}
+		
+		m.appendTail(sb);
+		System.out.println("["+s +"] -> ["+sb.toString()+"]");
+	}
+	
+	void printPattern1(Pattern pattern, int index, String s)
+	{
+		StringBuffer sb = new StringBuffer();
+		Matcher m = pattern.matcher(s);
+		int i, size = m.groupCount();
+		String t;
+		
+		m.find();
+		sb.append(s.substring(0, m.start()));
+
+		for (i=1; i<=index; i++)
+		{
+			t = m.group(i);
+			if (t != null) sb.append(t);
+		}
+		
+		sb.append(StringConst.SPACE);
+		
+		for (i=index+1; i<=size; i++)
+		{
+			t = m.group(i);
+			if (t != null) sb.append(t);
+		}
+		
+		System.out.println("["+s +"] -> ["+sb.toString()+"]");
+	}
+	
+	public void extractPOSs(String[] args) throws Exception
+	{
+		CTReader reader = new CTReader(IOUtils.createFileInputStream(args[0]));
+		Set<String> set = Sets.newHashSet();
+		CTTree tree;
+		
+		while ((tree = reader.nextTree()) != null)
+			extract(set, tree.getRoot(), "ADD");
+		
+		reader.close();
+		
+		for (String s : set)
+			System.out.println(s);
+		
+//		PrintStream out = IOUtils.createBufferedPrintStream(args[1]);
+//		List<String> list = Lists.newArrayList(set);
+//		Collections.sort(list);
+//		Matcher m;
+//		String sm;
+//		
+//		for (String s : list)
+//		{
+//			m = PatternConst.URL.matcher(s);
+//			sm = m.find() ? m.group() : null;
+//			
+//			if (sm == null)
+//			{
+//				out.println(s);
+//				out.println(sm);
+//				out.println();
+//			}
+//		}
+//		
+//		out.close();
+	}
+	
+	private void extract(Set<String> set, CTNode node, String pos)
+	{
+		if (node.isTerminal())
+		{
+			if (node.isWordForm(","))
+				set.add(node.getConstituentTag());
+		}
+		else
+		{
+			for (CTNode child : node.getChildrenList())
+				extract(set, child, pos);
+		}
 	}
 	
 	public double getWeight(DoubleArrayList weight, int index)

@@ -16,6 +16,8 @@
 package com.clearnlp.dependency;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
 import java.util.List;
@@ -152,7 +154,7 @@ public class DEPNodeTest
 		assertEquals(tree.get(8), list.get(1));
 		
 		list = node.getDescendantList(0);
-		assertEquals(true, list.isEmpty());
+		assertTrue(list.isEmpty());
 		
 		list = node.getDescendantList(1);
 		assertEquals(5, list.size());
@@ -173,28 +175,28 @@ public class DEPNodeTest
 		assertEquals("[8, 7, 9]", node.getSubNodeIDSet().toString());
 		
 		node = tree.get(3);
-		assertEquals(true , node.hasHead());
-		assertEquals(false, tree.get(0).hasHead());
+		assertTrue(node.hasHead());
+		assertFalse(tree.get(0).hasHead());
 		
 		node = tree.get(1);
-		assertEquals(true , node.isDependentOf(tree.get(3)));
-		assertEquals(true , node.isDependentOf(tree.get(3), "nsubj"));
-		assertEquals(false, node.isDependentOf(tree.get(3), "csubj"));
-		assertEquals(false, node.isDependentOf(tree.get(0)));
-		assertEquals(true , node.isDescendantOf(tree.get(0)));
-		assertEquals(true , node.isSiblingOf(tree.get(5)));
-		assertEquals(false, node.isSiblingOf(tree.get(4)));
+		assertTrue(node.isDependentOf(tree.get(3)));
+		assertTrue(node.isDependentOf(tree.get(3), "nsubj"));
+		assertFalse(node.isDependentOf(tree.get(3), "csubj"));
+		assertFalse(node.isDependentOf(tree.get(0)));
+		assertTrue(node.isDescendantOf(tree.get(0)));
+		assertTrue(node.isSiblingOf(tree.get(5)));
+		assertFalse(node.isSiblingOf(tree.get(4)));
 		
 		node = tree.get(3);
 		assertEquals("buy.01", node.getRolesetID());
 		
 		node.setRolesetID("buy.02");
 		assertEquals("buy.02", node.getRolesetID());
-		assertEquals(true, node.isSemanticHead());
+		assertTrue(node.isSemanticHead());
 		
 		node.clearRolesetID();
 		assertEquals(null, node.getRolesetID());
-		assertEquals(false, node.isSemanticHead());
+		assertFalse(node.isSemanticHead());
 		
 		node = tree.get(5);
 		assertEquals(tree.get(1) , node.getLeftNearestSibling(1));

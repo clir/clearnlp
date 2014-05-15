@@ -16,6 +16,8 @@
 package com.clearnlp.headrule;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -35,17 +37,17 @@ public class HeadRuleTest
 		CTNode  node1 = new CTNode("NNS", null);
 		CTNode  node2 = new CTNode("VBN", null);
 		
-		assertEquals(false, rule.isRightToLeft());
+		assertFalse(rule.isRightToLeft());
 
 		HeadTagSet[] headTags = rule.getHeadTags();
 		
 		HeadTagSet headTag = headTags[0];
-		assertEquals(true , headTag.matches(node1));
-		assertEquals(false, headTag.matches(node2));
+		assertTrue(headTag.matches(node1));
+		assertFalse(headTag.matches(node2));
 		
 		headTag = headTags[1];
-		assertEquals(false, headTag.matches(node1));
-		assertEquals(true , headTag.matches(node2));
+		assertFalse(headTag.matches(node1));
+		assertTrue(headTag.matches(node2));
 		
 		assertEquals(tags, rule.toString());
 	}

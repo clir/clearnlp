@@ -15,9 +15,12 @@
  */
 package com.clearnlp.dictionary;
 
+import java.io.InputStream;
 import java.util.Set;
 
 import com.clearnlp.util.DSUtils;
+import com.clearnlp.util.IOUtils;
+
 
 /**
  * @since 3.0.0
@@ -25,15 +28,35 @@ import com.clearnlp.util.DSUtils;
  */
 public class DTCurrency
 {
-	protected final Set<String> SET_CURRENCIES;
+	private Set<String> s_currency;
+	private Set<String> s_dollar;
 	
 	public DTCurrency()
 	{
-		SET_CURRENCIES = DSUtils.createStringSetFromClasspath("com/clearnlp/dictionary/universal/currencies.txt");
+		InputStream currency = IOUtils.getInputStreamsFromClasspath(DTPath.PATH_CURRENCY);
+		InputStream dollar   = IOUtils.getInputStreamsFromClasspath(DTPath.PATH_CURRENCY_DOLLAR);
+
+		init(currency, dollar);
+	}
+	
+	public DTCurrency(InputStream currency, InputStream dollar)
+	{
+		init(currency, dollar);
+	}
+	
+	public void init(InputStream currency, InputStream dollar)
+	{
+		s_currency = DSUtils.createStringHashSet(currency, true);
+		s_dollar   = DSUtils.createStringHashSet(dollar  , true);
+	}
+	
+	public boolean isCurrencyDollar(String lower)
+	{
+		return s_dollar.contains(lower);
 	}
 	
 	public boolean isCurrency(String lower)
 	{
-		return SET_CURRENCIES.contains(lower);
+		return s_currency.contains(lower);
 	}
 }

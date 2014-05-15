@@ -87,9 +87,9 @@ abstract public class AbstractFeatureTemplate<FeatureTokenType> implements Seria
 	
 	private FeatureTokenType getFeatureToken(String str)
 	{
-		String[] t0 = Splitter.splitColons(str);		// "l-1_hd:p" -> {"l-1_hd", "p"}
-		String[] t1 = Splitter.splitUnderscore(t0[0]);	// "l-1_hd"   -> {"l-1", "hd"} 
-		String   s  = t1[0];
+		List<String> t0 = Splitter.splitColons(str);			// "l-1_hd:p" -> {"l-1_hd", "p"}
+		List<String> t1 = Splitter.splitUnderscore(t0.get(0));	// "l-1_hd"   -> {"l-1", "hd"} 
+		String s = t1.get(0);
 		
 		String source = s.substring(0, 1);
 		int    offset = 0;
@@ -97,8 +97,8 @@ abstract public class AbstractFeatureTemplate<FeatureTokenType> implements Seria
 		if (s.length() >= 2)
 			offset = (s.charAt(1) == '+') ? Integer.parseInt(s.substring(2)) : Integer.parseInt(s.substring(1));
 		
-		String relation = (t1.length > 1) ? t1[1] : null;
-		String field = t0[1];
+		String relation = (t1.size() > 1) ? t1.get(1) : null;
+		String field = t0.get(1);
 
 		return createFeatureToken(source, relation, field, offset);
 	}

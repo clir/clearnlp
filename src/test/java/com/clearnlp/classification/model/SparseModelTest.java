@@ -16,6 +16,7 @@
 package com.clearnlp.classification.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -48,7 +49,8 @@ public class SparseModelTest
 		assertEquals(   2, model.getLabelSize());
 		assertEquals(  13, model.getFeatureSize());
 		assertEquals(  13, vector.size());
-		assertEquals(true, vector.isBinaryLabel());
+		assertTrue(vector.isBinaryLabel());
+		
 	}
 	
 	@Test
