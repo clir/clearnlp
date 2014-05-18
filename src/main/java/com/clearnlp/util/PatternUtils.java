@@ -35,7 +35,7 @@ public class PatternUtils implements PatternConst
 
 	static public Pattern createClosedPattern(String regex)
 	{
-		return Pattern.compile("^("+regex+")$");
+		return Pattern.compile("^(?:"+regex+")$");
 	}
 	
 	static public Pattern createClosedORPattern(String... regex)

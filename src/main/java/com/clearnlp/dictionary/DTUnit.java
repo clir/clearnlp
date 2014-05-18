@@ -20,42 +20,38 @@ import java.util.Set;
 
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
-import com.clearnlp.util.StringUtils;
+
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DTEmoticon
+public class DTUnit
 {
-	private final String[] POST = {".","?","!","'","\"",",",":",";"};
-	private Set<String> g_set;
+	private Set<String> s_unit;
 	
-	public DTEmoticon()
+	public DTUnit()
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.PATH_EMOTICON));
+		init(IOUtils.getInputStreamsFromClasspath(DTPath.UNITS));
 	}
 	
-	/** Calls {@link #init(InputStream)}. */
-	public DTEmoticon(InputStream in)
+	public DTUnit(InputStream unit)
 	{
-		init(in);
+		init(unit);
 	}
 	
-	/** @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}. */
-	public void init(InputStream in)
+	public void init(InputStream unit)
 	{
-		g_set = DSUtils.createStringHashSet(in, true);
+		s_unit = DSUtils.createStringHashSet(unit, true);
 	}
 	
-	public boolean isEmoticon(String s)
+	public boolean isUnit(String lower)
 	{
-		if (g_set.contains(s))
-			return true;
-		
-		if (StringUtils.endsWithAny(s, POST))
-			return g_set.contains(s.substring(0, s.length()-1));
-		
-		return false;
+		return s_unit.contains(lower);
+	}
+	
+	public Set<String> getUnitSet()
+	{
+		return s_unit;
 	}
 }

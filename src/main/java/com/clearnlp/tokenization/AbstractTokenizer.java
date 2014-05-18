@@ -16,16 +16,18 @@
 package com.clearnlp.tokenization;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.clearnlp.constant.PatternConst;
 import com.clearnlp.constant.StringConst;
-import com.clearnlp.dictionary.DTAbbreviation;
 import com.clearnlp.dictionary.DTCurrency;
-import com.clearnlp.dictionary.DTHtml;
+import com.clearnlp.dictionary.DTUnit;
 import com.clearnlp.util.CharUtils;
+import com.clearnlp.util.PatternUtils;
 import com.clearnlp.util.StringUtils;
 import com.google.common.collect.Lists;
 
@@ -35,62 +37,43 @@ import com.google.common.collect.Lists;
  */
 abstract public class AbstractTokenizer
 {
+	private final Pattern P_YEAR = PatternUtils.createClosedPattern("\\d\\d['|\u2019]?[sS]?");
+	private final Pattern P_ABBREVIATION = PatternUtils.createClosedPattern("\\p{Alnum}([\\.|-]\\p{Alnum})*");
+	
 	private DTCurrency d_currency;
-	private DTHtml     d_html;
+	private DTUnit d_unit;
 	
-	private DTAbbreviation d_abbreviation;
-	
-	public AbstractTokenizer(boolean html)
+	public AbstractTokenizer()
 	{
-		if (html) d_html = new DTHtml();
-		d_currency = new DTCurrency(); 
+		d_currency = new DTCurrency();
+		d_unit = new DTUnit();
 	}
 	
-	/**
-	 * Replaces HTML tags to characters (e.g., "&nbsp;", "&quot;").
-	 * Tokenizes white-spaces.
-	 * Preserves hyperlinks (e.g., "http://www.clearnlp.com").
-	 * Preserves emoticons (e.g., ":-")).
-	 * Preserves consecutive finals (e.g., "...", ".?!").
-	 * Preserves consecutive separators (e.g., ",,,", "---").
-	 */
 	public List<String> tokenize(String s)
 	{
-		if (d_html != null) s = d_html.replace(s);
-		List<String> tokens = tokenizeEdge(s);
-		
-		
-		return tokens;
-	}
-	
-	/** Called by {@link #tokenize(String)}. */
-	private List<String> tokenizeEdge(String s)
-	{
-		int eIndex, bIndex = 0, len = s.length();
-		List<String> tokens = Lists.newArrayList();
+		ArrayList<String> tokens = Lists.newArrayList();
+		int bIndex = 0, eIndex, len = s.length();
 		char[] cs = s.toCharArray();
 		
 		for (eIndex=0; eIndex<len; eIndex++)
 		{
 			if (CharUtils.isWhiteSpace(cs[eIndex]))
 			{
-				addTokens(tokens, StringUtils.substring(s, bIndex, eIndex));
+				if (bIndex < eIndex) addTokens(tokens, s.substring(bIndex, eIndex));
 				bIndex = eIndex + 1;
 			}
 		}
 		 
-		addTokens(tokens, StringUtils.substring(s, bIndex, eIndex));
+		if (bIndex < eIndex) addTokens(tokens, s.substring(bIndex, eIndex));
+		finalize(tokens);
+		
+		tokens.trimToSize();
 		return tokens;
 	}
 	
-	/**
-	 * Called by {@link #tokenizeEdge(String)}.
-	 * @param startIndex inclusive.
-	 * @param endIndex exclusive.
-	 */
+	/** Called by {@link #tokenizeAux(String)}. */
 	private void addTokens(List<String> tokens, String s)
 	{
-		if (s.equals(StringConst.EMPTY)) return;
 		Matcher m;
 		
 		if ((m = PatternConst.HYPERLINK.matcher(s)).find() || (m = PatternConst.EMOTICON.matcher(s)).find())
@@ -105,6 +88,7 @@ abstract public class AbstractTokenizer
 			addTokensAux(tokens, s);
 	}
 	
+	/** Called by {@link #addTokens(List, String)}. */
 	private void addTokensAux(List<String> tokens, String s)
 	{
 		char[] cs = s.toCharArray();
@@ -128,21 +112,18 @@ abstract public class AbstractTokenizer
 		
 		String t = s.substring(bIndex, eIndex);
 		
-		if (bIndex > 0)		bIndex = adjustFirstNonSymbolIndex(tokens, cs, bIndex, t);
-		if (eIndex < len)	eIndex = adjustLastNonSymbolIndex (tokens, cs, eIndex, t);
+		if (bIndex > 0)		bIndex = adjustFirstNonSymbolIndex(cs, bIndex, t);
+		if (eIndex < len)	eIndex = adjustLastNonSymbolIndex (cs, eIndex, t);
 		
-		if (bIndex > 0)
-			tokenizeSymbols(tokens, s.substring(0, bIndex));	
-		
-		if (bIndex == 0 && eIndex == len)
-			tokenizeWords(tokens, s);
-		else
-			tokenizeWords(tokens, s.substring(bIndex, eIndex));
-		
-		if (eIndex < len)
-			tokenizeSymbols(tokens, s.substring(eIndex, len));
+		if (bIndex > 0)		tokenizeSymbols(tokens, s.substring(0, bIndex));	
+							tokenizeWords  (tokens, s.substring(bIndex, eIndex));
+		if (eIndex < len)	tokenizeSymbols(tokens, s.substring(eIndex, len));
 	}
 
+	/**
+	 * Called by {@link #addTokensAux(List, String)}.
+	 * @return {@code cs.length} if all characters in {@code cs} are symbols.  
+	 */
 	private int getFirstNonSymbolIndex(char[] cs)
 	{
 		int i, len = cs.length;
@@ -156,6 +137,10 @@ abstract public class AbstractTokenizer
 		return i;
 	}
 	
+	/**
+	 * Called by {@link #addTokensAux(List, String)}.
+	 * @return {@code 0} if all characters in {@code cs} are symbols.  
+	 */
 	private int getLastNonSymbolIndex(char[] cs)
 	{
 		int i;
@@ -170,41 +155,68 @@ abstract public class AbstractTokenizer
 	}
 	
 	/** Called by {@link #addTokensAux(List, String)}. */
-	protected int adjustFirstNonSymbolIndex(List<String> tokens, char[] cs, int beginIndex, String t)
+	private int adjustFirstNonSymbolIndex(char[] cs, int beginIndex, String t)
 	{
 		char sym = cs[beginIndex-1], curr = cs[beginIndex];
+		int gap;
 		
-		if (CharUtils.isPreDigitSymbol(sym) && CharUtils.isDigit(curr))	// -1, .1, +1
-			beginIndex--;
-		else if ((sym == '@' || sym == '#') && CharUtils.isAlphabet(curr))	// @A, #A
-			beginIndex--;
-		else if (sym == '\'' && d_abbreviation.isAbbreviationStartingWithApostrophe(t.toLowerCase()))
-			beginIndex--;
+		if ((gap = adjustFirstNonSymbolGap(cs, beginIndex, t)) > 0)
+			beginIndex -= gap;
+		else if (CharUtils.isPreDigitSymbol(sym))
+		{
+			if (CharUtils.isDigit(curr)) beginIndex--;		// -1, .1, +1
+		}
+		else if ((sym == '@' || sym == '#'))
+		{
+			if (CharUtils.isAlphabet(curr)) beginIndex--;	// @A, #A
+		}
+		else if (CharUtils.isApostrophe(sym))
+		{
+			if (P_YEAR.matcher(t).find()) beginIndex--;		// '90, '90s
+		}
 			
 		return beginIndex;
 	}
-
+	
 	/** Called by {@link #addTokensAux(List, String)}. */
-	protected int adjustLastNonSymbolIndex(List<String> tokens, char[] cs, int endIndex, String t)
+	protected int adjustLastNonSymbolIndex(char[] cs, int endIndex, String t)
 	{
 		char sym = cs[endIndex];
+		int gap;
 		
-		if (sym == '$')
+		if ((gap = adjustLastNonSymbolGap(cs, endIndex, t)) > 0)
+			endIndex += gap;
+		else if (sym == '$')
 		{
-			if (d_currency.isCurrencyDollar(t))
-				endIndex++;
+			if (d_currency.isCurrencyDollar(t)) endIndex++;
 		}
 		else if (sym == '.')
 		{
-			if (d_abbreviation.isAbbreviationEndingWithPeriod(t) && (endIndex+1 == cs.length || !CharUtils.isFinalMark(cs[endIndex+1])))
-				endIndex++;
-			else if (endIndex+1 < cs.length && CharUtils.isSeparatorMark(cs[endIndex+1]))
-				endIndex++;
+			if (preservePeriod(cs, endIndex, t)) endIndex++;
 		}
 		
 		return endIndex;
 	}
 	
+	/** Called by {@link #adjustLastNonSymbolGap(char[], int, String)}. */
+	private boolean preservePeriod(char[] cs, int endIndex, String t)
+	{
+		if (P_ABBREVIATION.matcher(t).find())
+			return true;
+		
+		if (endIndex+1 < cs.length && CharUtils.isSeparatorMark(cs[endIndex+1]))
+			return true;
+		
+		int len = t.length();
+		return (2 <= len && len <= 5) && CharUtils.containsOnlyConsonants(t);
+	}
+	
+	/** Called by {@link #adjustFirstNonSymbolIndex(char[], int, String)}. */
+	abstract protected int adjustFirstNonSymbolGap(char[] cs, int beginIndex, String t);
+	/** Called by {@link #adjustLastNonSymbolIndex(char[], int, String)}. */
+	abstract protected int adjustLastNonSymbolGap (char[] cs, int endIndex, String t);
+	
+	/** Called by {@link #addTokensAux(List, String)}. */
 	private void tokenizeSymbols(List<String> tokens, String s)
 	{
 		if (s.length() == 1)
@@ -213,43 +225,42 @@ abstract public class AbstractTokenizer
 			return;
 		}
 		
-		int i, leftBound = 0, rightBound = s.length();
+		int i, f, leftBound = 0, rightBound = s.length();
 		Deque<String> stack = new ArrayDeque<>();
 		char[] cs = s.toCharArray();
-		char c;
 		
+		// post: leftBound = the index of the first symbol that shouldn't be tokenized 
 		for (i=0; i<rightBound; i=leftBound)
 		{
-			c = cs[i];
+			f = getEdgeSymbolFlag(cs[i]);
 			
-			if (CharUtils.isFinalMark(c))
-				leftBound = getSpanIndexLR(cs, i, rightBound, true);
-			else if (CharUtils.isBracket(c) || CharUtils.isSeparatorMark(c) || CharUtils.isQuotationMark(c))
-				leftBound = getSpanIndexLR(cs, i, rightBound, false);
-			else
+			if (f == 0)
 			{
 				leftBound = i;
 				break;
 			}
-			
-			tokens.add(s.substring(i, leftBound));
+			else
+			{
+				leftBound = getSpanIndexLR(cs, i, rightBound, f == 1);
+				tokens.add(s.substring(i, leftBound));
+			}
 		}
 		
+		// post: rightBound = the index+1 of the last symbol that shoulnd't be tokenized
 		for (i=rightBound-1; i>leftBound; i=rightBound-1)
 		{
-			c = cs[i];
+			f = getEdgeSymbolFlag(cs[i]);
 			
-			if (CharUtils.isFinalMark(c))
-				rightBound = getSpanIndexRL(cs, i, leftBound, true);
-			else if (CharUtils.isBracket(c) || CharUtils.isSeparatorMark(c) || CharUtils.isQuotationMark(c))
-				rightBound = getSpanIndexRL(cs, i, leftBound, false);
-			else
+			if (f == 0)
 			{
 				rightBound = i+1;
 				break;
 			}
-			
-			stack.push(s.substring(rightBound, i+1));
+			else
+			{
+				rightBound = getSpanIndexRL(cs, i, leftBound, f == 1);
+				stack.push(s.substring(rightBound, i+1));
+			}
 		}
 		
 		if (leftBound < rightBound)
@@ -257,6 +268,17 @@ abstract public class AbstractTokenizer
 		
 		while (!stack.isEmpty())
 			tokens.add(stack.pop());
+	}
+	
+	/** Called by {@link #tokenizeSymbols(List, String)}. */
+	private int getEdgeSymbolFlag(char c)
+	{
+		if (CharUtils.isFinalMark(c))
+			return 1;
+		else if (CharUtils.isBracket(c) || CharUtils.isSeparatorMark(c) || CharUtils.isQuotationMark(c))
+			return 2;
+		else
+			return 0;
 	}
 	
 	/**
@@ -301,75 +323,137 @@ abstract public class AbstractTokenizer
 		return finalMark ? CharUtils.isFinalMark(cs[index]) : c == cs[index];
 	}
 	
+	/** Called by {@link #addTokensAux(List, String)}. */
 	private void tokenizeWords(List<String> tokens, String s)
 	{
-		int i, beginIndex = 0, endIndex, len = s.length();
+		int i, beginIndex = 0, endIndex, len = s.length() - 1;
 		char[] cs = s.toCharArray();
-		char c;
 		
-		for (i=0; i<len; i++)
+		for (i=1; i<len; i++)
 		{
-			c = cs[i];
+			if (preserveSymbolInBetween(cs, i) || isCommaInDigit(cs, i) || isSymbolInAlphabets(cs, i) || isSymbolInDigits(cs, i))
+				continue;
 			
-			// ~ & - + = 
-			if (c == ';' || c == '"' || c == '|' || c == '=' || c == '~' || c == '(' || c == ')' || c == '{' || c == '}' || c == '[' || c == ']')
-				tokenize(i);
-			else if (c == '.' || c == '?' || c == '!')
-				tokenize(i);
-			
-			switch (cs[i])
+			if (isEllipsis(cs, i) || isSymbolInBetween(cs[i]))
 			{
-			case ',' : if (!isSkipComma(cs, i)) tokenize(i); break; 
-			case ':' : if (!isSkipColon(cs, i)) tokenize(i); break;
-			case '-' : if (!isSkipHyphen(cs, i)) tokenize(i); break;
-			case '&' : if (!isSkipAmpersand(cs, i)) tokenize(i); break;
-			case '/' : if (!isSkipSlash(cs, i)) tokenize(i); break;
-			case '\\': if (!isSkipSlash(cs, i)) tokenize(i); break;
-			case '\'': if (!isSkipApostrophe(cs, i)) tokenize(i); break;
+				endIndex = getSpanIndexLR(cs, i, len, false);
+				if (beginIndex < i)	tokenizeWordsAux(tokens, s.substring(beginIndex, i));
+				tokens.add(s.substring(i, endIndex));
+				beginIndex = endIndex;
+				i = endIndex  - 1;
 			}
 		}
-	}
-	
-	
-	
-	private boolean isSkipComma(char[] cs, int index)
-	{
-		int len = cs.length;
 		
-		if (0 <= index-1 && index+3 < len && (index+4 == len || !CharUtils.isDigit(cs[index+4])))
-			return CharUtils.isDigit(cs[index-1]) && CharUtils.isDigit(cs[index+1]) && CharUtils.isDigit(cs[index+2]) && CharUtils.isDigit(cs[index+3]);
+		if (beginIndex < s.length())
+			tokenizeWordsAux(tokens, s.substring(beginIndex));
+	}
+	
+	private void tokenizeWordsAux(List<String> tokens, String s)
+	{
+		char[] cs= s.toCharArray();
+		String lower = CharUtils.toLowerCase(cs) ? new String(cs) : s;
+		
+		if (!tokenizeWordsMore(tokens, s, lower, cs) && !tokenizeCurrency(tokens, s, lower, cs) && !tokenizeUnit(tokens, s, lower, cs))
+				;
+	}
+	
+	private boolean tokenizeCurrency(List<String> tokens, String original, String lower, char[] cs)
+	{
+		int len = original.length();
+		
+		for (String prefix : d_currency.getCurrencySet())
+		{
+			if (lower.startsWith(prefix))
+			{
+				int i = prefix.length();
+				
+				if (i < len && CharUtils.isDigit(cs[i]))
+				{
+					addTokens(tokens, original, i);
+					return true;
+				}
+			}
+		}
 		
 		return false;
 	}
 	
-	private boolean isSkipHyphen(char[] cs, int index)
+	private boolean tokenizeUnit(List<String> tokens, String original, String lower, char[] cs)
 	{
+		int len = original.length();
+		
+		for (String suffix : d_unit.getUnitSet())
+		{
+			if (lower.endsWith(suffix))
+			{
+				int i = len - suffix.length();
+				
+				if (0 < i && CharUtils.isDigit(cs[i-1]))
+				{	
+					addTokens(tokens, original, i);
+					return true;
+				}
+			}
+		}
+		
 		return false;
 	}
 	
-	private boolean isSkipColon(char[] cs, int index)
+	protected void addTokens(List<String> tokens, String s, int... splits)
 	{
+		int beginIndex = 0;
+		
+		for (int split : splits)
+		{
+			tokens.add(s.substring(beginIndex, split));
+			beginIndex = split;
+		}
+		
+		tokens.add(s.substring(beginIndex));
+	}
+	
+	abstract protected boolean preserveSymbolInBetween(char[] cs, int index);
+	abstract protected boolean tokenizeWordsMore(List<String> tokens, String original, String lower, char[] cs);
+	
+	/** Called by {@link #tokenizeWords(List, String)}. */
+	private boolean isCommaInDigit(char[] cs, int index)
+	{
+		if (cs[index] == ',')
+			return (0 <= index-1 && index+3 < cs.length) && (index+4 == cs.length || !CharUtils.isDigit(cs[index+4])) && CharUtils.isDigit(cs[index-1]) && CharUtils.isDigit(cs[index+1]) && CharUtils.isDigit(cs[index+2]) && CharUtils.isDigit(cs[index+3]);
+		
 		return false;
 	}
 	
-	private boolean isSkipSlash(char[] cs, int index)
+	/** Called by {@link #tokenizeWords(List, String)}. */
+	private boolean isSymbolInAlphabets(char[] cs, int index)
 	{
+		if (cs[index] == '&')
+			return (0 <= index-1 && index+1 < cs.length) && CharUtils.isAlphabet(cs[index-1]) && CharUtils.isAlphabet(cs[index+1]);
+		
 		return false;
 	}
 	
-	private boolean isSkipApostrophe(char[] cs, int index)
+	/** Called by {@link #tokenizeWords(List, String)}. */
+	private boolean isSymbolInDigits(char[] cs, int index)
 	{
-		return false;		
-	}
-	
-	private boolean isSkipAmpersand(char[] cs, int index)
-	{
+		char c = cs[index];
+		
+		if (CharUtils.isHyphen(c) || c == '/' || c == '\\')
+			return (0 <= index-1 && index+1 < cs.length) && CharUtils.isDigit(cs[index-1]) && CharUtils.isDigit(cs[index+1]);
+		
 		return false;
 	}
 	
-	private int tokenize(int index)
+	/** Called by {@link #tokenizeWords(List, String)}. */
+	private boolean isEllipsis(char[] cs, int index)
 	{
-		return 3;
+		return (index+1 < cs.length) && (cs[index] == '.') && (cs[index+1] == '.');
+	}
+	
+	/** Called by {@link #tokenizeWords(List, String)}. */
+	private boolean isSymbolInBetween(char c)
+	{
+		return CharUtils.isBracket(c) || c == '~' || c == '&' || c == '|' || c == '/' || c == '\\' || c == ';' || c == ',';
 	}
 	
 //	-------------------------------- Booleans -------------------------------- 
@@ -382,324 +466,38 @@ abstract public class AbstractTokenizer
 			   CharUtils.isArrow(c);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-//	private final String EDGE = "(\\(|\\)|\\[|\\]|\\{|\\}|<|>|,|;|`|'|\")+";
-//	
-//	private final Pattern P_PRE  = Pattern.compile("^(\\p{Punct})*(\\(|\\[|\\{|<`|'|\")+");
-//	private final Pattern P_POST = Pattern.compile("\\(|\\)|\\[|\\]|\\{|\\}|<|>|,|;|`|'|\"");
-//	
-//	Pattern P_APOSTROPHY = Pattern.compile("(\\p{Alnum})(\\')(s|d|m|z|t|ll|re|ve|nt)");
-//	
-//	
-//	private NumberProtector protector_number = null;
-//	private NumberProtector protector_dollar = null;
-//	private NumberProtector protector_apostrophy = null;
-//	private NumberProtector protector_filename = null;
-//	
-////	protected final List<ObjectCharPair<String>> PROTECT; 
-////	private final CharObjectHashMap<String> M_PROTECT;
-//	
-//	protected Set<String> s_protectedForms;
-//	protected boolean     b_twit = false;
-//	
-//	
-//	protected DTEmoticon d_emoticon;
-//	
-//	protected AbstractTokenMatcher m_finals;
-//	protected AbstractTokenMatcher m_separators;
-//	protected AbstractTokenMatcher m_dot;
-//	
-//	
-	
-//	
-//	
-//	
-//	private final Pattern[] PROTECT_NUMBER;
-	
-//	public AbstractTokenizer(boolean html, boolean unicode)
-//	{
-//		if (html)		d_html    = new DTHtml();
-//		if (unicode)	d_unicode = new DTUnicode();
-//		
-//		
-//		
-//		PROTECT = initProtects();
-//		M_PROTECT = initProtectMap(PROTECT);
-//		
-//		s_protectedForms = Sets.newHashSet();
-//		d_emoticon = new DTEmoticon();
-//		m_finals = new TokenMatcher0(PatternConst.PUNCT_FINALS);
-//		m_separators = new TokenMatcher0(PatternConst.PUNCT_SEPARATORS);
-//		m_dot = new TokenMatcher12(Pattern.compile("(\\p{Alnum}\\.)(\\p{Punct}+)"));
-//		
-//		
-//		
-//	}
-	
-	
-	
-	
-//	private final String PUNCT_FRONT = "`|'|\"|\\(|\\{|\\[|<"; 
-	
-//	private List<ObjectIntPair<Pattern>> initPatterns()
-//	{
-//		ArrayList<ObjectIntPair<Pattern>> list = Lists.newArrayList();
-//		
-//		// ,;|/\"[]{}()&
-//		list.add(new ObjectIntPair<Pattern>(Pattern.compile("(\\d)(,)(\\d\\d\\d)(?!\\d)"), 2));
-//		list.add(new ObjectIntPair<Pattern>(Pattern.compile("(\\d)(\\/)(\\d)"), 2));
-//		
-//		
-//		
-//		Pattern.compile("^(\\p{Punct})*(-|\\+|\\.)(\\d)");		// -1, +1, .1, (-1)
-//		Pattern.compile("^(\\p{Punct})*(@|#)(\\p{Alpha})");		// @A, #A, (@A)
-//		Pattern.compile("^(\\p{Punct})+");
-//		
-//		Pattern.compile("^(AU|B|BB|BM|BN|BS|BZ|C|CA|FJ|HK|JM|JY|KY|LR|NA|NT|NZ|SB|SG|US|USD|XC|ZB)(\\$)(\\d|\\p{Punct})", Pattern.CASE_INSENSITIVE);	// US$0, US$.
-//		Pattern.compile("(\\.)(\\p{Punct})*$");
-//		Pattern.compile("(\\p{Punct})+$");
-//		
-//		
-//		
-//		list.trimToSize();
-//		return list;
-//	}
-	
-	
-	
-	
-	
-	
-//	/**
-//	 * Replaces non-UTF8 characters to UTF8 characters (e.g., smart quotes).
-//	 * Replaces HTML tags (e.g., "&nbsp;", "&quot;").
-//	 * Tokenizes white-spaces.
-//	 * Preserves emoticons (e.g., ":-")).
-//	 * Preserves hyperlinks (e.g., "http://www.clearnlp.com").
-//	 * Preserves consecutive finals (e.g., "...", ".?!").
-//	 * Preserves consecutive separators (e.g., ",,,", "---").
-//	 */
-//	public List<String> tokenize(String s)
-//	{
-//		if (d_html != null) s = d_html.replace(s);
-//		List<String> tokens = tokenizeInit(s);
-//		
-//		
-////		@#$.
-////		IN: ,
-////		Separate: ,?
-////		<>?;"{}[]|\\`
-////		Apostrophe: 's
-////		Slash: /\d{2}?\d{1,2}
-////		Hyphen: -\d{2,4} affix
-////		Colon: :\d{2}
-//		
-//		
-//		m_finals.match(tokens);
-//		m_separators.match(tokens);
-//		m_dot.match(tokens);
-//		replace(tokens, protector_number);
-//		replace(tokens, protector_dollar);
-//		replace(tokens, protector_apostrophy);
-//		replace(tokens, protector_filename);
-//		
-//		return tokens;
-//	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-//	private List<ObjectCharPair<String>> initProtects()
-//	{
-//		ArrayList<ObjectCharPair<String>> list = Lists.newArrayList();
-//		
-//		list.add(new ObjectCharPair<String>(" d", '.'));
-//		list.add(new ObjectCharPair<String>(" h", '-'));
-//		list.add(new ObjectCharPair<String>(" a", '\''));
-//		list.add(new ObjectCharPair<String>(" m", '&'));
-//		
-//		list.trimToSize();
-//		return list;
-//	}
-//	
-//	private CharObjectHashMap<String> initProtectMap(List<ObjectCharPair<String>> list)
-//	{
-//		CharObjectHashMap<String> map = new CharObjectHashMap<>();
-//		
-//		for (ObjectCharPair<String> p : list)
-//			map.put(p.c, p.o);
-//		
-//		return map;
-//	}
-//	
-//	private void init()
-//	{
-//		String PRE = "`|!|#|$|%|(|)|[|]|{|}|<|>|;|'|\"|<|>|,|\\?";
-//	}
-//	
-//	
-//	/**
-//	 * @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}.
-//	 * @return a list of token in the specific reader.
-//	 */
-//	public List<String> getTokenList(InputStream in)
-//	{
-//		BufferedReader reader = IOUtils.createBufferedReader(in);
-//		ArrayList<String> tokens = Lists.newArrayList();
-//		String line;
-//		
-//		try
-//		{
-//			while ((line = reader.readLine()) != null)
-//				tokens.addAll(getTokenList(line));
-//		}
-//		catch (IOException e) {e.printStackTrace();}
-//		
-//		tokens.trimToSize();
-//		return tokens;
-//	}
-//	
-//	/** @return a list of tokens from the specific string. */
-//	abstract public List<String> getTokenList(String rawText);
-//	
-//	public void setTwitter(boolean isTwitter)
-//	{
-//		b_twit = isTwitter;
-//	}
-//	
-//	public void addProtectedForm(String form)
-//	{
-//		s_protectedForms.add(form);
-//	}
-//	
-//	public void removeProtectedForm(String form)
-//	{
-//		s_protectedForms.remove(form);
-//	}
-//	
-//	protected void replace(List<String> tokens, AbstractReplacer replacer)
-//	{
-//		for (String token : tokens)
-//		{
-//			if (!token.isProtect())
-//				token.setWordForm(replacer.replace(token.getWordForm()));
-//		}
-//	}
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	abstract protected class AbstractTokenMatcher
-//	{
-//		protected final Pattern PATTERN;
-//		
-//		public AbstractTokenMatcher(Pattern pattern)
-//		{
-//			PATTERN = pattern;
-//		}
-//		
-//		public void match(List<String> tokens)
-//		{
-//			int i, size = tokens.size();
-//			String token;
-//			
-//			for (i=0; i<size; i++)
-//			{
-//				token = tokens.get(i);
-//				
-//				if (!token.isProtect())
-//				{
-//					i = addTokens(tokens, token.getWordForm(), i);
-//					size = tokens.size();
-//				}
-//			}
-//		}
-//		
-//		private int addTokens(List<String> tokens, String form, int index)
-//		{
-//			Matcher m = PATTERN.matcher(form);
-//			int last = 0, curr;
-//			
-//			while (m.find())
-//			{
-//				curr = m.start();
-//				
-//				if (last < curr)
-//					tokens.add(index++, new String(form.substring(last, curr)));
-//				
-//				last = m.end();
-//				index = addMatch(tokens, m, index);
-//			}
-//			
-//			if (last < form.length())
-//				tokens.add(index++, new String(form.substring(last)));
-//			
-//			return index;
-//		}
-//
-//		abstract protected int addMatch(List<String> tokens, Matcher m, int index);
-//	}
-//
-//	protected class TokenMatcher0 extends AbstractTokenMatcher
-//	{
-//		public TokenMatcher0(Pattern pattern)
-//		{
-//			super(pattern);
-//		}
-//
-//		@Override
-//		protected int addMatch(List<String> tokens, Matcher m, int index)
-//		{
-//			tokens.add(index++, new String(m.group(0), true));
-//			return index;
-//		}
-//	}
-//	
-//	protected class TokenMatcher12 extends AbstractTokenMatcher
-//	{
-//		public TokenMatcher12(Pattern pattern)
-//		{
-//			super(pattern);
-//		}
-//		
-//		@Override
-//		protected int addMatch(List<String> tokens, Matcher m, int index)
-//		{
-//			tokens.add(index++, new String(m.group(1)));
-//			tokens.add(index++, new String(m.group(2)));
-//			return index;
-//		}
-//	}
+	private void finalize(List<String> tokens)
+	{
+		String token, lower, prev, next;
+		int i, size = tokens.size();
+		
+		for (i=0; i<size; i++)
+		{
+			token = tokens.get(i);
+			lower = StringUtils.toLowerCase(token);
+			
+			if (i+1 < size && lower.equals("no.") && CharUtils.isDigit(tokens.get(i+1).charAt(0)))
+			{
+				tokens.set(i, token.substring(0, token.length()-1));
+				tokens.add(i+1, StringConst.PERIOD);
+				i++;
+				size = tokens.size();
+			}
+			else if (token.length() == 1 && 0 <= i-1 && i+1 < size)
+			{
+				prev = tokens.get(i-1);
+				next = tokens.get(i+1);
+				
+				if (prev.equals(StringConst.LRB) && next.equals(StringConst.RRB))
+				{
+					tokens.set(i-1, prev+token+next);
+					tokens.remove(i);
+					tokens.remove(i);
+					i--;
+					size = tokens.size();
+				}
+			}
+		}
+	}
 }
 

@@ -31,6 +31,16 @@ import com.clearnlp.util.regex.Joiner;
  */
 public class PatternConstTest
 {
+//	@Test
+//	public void testYearAbbrevation()
+//	{
+//		System.out.println(PatternConst.YEAR_ABBREVIATION.matcher("90s").find());
+//		System.out.println(PatternConst.YEAR_ABBREVIATION.matcher("90s'").find());
+//		System.out.println(PatternConst.YEAR_ABBREVIATION.matcher("90's").find());
+//		System.out.println(PatternConst.YEAR_ABBREVIATION.matcher("90").find());
+//		System.out.println(PatternConst.YEAR_ABBREVIATION.matcher("900").find());
+//	}
+	
 	@Test
 	public void test()
 	{

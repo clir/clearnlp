@@ -40,7 +40,7 @@ public class DTHtml
 	
 	public DTHtml()
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.PATH_HTML_TAGS));
+		init(IOUtils.getInputStreamsFromClasspath(DTPath.HTML_TAGS));
 	}
 	
 	/** @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}. */

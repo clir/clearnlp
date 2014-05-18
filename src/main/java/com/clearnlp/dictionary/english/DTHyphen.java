@@ -13,55 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.dictionary;
+package com.clearnlp.dictionary.english;
 
 import java.io.InputStream;
 import java.util.Set;
 
+import com.clearnlp.dictionary.DTPath;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
-
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DTCurrency
+public class DTHyphen
 {
-	private Set<String> s_currency;
-	private Set<String> s_dollar;
+	private Set<String> s_prefix;
+	private Set<String> s_suffix;
 	
-	public DTCurrency()
+	public DTHyphen()
 	{
-		InputStream currency = IOUtils.getInputStreamsFromClasspath(DTPath.CURRENCY);
-		InputStream dollar   = IOUtils.getInputStreamsFromClasspath(DTPath.CURRENCY_DOLLAR);
-
-		init(currency, dollar);
+		InputStream prefix = IOUtils.getInputStreamsFromClasspath(DTPath.EN_HYPHEN_PREFIX);
+		InputStream suffix = IOUtils.getInputStreamsFromClasspath(DTPath.EN_HYPHEN_SUFFIX);
+		init(prefix, suffix);
 	}
 	
-	public DTCurrency(InputStream currency, InputStream dollar)
+	public DTHyphen(InputStream prefix, InputStream suffix)
 	{
-		init(currency, dollar);
+		init(prefix, suffix);
 	}
 	
-	public void init(InputStream currency, InputStream dollar)
+	public void init(InputStream prefix, InputStream suffix)
 	{
-		s_currency = DSUtils.createStringHashSet(currency, true);
-		s_dollar   = DSUtils.createStringHashSet(dollar  , true);
+		s_prefix = DSUtils.createStringHashSet(prefix, true);
+		s_suffix = DSUtils.createStringHashSet(suffix, true);
 	}
 	
-	public boolean isCurrencyDollar(String lower)
+	public boolean isPrefix(String lower)
 	{
-		return s_dollar.contains(lower);
+		return s_prefix.contains(lower);
 	}
 	
-	public boolean isCurrency(String lower)
+	public boolean isSuffix(String lower)
 	{
-		return s_currency.contains(lower);
-	}
-	
-	public Set<String> getCurrencySet()
-	{
-		return s_currency;
+		return s_suffix.contains(lower);
 	}
 }

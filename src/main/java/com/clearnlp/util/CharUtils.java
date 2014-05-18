@@ -48,6 +48,64 @@ public class CharUtils
 		return true;
 	}
 	
+	static public boolean toUpperCase(char[] cs)
+	{
+		boolean b = false;
+		char c; int i;
+		
+		for (i=cs.length-1; i>=0; i--)
+		{
+			c = cs[i];
+			
+			if ((97 <= c && c <= 122) || (224 <= c && c <= 254 && c != 247))
+			{
+				cs[i] = (char)(c-32);
+				b = true;
+			}
+			else if (c == 154 || c == 156 || c == 158)
+			{
+				cs[i] = (char)(c-16);
+				b = true;
+			}
+			else if (c == 255)
+			{
+				cs[i] = (char)159;
+				b = true;
+			}
+		}
+		
+		return b;
+	}
+	
+	static public boolean toLowerCase(char[] cs)
+	{
+		boolean b = false;
+		char c; int i;
+		
+		for (i=cs.length-1; i>=0; i--)
+		{
+			c = cs[i];
+			
+			if ((65 <= c && c <= 90) || (192 <= c && c <= 222 && c != 215))
+			{
+				cs[i] = (char)(c+32);
+				b = true;
+			}
+			else if (c == 138 || c == 140 || c == 142)
+			{
+				cs[i] = (char)(c+16);
+				b = true;
+			}
+			else if (c == 159)
+			{
+				cs[i] = (char)255;
+				b = true;
+			}
+		}
+		
+		return b;
+	}
+	
 //	----------------------------------- Alphabet -----------------------------------	
 	
 	/** {@link CharUtils#isWhiteSpace(char)} */
@@ -69,6 +127,33 @@ public class CharUtils
 	public static boolean isLowerCase(char c)
 	{
 		return isRange(c, 'a', 'z');
+	}
+	
+	/** @return {@code true} if {@code c == 'a', 'e', 'i', 'o', 'u'}*/
+	public static boolean isVowel(char c)
+	{
+		return (c == 'a') || (c == 'e') || (c == 'i') || (c == 'o') || (c == 'u') || (c == 'A') || (c == 'E') || (c == 'I') || (c == 'O') || (c == 'U');
+	}
+	
+	public static boolean isConsonant(char c)
+	{
+		return isAlphabet(c) && !isVowel(c);
+	}
+	
+	public static boolean containsOnlyConsonants(String s)
+	{
+		return containsOnlyConsonants(s.toCharArray());
+	}
+	
+	public static boolean containsOnlyConsonants(char[] cs)
+	{
+		for (char c : cs)
+		{
+			if (!isConsonant(c))
+				return false;
+		}
+		
+		return true;
 	}
 	
 //	----------------------------------- Symbols -----------------------------------
@@ -105,7 +190,12 @@ public class CharUtils
 	
 	public static boolean isHyphen(char c)
 	{
-		return c == '-' || c == '~' || c == '\u2027' || isRange(c, '\u2010', '\u2015'); 
+		return c == '-' || isRange(c, '\u2010', '\u2014'); 
+	}
+	
+	public static boolean isApostrophe(char c)
+	{
+		return c == '\'' || c == '\u2019';
 	}
 	
 	public static boolean isListMark(char c)

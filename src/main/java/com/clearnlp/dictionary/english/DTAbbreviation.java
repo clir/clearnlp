@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.dictionary;
+package com.clearnlp.dictionary.english;
 
-import java.util.regex.Pattern;
+import java.io.InputStream;
+import java.util.Set;
 
-import com.clearnlp.util.PatternUtils;
+import com.clearnlp.dictionary.DTPath;
+import com.clearnlp.util.DSUtils;
+import com.clearnlp.util.IOUtils;
 
 /**
  * @since 3.0.0
@@ -25,17 +28,25 @@ import com.clearnlp.util.PatternUtils;
  */
 public class DTAbbreviation
 {
-	private Pattern WORD_DOT_PAIRS = PatternUtils.createClosedPattern("\\p{Alnum}([\\.|-]\\p{Alnum})*");
-	private Pattern CONSONANTS     = PatternUtils.createClosedPattern("[bcdfghjklmnpqrstvwxz]{2,5}");
-	private Pattern YEAR = PatternUtils.createClosedPattern("\\d\\d[sS]?");
+	private Set<String> SET_ABBR_PERIOD;
 	
-	public boolean isAbbreviationStartingWithApostrophe(String lower)
+	public DTAbbreviation()
 	{
-		return YEAR.matcher(lower).find();
+		init(IOUtils.getInputStreamsFromClasspath(DTPath.EN_ABBREVIATION_PERIOD));
+	}
+	
+	public DTAbbreviation(InputStream abbreviationPeriod)
+	{
+		init(abbreviationPeriod);
+	}
+	
+	public void init(InputStream abbreviationPeriod)
+	{
+		SET_ABBR_PERIOD = DSUtils.createStringHashSet(abbreviationPeriod, true);
 	}
 	
 	public boolean isAbbreviationEndingWithPeriod(String lower)
 	{
-		return WORD_DOT_PAIRS.matcher(lower).find() || CONSONANTS.matcher(lower).find();
+		return SET_ABBR_PERIOD.contains(lower);
 	}
 }

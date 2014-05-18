@@ -20,6 +20,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.clearnlp.dictionary.english.DTAbbreviation;
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
@@ -32,16 +34,15 @@ public class DTAbbreviationTest
 		DTAbbreviation dt = new DTAbbreviation();
 
 		
-		assertTrue(dt.isAbbreviationStartingWithApostrophe("90"));
-		assertTrue(dt.isAbbreviationStartingWithApostrophe("90s"));
 		assertTrue(dt.isAbbreviationEndingWithPeriod("A"));
 		assertTrue(dt.isAbbreviationEndingWithPeriod("1"));
 		assertTrue(dt.isAbbreviationEndingWithPeriod("A.1"));
 		assertTrue(dt.isAbbreviationEndingWithPeriod("A-1"));
 
-		assertFalse(dt.isAbbreviationStartingWithApostrophe("9"));
-		assertFalse(dt.isAbbreviationStartingWithApostrophe("900"));
 		assertFalse(dt.isAbbreviationEndingWithPeriod("A1"));
 		assertFalse(dt.isAbbreviationEndingWithPeriod("A:1"));
+		
+		assertTrue(dt.isAbbreviationEndingWithPeriod("mr"));
+		assertTrue(dt.isAbbreviationEndingWithPeriod("mrs"));
 	}
 }

@@ -32,29 +32,7 @@ public class StringUtils
 	static public String toUpperCase(String str)
 	{
 		char[] array = str.toCharArray();
-		char c; int i; boolean b = false;
-		
-		for (i=str.length()-1; i>=0; i--)
-		{
-			c = array[i];
-			
-			if ((97 <= c && c <= 122) || (224 <= c && c <= 254 && c != 247))
-			{
-				array[i] = (char)(c-32);
-				b = true;
-			}
-			else if (c == 154 || c == 156 || c == 158)
-			{
-				array[i] = (char)(c-16);
-				b = true;
-			}
-			else if (c == 255)
-			{
-				array[i] = (char)159;
-				b = true;
-			}
-		}
-		
+		boolean b = CharUtils.toUpperCase(array);
 		return b ? new String(array) : str;
 	}
 	
@@ -65,29 +43,7 @@ public class StringUtils
 	static public String toLowerCase(String str)
 	{
 		char[] array = str.toCharArray();
-		char c; int i; boolean b = false;
-		
-		for (i=str.length()-1; i>=0; i--)
-		{
-			c = array[i];
-			
-			if ((65 <= c && c <= 90) || (192 <= c && c <= 222 && c != 215))
-			{
-				array[i] = (char)(c+32);
-				b = true;
-			}
-			else if (c == 138 || c == 140 || c == 142)
-			{
-				array[i] = (char)(c+16);
-				b = true;
-			}
-			else if (c == 159)
-			{
-				array[i] = (char)255;
-				b = true;
-			}
-		}
-		
+		boolean b = CharUtils.toLowerCase(array);
 		return b ? new String(array) : str;
 	}
 	
@@ -123,14 +79,5 @@ public class StringUtils
 		}
 		
 		return false;
-	}
-	
-	/** @return {@link StringConst#EMPTY} if {@code endIndex <= beginIndex || beginIndex < 0}. */
-	static public String substring(String s, int beginIndex, int endIndex)
-	{
-		if (endIndex <= beginIndex || beginIndex < 0)
-			return StringConst.EMPTY;
-		
-		return s.substring(beginIndex, endIndex);
 	}
 }

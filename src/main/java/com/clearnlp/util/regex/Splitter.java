@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 
 import com.clearnlp.constant.PatternConst;
 import com.clearnlp.util.CharTokenizer;
-import com.clearnlp.util.CharUtils;
 import com.google.common.collect.Lists;
 
 /**

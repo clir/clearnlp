@@ -15,6 +15,9 @@
  */
 package com.clearnlp.experiment;
 
+import java.io.BufferedReader;
+import java.io.PrintStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +31,7 @@ import com.clearnlp.constant.StringConst;
 import com.clearnlp.constituent.CTNode;
 import com.clearnlp.constituent.CTReader;
 import com.clearnlp.constituent.CTTree;
+import com.clearnlp.dictionary.english.DTAbbreviation;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.pair.ObjectIntPair;
@@ -48,17 +52,35 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		int i = 1000;
-		System.out.println(i/0);
+		DTAbbreviation at = new DTAbbreviation();
+		BufferedReader in = IOUtils.createBufferedReader(args[0]);
+		PrintStream out = IOUtils.createBufferedPrintStream(args[1]);
+		Set<String> set = Sets.newHashSet();
+		String line;
+		while ((line = in.readLine()) != null)
+		{
+			line = line.trim().toLowerCase();
+			if (line.endsWith(".")) line = line.substring(0, line.length()-1);
+			if (!at.isAbbreviationEndingWithPeriod(line))
+				set.add(line);
+		}
+		List<String> list = Lists.newArrayList(set);
+		Collections.sort(list);
+		for (String item : list)
+			out.println(item);
+		in.close();
+		out.close();
 		
-//		int i, size = 1000000;
-//		String s = "1234567";
+		
+		
+//		String s = "123456712345671234567";
+//		int i, size = 10000000, len = s.length();
 //		long st, et;
 //		
 //		st = System.currentTimeMillis();
 //		for (i=0; i<size; i++)
 //		{
-//			CharUtils.containsOnlyDigits(s.toCharArray());
+//			s.substring(0, len);
 //		}
 //		et = System.currentTimeMillis();
 //		System.out.println(et-st);
