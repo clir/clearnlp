@@ -13,40 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.dictionary.english;
+package com.clearnlp.dictionary.universal;
 
-import java.io.InputStream;
-import java.util.Set;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import com.clearnlp.dictionary.DTPath;
-import com.clearnlp.util.DSUtils;
-import com.clearnlp.util.IOUtils;
+import java.util.Arrays;
+
+import org.junit.Test;
+
+import com.clearnlp.dictionary.universal.DTCompound;
+import com.clearnlp.type.LanguageType;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DTAbbreviation
+public class DTCompoundTest
 {
-	private Set<String> s_period;
-	
-	public DTAbbreviation()
+	@Test
+	public void test()
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.EN_ABBREVIATION_PERIOD));
-	}
-	
-	public DTAbbreviation(InputStream abbreviationPeriod)
-	{
-		init(abbreviationPeriod);
-	}
-	
-	public void init(InputStream abbreviationPeriod)
-	{
-		s_period = DSUtils.createStringHashSet(abbreviationPeriod, true, true);
-	}
-	
-	public boolean isAbbreviationEndingWithPeriod(String lower)
-	{
-		return s_period.contains(lower);
+		DTCompound dt = new DTCompound(LanguageType.ENGLISH);
+		
+		assertEquals("[I, 'mmm]"   , Arrays.toString(dt.tokenize("I'mmm")));
+		assertEquals("[wha, d, ya]", Arrays.toString(dt.tokenize("whadya")));
+		
+		assertTrue(dt.tokenize("I'm") == null);
 	}
 }

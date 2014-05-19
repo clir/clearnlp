@@ -13,43 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.dictionary;
+package com.clearnlp.dictionary.english;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import com.clearnlp.dictionary.english.DTAbbreviation;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DTHtmlTest
+public class DTAbbreviationTest
 {
 	@Test
 	public void test()
 	{
-		DTHtml html = new DTHtml();
-		StringBuilder build;
-		String s;
-		
-		s = "&quot;&amp;&lt;&gt;";
-		assertEquals("\"&<>", html.replace(s));
-		
-		s = "&cent;&pound;&curren;&yen;&sect;&copy;&reg;&euro;";
-		build = new StringBuilder();
-		
-		build.append((char)162);
-		build.append((char)163);
-		build.append((char)164);
-		build.append((char)165);
-		build.append((char)167);
-		build.append((char)169);
-		build.append((char)174);
-		build.append((char)8364);
+		DTAbbreviation dt = new DTAbbreviation();
 
-		assertEquals(build.toString(), html.replace(s));
+		assertTrue(dt.isAbbreviationEndingWithPeriod("mr"));
+		assertTrue(dt.isAbbreviationEndingWithPeriod("mrs"));
 		
-		s = "&#33;&lt;&rand;&gt;&#123;";
-		assertEquals("!<&rand;>{", html.replace(s));
+		assertFalse(dt.isAbbreviationEndingWithPeriod("e.g"));
 	}
 }

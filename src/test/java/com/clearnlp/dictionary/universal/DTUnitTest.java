@@ -13,40 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.dictionary.english;
+package com.clearnlp.dictionary.universal;
 
-import java.io.InputStream;
-import java.util.Set;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import com.clearnlp.dictionary.DTPath;
-import com.clearnlp.util.DSUtils;
-import com.clearnlp.util.IOUtils;
+import java.util.Arrays;
+
+import org.junit.Test;
+
+import com.clearnlp.dictionary.universal.DTUnit;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DTAbbreviation
+public class DTUnitTest
 {
-	private Set<String> s_period;
-	
-	public DTAbbreviation()
+	@Test
+	public void test()
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.EN_ABBREVIATION_PERIOD));
-	}
-	
-	public DTAbbreviation(InputStream abbreviationPeriod)
-	{
-		init(abbreviationPeriod);
-	}
-	
-	public void init(InputStream abbreviationPeriod)
-	{
-		s_period = DSUtils.createStringHashSet(abbreviationPeriod, true, true);
-	}
-	
-	public boolean isAbbreviationEndingWithPeriod(String lower)
-	{
-		return s_period.contains(lower);
+		DTUnit dt = new DTUnit();
+		
+		assertEquals("[1, mg]", Arrays.toString(dt.tokenize("1mg")));
+		assertEquals("[1, cm]", Arrays.toString(dt.tokenize("1cm")));
+		
+		assertEquals("[10, MG]", Arrays.toString(dt.tokenize("10MG")));
+		assertEquals("[10, CM]", Arrays.toString(dt.tokenize("10CM")));
+		
+		assertTrue(dt.tokenize("1ma") == null);
 	}
 }

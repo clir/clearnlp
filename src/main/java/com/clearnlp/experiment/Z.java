@@ -15,9 +15,7 @@
  */
 package com.clearnlp.experiment;
 
-import java.io.BufferedReader;
-import java.io.PrintStream;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +29,7 @@ import com.clearnlp.constant.StringConst;
 import com.clearnlp.constituent.CTNode;
 import com.clearnlp.constituent.CTReader;
 import com.clearnlp.constituent.CTTree;
-import com.clearnlp.dictionary.english.DTAbbreviation;
+import com.clearnlp.tokenization.english.ApostropheEnglishTokenizer;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.pair.ObjectIntPair;
@@ -52,38 +50,31 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		DTAbbreviation at = new DTAbbreviation();
-		BufferedReader in = IOUtils.createBufferedReader(args[0]);
-		PrintStream out = IOUtils.createBufferedPrintStream(args[1]);
-		Set<String> set = Sets.newHashSet();
-		String line;
-		while ((line = in.readLine()) != null)
+		ApostropheEnglishTokenizer tok = new ApostropheEnglishTokenizer();
+		
+		System.out.println(Arrays.toString(tok.tokenize("he's")));
+		System.out.println(Arrays.toString(tok.tokenize("he'S")));
+		System.out.println(Arrays.toString(tok.tokenize("he'dd")));
+		System.out.println(Arrays.toString(tok.tokenize("don't")));
+		System.out.println(Arrays.toString(tok.tokenize("do'nt")));
+		System.out.println(Arrays.toString(tok.tokenize("dont")));
+		
+		int i, size = 10000000;
+		long st, et;
+		List<String> r;
+		
+		st = System.currentTimeMillis();
+		for (i=0; i<size; i++)
 		{
-			line = line.trim().toLowerCase();
-			if (line.endsWith(".")) line = line.substring(0, line.length()-1);
-			if (!at.isAbbreviationEndingWithPeriod(line))
-				set.add(line);
+//			t = new String[2];
+//			t[0] = "AAA";
+//			t[1] = "BBB";
+			r = Lists.newArrayList();
+			r.add("AAA");
+			r.add("BBB");
 		}
-		List<String> list = Lists.newArrayList(set);
-		Collections.sort(list);
-		for (String item : list)
-			out.println(item);
-		in.close();
-		out.close();
-		
-		
-		
-//		String s = "123456712345671234567";
-//		int i, size = 10000000, len = s.length();
-//		long st, et;
-//		
-//		st = System.currentTimeMillis();
-//		for (i=0; i<size; i++)
-//		{
-//			s.substring(0, len);
-//		}
-//		et = System.currentTimeMillis();
-//		System.out.println(et-st);
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
 	}
 	
 	void printPattern0(Pattern pattern, int index, String s)

@@ -242,6 +242,19 @@ public class CharUtils
 		return 48 <= c && c <= 57;
 	}
 	
+	public static boolean isDigitOrPunctuation(char[] cs, int beginIndex, int endIndex)
+	{
+		int i;
+		
+		for (i=beginIndex; i<endIndex; i++)
+		{
+			if (!isDigit(cs[i]) && !isPunctuation(cs[i]))
+				return false;
+		}
+		
+		return true;
+	}
+	
 	public static boolean isPreDigitSymbol(char c)
 	{
 		return c == '.' || c == '-' || c == '+' || c == '\u00B1' ||	isRange(c, '\u2212', '\u2213') || isRange(c, '\u221A', '\u221C');

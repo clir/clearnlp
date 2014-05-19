@@ -15,13 +15,14 @@
  */
 package com.clearnlp.tokenization;
 
-import java.util.Arrays;
 import java.util.List;
 
+import com.clearnlp.constant.CharConst;
 import com.clearnlp.dictionary.english.DTAbbreviation;
-import com.clearnlp.dictionary.english.DTCompound;
 import com.clearnlp.dictionary.english.DTHyphen;
-import com.clearnlp.util.CharUtils;
+import com.clearnlp.dictionary.universal.DTCompound;
+import com.clearnlp.tokenization.english.ApostropheEnglishTokenizer;
+import com.clearnlp.type.LanguageType;
 
 /**
  * @since 3.0.0
@@ -29,17 +30,17 @@ import com.clearnlp.util.CharUtils;
  */
 public class EnglishTokenizer extends AbstractTokenizer
 {
-	private final String[] APOSTROPHE_SUFFIX = {"d","m","s","t","z","ll","nt","re","ve"};
-	
-	private DTAbbreviation d_abbreviation;
-	private DTHyphen d_hyphen;
-	private DTCompound d_compound;
+	private ApostropheEnglishTokenizer d_apostrophe;
+	private DTAbbreviation             d_abbreviation;
+	private DTCompound                 d_compound;
+	private DTHyphen                   d_hyphen;
 	
 	public EnglishTokenizer()
 	{
-		super();
+		d_apostrophe   = new ApostropheEnglishTokenizer();
 		d_abbreviation = new DTAbbreviation();
-		d_hyphen = new DTHyphen();
+		d_compound     = new DTCompound(LanguageType.ENGLISH);
+		d_hyphen       = new DTHyphen();
 	}
 	
 	@Override
@@ -53,7 +54,7 @@ public class EnglishTokenizer extends AbstractTokenizer
 	{
 		char sym = cs[endIndex];
 		
-		if (sym == '.')
+		if (sym == CharConst.PERIOD)
 		{
 			if (d_abbreviation.isAbbreviationEndingWithPeriod(t.toLowerCase()))
 				return 1;
@@ -65,108 +66,12 @@ public class EnglishTokenizer extends AbstractTokenizer
 	@Override
 	protected boolean preserveSymbolInBetween(char[] cs, int index)
 	{
-		return preserveHyphen(cs, index);
+		return d_hyphen.preserveHyphen(cs, index);
 	}
 	
-	private boolean preserveHyphen(char[] cs, int index)
-	{
-		if (CharUtils.isHyphen(cs[index]))
-		{
-			int len = cs.length;
-			char[] tmp;
-			
-			if (index > 0)
-			{
-				tmp = Arrays.copyOfRange(cs, 0, index);
-				CharUtils.toLowerCase(tmp);
-				
-				if (d_hyphen.isPrefix(new String(tmp)))
-					return true;	
-			}
-			
-			if (index+1 < len)
-			{
-				tmp = Arrays.copyOfRange(cs, index+1, len);
-				CharUtils.toLowerCase(tmp);
-				
-				if (d_hyphen.isSuffix(new String(tmp)))
-					return true;	
-			}
-			
-			if (index+2 < len)
-			{
-				if (CharUtils.isVowel(cs[index+1]) && CharUtils.isHyphen(cs[index+2]))
-					return true;
-			}
-			
-			if (0 <= index-2)
-			{
-				if (CharUtils.isVowel(cs[index-1]) && CharUtils.isHyphen(cs[index-2]))
-					return true;
-			}
-		}
-		
-		return false;
-	}
-
 	@Override
-	protected boolean tokenizeWordsMore(List<String> tokens, String original, String lower, char[] cs)
+	protected boolean tokenizeWordsMore(List<String> tokens, String original, String lower, char[] lcs)
 	{
-		return tokenizeApostrophe(tokens, original, lower, cs) || tokenizeCompound(tokens, original, lower, cs);
-	}
-	
-	private boolean tokenizeApostrophe(List<String> tokens, String original, String lower, char[] cs)
-	{
-		int i;
-		
-		for (String suffix : APOSTROPHE_SUFFIX)
-		{
-			i = isApostropheSuffix(cs, lower, suffix);
-			
-			if (i > 0)
-			{
-				addTokens(tokens, original, i);
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	private int isApostropheSuffix(char[] cs, String lower, String suffix)
-	{
-		if (lower.endsWith(suffix))
-		{
-			if (suffix.equals("t"))
-			{
-				int i = lower.length() - suffix.length() - 2;
-				
-				if (0 < i && cs[i] == 'n' && CharUtils.isApostrophe(cs[i+1]))
-					return i;
-			}
-			else
-			{
-				int i = lower.length() - suffix.length() - 1;
-				
-				if (0 < i && CharUtils.isApostrophe(cs[i]))
-					return i;
-			}
-		}
-		
-		return -1;
-	}
-	
-	private boolean tokenizeCompound(List<String> tokens, String original, String lower, char[] cs)
-	{
-		int[] splits = d_compound.getSplitIndices(lower);
-		
-		if (splits != null)
-		{
-			addTokens(tokens, original, splits);
-			return true;
-		}
-		
-		return false;
-		
+		return tokenize(tokens, original, lower, lcs, d_apostrophe) || tokenize(tokens, original, lower, lcs, d_compound); 
 	}
 }

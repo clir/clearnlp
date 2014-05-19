@@ -80,4 +80,9 @@ public class StringUtils
 		
 		return false;
 	}
+	
+	static public String trim(String s, int trimSize)
+	{
+		return s.substring(0, s.length()-trimSize);
+	}
 }

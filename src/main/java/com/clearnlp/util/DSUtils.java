@@ -44,8 +44,9 @@ public class DSUtils
 	/**
 	 * @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}.
 	 * The file that the input-stream is created from consists of one entry per line. 
+	 * @param decap TODO
 	 */
-	static public Set<String> createStringHashSet(InputStream in, boolean trim)
+	static public Set<String> createStringHashSet(InputStream in, boolean trim, boolean decap)
 	{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		Set<String> set = Sets.newHashSet();
@@ -60,6 +61,9 @@ public class DSUtils
 					line = line.trim();
 					if (line.isEmpty()) continue;
 				}
+				
+				if (decap)
+					line = StringUtils.toLowerCase(line);
 				
 				set.add(line);
 			}			
@@ -235,6 +239,13 @@ public class DSUtils
 			j = rand.nextInt(size - i) + i + 1;
 			swap(list, i, j);
 		}
+	}
+	
+	/** Adds all items in the specific array to the specific list. */
+	static public void addAll(List<String> list, String[] array)
+	{
+		for (String item : array)
+			list.add(item);
 	}
 	
 	static public void append(FloatArrayList list, float value, int n)

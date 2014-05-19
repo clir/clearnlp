@@ -16,9 +16,11 @@
 package com.clearnlp.dictionary.english;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Set;
 
 import com.clearnlp.dictionary.DTPath;
+import com.clearnlp.util.CharUtils;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
 
@@ -45,8 +47,8 @@ public class DTHyphen
 	
 	public void init(InputStream prefix, InputStream suffix)
 	{
-		s_prefix = DSUtils.createStringHashSet(prefix, true);
-		s_suffix = DSUtils.createStringHashSet(suffix, true);
+		s_prefix = DSUtils.createStringHashSet(prefix, true, true);
+		s_suffix = DSUtils.createStringHashSet(suffix, true, true);
 	}
 	
 	public boolean isPrefix(String lower)
@@ -57,5 +59,46 @@ public class DTHyphen
 	public boolean isSuffix(String lower)
 	{
 		return s_suffix.contains(lower);
+	}
+	
+	public boolean preserveHyphen(char[] cs, int index)
+	{
+		if (CharUtils.isHyphen(cs[index]))
+		{
+			int len = cs.length;
+			char[] tmp;
+			
+			if (index > 0)
+			{
+				tmp = Arrays.copyOfRange(cs, 0, index);
+				CharUtils.toLowerCase(tmp);
+				
+				if (isPrefix(new String(tmp)))
+					return true;	
+			}
+			
+			if (index+1 < len)
+			{
+				tmp = Arrays.copyOfRange(cs, index+1, len);
+				CharUtils.toLowerCase(tmp);
+				
+				if (isSuffix(new String(tmp)))
+					return true;	
+			}
+			
+			if (index+2 < len)
+			{
+				if (CharUtils.isVowel(cs[index+1]) && CharUtils.isHyphen(cs[index+2]))
+					return true;
+			}
+			
+			if (0 <= index-2)
+			{
+				if (CharUtils.isVowel(cs[index-1]) && CharUtils.isHyphen(cs[index-2]))
+					return true;
+			}
+		}
+		
+		return false;
 	}
 }

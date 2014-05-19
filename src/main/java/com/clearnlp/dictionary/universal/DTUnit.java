@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.dictionary;
+package com.clearnlp.dictionary.universal;
 
 import java.io.InputStream;
 import java.util.Set;
 
+import com.clearnlp.dictionary.AbstractDTTokenizer;
+import com.clearnlp.dictionary.DTPath;
+import com.clearnlp.util.CharUtils;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
 
@@ -26,7 +29,7 @@ import com.clearnlp.util.IOUtils;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DTUnit
+public class DTUnit extends AbstractDTTokenizer
 {
 	private Set<String> s_unit;
 	
@@ -42,16 +45,31 @@ public class DTUnit
 	
 	public void init(InputStream unit)
 	{
-		s_unit = DSUtils.createStringHashSet(unit, true);
+		s_unit = DSUtils.createStringHashSet(unit, true, true);
 	}
 	
 	public boolean isUnit(String lower)
 	{
 		return s_unit.contains(lower);
 	}
-	
-	public Set<String> getUnitSet()
+
+	@Override
+	/** @return "1mg" -> {"1", "mg"}. */
+	public String[] tokenize(String original, String lower, char[] lcs)
 	{
-		return s_unit;
+		int len = original.length();
+		
+		for (String unit : s_unit)
+		{
+			if (lower.endsWith(unit))
+			{
+				int i = len - unit.length();
+				
+				if (0 < i && CharUtils.isDigit(lcs[i-1]))
+					return new String[]{original.substring(0,i), original.substring(i)};
+			}
+		}
+		
+		return null;
 	}
 }

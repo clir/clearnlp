@@ -13,40 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.dictionary.english;
+package com.clearnlp.tokenization.english;
 
-import java.io.InputStream;
-import java.util.Set;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import com.clearnlp.dictionary.DTPath;
-import com.clearnlp.util.DSUtils;
-import com.clearnlp.util.IOUtils;
+import java.util.Arrays;
+
+import org.junit.Test;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DTAbbreviation
+public class ApostropheTokenizerTest
 {
-	private Set<String> s_period;
-	
-	public DTAbbreviation()
+	@Test
+	public void test()
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.EN_ABBREVIATION_PERIOD));
-	}
-	
-	public DTAbbreviation(InputStream abbreviationPeriod)
-	{
-		init(abbreviationPeriod);
-	}
-	
-	public void init(InputStream abbreviationPeriod)
-	{
-		s_period = DSUtils.createStringHashSet(abbreviationPeriod, true, true);
-	}
-	
-	public boolean isAbbreviationEndingWithPeriod(String lower)
-	{
-		return s_period.contains(lower);
+		ApostropheEnglishTokenizer dt = new ApostropheEnglishTokenizer();
+		
+		assertEquals("[he, 's]" , Arrays.toString(dt.tokenize("he's")));
+		assertEquals("[he, 'S]" , Arrays.toString(dt.tokenize("he'S")));
+		assertEquals("[do, n't]", Arrays.toString(dt.tokenize("don't")));
+		assertEquals("[do, 'nt]", Arrays.toString(dt.tokenize("do'nt")));
+		
+		assertTrue(dt.tokenize("he'dd") == null);
+		assertTrue(dt.tokenize("dont")  == null);
 	}
 }

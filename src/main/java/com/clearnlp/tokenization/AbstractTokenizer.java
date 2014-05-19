@@ -22,11 +22,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.clearnlp.constant.CharConst;
 import com.clearnlp.constant.PatternConst;
 import com.clearnlp.constant.StringConst;
-import com.clearnlp.dictionary.DTCurrency;
-import com.clearnlp.dictionary.DTUnit;
+import com.clearnlp.dictionary.AbstractDTTokenizer;
+import com.clearnlp.dictionary.universal.DTCurrency;
+import com.clearnlp.dictionary.universal.DTUnit;
 import com.clearnlp.util.CharUtils;
+import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.PatternUtils;
 import com.clearnlp.util.StringUtils;
 import com.google.common.collect.Lists;
@@ -37,17 +40,19 @@ import com.google.common.collect.Lists;
  */
 abstract public class AbstractTokenizer
 {
-	private final Pattern P_YEAR = PatternUtils.createClosedPattern("\\d\\d['|\u2019]?[sS]?");
 	private final Pattern P_ABBREVIATION = PatternUtils.createClosedPattern("\\p{Alnum}([\\.|-]\\p{Alnum})*");
-	
+	private final Pattern P_YEAR = PatternUtils.createClosedPattern("\\d\\d['|\u2019]?[sS]?");
+
 	private DTCurrency d_currency;
-	private DTUnit d_unit;
+	private DTUnit     d_unit;
 	
 	public AbstractTokenizer()
 	{
 		d_currency = new DTCurrency();
-		d_unit = new DTUnit();
+		d_unit     = new DTUnit();
 	}
+	
+//	----------------------------------- Tokenize -----------------------------------
 	
 	public List<String> tokenize(String s)
 	{
@@ -64,7 +69,7 @@ abstract public class AbstractTokenizer
 			}
 		}
 		 
-		if (bIndex < eIndex) addTokens(tokens, s.substring(bIndex, eIndex));
+		if (bIndex < eIndex) addTokens(tokens, s.substring(bIndex));
 		finalize(tokens);
 		
 		tokens.trimToSize();
@@ -154,6 +159,14 @@ abstract public class AbstractTokenizer
 		return i+1;
 	}
 	
+	private boolean isSymbol(char c)
+	{
+		return CharUtils.isPunctuation(c) ||
+			   CharUtils.isGeneralPunctuation(c) ||
+			   CharUtils.isCurrency(c) ||
+			   CharUtils.isArrow(c);
+	}
+	
 	/** Called by {@link #addTokensAux(List, String)}. */
 	private int adjustFirstNonSymbolIndex(char[] cs, int beginIndex, String t)
 	{
@@ -161,12 +174,14 @@ abstract public class AbstractTokenizer
 		int gap;
 		
 		if ((gap = adjustFirstNonSymbolGap(cs, beginIndex, t)) > 0)
+		{
 			beginIndex -= gap;
+		}
 		else if (CharUtils.isPreDigitSymbol(sym))
 		{
 			if (CharUtils.isDigit(curr)) beginIndex--;		// -1, .1, +1
 		}
-		else if ((sym == '@' || sym == '#'))
+		else if ((sym == CharConst.AT || sym == CharConst.POUND))
 		{
 			if (CharUtils.isAlphabet(curr)) beginIndex--;	// @A, #A
 		}
@@ -185,12 +200,14 @@ abstract public class AbstractTokenizer
 		int gap;
 		
 		if ((gap = adjustLastNonSymbolGap(cs, endIndex, t)) > 0)
+		{
 			endIndex += gap;
-		else if (sym == '$')
+		}
+		else if (sym == CharConst.DOLLAR)
 		{
 			if (d_currency.isCurrencyDollar(t)) endIndex++;
 		}
-		else if (sym == '.')
+		else if (sym == CharConst.PERIOD)
 		{
 			if (preservePeriod(cs, endIndex, t)) endIndex++;
 		}
@@ -215,6 +232,8 @@ abstract public class AbstractTokenizer
 	abstract protected int adjustFirstNonSymbolGap(char[] cs, int beginIndex, String t);
 	/** Called by {@link #adjustLastNonSymbolIndex(char[], int, String)}. */
 	abstract protected int adjustLastNonSymbolGap (char[] cs, int endIndex, String t);
+	
+//	----------------------------------- Tokenize symbols -----------------------------------
 	
 	/** Called by {@link #addTokensAux(List, String)}. */
 	private void tokenizeSymbols(List<String> tokens, String s)
@@ -323,6 +342,8 @@ abstract public class AbstractTokenizer
 		return finalMark ? CharUtils.isFinalMark(cs[index]) : c == cs[index];
 	}
 	
+//	----------------------------------- Tokenize words -----------------------------------
+	
 	/** Called by {@link #addTokensAux(List, String)}. */
 	private void tokenizeWords(List<String> tokens, String s)
 	{
@@ -331,7 +352,7 @@ abstract public class AbstractTokenizer
 		
 		for (i=1; i<len; i++)
 		{
-			if (preserveSymbolInBetween(cs, i) || isCommaInDigit(cs, i) || isSymbolInAlphabets(cs, i) || isSymbolInDigits(cs, i))
+			if (preserveSymbolInBetween(cs, i) || isCommaInDigits(cs, i) || isSymbolInAlphabets(cs, i) || isSymbolInDigits(cs, i))
 				continue;
 			
 			if (isEllipsis(cs, i) || isSymbolInBetween(cs[i]))
@@ -350,75 +371,33 @@ abstract public class AbstractTokenizer
 	
 	private void tokenizeWordsAux(List<String> tokens, String s)
 	{
-		char[] cs= s.toCharArray();
-		String lower = CharUtils.toLowerCase(cs) ? new String(cs) : s;
+		char[] lcs = s.toCharArray();
+		String lower = CharUtils.toLowerCase(lcs) ? new String(lcs) : s;
 		
-		if (!tokenizeWordsMore(tokens, s, lower, cs) && !tokenizeCurrency(tokens, s, lower, cs) && !tokenizeUnit(tokens, s, lower, cs))
-				;
-	}
-	
-	private boolean tokenizeCurrency(List<String> tokens, String original, String lower, char[] cs)
-	{
-		int len = original.length();
-		
-		for (String prefix : d_currency.getCurrencySet())
-		{
-			if (lower.startsWith(prefix))
-			{
-				int i = prefix.length();
-				
-				if (i < len && CharUtils.isDigit(cs[i]))
-				{
-					addTokens(tokens, original, i);
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	private boolean tokenizeUnit(List<String> tokens, String original, String lower, char[] cs)
-	{
-		int len = original.length();
-		
-		for (String suffix : d_unit.getUnitSet())
-		{
-			if (lower.endsWith(suffix))
-			{
-				int i = len - suffix.length();
-				
-				if (0 < i && CharUtils.isDigit(cs[i-1]))
-				{	
-					addTokens(tokens, original, i);
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	protected void addTokens(List<String> tokens, String s, int... splits)
-	{
-		int beginIndex = 0;
-		
-		for (int split : splits)
-		{
-			tokens.add(s.substring(beginIndex, split));
-			beginIndex = split;
-		}
-		
-		tokens.add(s.substring(beginIndex));
+		if (!tokenizeWordsMore(tokens, s, lower, lcs) && !tokenize(tokens, s, lower, lcs, d_currency) && !tokenize(tokens, s, lower, lcs, d_unit))
+			tokens.add(s);
 	}
 	
 	abstract protected boolean preserveSymbolInBetween(char[] cs, int index);
 	abstract protected boolean tokenizeWordsMore(List<String> tokens, String original, String lower, char[] cs);
 	
-	/** Called by {@link #tokenizeWords(List, String)}. */
-	private boolean isCommaInDigit(char[] cs, int index)
+	protected boolean tokenize(List<String> tokens, String original, String lower, char[] lcs, AbstractDTTokenizer tokenizer)
 	{
-		if (cs[index] == ',')
+		String[] t = tokenizer.tokenize(original, lower, lcs);
+		
+		if (t != null)
+		{
+			DSUtils.addAll(tokens, t);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/** Called by {@link #tokenizeWords(List, String)}. */
+	private boolean isCommaInDigits(char[] cs, int index)
+	{
+		if (cs[index] == CharConst.COMMA)
 			return (0 <= index-1 && index+3 < cs.length) && (index+4 == cs.length || !CharUtils.isDigit(cs[index+4])) && CharUtils.isDigit(cs[index-1]) && CharUtils.isDigit(cs[index+1]) && CharUtils.isDigit(cs[index+2]) && CharUtils.isDigit(cs[index+3]);
 		
 		return false;
@@ -427,7 +406,7 @@ abstract public class AbstractTokenizer
 	/** Called by {@link #tokenizeWords(List, String)}. */
 	private boolean isSymbolInAlphabets(char[] cs, int index)
 	{
-		if (cs[index] == '&')
+		if (cs[index] == CharConst.AMPERSAND)
 			return (0 <= index-1 && index+1 < cs.length) && CharUtils.isAlphabet(cs[index-1]) && CharUtils.isAlphabet(cs[index+1]);
 		
 		return false;
@@ -438,7 +417,7 @@ abstract public class AbstractTokenizer
 	{
 		char c = cs[index];
 		
-		if (CharUtils.isHyphen(c) || c == '/' || c == '\\')
+		if (CharUtils.isHyphen(c) || c == CharConst.FW_SLASH || c == CharConst.BW_SLASH)
 			return (0 <= index-1 && index+1 < cs.length) && CharUtils.isDigit(cs[index-1]) && CharUtils.isDigit(cs[index+1]);
 		
 		return false;
@@ -447,57 +426,81 @@ abstract public class AbstractTokenizer
 	/** Called by {@link #tokenizeWords(List, String)}. */
 	private boolean isEllipsis(char[] cs, int index)
 	{
-		return (index+1 < cs.length) && (cs[index] == '.') && (cs[index+1] == '.');
+		return (index+1 < cs.length) && (cs[index] == CharConst.PERIOD) && (cs[index+1] == CharConst.PERIOD);
 	}
 	
 	/** Called by {@link #tokenizeWords(List, String)}. */
 	private boolean isSymbolInBetween(char c)
 	{
-		return CharUtils.isBracket(c) || c == '~' || c == '&' || c == '|' || c == '/' || c == '\\' || c == ';' || c == ',';
+		return CharUtils.isBracket(c) || CharUtils.isArrow(c) || c == CharConst.PLUS || c == CharConst.EQUAL || c == CharConst.TILDA || c == CharConst.AMPERSAND || c == CharConst.PIPE || c == CharConst.FW_SLASH || c == CharConst.BW_SLASH || c == CharConst.SEMICOLON || c == CharConst.COMMA;
 	}
 	
-//	-------------------------------- Booleans -------------------------------- 
+//	----------------------------------- Finalize -----------------------------------
 	
-	protected boolean isSymbol(char c)
-	{
-		return CharUtils.isPunctuation(c) ||
-			   CharUtils.isGeneralPunctuation(c) ||
-			   CharUtils.isCurrency(c) ||
-			   CharUtils.isArrow(c);
-	}
-	
+	/** Called by {@link #tokenize(String)}. */
 	private void finalize(List<String> tokens)
 	{
-		String token, lower, prev, next;
-		int i, size = tokens.size();
+		int i, j, size = tokens.size();
+		String token, lower;
 		
 		for (i=0; i<size; i++)
 		{
 			token = tokens.get(i);
 			lower = StringUtils.toLowerCase(token);
 			
-			if (i+1 < size && lower.equals("no.") && CharUtils.isDigit(tokens.get(i+1).charAt(0)))
+			if ((j = tokenizeNo(tokens, token, lower, i)) != 0 || (mergeParenthesis(tokens, token, i)) != 0)
 			{
-				tokens.set(i, token.substring(0, token.length()-1));
-				tokens.add(i+1, StringConst.PERIOD);
-				i++;
 				size = tokens.size();
+				i += j;
 			}
-			else if (token.length() == 1 && 0 <= i-1 && i+1 < size)
+		}
+		
+		tokenizeLastPeriod(tokens);
+	}
+	
+	/** Called by {@link #finalize()}. */
+	private int tokenizeNo(List<String> tokens, String token, String lower, int index)
+	{
+		if (index+1 < tokens.size() && lower.equals("no.") && CharUtils.isDigit(tokens.get(index+1).charAt(0)))
+		{
+			tokens.set(index  , StringUtils.trim(token, 1));
+			tokens.add(index+1, StringConst.PERIOD);
+			return 1;
+		}
+		
+		return 0;
+	}
+	
+	/** Called by {@link #finalize()}. */
+	private int mergeParenthesis(List<String> tokens, String token, int index)
+	{
+		if (token.length() == 1 && 0 <= index-1 && index+1 < tokens.size())
+		{
+			String prev = tokens.get(index-1);
+			String next = tokens.get(index+1);
+			
+			if (prev.equals(StringConst.LRB) && next.equals(StringConst.RRB))
 			{
-				prev = tokens.get(i-1);
-				next = tokens.get(i+1);
-				
-				if (prev.equals(StringConst.LRB) && next.equals(StringConst.RRB))
-				{
-					tokens.set(i-1, prev+token+next);
-					tokens.remove(i);
-					tokens.remove(i);
-					i--;
-					size = tokens.size();
-				}
+				tokens.set(index-1, prev+token+next);
+				tokens.remove(index);
+				tokens.remove(index);
+				return -1;
 			}
+		}
+		
+		return 0;
+	}
+	
+	/** Called by {@link #finalize()}. */
+	private void tokenizeLastPeriod(List<String> tokens)
+	{
+		int last = tokens.size() - 1;
+		String token = tokens.get(last);
+		
+		if (token.endsWith(StringConst.PERIOD))
+		{
+			tokens.set(last, StringUtils.trim(token, 1));
+			tokens.add(StringConst.PERIOD);
 		}
 	}
 }
-

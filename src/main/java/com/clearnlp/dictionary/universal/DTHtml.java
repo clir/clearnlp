@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.dictionary;
+package com.clearnlp.dictionary.universal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 
 import com.clearnlp.constant.PatternConst;
 import com.clearnlp.constant.StringConst;
+import com.clearnlp.dictionary.DTPath;
 import com.clearnlp.util.CharUtils;
 import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.regex.Splitter;

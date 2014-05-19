@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.dictionary.english;
+package com.clearnlp.dictionary.universal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,8 +21,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import com.clearnlp.dictionary.AbstractDTTokenizer;
 import com.clearnlp.dictionary.DTPath;
+import com.clearnlp.type.LanguageType;
 import com.clearnlp.util.IOUtils;
+import com.clearnlp.util.StringUtils;
 import com.clearnlp.util.regex.Splitter;
 import com.google.common.collect.Maps;
 
@@ -30,13 +33,17 @@ import com.google.common.collect.Maps;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DTCompound
+public class DTCompound extends AbstractDTTokenizer
 {
 	private Map<String,int[]> m_compound;
 	
-	public DTCompound()
+	public DTCompound(LanguageType language)
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.EN_COMPOUND));
+		switch (language)
+		{
+		case ENGLISH: init(IOUtils.getInputStreamsFromClasspath(DTPath.EN_COMPOUNDS)); break;
+		default: throw new IllegalArgumentException(language.toString());
+		}
 	}
 	
 	public DTCompound(InputStream compound)
@@ -71,14 +78,16 @@ public class DTCompound
 				}
 				
 				build.append(tokens.get(size));
-				m_compound.put(build.toString(), tmp);
+				m_compound.put(StringUtils.toLowerCase(build.toString()), tmp);
 			}
 		}
 		catch (IOException e) {e.printStackTrace();}
 	}
 	
-	public int[] getSplitIndices(String lower)
+	@Override
+	public String[] tokenize(String original, String lower, char[] lcs)
 	{
-		return m_compound.get(lower);
+		int[] indices = m_compound.get(lower);
+		return (indices != null) ? Splitter.split(original, indices) : null;
 	}
 }

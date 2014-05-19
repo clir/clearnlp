@@ -95,4 +95,20 @@ public class Splitter implements PatternConst
 		list.trimToSize();
 		return list;
 	}
+	
+	static public String[] split(String s, int... splitIndices)
+	{
+		int i, len = splitIndices.length;
+		String[] t = new String[len+1];
+		int beginIndex = 0;
+		
+		for (i=0; i<len; i++)
+		{
+			t[i] = s.substring(beginIndex, splitIndices[i]);
+			beginIndex = splitIndices[i];
+		}
+		
+		t[i] = s.substring(beginIndex);
+		return t;
+	}
 }
