@@ -75,11 +75,6 @@ public class PatternUtils implements PatternConst
 		return HYPERLINK.matcher(s).find();
 	}
 	
-	static public boolean containsEmoticon(String s)
-	{
-		return EMOTICON.matcher(s).find();
-	}
-	
 	/** @return {@code true} if the specific string contains only digits. */
 	static public boolean containsPunctuation(String s)
 	{

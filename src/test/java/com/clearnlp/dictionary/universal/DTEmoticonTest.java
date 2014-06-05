@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.util;
+package com.clearnlp.dictionary.universal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
@@ -25,20 +26,24 @@ import org.junit.Test;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class CharTokenizerTest
+public class DTEmoticonTest
 {
 	@Test
 	public void test()
 	{
-		CharTokenizer t;
+		DTEmoticon dt = new DTEmoticon();
 		String s;
 		
-		t = new CharTokenizer(',');
-		s = "a,b,c";
-		assertEquals("[a, b, c]", Arrays.toString(t.tokenize(s)));
+		s = ":";
+		assertTrue(dt.getEmoticonRange(s) == null);
 		
-		t = new CharTokenizer(';');
-		s = ";abc;def;;ghi;";
-		assertEquals("[abc, def, ghi]", Arrays.toString(t.tokenize(s)));
+		s = ":-)";
+		assertEquals("[0, 3]", Arrays.toString(dt.getEmoticonRange(s)));
+		
+		s = "Hi:-)";
+		assertEquals("[2, 5]", Arrays.toString(dt.getEmoticonRange(s)));
+		
+		s = ":-)..";
+		assertEquals("[0, 3]", Arrays.toString(dt.getEmoticonRange(s)));
 	}
 }

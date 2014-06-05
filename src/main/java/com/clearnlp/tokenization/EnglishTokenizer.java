@@ -15,6 +15,8 @@
  */
 package com.clearnlp.tokenization;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
 import java.util.List;
 
 import com.clearnlp.constant.CharConst;
@@ -23,6 +25,8 @@ import com.clearnlp.dictionary.english.DTHyphen;
 import com.clearnlp.dictionary.universal.DTCompound;
 import com.clearnlp.tokenization.english.ApostropheEnglishTokenizer;
 import com.clearnlp.type.LanguageType;
+import com.clearnlp.util.StringUtils;
+import com.google.common.collect.Lists;
 
 /**
  * @since 3.0.0
@@ -30,6 +34,9 @@ import com.clearnlp.type.LanguageType;
  */
 public class EnglishTokenizer extends AbstractTokenizer
 {
+	private final String[] L_BRACKETS = {"\"","(","{","["};
+	private final String[] R_BRACKETS = {"\"",")","}","]"};
+	
 	private ApostropheEnglishTokenizer d_apostrophe;
 	private DTAbbreviation             d_abbreviation;
 	private DTCompound                 d_compound;
@@ -43,6 +50,8 @@ public class EnglishTokenizer extends AbstractTokenizer
 		d_hyphen       = new DTHyphen();
 	}
 	
+//	----------------------------------- Tokenize -----------------------------------
+	
 	@Override
 	protected int adjustFirstNonSymbolGap(char[] cs, int beginIndex, String t)
 	{
@@ -50,13 +59,13 @@ public class EnglishTokenizer extends AbstractTokenizer
 	}
 	
 	@Override
-	protected int adjustLastNonSymbolGap(char[] cs, int endIndex, String t)
+	protected int adjustLastSymbolSequenceGap(char[] cs,  int endIndex, String t)
 	{
 		char sym = cs[endIndex];
 		
 		if (sym == CharConst.PERIOD)
 		{
-			if (d_abbreviation.isAbbreviationEndingWithPeriod(t.toLowerCase()))
+			if (d_abbreviation.isAbbreviationEndingWithPeriod(StringUtils.toLowerCase(t)))
 				return 1;
 		}
 		
@@ -73,5 +82,74 @@ public class EnglishTokenizer extends AbstractTokenizer
 	protected boolean tokenizeWordsMore(List<String> tokens, String original, String lower, char[] lcs)
 	{
 		return tokenize(tokens, original, lower, lcs, d_apostrophe) || tokenize(tokens, original, lower, lcs, d_compound); 
+	}
+	
+//	----------------------------------- Segmentize -----------------------------------
+	
+	@Override
+	public List<List<String>> segmentize(InputStream in)
+	{
+		List<List<String>> sentences = Lists.newArrayList();
+		int[] brackets = new int[R_BRACKETS.length];
+		List<String> tokens = tokenize(in);
+		int bIndex, i, size = tokens.size();
+		boolean isTerminal = false;
+		String token;
+		
+		for (i=0, bIndex=0; i<size; i++)
+		{
+			token = tokens.get(i);
+			countBrackets(token, brackets);
+			
+			if (isTerminal || isFinalMarksOnly(token))
+			{
+				if (i+1 < size && isFollowedByBracket(tokens.get(i+1), brackets))
+				{
+					isTerminal = true;
+					continue;
+				}
+				
+				sentences.add(tokens.subList(bIndex, bIndex = i+1));
+				isTerminal = false;
+			}
+		}
+		
+		if (bIndex < size)
+			sentences.add(tokens.subList(bIndex, size));
+		
+		return sentences;
+	}
+		
+	/** Called by {@link EnglishSegmenter#getSentencesRaw(BufferedReader)}. */
+	private void countBrackets(String str, int[] brackets)
+	{
+		if (str.equals("\""))
+			brackets[0] += (brackets[0] == 0) ? 1 : -1;
+		else
+		{
+			int i, size = brackets.length;
+			
+			for (i=1; i<size; i++)
+			{
+				if      (str.equals(L_BRACKETS[i]))
+					brackets[i]++;
+				else if (str.equals(R_BRACKETS[i]))
+					brackets[i]--; 
+			}
+		}
+	}
+	
+	/** Called by {@link EnglishSegmenter#getSentencesRaw(BufferedReader)}. */
+	private boolean isFollowedByBracket(String str, int[] brackets)
+	{
+		int i, size = R_BRACKETS.length;
+		
+		for (i=0; i<size; i++)
+		{
+			if (brackets[i] > 0 && str.equals(R_BRACKETS[i]))
+				return true;
+		}
+		
+		return false;
 	}
 }

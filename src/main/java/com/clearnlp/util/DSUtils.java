@@ -44,7 +44,6 @@ public class DSUtils
 	/**
 	 * @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}.
 	 * The file that the input-stream is created from consists of one entry per line. 
-	 * @param decap TODO
 	 */
 	static public Set<String> createStringHashSet(InputStream in, boolean trim, boolean decap)
 	{
@@ -81,7 +80,7 @@ public class DSUtils
 	{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		Map<String,String> map = Maps.newHashMap();
-		List<String> t;
+		String[] t;
 		String line;
 		
 		try
@@ -95,7 +94,7 @@ public class DSUtils
 				}
 				
 				t = tokenizer.tokenize(line);
-				map.put(t.get(0), t.get(1));
+				map.put(t[0], t[1]);
 			}			
 		}
 		catch (IOException e) {e.printStackTrace();}

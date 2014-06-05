@@ -16,13 +16,13 @@
 package com.clearnlp.feature;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import com.clearnlp.constant.CharConst;
 import com.clearnlp.util.regex.Splitter;
 import com.google.common.collect.Lists;
 
@@ -35,42 +35,28 @@ abstract public class AbstractFeatureTemplate<FeatureTokenType> implements Seria
 	private static final long serialVersionUID = 6926688863000363869L;
 	private static final String FIELD = "f";
 	
-	private ArrayList<FeatureTokenType> l_tokens;
+	protected FeatureTokenType[] f_tokens;
 	
 	public AbstractFeatureTemplate(Element eFeature)
 	{
-		init(eFeature);
+		f_tokens = createFeatureTokens(eFeature);
 	}
 	
-	private void init(Element eFeature)
+	public FeatureTokenType[] getFeatureTokens()
 	{
-		l_tokens = Lists.newArrayList();
-		
-		for (String p : getFields(eFeature))
-			l_tokens.add(getFeatureToken(p));
-		
-		l_tokens.trimToSize();
-	}
-	
-	public List<FeatureTokenType> getFeatureTokens()
-	{
-		return l_tokens;
+		return f_tokens;
 	}
 	
 	public FeatureTokenType getFeatureToken(int index)
 	{
-		return l_tokens.get(index);
+		return f_tokens[index];
 	}
 	
-	public void addFeatureToken(FeatureTokenType token)
-	{
-		l_tokens.add(token);
-	}
-
-	private List<String> getFields(Element element)
+	/** @return [f="i:f", f="i:p"] */
+	protected List<String> getFields(Element eFeature)
 	{
 		List<String> attributes = Lists.newArrayList();
-		NamedNodeMap nodes = element.getAttributes();
+		NamedNodeMap nodes = eFeature.getAttributes();
 		int i, size = nodes.getLength();
 		Node node;
 		
@@ -85,23 +71,25 @@ abstract public class AbstractFeatureTemplate<FeatureTokenType> implements Seria
 		return attributes;
 	}
 	
-	private FeatureTokenType getFeatureToken(String str)
+	/** @param str "l-1_hd:p" */
+	protected FeatureTokenType getFeatureToken(String str)
 	{
-		List<String> t0 = Splitter.splitColons(str);			// "l-1_hd:p" -> {"l-1_hd", "p"}
-		List<String> t1 = Splitter.splitUnderscore(t0.get(0));	// "l-1_hd"   -> {"l-1", "hd"} 
-		String s = t1.get(0);
+		String[] t0 = Splitter.splitColons(str);		// "l-1_hd:p" -> {"l-1_hd", "p"}
+		String[] t1 = Splitter.splitUnderscore(t0[0]);	// "l-1_hd"   -> {"l-1", "hd"} 
+		String s = t1[0];
 		
 		String source = s.substring(0, 1);
 		int    offset = 0;
 		
 		if (s.length() >= 2)
-			offset = (s.charAt(1) == '+') ? Integer.parseInt(s.substring(2)) : Integer.parseInt(s.substring(1));
+			offset = (s.charAt(1) == CharConst.PLUS) ? Integer.parseInt(s.substring(2)) : Integer.parseInt(s.substring(1));
 		
-		String relation = (t1.size() > 1) ? t1.get(1) : null;
-		String field = t0.get(1);
+		String relation = (t1.length > 1) ? t1[1] : null;
+		String field = t0[1];
 
 		return createFeatureToken(source, relation, field, offset);
 	}
 	
+	abstract protected FeatureTokenType[] createFeatureTokens(Element eFeature);
 	abstract protected FeatureTokenType createFeatureToken(String source, String relation, String field, int offset);
 }

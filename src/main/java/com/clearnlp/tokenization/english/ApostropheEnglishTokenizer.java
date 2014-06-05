@@ -56,7 +56,7 @@ public class ApostropheEnglishTokenizer extends AbstractDTTokenizer
 				int i = lower.length() - suffix.length() - 1;
 				
 				if (0 < i && CharUtils.isApostrophe(lcs[i]))
-					return i;
+					return (suffix.equals("s") && CharUtils.isDigit(lcs[i-1])) ? -1 : i;
 			}
 		}
 		

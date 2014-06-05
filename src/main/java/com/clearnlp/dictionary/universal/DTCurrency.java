@@ -82,6 +82,13 @@ public class DTCurrency extends AbstractDTTokenizer
 				if (i < len && CharUtils.isDigit(lcs[i]))
 					return Splitter.split(original, i);
 			}
+			else if (lower.endsWith(currency))
+			{
+				i = len - currency.length();
+				
+				if (0 <= i-1 && CharUtils.isDigit(lcs[i-1]))
+					return Splitter.split(original, i);
+			}
 		}
 		
 		return null;

@@ -17,58 +17,58 @@ package com.clearnlp.dictionary.universal;
 
 import java.io.InputStream;
 import java.util.Set;
+import java.util.regex.Matcher;
 
-import com.clearnlp.dictionary.AbstractDTTokenizer;
+import com.clearnlp.collection.tree.AffixTree;
+import com.clearnlp.constant.PatternConst;
 import com.clearnlp.dictionary.DTPath;
-import com.clearnlp.util.CharUtils;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
-
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DTUnit extends AbstractDTTokenizer
+public class DTEmoticon
 {
-	private Set<String> s_unit;
+	private Set<String> s_emoticon;
+	private AffixTree   t_prefix;
+	private AffixTree   t_suffix;
 	
-	public DTUnit()
+	public DTEmoticon()
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.UNITS));
+		init(IOUtils.getInputStreamsFromClasspath(DTPath.EMOTICONS));
 	}
 	
-	public DTUnit(InputStream in)
+	public DTEmoticon(InputStream in)
 	{
 		init(in);
 	}
 	
 	public void init(InputStream in)
 	{
-		s_unit = DSUtils.createStringHashSet(in, true, true);
+		s_emoticon = DSUtils.createStringHashSet(in, true, false);
+		t_prefix = new AffixTree(true);		t_prefix.addAll(s_emoticon);
+		t_suffix = new AffixTree(false);	t_suffix.addAll(s_emoticon);
 	}
 	
-	public boolean isUnit(String lower)
+	public int[] getEmoticonRange(String s)
 	{
-		return s_unit.contains(lower);
-	}
-
-	@Override
-	/** @return "1mg" -> {"1", "mg"}. */
-	public String[] tokenize(String original, String lower, char[] lcs)
-	{
-		int len = original.length();
+		if (s_emoticon.contains(s))
+			return new int[]{0, s.length()};
 		
-		for (String unit : s_unit)
-		{
-			if (lower.endsWith(unit))
-			{
-				int i = len - unit.length();
-				
-				if (0 < i && CharUtils.isDigit(lcs[i-1]))
-					return new String[]{original.substring(0,i), original.substring(i)};
-			}
-		}
+		Matcher m = PatternConst.EMOTICON.matcher(s);
+		
+		if (m.find())
+			return new int[]{m.start(), m.end()};
+		
+		int idx;
+		
+		if ((idx = t_prefix.getAffixIndex(s, false)) >= 0)
+			return new int[]{0, idx+1};
+		
+		if ((idx = t_suffix.getAffixIndex(s, false)) >= 0)
+			return new int[]{idx, s.length()};
 		
 		return null;
 	}

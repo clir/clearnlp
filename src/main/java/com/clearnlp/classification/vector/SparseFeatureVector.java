@@ -46,7 +46,8 @@ public class SparseFeatureVector extends AbstractFeatureVector
 	/** @param index the feature index. */
 	public void addFeature(int index)
 	{
-		i_indices.add(index);
+		if (hasWeight())	addFeature(index, 1);
+		else				i_indices.add(index);
 	}
 	
 	/**

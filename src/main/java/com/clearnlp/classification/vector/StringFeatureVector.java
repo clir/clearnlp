@@ -54,8 +54,13 @@ public class StringFeatureVector extends AbstractFeatureVector
 	 */
 	public void addFeature(int type, String value)
 	{
-		i_types .add(type);
-		s_values.add(value);
+		if (hasWeight())
+			addFeature(type, value, 1);
+		else
+		{
+			i_types .add(type);
+			s_values.add(value);
+		}
 	}
 	
 	/**

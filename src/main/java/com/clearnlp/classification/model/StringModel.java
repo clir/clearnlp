@@ -131,16 +131,16 @@ public class StringModel extends AbstractModel<StringInstance,StringFeatureVecto
 		return x;
 	}
 	
+	public int getFeatureIndex(StringFeatureVector x, int i)
+	{
+		return m_features.getFeatureIndex(x.getType(i), x.getValue(i));
+	}
+	
 // =============================== Predictions ===============================
 
 	@Override
 	public double[] getScores(StringFeatureVector x)
 	{
 		return w_vector.getScores(toSparseFeatureVector(x));
-	}
-	
-	public int getFeatureIndex(StringFeatureVector x, int i)
-	{
-		return m_features.getFeatureIndex(x.getType(i), x.getValue(i));
 	}
 }

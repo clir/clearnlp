@@ -16,11 +16,12 @@
 package com.clearnlp.feature;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.clearnlp.constant.StringConst;
 import com.clearnlp.util.XmlUtils;
 import com.google.common.collect.Lists;
 
@@ -28,13 +29,14 @@ import com.google.common.collect.Lists;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractFeatureExtractor<FeatreTemplateType> implements Serializable, FeatureXml
+abstract public class AbstractFeatureExtractor<FeatureTemplateType> implements Serializable, FeatureXml
 {
 	private static final long serialVersionUID = 1558293248573950051L;
+	public  static final String DELIM = StringConst.UNDERSCORE;
 	
-	protected List<FeatreTemplateType> b_templates;
-	protected List<FeatreTemplateType> g_templates;
-	protected List<FeatreTemplateType> s_templates;
+	protected ArrayList<FeatureTemplateType> b_templates;
+	protected ArrayList<FeatureTemplateType> g_templates;
+	protected ArrayList<FeatureTemplateType> s_templates;
 
 	public AbstractFeatureExtractor(Element eRoot)
 	{
@@ -49,7 +51,7 @@ abstract public class AbstractFeatureExtractor<FeatreTemplateType> implements Se
 	{
 		NodeList eList = eRoot.getElementsByTagName(E_FEATURE);
 		int i, size = eList.getLength();
-		FeatreTemplateType template;
+		FeatureTemplateType template;
 		Element eFeature;
 		String type;
 
@@ -74,6 +76,10 @@ abstract public class AbstractFeatureExtractor<FeatreTemplateType> implements Se
 				}
 			}
 		}
+		
+		b_templates.trimToSize();
+		g_templates.trimToSize();
+		s_templates.trimToSize();
 	}
 	
 	private boolean isVisible(Element eFeature)
@@ -87,5 +93,5 @@ abstract public class AbstractFeatureExtractor<FeatreTemplateType> implements Se
 		return XmlUtils.getTrimmedAttribute(eFeature, A_TYPE);
 	}
 	
-	abstract protected FeatreTemplateType createFeatureTemplate(Element eFeature);
+	abstract protected FeatureTemplateType createFeatureTemplate(Element eFeature);
 }

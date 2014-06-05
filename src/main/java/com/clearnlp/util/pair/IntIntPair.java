@@ -13,32 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.util;
+package com.clearnlp.util.pair;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-
-import org.junit.Test;
+import java.io.Serializable;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class CharTokenizerTest
+public class IntIntPair implements Serializable
 {
-	@Test
-	public void test()
+	private static final long serialVersionUID = 1674260806426517804L;
+
+	public int i1;
+	public int i2;
+	
+	public IntIntPair(int i1, int i2)
 	{
-		CharTokenizer t;
-		String s;
-		
-		t = new CharTokenizer(',');
-		s = "a,b,c";
-		assertEquals("[a, b, c]", Arrays.toString(t.tokenize(s)));
-		
-		t = new CharTokenizer(';');
-		s = ";abc;def;;ghi;";
-		assertEquals("[abc, def, ghi]", Arrays.toString(t.tokenize(s)));
+		set(i1, i2);
+	}
+	
+	public void set(int i1, int i2)
+	{
+		this.i1 = i1;
+		this.i2 = i2;
 	}
 }

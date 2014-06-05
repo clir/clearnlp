@@ -76,11 +76,16 @@ public class ObjectIntHashMap<T> implements Serializable, Iterable<ObjectIntPair
 			put((T)p.o, p.i);
 	}
 	
-	public int add(T key)
+	public int add(T key, int inc)
 	{
-		int value = get(key) + 1;
+		int value = get(key) + inc;
 		put(key, value);
 		return value;
+	}
+	
+	public int add(T key)
+	{
+		return add(key, 1);
 	}
 	
 	public void put(T key, int value)

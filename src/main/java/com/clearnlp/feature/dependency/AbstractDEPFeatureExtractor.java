@@ -40,12 +40,6 @@ abstract public class AbstractDEPFeatureExtractor extends AbstractFeatureExtract
 	{
 		super(eRoot);
 	}
-
-	@Override
-	protected DEPFeatureTemplate createFeatureTemplate(Element eFeature)
-	{
-		return new DEPFeatureTemplate(eFeature);
-	}
 	
 	public StringFeatureVector createStringFeatureVector(DEPTree tree)
 	{
@@ -55,7 +49,7 @@ abstract public class AbstractDEPFeatureExtractor extends AbstractFeatureExtract
 		beginID = 0;
 		addBooleanFeatures(vector, tree, beginID);
 		
-		if (b_templates.isEmpty()) beginID++;
+		if (!b_templates.isEmpty()) beginID++;
 		addGeneralFeatures(vector, tree, beginID);
 		
 		beginID += g_templates.size();
@@ -63,37 +57,38 @@ abstract public class AbstractDEPFeatureExtractor extends AbstractFeatureExtract
 		
 		return vector;
 	}
-	
-//	====================================== Abstract ======================================
+
+	@Override
+	protected DEPFeatureTemplate createFeatureTemplate(Element eFeature)
+	{
+		return new DEPFeatureTemplate(eFeature);
+	}
+
+//	====================================== getNode ======================================
 	
 	abstract protected DEPNode getNode(DEPFeatureToken<?> token, DEPTree tree);
-	abstract protected boolean isBooleanFeature(DEPFeatureToken<?> token, DEPTree tree);
-	abstract protected String getGeneralFeature(DEPFeatureToken<?> token, DEPNode node);
-	abstract protected String[] getSetFeatures (DEPFeatureToken<?> token, DEPTree tree);
-
-//	====================================== Extract ======================================
 	
 	/**
-	 * @param leftBound the leftmost ID (exclusive).
+	 * @param leftBound  the leftmost  ID (inclusive).
 	 * @param rightBound the rightmost ID (exclusive).
 	 */
 	protected DEPNode getNode(DEPFeatureToken<?> token, DEPTree tree, int nodeID, int leftBound, int rightBound)
 	{
 		if (token.getOffset() == 0)
-			return tree.get(nodeID);
+			return getNode(token, tree, nodeID);
 
 		nodeID += token.getOffset();
 		
-		if (leftBound < nodeID && nodeID < rightBound)
-			return tree.get(nodeID);
+		if (leftBound <= nodeID && nodeID < rightBound)
+			return getNode(token, tree, nodeID);
 		
 		return null;
 	}
 	
-	protected DEPNode getNode(DEPFeatureToken<?> token, DEPNode node)
+	/** Called by {@link #getNode(DEPFeatureToken, DEPTree, int, int, int)}. */
+	private DEPNode getNode(DEPFeatureToken<?> token, DEPTree tree, int nodeID)
 	{
-		if (node == null)
-			return null;
+		DEPNode node = tree.get(nodeID);
 		
 		if (token.hasRelation())
 		{
@@ -120,66 +115,54 @@ abstract public class AbstractDEPFeatureExtractor extends AbstractFeatureExtract
 		return node;
 	}
 	
+//	====================================== Boolean features ======================================
+	
 	/** Called by {@link #createStringFeatureVector(DEPTree)}. */
 	private void addBooleanFeatures(StringFeatureVector vector, DEPTree tree, int beginID)
 	{
 		int i, size = b_templates.size();
-		DEPFeatureTemplate template;
 		
 		for (i=0; i<size; i++)
 		{
-			template = b_templates.get(i);
-			
-			if (isBooleanFeature(template.getFeatureToken(0), tree))
+			if (isBooleanFeature(b_templates.get(i).getFeatureToken(0), tree))
 				vector.addFeature(beginID, Integer.toString(i));
 		}
 	}
+	
+	/** Called by {@link #addBooleanFeatures(StringFeatureVector, DEPTree, int)}. */
+	abstract protected boolean isBooleanFeature(DEPFeatureToken<?> token, DEPTree tree);
+	
+//	====================================== General features ======================================
 	
 	/** Called by {@link #createStringFeatureVector(DEPTree)}. */
 	private void addGeneralFeatures(StringFeatureVector vector, DEPTree tree, int beginID)
 	{
 		int i, size = g_templates.size();
-		DEPFeatureTemplate template;
 		
 		for (i=0; i<size; i++)
-		{
-			template = g_templates.get(i);
-			vector.addFeature(beginID+i, getGeneralFeature(template, tree));
-		}
+			vector.addFeature(beginID+i, getGeneralFeature(g_templates.get(i), tree));
 	}
 	
 	/** Called by {@link #addGeneralFeatures(StringFeatureVector, DEPTree)}. */
 	private String getGeneralFeature(DEPFeatureTemplate template, DEPTree tree)
 	{
+		DEPFeatureToken<?>[] tokens = template.getFeatureTokens();
 		StringBuilder build = new StringBuilder();
-		
-		for (DEPFeatureToken<?> token : template.getFeatureTokens())
+		int i, size = tokens.length;
+
+		for (i=0; i<size; i++)
 		{
-			build.append(StringConst.SPACE);
-			build.append(getGeneralFeature(token, getNode(token, tree)));
+			if (i > 0) build.append(DELIM);
+			build.append(getGeneralFeature(tokens[i], getNode(tokens[i], tree)));
 		}
 		
 		return build.substring(1);
 	}
 	
-	/** Called by {@link #createStringFeatureVector(DEPTree)}. */
-	private void addSetFeatures(StringFeatureVector vector, DEPTree tree, int beginID)
-	{
-		int i, type, size = s_templates.size();
-		DEPFeatureTemplate template;
-		
-		for (i=0; i<size; i++)
-		{
-			template = s_templates.get(i);
-			type = beginID + i;
-			
-			for (String feature : getSetFeatures(template.getFeatureToken(0), tree))
-				vector.addFeature(type, feature);
-		}
-	}
+	/** Called by {@link #getGeneralFeature(DEPFeatureTemplate, DEPTree)}. */
+	abstract protected String getGeneralFeature(DEPFeatureToken<?> token, DEPNode node);
 	
-	@SuppressWarnings("incomplete-switch")
-	protected String getBasicFeature(DEPFeatureToken<?> token, DEPNode node)
+	protected String getGeneralFeatureDefault(DEPFeatureToken<?> token, DEPNode node)
 	{
 		switch (token.getField())
 		{
@@ -191,23 +174,77 @@ abstract public class AbstractDEPFeatureExtractor extends AbstractFeatureExtract
 		case lv  : return Integer.toString(node.getLeftValency());
 		case rv  : return Integer.toString(node.getRightValency());
 		case feat: return node.getFeat((String)token.getValue());
+		default  : return null;
 		}
-		
-		return null;
 	}
 	
-	@SuppressWarnings("incomplete-switch")
-	protected String[] getBasicSetFeature(DEPFeatureToken<?> token, DEPNode node)
+//	====================================== Set features ======================================
+	
+	/** Called by {@link #createStringFeatureVector(DEPTree)}. */
+	private void addSetFeatures(StringFeatureVector vector, DEPTree tree, int beginID)
+	{
+		int i, size = s_templates.size();
+		
+		for (i=0; i<size; i++)
+			addSetFeaturesAux(vector, s_templates.get(i), tree, beginID+i);
+	}
+	
+	/** Called by {@link #addSetFeatures(StringFeatureVector, DEPTree, int)}. */
+	private void addSetFeaturesAux(StringFeatureVector vector, DEPFeatureTemplate template, DEPTree tree, int type)
+	{
+		DEPFeatureToken<?>[] tokens = template.getFeatureTokens();
+		int i, size = tokens.length;
+		
+		String[][] fields = new String[size][];
+		
+		for (i=0; i<size; i++)
+		{
+			fields[i] = getSetFeatures(tokens[i], getNode(tokens[i], tree));
+			if (fields[i] == null) return;
+		}
+		
+		if (size == 1)	addSetFeaturesAux1(vector, type, fields[0]);
+		else			addSetFeaturesAuxM(vector, type, fields, 0, StringConst.EMPTY);
+    }
+	
+	/** Called by {@link #addSetFeaturesAux(StringFeatureVector, DEPFeatureTemplate, DEPTree, int)}. */
+	private void addSetFeaturesAux1(StringFeatureVector vector, int type, String[] fields)
+	{
+		for (String field : fields)
+			vector.addFeature(type, field);
+	}
+	
+	/** Called by {@link #addSetFeaturesAux(StringFeatureVector, DEPFeatureTemplate, DEPTree, int)}. */
+	private void addSetFeaturesAuxM(StringFeatureVector vector, int type, String[][] fields, int index, String prev)
+	{
+		if (index < fields.length)
+		{
+			for (String field : fields[index])
+			{
+				if (prev.isEmpty())
+					addSetFeaturesAuxM(vector, type, fields, index+1, field);
+				else
+					addSetFeaturesAuxM(vector, type, fields, index+1, prev + DELIM + field);
+			}
+		}
+		else
+			vector.addFeature(type, prev);
+	}
+	
+	/** Called by {@link #addSetFeaturesAux(StringFeatureVector, DEPFeatureTemplate, DEPTree, int)}. */
+	abstract protected String[] getSetFeatures(DEPFeatureToken<?> token, DEPNode node);
+	
+	protected String[] getSetFeaturesDefault(DEPFeatureToken<?> token, DEPNode node)
 	{
 		switch (token.getField())
 		{
 		case ds : return getDependencyLabels(node.getDependentList());
 		case ds2: return getDependencyLabels(node.getGrandDependentList());
+		default : return null;
 		}
-		
-		return null;
 	}
 	
+	/** Called by {@link #getSetFeatures(DEPFeatureToken, DEPNode)}. */
 	private String[] getDependencyLabels(List<DEPNode> dependents)
 	{
 		Set<String> set = Sets.newHashSet();

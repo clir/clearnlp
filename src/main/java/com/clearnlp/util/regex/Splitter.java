@@ -42,32 +42,32 @@ public class Splitter implements PatternConst
 		return p.split(s);
 	}
 	
-	static public List<String> splitSpace(String s)
+	static public String[] splitSpace(String s)
 	{
 		return T_SPACE.tokenize(s);
 	}
 	
-	static public List<String> splitTabs(String s)
+	static public String[] splitTabs(String s)
 	{
 		return T_TAB.tokenize(s);
 	}
 	
-	static public List<String> splitUnderscore(String s)
+	static public String[] splitUnderscore(String s)
 	{
 		return T_UNDERSCORE.tokenize(s);
 	}
 
-	static public List<String> splitHyphens(String s)
+	static public String[] splitHyphens(String s)
 	{
 		return T_HYPHEN.tokenize(s);
 	}
 	
-	static public List<String> splitCommas(String s)
+	static public String[] splitCommas(String s)
 	{
 		return T_COMMA.tokenize(s);
 	}
 	
-	static public List<String> splitColons(String s)
+	static public String[] splitColons(String s)
 	{
 		return T_COLON.tokenize(s);
 	}

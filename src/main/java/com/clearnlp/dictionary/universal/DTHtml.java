@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -54,7 +53,7 @@ public class DTHtml
 	public void init(InputStream in)
 	{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		List<String> t;
+		String[] t;
 		String line;
 		
 		m_tags = Maps.newHashMap();
@@ -64,7 +63,7 @@ public class DTHtml
 			while ((line = reader.readLine()) != null)
 			{
 				t = Splitter.splitTabs(line);
-				m_tags.put(t.get(0), Character.toString((char)Integer.parseInt(t.get(1))));
+				m_tags.put(t[0], Character.toString((char)Integer.parseInt(t[1])));
 			}			
 		}
 		catch (IOException e) {e.printStackTrace();}

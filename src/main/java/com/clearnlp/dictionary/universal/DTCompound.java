@@ -18,7 +18,6 @@ package com.clearnlp.dictionary.universal;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 import com.clearnlp.dictionary.AbstractDTTokenizer;
@@ -46,18 +45,18 @@ public class DTCompound extends AbstractDTTokenizer
 		}
 	}
 	
-	public DTCompound(InputStream compound)
+	public DTCompound(InputStream in)
 	{
-		init(compound);
+		init(in);
 	}
 	
-	public void init(InputStream compound)
+	public void init(InputStream in)
 	{
-		BufferedReader reader = IOUtils.createBufferedReader(compound);
+		BufferedReader reader = IOUtils.createBufferedReader(in);
 		m_compound = Maps.newHashMap();
-		List<String> tokens;
 		StringBuilder build;
 		String line, token;
+		String[] tokens;
 		int i, size;
 		int[] tmp;
 		
@@ -67,17 +66,17 @@ public class DTCompound extends AbstractDTTokenizer
 			{
 				tokens = Splitter.splitSpace(line.trim());
 				build  = new StringBuilder();
-				size   = tokens.size() - 1;
+				size   = tokens.length - 1;
 				tmp    = new int[size];
 				
 				for (i=0; i<size; i++)
 				{
-					token  = tokens.get(i);
+					token  = tokens[i];
 					tmp[i] = build.length() + token.length();
 					build.append(token);
 				}
 				
-				build.append(tokens.get(size));
+				build.append(tokens[size]);
 				m_compound.put(StringUtils.toLowerCase(build.toString()), tmp);
 			}
 		}

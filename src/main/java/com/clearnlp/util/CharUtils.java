@@ -16,6 +16,7 @@
 package com.clearnlp.util;
 
 
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
@@ -112,6 +113,11 @@ public class CharUtils
 	public static boolean isWhiteSpace(char c)
 	{
 		return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\u00A0' || c == '\u2028' || c == '\u2029';
+	}
+	
+	public static boolean isAlnum(char c)
+	{
+		return isAlphabet(c) || isDigit(c);
 	}
 	
 	public static boolean isAlphabet(char c)
@@ -215,7 +221,17 @@ public class CharUtils
 	
 	public static boolean isQuotationMark(char c)
 	{
-		return c == '`' || c == '\'' || c == '"' || isRange(c, '\u2018', '\u201F');
+		return isSingleQuotationMark(c) || isDoubleQuotationMark(c);
+	}
+	
+	public static boolean isSingleQuotationMark(char c)
+	{
+		return c == '\'' || isRange(c, '\u2018', '\u201B');
+	}
+	
+	public static boolean isDoubleQuotationMark(char c)
+	{
+		return c == '"' || isRange(c, '\u201C', '\u201F');
 	}
 	
 //	----------------------------------- Bracket -----------------------------------
@@ -227,12 +243,12 @@ public class CharUtils
 	
 	public static boolean isLeftBracket(char c)
 	{
-		return c == '(' || c == '{' ||c == '[';
+		return c == '(' || c == '{' ||c == '[' ||c == '<';
 	}
 	
 	public static boolean isRightgBracket(char c)
 	{
-		return c == ')' || c == '}' ||c == ']';
+		return c == ')' || c == '}' ||c == ']' ||c == '>';
 	}
 	
 //	----------------------------------- Digit -----------------------------------

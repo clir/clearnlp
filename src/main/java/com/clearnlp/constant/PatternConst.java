@@ -54,16 +54,17 @@ public interface PatternConst
 	Pattern TWITTER_HASH_TAG = Pattern.compile("^\\p{Alpha}[\\p{Alnum}_]{1,138}$");
 	Pattern TWITTER_USER_ID  = Pattern.compile("^\\p{Alpha}[\\p{Alnum}_]{1,19}$");
 	
-	Pattern EMOTICON = Pattern.compile("[#<>%\\*]?[:;!#\\$%@=\\|][-\\+\\*=o^<]{0,4}[\\(\\)\\[\\]{}\\*#&\\w}]{1,5}[\\(\\)#<>]?");
-
+	
+	Pattern EMOTICON = Pattern.compile("[\\!\\|;:#%][-]*[\\(\\)\\[\\]\\{\\}\\|<>]+");
+	
 	Pattern HYPERLINK = Pattern.compile(
 			// protocol (http, https, ftp)
 			"(\\p{Alpha}{3,9}://)?" +
 			// id:pass (id:pass@, id:@, id@, mailto:id@)
-			"(\\S+(:\\S*)?@)?" +
+			"([\\p{Alnum}_]+(:\\S*)?@)?" +
 		"(" +
 			// IPv4 address (255.248.27.1)
-			"(" + "25[0-5]|2[0-4]\\d|[01]?\\d\\d?" + "(\\.(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)){3}" + ")" +
+			"(" + "\\d{3}" + "(\\.\\d{1,3}){3}" + ")" +
 		"|" +
 			// host + domain + TLD name (www.clearnlp.com, www-01.clearnlp.com, mathcs.emory.edu, clearnlp.co.kr)
 			"(" + "\\w+(-\\w+)*" + "(\\.\\w+(-\\w+)*)*" + "\\.\\p{Alpha}{2,}" + ")" +

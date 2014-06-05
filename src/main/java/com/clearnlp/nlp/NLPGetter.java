@@ -23,6 +23,8 @@ import com.clearnlp.component.morphology.EnglishMPAnalyzer;
 import com.clearnlp.conversion.AbstractC2DConverter;
 import com.clearnlp.conversion.EnglishC2DConverter;
 import com.clearnlp.headrule.HeadRuleMap;
+import com.clearnlp.tokenization.AbstractTokenizer;
+import com.clearnlp.tokenization.EnglishTokenizer;
 import com.clearnlp.type.LanguageType;
 
 /**
@@ -38,6 +40,11 @@ public class NLPGetter
 	{
 		HeadRuleMap headrules = new HeadRuleMap(in);
 		return new EnglishC2DConverter(headrules);
+	}
+	
+	static public AbstractTokenizer getTokenizer(LanguageType language)
+	{
+		return new EnglishTokenizer();
 	}
 	
 	static public AbstractMPAnalyzer getMPAnalyzer(LanguageType language)

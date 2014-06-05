@@ -142,4 +142,49 @@ public class MathUtils
 		for (i=0; i<size; i++)
 			array[i] *= multiplier;
 	}
+	
+	/** @param n a positive integer. */
+	static public boolean isPrimeNumber(long n)
+	{
+		if (n < 2) return false;
+		if (n == 2 || n == 3) return true;
+		if (n%2 == 0 || n%3 == 0) return false;
+		
+		long i, sqrt = (long)Math.sqrt(n) + 1;
+	    
+		for (i=6; i<=sqrt; i+=6)
+		{
+			if (n%(i-1) == 0 || n%(i+1) == 0)
+				return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * @param n inclusive.
+	 * @return the next prime number if exists; otherwise, {@code -1}.
+	 */
+	static public long nextPrimeNumber(long n)
+	{
+		while (true)
+		{
+			if (n >= Long.MAX_VALUE)
+				return -1;
+			
+			if (isPrimeNumber(n))
+				return n;
+			
+			n++;
+		}
+	}
+	
+	/**
+	 * @param a either a positive or negative integer.
+	 * @param b a positive integer.
+	 */
+	static public int divisor(int a, int b)
+	{
+		return (a < 0) ? ((a % b) + b) % b : a % b;
+	}
 }

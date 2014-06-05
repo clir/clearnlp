@@ -42,6 +42,7 @@ public interface CharConst
 	char AMPERSAND		= '&';
 	char AT				= '@';
 	char TILDA			= '~';
+	char PRIME			= '`';
 	
 	char LRB			= '(';
 	char RRB			= ')';

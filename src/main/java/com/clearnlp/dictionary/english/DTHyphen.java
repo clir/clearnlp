@@ -63,7 +63,7 @@ public class DTHyphen
 	
 	public boolean preserveHyphen(char[] cs, int index)
 	{
-		if (CharUtils.isHyphen(cs[index]))
+		if (CharUtils.isHyphen(cs[index]) && (index+1 == cs.length || CharUtils.isAlphabet(cs[index+1])))
 		{
 			int len = cs.length;
 			char[] tmp;

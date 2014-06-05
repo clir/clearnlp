@@ -15,7 +15,8 @@
  */
 package com.clearnlp.experiment;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,11 +26,12 @@ import java.util.regex.Pattern;
 import com.carrotsearch.hppc.ObjectIntOpenHashMap;
 import com.clearnlp.collection.list.DoubleArrayList;
 import com.clearnlp.collection.map.ObjectIntHashMap;
+import com.clearnlp.collection.map.StringIntMinimalPerfectHashMap;
 import com.clearnlp.constant.StringConst;
 import com.clearnlp.constituent.CTNode;
 import com.clearnlp.constituent.CTReader;
 import com.clearnlp.constituent.CTTree;
-import com.clearnlp.tokenization.english.ApostropheEnglishTokenizer;
+import com.clearnlp.dictionary.DTPath;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.pair.ObjectIntPair;
@@ -50,31 +52,90 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		ApostropheEnglishTokenizer tok = new ApostropheEnglishTokenizer();
-		
-		System.out.println(Arrays.toString(tok.tokenize("he's")));
-		System.out.println(Arrays.toString(tok.tokenize("he'S")));
-		System.out.println(Arrays.toString(tok.tokenize("he'dd")));
-		System.out.println(Arrays.toString(tok.tokenize("don't")));
-		System.out.println(Arrays.toString(tok.tokenize("do'nt")));
-		System.out.println(Arrays.toString(tok.tokenize("dont")));
-		
-		int i, size = 10000000;
+		int i, size = 100000000;
 		long st, et;
-		List<String> r;
 		
 		st = System.currentTimeMillis();
 		for (i=0; i<size; i++)
+			"abcdefegssd sd fs fs".isEmpty();
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
+	}
+	
+	public void emoticon(String[] args) throws Exception
+	{
+		Set<String> set = DSUtils.createStringHashSet(IOUtils.getInputStreamsFromClasspath(DTPath.EMOTICONS), true, true);
+		Pattern e0 = Pattern.compile("^[\\!\\|;:#%][-]*[\\(\\)\\[\\]\\{\\}\\|<>]+$");
+		int count = set.size();
+		List<String> list = Lists.newArrayList(set);
+		Collections.sort(list);
+		
+		for (String s : list)
 		{
-//			t = new String[2];
-//			t[0] = "AAA";
-//			t[1] = "BBB";
-			r = Lists.newArrayList();
-			r.add("AAA");
-			r.add("BBB");
+			if (e0.matcher(s).find())
+			{
+				System.out.println(s);
+				set.remove(s);
+			}
+		}
+		
+		System.out.println(count+" -> "+set.size());
+		
+		list = Lists.newArrayList(set);
+		Collections.sort(list);
+		
+		for (String s : list)
+			System.out.println(s);
+	}
+	
+	public void minimalHash(String[] args) throws Exception
+	{
+		Set<String> set = DSUtils.createStringHashSet(IOUtils.createFileInputStream(args[0]), true, false);
+		StringIntMinimalPerfectHashMap map = new StringIntMinimalPerfectHashMap();
+		ObjectIntHashMap<String> kmap = new ObjectIntHashMap<>();
+		int min = Integer.MAX_VALUE, max = -1;
+		int h1;
+		
+		for (String s : set)
+			map.addkey(s);
+		
+		map.initHashFunction();
+		
+		for (String s : set)
+		{
+			h1 = map.lookup(s);
+			max  = Math.max(max, h1);
+			min  = Math.min(min, h1);
+			kmap.put(s, h1);
+		}
+		
+		System.out.println(min+" "+max+" "+kmap.size());
+		
+		int i, size = 1000;
+		long st, et;
+
+		st = System.currentTimeMillis();
+		for (i=0; i<size; i++)
+		{
+			for (String s : set)
+			{
+				kmap.get(s);
+				map.lookup(s);
+			}
 		}
 		et = System.currentTimeMillis();
 		System.out.println(et-st);
+	}
+	
+	class StringList extends ArrayList<String> implements Comparable<StringList>
+	{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public int compareTo(StringList list)
+		{
+			return size() - list.size();
+		}
 	}
 	
 	void printPattern0(Pattern pattern, int index, String s)

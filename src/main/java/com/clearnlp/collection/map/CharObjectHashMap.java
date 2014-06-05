@@ -91,6 +91,12 @@ public class CharObjectHashMap<T> implements Serializable, Iterable<ObjectCharPa
 		return g_map.remove(key);
 	}
 	
+	public void clear()
+	{
+		for (ObjectCharPair<T> p : toList())
+			remove(p.c);
+	}
+	
 	public boolean containsKey(char key)
 	{
 		return g_map.containsKey(key);

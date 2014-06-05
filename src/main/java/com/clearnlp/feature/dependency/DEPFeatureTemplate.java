@@ -15,6 +15,7 @@
  */
 package com.clearnlp.feature.dependency;
 
+import java.util.List;
 import java.util.regex.Matcher;
 
 import org.w3c.dom.Element;
@@ -34,12 +35,26 @@ public class DEPFeatureTemplate extends AbstractFeatureTemplate<DEPFeatureToken<
 	{
 		super(eFeature);
 	}
+	
+	@Override
+	protected DEPFeatureToken<?>[] createFeatureTokens(Element eFeature)
+	{
+		List<String> fields = getFields(eFeature);
+		int i, size = fields.size();
+		
+		DEPFeatureToken<?>[] tokens = new DEPFeatureToken<?>[size];
+		
+		for (i=0; i<size; i++)
+			tokens[i] = getFeatureToken(fields.get(i));
+		
+		return tokens;
+	}
 
 	/** @param relation {@code null} if no relation. */
 	@Override
 	protected DEPFeatureToken<?> createFeatureToken(String source, String relation, String field, int offset)
 	{
-		DEPSourceType s = DEPSourceType.valueOf(source);
+		DEPSourceType   s = DEPSourceType.valueOf(source);
 		DEPRelationType r = (relation != null) ? DEPRelationType.valueOf(relation) : null;
 		return createFeatureToken(s, r, field, offset); 
 	}

@@ -15,21 +15,25 @@
  */
 package com.clearnlp.tokenization;
 
-import java.util.ArrayDeque;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.clearnlp.collection.set.CharHashSet;
 import com.clearnlp.constant.CharConst;
 import com.clearnlp.constant.PatternConst;
 import com.clearnlp.constant.StringConst;
 import com.clearnlp.dictionary.AbstractDTTokenizer;
 import com.clearnlp.dictionary.universal.DTCurrency;
+import com.clearnlp.dictionary.universal.DTEmoticon;
 import com.clearnlp.dictionary.universal.DTUnit;
 import com.clearnlp.util.CharUtils;
 import com.clearnlp.util.DSUtils;
+import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.PatternUtils;
 import com.clearnlp.util.StringUtils;
 import com.google.common.collect.Lists;
@@ -40,61 +44,121 @@ import com.google.common.collect.Lists;
  */
 abstract public class AbstractTokenizer
 {
+	private final CharHashSet S_SYMBOL_IN_BETWEEN = new CharHashSet(CharConst.SEMICOLON, CharConst.COMMA, CharConst.TILDA, CharConst.EQUAL, CharConst.PLUS, CharConst.AMPERSAND, CharConst.PIPE, CharConst.FW_SLASH);
 	private final Pattern P_ABBREVIATION = PatternUtils.createClosedPattern("\\p{Alnum}([\\.|-]\\p{Alnum})*");
-	private final Pattern P_YEAR = PatternUtils.createClosedPattern("\\d\\d['|\u2019]?[sS]?");
+	private final Pattern P_YEAR = PatternUtils.createClosedPattern("\\d\\d['\u2019]?[sS]?");
 
+	private DTEmoticon d_emoticon;
 	private DTCurrency d_currency;
 	private DTUnit     d_unit;
 	
 	public AbstractTokenizer()
 	{
+		d_emoticon = new DTEmoticon();
 		d_currency = new DTCurrency();
 		d_unit     = new DTUnit();
 	}
 	
-//	----------------------------------- Tokenize -----------------------------------
+//	----------------------------------- Public methods -----------------------------------
 	
-	public List<String> tokenize(String s)
+	abstract public List<List<String>> segmentize(InputStream in);
+	
+	/** @return a list of tokens in the specific input stream. */
+	public List<String> tokenize(InputStream in)
 	{
+		BufferedReader reader = IOUtils.createBufferedReader(in);
 		ArrayList<String> tokens = Lists.newArrayList();
-		int bIndex = 0, eIndex, len = s.length();
-		char[] cs = s.toCharArray();
+		List<String> t;
+		String line;
 		
-		for (eIndex=0; eIndex<len; eIndex++)
+		try
 		{
-			if (CharUtils.isWhiteSpace(cs[eIndex]))
+			while ((line = reader.readLine()) != null)
 			{
-				if (bIndex < eIndex) addTokens(tokens, s.substring(bIndex, eIndex));
-				bIndex = eIndex + 1;
+				t = tokenizeWhiteSpaces(line);
+				if (!t.isEmpty()) tokens.addAll(t);
 			}
+			
+			reader.close();
 		}
-		 
-		if (bIndex < eIndex) addTokens(tokens, s.substring(bIndex));
-		finalize(tokens);
+		catch (IOException e) {e.printStackTrace();}
 		
 		tokens.trimToSize();
 		return tokens;
 	}
 	
-	/** Called by {@link #tokenizeAux(String)}. */
-	private void addTokens(List<String> tokens, String s)
+	/** @return a list of tokens in the specific string. */
+	public List<String> tokenize(String s)
 	{
-		Matcher m;
-		
-		if ((m = PatternConst.HYPERLINK.matcher(s)).find() || (m = PatternConst.EMOTICON.matcher(s)).find())
-		{
-			int bIndex = m.start(), eIndex = m.end();
-			
-			if (bIndex > 0) addTokensAux(tokens, s.substring(0, bIndex));
-			tokens.add(new String(m.group()));
-			if (eIndex < s.length()) addTokensAux(tokens, s.substring(eIndex));
-		}
-		else
-			addTokensAux(tokens, s);
+		List<String> tokens = tokenizeWhiteSpaces(s);
+		return tokens;
 	}
 	
-	/** Called by {@link #addTokens(List, String)}. */
-	private void addTokensAux(List<String> tokens, String s)
+//	----------------------------------- Tokenize -----------------------------------
+	
+	/**
+	 * Tokenizes white spaces.
+	 * Called by {@link #tokenize(InputStream)} and {@link #tokenize(String)}.
+	 */
+	private List<String> tokenizeWhiteSpaces(String s)
+	{
+		List<String> tokens = Lists.newArrayList();
+		int i, len = s.length(), bIndex = 0;
+		char[] cs = s.toCharArray();
+		
+		for (i=0; i<len; i++)
+		{
+			if (CharUtils.isWhiteSpace(cs[i]))
+			{
+				if (bIndex < i) tokenizeMetaInfo(tokens, s.substring(bIndex, i));
+				bIndex = i + 1;
+			}
+		}
+		 
+		if (bIndex < len) tokenizeMetaInfo(tokens, s.substring(bIndex));
+		if (!tokens.isEmpty()) finalize(tokens);
+		
+		return tokens;
+	}
+	
+	/**
+	 * Tokenizes hyperlinks, emoticons.
+	 * Called by {@link #tokenizeAux(String)}.
+	 */
+	private void tokenizeMetaInfo(List<String> tokens, String s)
+	{
+		int[] ps;
+		
+		if ((ps = getMetaRange(s)) != null)
+		{
+			int bIndex = ps[0], eIndex = ps[1], len = s.length();
+			
+			if (0 < bIndex)		tokenizeSymbols(tokens, s.substring(0, bIndex));
+								tokens.add(s.substring(bIndex, eIndex));
+			if (eIndex < len)	tokenizeSymbols(tokens, s.substring(eIndex));
+		}
+		else
+			tokenizeSymbols(tokens, s);
+	}
+	
+	/** Called by {@link #tokenizeMetaInfo(List, String)}. */
+	private int[] getMetaRange(String s)
+	{
+		int[] ps;
+		
+		if ((ps = d_emoticon.getEmoticonRange(s)) != null)
+			return ps;
+		
+		Matcher m = PatternConst.HYPERLINK.matcher(s);
+		
+		if (m.find())
+			return new int[]{m.start(), m.end()};
+		
+		return null;
+	}
+	
+	/** Called by {@link #tokenizeMetaInfo(List, String)}. */
+	private void tokenizeSymbols(List<String> tokens, String s)
 	{
 		char[] cs = s.toCharArray();
 		int len = s.length();
@@ -103,31 +167,24 @@ abstract public class AbstractTokenizer
 		
 		if (bIndex == len)
 		{
-			tokenizeSymbols(tokens, s);
+			addSymbols(tokens, s);
 			return;
 		}
 		
-		int eIndex = getLastNonSymbolIndex(cs);
+		int eIndex = getLastSymbolSequenceIndex(cs);
+		List<int[]> indices = Lists.newArrayList();
 		
-		if (bIndex == 0 && eIndex == len)
-		{
-			tokenizeWords(tokens, s);
-			return;
-		}
+		indices.add(new int[]{0, bIndex});
+		addNextSymbolSequenceIndices(indices, cs, bIndex+1, eIndex-1);
+		indices.add(new int[]{eIndex, len});
 		
-		String t = s.substring(bIndex, eIndex);
-		
-		if (bIndex > 0)		bIndex = adjustFirstNonSymbolIndex(cs, bIndex, t);
-		if (eIndex < len)	eIndex = adjustLastNonSymbolIndex (cs, eIndex, t);
-		
-		if (bIndex > 0)		tokenizeSymbols(tokens, s.substring(0, bIndex));	
-							tokenizeWords  (tokens, s.substring(bIndex, eIndex));
-		if (eIndex < len)	tokenizeSymbols(tokens, s.substring(eIndex, len));
+		tokenizeSymbolsAux(tokens, s, cs, indices);
 	}
-
+	
 	/**
-	 * Called by {@link #addTokensAux(List, String)}.
+	 * @return {@code 0} if no character in {@code cs} is symbol.
 	 * @return {@code cs.length} if all characters in {@code cs} are symbols.  
+	 * Called by {@link #tokenizeSymbols(List, String)}.
 	 */
 	private int getFirstNonSymbolIndex(char[] cs)
 	{
@@ -143,10 +200,11 @@ abstract public class AbstractTokenizer
 	}
 	
 	/**
-	 * Called by {@link #addTokensAux(List, String)}.
+	 * @return {@code cs.length} if no character in {@code cs} is symbol.
 	 * @return {@code 0} if all characters in {@code cs} are symbols.  
+	 * Called by {@link #tokenizeSymbols(List, String)}.
 	 */
-	private int getLastNonSymbolIndex(char[] cs)
+	private int getLastSymbolSequenceIndex(char[] cs)
 	{
 		int i;
 		
@@ -159,15 +217,89 @@ abstract public class AbstractTokenizer
 		return i+1;
 	}
 	
-	private boolean isSymbol(char c)
+	/** Called by {@link #tokenizeSymbols(List, String)}. */
+	private void addNextSymbolSequenceIndices(List<int[]> indices, char[] cs, int bIndex, int eIndex)
 	{
-		return CharUtils.isPunctuation(c) ||
-			   CharUtils.isGeneralPunctuation(c) ||
-			   CharUtils.isCurrency(c) ||
-			   CharUtils.isArrow(c);
+		int i, j;
+		
+		for (i=bIndex; i<eIndex; i++)
+		{
+			if (preserveSymbolInBetween(cs, i) || preserveSymbolInDigits(cs, i) || preserveSymbolInAlphabets(cs, i))
+				continue;
+		
+			if (isEllipsis(cs, i) || isSymbolInBetween(cs[i]))
+			{
+				j = getSpanIndex(cs, i, eIndex, false);
+				indices.add(new int[]{i, j});
+				i = j - 1;
+			}
+		}
 	}
 	
-	/** Called by {@link #addTokensAux(List, String)}. */
+	/** Called by {@link #tokenizeSymbols(List, String)}. */
+	private void tokenizeSymbolsAux(List<String> tokens, String s, char[] cs, List<int[]> indices)
+	{
+		int i, pg, ng, bIndex, eIndex, size = indices.size() - 1;
+		boolean pb, nb;
+		int[] pi, ni;
+		String t;
+		
+		for (i=0; i<size; i++)
+		{
+			pi = indices.get(i);
+			ni = indices.get(i+1);
+			
+			bIndex = pi[1];
+			eIndex = ni[0];
+			
+			if (bIndex < eIndex)
+			{
+				t  = s.substring(bIndex, eIndex);
+				pg = pi[1] - pi[0];
+				ng = ni[1] - ni[0];
+				
+				pb = (i == 0) ? pg > 0 : pg == 1;
+				nb = (i+1 == size) ? ng > 0 : ng == 1;
+				
+				if (pb) pi[1] = adjustFirstNonSymbolIndex(cs, bIndex, t);
+				if (nb) ni[0] = adjustLastSymbolSequenceIndex(cs, eIndex, t);
+			}
+		}
+		
+		for (i=0; i<size; i++)
+		{
+			pi = indices.get(i);
+			ni = indices.get(i+1);
+			
+			bIndex = pi[0];
+			eIndex = pi[1];
+			
+			if (bIndex < eIndex)
+			{
+				t = s.substring(bIndex, eIndex);
+				if (i == 0) addSymbols(tokens, t);
+				else		tokens.add(t);
+			}
+			
+			bIndex = pi[1];
+			eIndex = ni[0];
+			
+			if (bIndex < eIndex)
+			{
+				t = s.substring(bIndex, eIndex);
+				addMorphemes(tokens, t);
+			}
+		}
+		
+		ni = indices.get(size);
+		bIndex = ni[0];
+		eIndex = ni[1];
+		
+		if (bIndex < eIndex)
+			addSymbols(tokens, s.substring(bIndex, eIndex));
+	}
+	
+	/** Called by {@link #tokenizeSymbolsAux(List, String, char[], List)}. */
 	private int adjustFirstNonSymbolIndex(char[] cs, int beginIndex, String t)
 	{
 		char sym = cs[beginIndex-1], curr = cs[beginIndex];
@@ -187,25 +319,26 @@ abstract public class AbstractTokenizer
 		}
 		else if (CharUtils.isApostrophe(sym))
 		{
-			if (P_YEAR.matcher(t).find()) beginIndex--;		// '90, '90s
+			if (P_YEAR.matcher(t).find()) beginIndex--;
 		}
 			
 		return beginIndex;
 	}
 	
-	/** Called by {@link #addTokensAux(List, String)}. */
-	protected int adjustLastNonSymbolIndex(char[] cs, int endIndex, String t)
+	/** Called by {@link #tokenizeSymbolsAux(List, String, char[], List)}. */
+	protected int adjustLastSymbolSequenceIndex(char[] cs, int endIndex, String t)
 	{
+		String lower = StringUtils.toLowerCase(t);
 		char sym = cs[endIndex];
 		int gap;
 		
-		if ((gap = adjustLastNonSymbolGap(cs, endIndex, t)) > 0)
+		if ((gap = adjustLastSymbolSequenceGap(cs, endIndex, t)) > 0)
 		{
 			endIndex += gap;
 		}
 		else if (sym == CharConst.DOLLAR)
 		{
-			if (d_currency.isCurrencyDollar(t)) endIndex++;
+			if (d_currency.isCurrencyDollar(lower)) endIndex++;
 		}
 		else if (sym == CharConst.PERIOD)
 		{
@@ -215,28 +348,15 @@ abstract public class AbstractTokenizer
 		return endIndex;
 	}
 	
-	/** Called by {@link #adjustLastNonSymbolGap(char[], int, String)}. */
-	private boolean preservePeriod(char[] cs, int endIndex, String t)
-	{
-		if (P_ABBREVIATION.matcher(t).find())
-			return true;
-		
-		if (endIndex+1 < cs.length && CharUtils.isSeparatorMark(cs[endIndex+1]))
-			return true;
-		
-		int len = t.length();
-		return (2 <= len && len <= 5) && CharUtils.containsOnlyConsonants(t);
-	}
-	
 	/** Called by {@link #adjustFirstNonSymbolIndex(char[], int, String)}. */
 	abstract protected int adjustFirstNonSymbolGap(char[] cs, int beginIndex, String t);
-	/** Called by {@link #adjustLastNonSymbolIndex(char[], int, String)}. */
-	abstract protected int adjustLastNonSymbolGap (char[] cs, int endIndex, String t);
+	/** Called by {@link #adjustLastSymbolSequenceIndex(char[], int, String)}. */
+	abstract protected int adjustLastSymbolSequenceGap(char[] cs, int endIndex, String t);
 	
-//	----------------------------------- Tokenize symbols -----------------------------------
+//	----------------------------------- Add symbols -----------------------------------
 	
-	/** Called by {@link #addTokensAux(List, String)}. */
-	private void tokenizeSymbols(List<String> tokens, String s)
+	/** Called by {@link #tokenizeSymbols(List, String)}. */
+	private void addSymbols(List<String> tokens, String s)
 	{
 		if (s.length() == 1)
 		{
@@ -244,67 +364,31 @@ abstract public class AbstractTokenizer
 			return;
 		}
 		
-		int i, f, leftBound = 0, rightBound = s.length();
-		Deque<String> stack = new ArrayDeque<>();
+		int i, j, flag, len = s.length(), bIndex = 0;
 		char[] cs = s.toCharArray();
 		
-		// post: leftBound = the index of the first symbol that shouldn't be tokenized 
-		for (i=0; i<rightBound; i=leftBound)
+		for (i=0; i<len; i=j)
 		{
-			f = getEdgeSymbolFlag(cs[i]);
-			
-			if (f == 0)
+			flag = getSymbolFlag(cs[i]);
+			j = getSpanIndex(cs, i, len, flag == 1);
+					
+			if (0 < flag || i+1 < j)
 			{
-				leftBound = i;
-				break;
-			}
-			else
-			{
-				leftBound = getSpanIndexLR(cs, i, rightBound, f == 1);
-				tokens.add(s.substring(i, leftBound));
+				if (bIndex < i) tokens.add(s.substring(bIndex, i));
+				tokens.add(s.substring(i, j));
+				bIndex = j;
 			}
 		}
 		
-		// post: rightBound = the index+1 of the last symbol that shoulnd't be tokenized
-		for (i=rightBound-1; i>leftBound; i=rightBound-1)
-		{
-			f = getEdgeSymbolFlag(cs[i]);
-			
-			if (f == 0)
-			{
-				rightBound = i+1;
-				break;
-			}
-			else
-			{
-				rightBound = getSpanIndexRL(cs, i, leftBound, f == 1);
-				stack.push(s.substring(rightBound, i+1));
-			}
-		}
-		
-		if (leftBound < rightBound)
-			tokens.add(s.substring(leftBound, rightBound));
-		
-		while (!stack.isEmpty())
-			tokens.add(stack.pop());
-	}
-	
-	/** Called by {@link #tokenizeSymbols(List, String)}. */
-	private int getEdgeSymbolFlag(char c)
-	{
-		if (CharUtils.isFinalMark(c))
-			return 1;
-		else if (CharUtils.isBracket(c) || CharUtils.isSeparatorMark(c) || CharUtils.isQuotationMark(c))
-			return 2;
-		else
-			return 0;
+		if (bIndex < len)
+			tokens.add(s.substring(bIndex));
 	}
 	
 	/**
 	 * @return the right-most index in the span (exclusive).
-	 * Called by {@link #tokenizeSymbols(List, String)}.
+	 * Called by {@link #addSymbols(List, String)}.
 	 */
-	private int getSpanIndexLR(char[] cs, int index, int rightBound, boolean finalMark)
+	private int getSpanIndex(char[] cs, int index, int rightBound, boolean finalMark)
 	{
 		char c = cs[index];
 		int i;
@@ -318,69 +402,43 @@ abstract public class AbstractTokenizer
 		return i;
 	}
 	
-	/**
-	 * @return the left-most index in the span (inclusive).  
-	 * Called by {@link #tokenizeSymbols(List, String)}.
-	 */
-	private int getSpanIndexRL(char[] cs, int index, int leftBound, boolean finalMark)
+//	/**
+//	 * @return the left-most index in the span (inclusive).  
+//	 * Called by {@link #addSymbols(List, String)}.
+//	 */
+//	private int getSpanIndexRL(char[] cs, int index, int leftBound, boolean finalMark)
+//	{
+//		char c = cs[index];
+//		int i;
+//		
+//		for (i=index-1; i>leftBound; i--)
+//		{
+//			if (!isConsecutive(cs, i, c, finalMark))
+//				return i+1;
+//		}
+//		
+//		return i+1;
+//	}
+	
+//	----------------------------------- Add morphmes -----------------------------------
+	
+	/** Called by {@link #tokenizeSymbols(List, String)}. */
+	private void addMorphemes(List<String> tokens, String s)
 	{
-		char c = cs[index];
-		int i;
-		
-		for (i=index-1; i>leftBound; i--)
+		if (s.length() == 1)
 		{
-			if (!isConsecutive(cs, i, c, finalMark))
-				return i+1;
+			tokens.add(s);
+			return;
 		}
 		
-		return i+1;
-	}
-	
-	/** Called by {@link #getSpanIndexLR(char[], int, int, boolean)} and {@link #getSpanIndexRL(char[], int, int, boolean)}. */
-	private boolean isConsecutive(char[] cs, int index, char c, boolean finalMark)
-	{
-		return finalMark ? CharUtils.isFinalMark(cs[index]) : c == cs[index];
-	}
-	
-//	----------------------------------- Tokenize words -----------------------------------
-	
-	/** Called by {@link #addTokensAux(List, String)}. */
-	private void tokenizeWords(List<String> tokens, String s)
-	{
-		int i, beginIndex = 0, endIndex, len = s.length() - 1;
-		char[] cs = s.toCharArray();
-		
-		for (i=1; i<len; i++)
-		{
-			if (preserveSymbolInBetween(cs, i) || isCommaInDigits(cs, i) || isSymbolInAlphabets(cs, i) || isSymbolInDigits(cs, i))
-				continue;
-			
-			if (isEllipsis(cs, i) || isSymbolInBetween(cs[i]))
-			{
-				endIndex = getSpanIndexLR(cs, i, len, false);
-				if (beginIndex < i)	tokenizeWordsAux(tokens, s.substring(beginIndex, i));
-				tokens.add(s.substring(i, endIndex));
-				beginIndex = endIndex;
-				i = endIndex  - 1;
-			}
-		}
-		
-		if (beginIndex < s.length())
-			tokenizeWordsAux(tokens, s.substring(beginIndex));
-	}
-	
-	private void tokenizeWordsAux(List<String> tokens, String s)
-	{
 		char[] lcs = s.toCharArray();
 		String lower = CharUtils.toLowerCase(lcs) ? new String(lcs) : s;
 		
-		if (!tokenizeWordsMore(tokens, s, lower, lcs) && !tokenize(tokens, s, lower, lcs, d_currency) && !tokenize(tokens, s, lower, lcs, d_unit))
+		if (!tokenize(tokens, s, lower, lcs, d_currency) && !tokenize(tokens, s, lower, lcs, d_unit) && !tokenizeDigit(tokens, s, lcs) && !tokenizeWordsMore(tokens, s, lower, lcs))
 			tokens.add(s);
 	}
 	
-	abstract protected boolean preserveSymbolInBetween(char[] cs, int index);
-	abstract protected boolean tokenizeWordsMore(List<String> tokens, String original, String lower, char[] cs);
-	
+	/** Called by {@link #addMorphemes(List, String)}. */
 	protected boolean tokenize(List<String> tokens, String original, String lower, char[] lcs, AbstractDTTokenizer tokenizer)
 	{
 		String[] t = tokenizer.tokenize(original, lower, lcs);
@@ -394,46 +452,40 @@ abstract public class AbstractTokenizer
 		return false;
 	}
 	
-	/** Called by {@link #tokenizeWords(List, String)}. */
-	private boolean isCommaInDigits(char[] cs, int index)
+	/** Called by {@link #addMorphemes(List, String)}. */
+	private boolean tokenizeDigit(List<String> tokens, String original, char[] lcs)
 	{
-		if (cs[index] == CharConst.COMMA)
-			return (0 <= index-1 && index+3 < cs.length) && (index+4 == cs.length || !CharUtils.isDigit(cs[index+4])) && CharUtils.isDigit(cs[index-1]) && CharUtils.isDigit(cs[index+1]) && CharUtils.isDigit(cs[index+2]) && CharUtils.isDigit(cs[index+3]);
+		int len = lcs.length;
+		if (len < 2) return false;
+		
+		if (tokenizeDigitAux(lcs[0]) && CharUtils.isDigitOrPunctuation(lcs, 1, len))
+		{
+			tokens.add(original.substring(0, 1));
+			tokens.add(original.substring(1));
+			return true;
+		}
+		
+		len--;
+		
+		if (tokenizeDigitAux(lcs[len]) && CharUtils.isDigitOrPunctuation(lcs, 0, len))
+		{
+			tokens.add(original.substring(0, len));
+			tokens.add(original.substring(len));
+			return true;
+		}
 		
 		return false;
-	}
-	
-	/** Called by {@link #tokenizeWords(List, String)}. */
-	private boolean isSymbolInAlphabets(char[] cs, int index)
-	{
-		if (cs[index] == CharConst.AMPERSAND)
-			return (0 <= index-1 && index+1 < cs.length) && CharUtils.isAlphabet(cs[index-1]) && CharUtils.isAlphabet(cs[index+1]);
 		
-		return false;
 	}
 	
-	/** Called by {@link #tokenizeWords(List, String)}. */
-	private boolean isSymbolInDigits(char[] cs, int index)
+	/** {@link #tokenizeDigit(List, String, char[])}. */
+	private boolean tokenizeDigitAux(char c)
 	{
-		char c = cs[index];
-		
-		if (CharUtils.isHyphen(c) || c == CharConst.FW_SLASH || c == CharConst.BW_SLASH)
-			return (0 <= index-1 && index+1 < cs.length) && CharUtils.isDigit(cs[index-1]) && CharUtils.isDigit(cs[index+1]);
-		
-		return false;
+		return c == CharConst.POUND || c == CharConst.DOLLAR || c == CharConst.PERCENT || c == CharConst.ASTERISK || c == CharConst.EQUAL;
 	}
 	
-	/** Called by {@link #tokenizeWords(List, String)}. */
-	private boolean isEllipsis(char[] cs, int index)
-	{
-		return (index+1 < cs.length) && (cs[index] == CharConst.PERIOD) && (cs[index+1] == CharConst.PERIOD);
-	}
-	
-	/** Called by {@link #tokenizeWords(List, String)}. */
-	private boolean isSymbolInBetween(char c)
-	{
-		return CharUtils.isBracket(c) || CharUtils.isArrow(c) || c == CharConst.PLUS || c == CharConst.EQUAL || c == CharConst.TILDA || c == CharConst.AMPERSAND || c == CharConst.PIPE || c == CharConst.FW_SLASH || c == CharConst.BW_SLASH || c == CharConst.SEMICOLON || c == CharConst.COMMA;
-	}
+	/** Called by {@link #addMorphemes(List, String)}. */
+	abstract protected boolean tokenizeWordsMore(List<String> tokens, String original, String lower, char[] lcs);
 	
 //	----------------------------------- Finalize -----------------------------------
 	
@@ -461,7 +513,7 @@ abstract public class AbstractTokenizer
 	/** Called by {@link #finalize()}. */
 	private int tokenizeNo(List<String> tokens, String token, String lower, int index)
 	{
-		if (index+1 < tokens.size() && lower.equals("no.") && CharUtils.isDigit(tokens.get(index+1).charAt(0)))
+		if (index+1 < tokens.size() && lower.equals("no.") && !CharUtils.isDigit(tokens.get(index+1).charAt(0)))
 		{
 			tokens.set(index  , StringUtils.trim(token, 1));
 			tokens.add(index+1, StringConst.PERIOD);
@@ -496,11 +548,123 @@ abstract public class AbstractTokenizer
 	{
 		int last = tokens.size() - 1;
 		String token = tokens.get(last);
+		char[] cs = token.toCharArray();
+		int len = token.length();
 		
-		if (token.endsWith(StringConst.PERIOD))
+		if (1 < len && cs[len-1] == CharConst.PERIOD && !CharUtils.isFinalMark(cs[len-2]))
 		{
 			tokens.set(last, StringUtils.trim(token, 1));
 			tokens.add(StringConst.PERIOD);
 		}
+	}
+	
+//	----------------------------------- Preserve -----------------------------------
+	
+	/** Called by {@link #addNextSymbolSequenceIndices(List, char[], int, int)}. */
+	abstract protected boolean preserveSymbolInBetween(char[] cs, int index);
+	
+	/** Called by {@link #addMorphemes(List, String)}. */
+	private boolean preserveSymbolInDigits(char[] cs, int index)
+	{
+		char c = cs[index];
+		
+		if (CharUtils.isHyphen(c))
+			return (0 <= index-1 && index+1 < cs.length) && CharUtils.isAlnum(cs[index-1]) && CharUtils.isDigit(cs[index+1]);
+		else if (c == CharConst.FW_SLASH)
+			return (0 <= index-1 && index+1 < cs.length) && CharUtils.isDigit(cs[index-1]) && CharUtils.isDigit(cs[index+1]);
+		else if (cs[index] == CharConst.COMMA)
+			return (0 <= index-1 && index+3 < cs.length) && (index+4 == cs.length || !CharUtils.isDigit(cs[index+4])) && CharUtils.isDigit(cs[index-1]) && CharUtils.isDigit(cs[index+1]) && CharUtils.isDigit(cs[index+2]) && CharUtils.isDigit(cs[index+3]);
+		
+		return false;
+	}
+	
+	/** Called by {@link #addMorphemes(List, String)}. */
+	private boolean preserveSymbolInAlphabets(char[] cs, int index)
+	{
+		char c = cs[index];
+		
+		if (c == CharConst.AMPERSAND)
+			return (0 <= index-1 && index+1 < cs.length) && CharUtils.isAlphabet(cs[index-1]) && CharUtils.isAlphabet(cs[index+1]);
+		
+		return false;
+	}
+	
+	/** Called by {@link #adjustLastSymbolSequenceGap(char[], int, String)}. */
+	private boolean preservePeriod(char[] cs, int endIndex, String t)
+	{
+		if (endIndex+1 < cs.length)
+		{
+			char c = cs[endIndex+1];
+			
+			if (CharUtils.isSeparatorMark(c))
+				return true;
+			
+			if (CharUtils.isFinalMark(c) || CharUtils.isQuotationMark(c))
+				return false;
+		}
+		
+		if (P_ABBREVIATION.matcher(t).find())
+			return true;
+		
+		int len = t.length();
+		return (2 <= len && len <= 5) && CharUtils.containsOnlyConsonants(t);
+	}
+	
+//	----------------------------------- Boolean -----------------------------------
+	
+	/** Called by {@link #getFirstNonSymbolIndex(char[])} and {@link #getLastSymbolSequenceIndex(char[])}. */
+	private boolean isSymbol(char c)
+	{
+		return CharUtils.isPunctuation(c) ||
+			   CharUtils.isGeneralPunctuation(c) ||
+			   CharUtils.isCurrency(c) ||
+			   CharUtils.isArrow(c);
+	}
+	
+	/** Called by {@link #addNextSymbolSequenceIndices(List, char[], int, int)}. */
+	private boolean isEllipsis(char[] cs, int index)
+	{
+		if (cs[index] == CharConst.PERIOD && index+1 < cs.length)
+		{
+			char c = cs[index+1];
+			return CharUtils.isFinalMark(c) || CharUtils.isSeparatorMark(c) || CharUtils.isQuotationMark(c);
+		}
+		
+		return false;
+	}
+	
+	/** Called by {@link #addNextSymbolSequenceIndices(List, char[], int, int)}. */
+	private boolean isSymbolInBetween(char c)
+	{
+		return CharUtils.isBracket(c) || CharUtils.isArrow(c) || CharUtils.isDoubleQuotationMark(c) || CharUtils.isHyphen(c) || S_SYMBOL_IN_BETWEEN.contains(c);
+	}
+	
+	/** Called by {@link #getSpanIndex(char[], int, int, boolean)}. */
+	private boolean isConsecutive(char[] cs, int index, char c, boolean finalMark)
+	{
+		return finalMark ? CharUtils.isFinalMark(cs[index]) : c == cs[index];
+	}
+	
+	/** Called by {@link #addSymbols(List, String)}. */
+	private int getSymbolFlag(char c)
+	{
+		if (CharUtils.isFinalMark(c))
+			return 1;
+		else if (CharUtils.isBracket(c) || CharUtils.isSeparatorMark(c) || CharUtils.isQuotationMark(c) || c == CharConst.PRIME)
+			return 2;
+		else
+			return 0;
+	}
+	
+	protected boolean isFinalMarksOnly(String s)
+	{
+		for (char c : s.toCharArray())
+		{
+			if (!CharUtils.isFinalMark(c))
+				return false;
+		}
+		
+		return true;
+		
 	}
 }

@@ -155,15 +155,4 @@ public class PatternUtilsTest
 		s = "http://www.clearnlp.com/watch?v=IAaDVOd2sRQ";
 		assertTrue(PatternUtils.containsHyperlink(s));
 	}
-	
-	@Test
-	public void testContainsEmoticon()
-	{
-		assertTrue(PatternUtils.containsEmoticon(":)"));
-		assertTrue(PatternUtils.containsEmoticon(":-)"));
-		assertTrue(PatternUtils.containsEmoticon(":--)"));
-		assertTrue(PatternUtils.containsEmoticon(":P"));
-		assertTrue(PatternUtils.containsEmoticon(":p"));
-		assertFalse(PatternUtils.containsEmoticon("p"));
-	}
 }

@@ -25,11 +25,10 @@ package com.clearnlp.feature.dependency;
  */
 public enum DEPRelationType
 {
- 	
-	 /** The h. */
-	 h,		// head
+	/** The h. */
+	h,		// head
 	/** The lmd. */
-		lmd,	// left-most dependent
+	lmd,	// left-most dependent
 	/** The rmd. */
 	rmd,	// right-most dependent
 	/** The lnd. */
@@ -44,7 +43,7 @@ public enum DEPRelationType
 	/** The h2. */
 	h2,		// grand head
 	/** The lmd2. */
-		lmd2,	// 2nd left-most dependent
+	lmd2,	// 2nd left-most dependent
 	/** The rmd2. */
 	rmd2,	// 2nd right-most dependent
 	/** The lnd2. */

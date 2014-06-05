@@ -15,7 +15,6 @@
  */
 package com.clearnlp.util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -38,38 +37,57 @@ public class CharTokenizer
 		c_delim = delim;
 	}
 	
-	public List<String> tokenize(String s)
+	public String[] tokenize(String s)
 	{
-		return tokenize(s, false);
-	}
-
-	public List<String> tokenize(String s, boolean includeDelim)
-	{
-		ArrayList<String> tokens = Lists.newArrayList();
-		int bIndex = 0, eIndex, len = s.length();
+		List<String> list = Lists.newArrayList();
+		int i, bIndex = 0, len = s.length();
 		char[] cs = s.toCharArray();
-		char c;
 		
-		for (eIndex=0; eIndex<len; eIndex++)
+		for (i=0; i<len; i++)
 		{
-			c = cs[eIndex];
-			
-			if (c == c_delim)
+			if (cs[i] == c_delim)
 			{
-				if (bIndex < eIndex)
-					tokens.add(s.substring(bIndex, eIndex));
-				
-				if (includeDelim)
-					tokens.add(Character.toString(c));
-				
-				bIndex = eIndex + 1;
+				if (bIndex < i) list.add(s.substring(bIndex, i));
+				bIndex = i + 1;
 			}
 		}
 		
-		if (bIndex < len)
-			tokens.add(s.substring(bIndex));
+		if (list.isEmpty())
+			return new String[]{s};
 		
-		tokens.trimToSize();
-		return tokens;
+		if (bIndex < len)
+			list.add(s.substring(bIndex));
+		
+		return list.toArray(new String[list.size()]);
 	}
+
+//	public String[] tokenize(String s, boolean includeDelim)
+//	{
+//		IntArrayList list = new IntArrayList();
+//		char[] cs = s.toCharArray();
+//		int i, len = s.length();
+//		
+//		for (i=0; i<len; i++)
+//		{
+//			if (cs[i] == c_delim)
+//				list.add(i);
+//		}
+//		
+//		len = list.size();
+//		int j, size = len + 1;
+//		if (includeDelim) size += len;
+//		String[] array = new String[size];
+//		int bIndex = 0, dIndex;
+//		
+//		for (i=0,j=0; i<len; i++)
+//		{
+//			dIndex = list.get(i);
+//			array[j++] = s.substring(bIndex, dIndex);
+//			if (includeDelim) array[j++] = Character.toString(c_delim);
+//			bIndex = dIndex + 1;
+//		}
+//		
+//		array[j] = s.substring(bIndex);
+//		return array;
+//	}
 }

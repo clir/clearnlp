@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.util;
+package com.clearnlp.util.triple;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-
-import org.junit.Test;
+import java.io.Serializable;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class CharTokenizerTest
+public class BooleanIntIntTriple implements Serializable
 {
-	@Test
-	public void test()
+	private static final long serialVersionUID = -5353827334306132865L;
+	
+	public boolean b;
+	public int i1;
+	public int i2;
+	
+	public BooleanIntIntTriple(boolean b, int i1, int i2)
 	{
-		CharTokenizer t;
-		String s;
-		
-		t = new CharTokenizer(',');
-		s = "a,b,c";
-		assertEquals("[a, b, c]", Arrays.toString(t.tokenize(s)));
-		
-		t = new CharTokenizer(';');
-		s = ";abc;def;;ghi;";
-		assertEquals("[abc, def, ghi]", Arrays.toString(t.tokenize(s)));
+		set(b, i1, i2);
+	}
+	
+	public void set(boolean b, int i1, int i2)
+	{
+		this.b  = b;
+		this.i1 = i1;
+		this.i2 = i2;
 	}
 }
