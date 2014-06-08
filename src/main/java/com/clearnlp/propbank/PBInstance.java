@@ -26,7 +26,6 @@ import com.clearnlp.constant.StringConst;
 import com.clearnlp.constituent.CTLibEn;
 import com.clearnlp.constituent.CTTree;
 import com.clearnlp.type.LanguageType;
-import com.clearnlp.util.CharUtils;
 import com.clearnlp.util.StringUtils;
 import com.google.common.collect.Lists;
 import com.sun.xml.internal.txw2.IllegalAnnotationException;
@@ -63,7 +62,7 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 	{
 		String[] tmp = SPLIT.split(str);
 		
-		if (tmp.length < 7 || !CharUtils.containsOnlyDigits(tmp[1]) || !CharUtils.containsOnlyDigits(tmp[2]))
+		if (tmp.length < 7 || !StringUtils.containsDigitOnly(tmp[1]) || !StringUtils.containsDigitOnly(tmp[2]))
 			throw new IllegalAnnotationException(str);
 		
 		s_treePath 		= tmp[0];

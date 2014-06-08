@@ -13,25 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.util;
+package com.clearnlp.feature.type;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.io.Serializable;
 
-import org.junit.Test;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class CharUtilsTest
+public enum SourceType implements Serializable
 {
-	@Test
-	public void testContainsOnlyDigits()
-	{
-		assertTrue (StringUtils.containsDigitOnly("12"));
-		assertFalse(StringUtils.containsDigitOnly("a1"));
-		assertFalse(StringUtils.containsDigitOnly("1b"));
-		assertFalse(StringUtils.containsDigitOnly("1-2"));
-	}
+	i, j, k;
 }

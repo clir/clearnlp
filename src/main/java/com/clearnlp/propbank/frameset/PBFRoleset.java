@@ -27,7 +27,7 @@ import org.w3c.dom.NodeList;
 
 import com.clearnlp.constant.StringConst;
 import com.clearnlp.propbank.PBLib;
-import com.clearnlp.util.CharUtils;
+import com.clearnlp.util.StringUtils;
 import com.clearnlp.util.XmlUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -145,7 +145,7 @@ public class PBFRoleset implements Serializable, Comparable<PBFRoleset>
 		String n = role.getArgumentNumber();
 		if (n.length() != 1) return false;
 		
-		if (CharUtils.containsOnlyDigits(n))	return true;
+		if (StringUtils.containsDigitOnly(n))	return true;
 		if (role.isArgumentNumber("A"))			return true;
 		if (role.isArgumentNumber("M") && !role.isFunctionTag(StringConst.EMPTY))	return true;
 		

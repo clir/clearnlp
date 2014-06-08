@@ -95,6 +95,13 @@ public class IntHashSet implements Serializable
 		return g_set;
 	}
 	
+	public IntHashSet clone()
+	{
+		IntHashSet set = new IntHashSet();
+		set.g_set = g_set.clone();
+		return set;
+	}
+	
 	@Override
 	public String toString()
 	{

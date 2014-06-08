@@ -25,8 +25,8 @@ import java.util.regex.Matcher;
 import com.clearnlp.constant.PatternConst;
 import com.clearnlp.constant.StringConst;
 import com.clearnlp.dictionary.DTPath;
-import com.clearnlp.util.CharUtils;
 import com.clearnlp.util.IOUtils;
+import com.clearnlp.util.StringUtils;
 import com.clearnlp.util.regex.Splitter;
 import com.google.common.collect.Maps;
 
@@ -108,7 +108,7 @@ public class DTHtml
 		{
 			s = s.substring(1);
 			
-			if (CharUtils.containsOnlyDigits(s))
+			if (StringUtils.containsDigitOnly(s))
 			{
 				int i = Integer.parseInt(s);
 				

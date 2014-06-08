@@ -75,7 +75,7 @@ public class DEPReader
 	public DEPReader(int iID, int iForm, int iLemma, int iPOSTag, int iFeats, int iHeadID, int iDeprel)
 	{
 		init(iID, iForm, iLemma, iPOSTag, -1, iFeats, iHeadID, iDeprel, -1, -1);
-	} 
+	}
 	
 	/**
 	 * For semantic role labeling.
@@ -84,7 +84,16 @@ public class DEPReader
 	public DEPReader(int iID, int iForm, int iLemma, int iPOSTag, int iFeats, int iHeadID, int iDeprel, int iSHeads)
 	{
 		init(iID, iForm, iLemma, iPOSTag, -1, iFeats, iHeadID, iDeprel, -1, iSHeads);
-	} 
+	}
+	
+	/**
+	 * Including all except for secondary dependencies.
+	 * @see #init(int, int, int, int, int, int, int, int, int, int)
+	 */
+	public DEPReader(int iID, int iForm, int iLemma, int iPOSTag, int iNamedEntityTag, int iFeats, int iHeadID, int iDeprel, int iSHeads)
+	{
+		init(iID, iForm, iLemma, iPOSTag, iNamedEntityTag, iFeats, iHeadID, iDeprel, -1, iSHeads);
+	}
 	
 	/** @see #init(int, int, int, int, int, int, int, int, int, int) */
 	public DEPReader(int iID, int iForm, int iLemma, int iPOSTag, int iNamedEntityTag, int iFeats, int iHeadID, int iDeprel, int iXHeads, int iSHeads)

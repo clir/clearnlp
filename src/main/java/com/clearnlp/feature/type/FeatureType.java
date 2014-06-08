@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.feature.dependency;
+package com.clearnlp.feature.type;
 
-import com.clearnlp.feature.FeatureToken;
+import java.io.Serializable;
 
 /**
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  * @since 3.0.0
+ * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DEPFeatureToken<ValueType> extends FeatureToken<DEPSourceType,DEPRelationType,DEPFieldType,ValueType>
+public enum FeatureType implements Serializable
 {
-	private static final long serialVersionUID = -4611193578450290459L;
-
-	public DEPFeatureToken(DEPSourceType source, DEPRelationType relation, DEPFieldType field, ValueType value, int offset)
-	{
-		super(source, relation, field, value, offset);
-	}
+	BINARY,
+	SIMPLE,
+	SET;
 }

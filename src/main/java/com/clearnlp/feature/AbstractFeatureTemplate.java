@@ -23,6 +23,10 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import com.clearnlp.constant.CharConst;
+import com.clearnlp.feature.type.FeatureType;
+import com.clearnlp.feature.type.FeatureXml;
+import com.clearnlp.feature.type.RelationType;
+import com.clearnlp.feature.type.SourceType;
 import com.clearnlp.util.regex.Splitter;
 import com.google.common.collect.Lists;
 
@@ -30,30 +34,39 @@ import com.google.common.collect.Lists;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractFeatureTemplate<FeatureTokenType> implements Serializable
+abstract public class AbstractFeatureTemplate<FeatureTokenType extends AbstractFeatureToken<?>> implements Serializable, FeatureXml
 {
 	private static final long serialVersionUID = 6926688863000363869L;
-	private static final String FIELD = "f";
-	
-	protected FeatureTokenType[] f_tokens;
+	private FeatureTokenType[] f_tokens;
+	private FeatureType        f_type;
 	
 	public AbstractFeatureTemplate(Element eFeature)
 	{
 		f_tokens = createFeatureTokens(eFeature);
+		f_type   = initFeatureType();
 	}
 	
-	public FeatureTokenType[] getFeatureTokens()
+//	====================================== Helper methods ======================================
+	
+	/** Called by {@link #AbstractFeatureTemplate(Element)}. */
+	private FeatureTokenType[] createFeatureTokens(Element eFeature)
 	{
-		return f_tokens;
+		List<String> fields = getFields(eFeature);
+		int i, size = fields.size();
+		
+		FeatureTokenType[] tokens = createFeatureTokens(size);
+		
+		for (i=0; i<size; i++)
+			tokens[i] = getFeatureToken(fields.get(i));
+		
+		return tokens;
 	}
 	
-	public FeatureTokenType getFeatureToken(int index)
-	{
-		return f_tokens[index];
-	}
-	
-	/** @return [f="i:f", f="i:p"] */
-	protected List<String> getFields(Element eFeature)
+	/**
+	 * Called by {@link #createFeatureTokens(Element)}.
+	 * @return [f="i:f", f="i:p"]
+	 */
+	private List<String> getFields(Element eFeature)
 	{
 		List<String> attributes = Lists.newArrayList();
 		NamedNodeMap nodes = eFeature.getAttributes();
@@ -64,32 +77,53 @@ abstract public class AbstractFeatureTemplate<FeatureTokenType> implements Seria
 		{
 		    node = nodes.item(i);
 		    
-		    if (FIELD.equals(node.getNodeName()))
+		    if (A_FIELD.matcher(node.getNodeName()).find())
 		    	attributes.add(node.getNodeValue());
 		}
 
 		return attributes;
 	}
 	
-	/** @param str "l-1_hd:p" */
+	/**
+	 * Called by {@link #createFeatureTokens(Element)}.
+	 * @param str "l-1_hd:p".
+	 */
 	protected FeatureTokenType getFeatureToken(String str)
 	{
 		String[] t0 = Splitter.splitColons(str);		// "l-1_hd:p" -> {"l-1_hd", "p"}
 		String[] t1 = Splitter.splitUnderscore(t0[0]);	// "l-1_hd"   -> {"l-1", "hd"} 
-		String s = t1[0];
+		String   s  = t1[0];
 		
-		String source = s.substring(0, 1);
-		int    offset = 0;
+		SourceType source = SourceType.valueOf(s.substring(0, 1));
+		int offset = 0;
 		
 		if (s.length() >= 2)
 			offset = (s.charAt(1) == CharConst.PLUS) ? Integer.parseInt(s.substring(2)) : Integer.parseInt(s.substring(1));
 		
-		String relation = (t1.length > 1) ? t1[1] : null;
+		RelationType relation = (t1.length > 1) ? RelationType.valueOf(t1[1]) : null;
 		String field = t0[1];
-
+		
 		return createFeatureToken(source, relation, field, offset);
 	}
 	
-	abstract protected FeatureTokenType[] createFeatureTokens(Element eFeature);
-	abstract protected FeatureTokenType createFeatureToken(String source, String relation, String field, int offset);
+	abstract protected FeatureType initFeatureType();
+	abstract protected FeatureTokenType[] createFeatureTokens(int size);
+	abstract protected FeatureTokenType createFeatureToken(SourceType source, RelationType relation, String field, int offset);
+
+//	====================================== Public methods ======================================
+
+	public FeatureTokenType[] getFeatureTokens()
+	{
+		return f_tokens;
+	}
+	
+	public FeatureTokenType getFeatureToken(int index)
+	{
+		return f_tokens[index];
+	}
+
+	public FeatureType getFeatureType()
+	{
+		return f_type;
+	}
 }

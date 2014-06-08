@@ -30,13 +30,36 @@ public class AffixTree
 	
 	public AffixTree(boolean prefix)
 	{
-		n_root   = new AffixNode();
+		init(prefix);
+	}
+	
+	public AffixTree(boolean prefix, Collection<String> col)
+	{
+		init(prefix);
+		addAll(col);
+	}
+	
+	public AffixTree(boolean prefix, String[] array)
+	{
+		init(prefix);
+		addAll(array);
+	}
+	
+	private void init(boolean prefix)
+	{
+		n_root = new AffixNode();
 		b_prefix = prefix;
 	}
 	
 	public void addAll(Collection<String> col)
 	{
 		for (String s : col)
+			add(s);
+	}
+	
+	public void addAll(String[] array)
+	{
+		for (String s : array)
 			add(s);
 	}
 	

@@ -15,6 +15,10 @@
  */
 package com.clearnlp.experiment;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,14 +56,27 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		int i, size = 100000000;
-		long st, et;
+//		int i = 0, size = 20000000;
+//		long st, et;
+//
+//		st = System.currentTimeMillis();
+//		for (i=0; i<size; i++)
+//		{
+//		}
+//		et = System.currentTimeMillis();
+//		System.out.println(et-st);
 		
-		st = System.currentTimeMillis();
-		for (i=0; i<size; i++)
-			"abcdefegssd sd fs fs".isEmpty();
-		et = System.currentTimeMillis();
-		System.out.println(et-st);
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("tmp.obj"));
+		Object[] arr = null;
+		
+		out.writeObject(arr);
+		out.close();
+		
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream("tmp.obj"));
+		arr = (Object[])in.readObject();
+		in.close();
+		
+		System.out.println(arr == null);
 	}
 	
 	public void emoticon(String[] args) throws Exception

@@ -17,11 +17,21 @@ package com.clearnlp.feature;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.clearnlp.classification.vector.StringFeatureVector;
+import com.clearnlp.component.state.AbstractState;
 import com.clearnlp.constant.StringConst;
+import com.clearnlp.dependency.DEPNode;
+import com.clearnlp.dependency.DEPTree;
+import com.clearnlp.feature.common.OrthographicType;
+import com.clearnlp.feature.type.FeatureXml;
+import com.clearnlp.util.CharUtils;
+import com.clearnlp.util.MetaUtils;
 import com.clearnlp.util.XmlUtils;
 import com.google.common.collect.Lists;
 
@@ -29,15 +39,15 @@ import com.google.common.collect.Lists;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractFeatureExtractor<FeatureTemplateType> implements Serializable, FeatureXml
+abstract public class AbstractFeatureExtractor<FeatureTemplateType extends AbstractFeatureTemplate<FeatureTokenType>, FeatureTokenType extends AbstractFeatureToken<?>> implements Serializable, FeatureXml
 {
 	private static final long serialVersionUID = 1558293248573950051L;
 	public  static final String DELIM = StringConst.UNDERSCORE;
 	
-	protected ArrayList<FeatureTemplateType> b_templates;
-	protected ArrayList<FeatureTemplateType> g_templates;
-	protected ArrayList<FeatureTemplateType> s_templates;
+	private ArrayList<FeatureTemplateType> f_templates;
 
+//	====================================== Initialization ======================================
+	
 	public AbstractFeatureExtractor(Element eRoot)
 	{
 		try
@@ -53,11 +63,8 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType> implements S
 		int i, size = eList.getLength();
 		FeatureTemplateType template;
 		Element eFeature;
-		String type;
 
-		b_templates = Lists.newArrayList();
-		g_templates = Lists.newArrayList();
-		s_templates = Lists.newArrayList();
+		f_templates = Lists.newArrayList();
 		
 		for (i=0; i<size; i++)
 		{
@@ -66,32 +73,222 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType> implements S
 			if (isVisible(eFeature))
 			{
 				template = createFeatureTemplate(eFeature);
-				type = getType(eFeature);
-				
-				switch (type)
-				{
-				case V_BOOL: b_templates.add(template); break;
-				case V_SET : s_templates.add(template); break;
-				default    : g_templates.add(template); break;
-				}
+				f_templates.add(template);
 			}
 		}
 		
-		b_templates.trimToSize();
-		g_templates.trimToSize();
-		s_templates.trimToSize();
+		f_templates.trimToSize();
 	}
 	
+	/** Called by {@link #init(Element)}. */
 	private boolean isVisible(Element eFeature)
 	{
 		String tmp = XmlUtils.getTrimmedAttribute(eFeature, A_VISIBLE);
 		return tmp.isEmpty() || Boolean.parseBoolean(tmp);
 	}
 	
-	private String getType(Element eFeature)
+	/** Called by {@link #init(Element)}. */
+	abstract protected FeatureTemplateType createFeatureTemplate(Element eFeature);
+
+//	====================================== Feature extraction ======================================
+	
+	public StringFeatureVector createStringFeatureVector(AbstractState<?,?> state)
 	{
-		return XmlUtils.getTrimmedAttribute(eFeature, A_TYPE);
+		StringFeatureVector vector = new StringFeatureVector();
+		addFeatures(vector, state);
+		return vector;
 	}
 	
-	abstract protected FeatureTemplateType createFeatureTemplate(Element eFeature);
+	/** Called by {@link #createStringFeatureVector(AbstractState)}. */
+	private void addFeatures(StringFeatureVector vector, AbstractState<?,?> state)
+	{
+		int i, id = 1, size = f_templates.size();
+		FeatureTemplateType template;
+		
+		for (i=0; i<size; i++)
+		{
+			template = f_templates.get(i);
+			
+			switch (template.getFeatureType())
+			{
+			case BINARY: addSimpleFeatures(vector, template, 0   , state); break;
+			case SIMPLE: addSimpleFeatures(vector, template, id++, state); break;
+			case SET   : addSetFeatures   (vector, template, id++, state); break;
+			}
+		}
+	}
+	
+	/** Called by {@link #addFeatures(StringFeatureVector, int, AbstractState)}. */
+	private void addSimpleFeatures(StringFeatureVector vector, FeatureTemplateType template, int typeID, AbstractState<?,?> state)
+	{
+		FeatureTokenType[] tokens = template.getFeatureTokens();
+		StringBuilder build = new StringBuilder();
+		int i, size = tokens.length;
+		String ftr;
+
+		for (i=0; i<size; i++)
+		{
+			ftr = getFeature(tokens[i], state);
+			if (ftr == null) return;
+			
+			if (i > 0) build.append(DELIM);
+			build.append(ftr);
+		}
+		
+		vector.addFeature(typeID, build.toString());
+	}
+	
+	/** Called by {@link #addSetFeatures(StringFeatureVector, int, AbstractState)}. */
+	private void addSetFeatures(StringFeatureVector vector, FeatureTemplateType template, int typeID, AbstractState<?,?> state)
+	{
+		FeatureTokenType[] tokens = template.getFeatureTokens();
+		int i, size = tokens.length;
+		
+		String[][] fields = new String[size][];
+		
+		for (i=0; i<size; i++)
+		{
+			fields[i] = getFeatures(tokens[i], state);
+			if (fields[i] == null) return;
+		}
+		
+		if (size == 1)	addSetFeaturesAux1(vector, typeID, fields[0]);
+		else			addSetFeaturesAuxM(vector, typeID, fields, 0, StringConst.EMPTY);
+    }
+	
+	/** Called by {@link #addSetFeaturesAux(StringFeatureVector, DEPTreeFeatureTemplate, DEPTree, int)}. */
+	private void addSetFeaturesAux1(StringFeatureVector vector, int type, String[] fields)
+	{
+		for (String field : fields)
+			vector.addFeature(type, field);
+	}
+	
+	/** Called by {@link #addSetFeaturesAux(StringFeatureVector, DEPTreeFeatureTemplate, DEPTree, int)}. */
+	private void addSetFeaturesAuxM(StringFeatureVector vector, int type, String[][] fields, int index, String prev)
+	{
+		if (index < fields.length)
+		{
+			for (String field : fields[index])
+			{
+				if (prev.isEmpty())
+					addSetFeaturesAuxM(vector, type, fields, index+1, field);
+				else
+					addSetFeaturesAuxM(vector, type, fields, index+1, prev + DELIM + field);
+			}
+		}
+		else
+			vector.addFeature(type, prev);
+	}
+	
+	abstract protected String   getFeature (FeatureTokenType token, AbstractState<?,?> state);
+	abstract protected String[] getFeatures(FeatureTokenType token, AbstractState<?,?> state);
+	
+//	====================================== Helper methods ======================================
+	
+	/** @return {@code null} if the specific list is empty. */
+	protected String[] toLabelArray(List<DEPNode> nodes)
+	{
+		if (nodes.isEmpty()) return null;
+		
+		int i, size = nodes.size();
+		String[] array = new String[size];
+		
+		for (i=0; i<size; i++)
+			array[i] = nodes.get(i).getLabel();
+		
+		return array;
+	}
+	
+	protected String[] toArray(Collection<String> list)
+	{
+		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
+	}
+	
+	protected String[] getOrthographicFeatures(AbstractState<?,?> state, DEPNode node)
+	{
+		List<String> list = Lists.newArrayList();
+		
+		if (node.isSimplifiedForm(MetaUtils.META_HYPERLINK))
+			list.add(OrthographicType.HYPERLINK);
+		else
+		{
+			char[] cs = node.getWordForm().toCharArray();
+			getOrthographicFeautureAux(state, node, list, cs);
+		}
+		
+		return toArray(list);
+	}
+	
+	/** Called by {@link #getOrthographicFeatures(AbstractState, DEPNode)}. */
+	private void getOrthographicFeautureAux(AbstractState<?,?> state, DEPNode node, List<String> list, char[] cs)
+	{
+		boolean hasDigit = false;
+		boolean hasPunct = false;
+		boolean fstUpper = false;
+		boolean allDigit = true;
+		boolean allPunct = true;
+		boolean allUpper = true;
+		boolean allLower = true;
+		boolean noLower  = true;
+		boolean allDigitOrPunct = true;
+		int countUpper = 0;
+		
+		boolean upper, lower, punct, digit;
+		int i, size = cs.length;
+		char c;
+		
+		for (i=0; i<size; i++)
+		{
+			c = cs[i];
+			
+			upper = CharUtils.isUpperCase(c);
+			lower = CharUtils.isLowerCase(c);
+			digit = CharUtils.isDigit(c);
+			punct = CharUtils.isPunctuation(c);
+			
+			if (upper)
+			{
+				if (i == 0)	fstUpper = true;
+				else		countUpper++;
+			}
+			else
+				allUpper = false;
+			
+			if (lower)	noLower  = false;	
+			else		allLower = false;
+			
+			if (digit)	hasDigit = true;
+			else		allDigit = false;
+
+			if (punct)	hasPunct = true;
+			else		allPunct = false;
+			
+			if (!digit && !punct) allDigitOrPunct = false;
+		}
+		
+		if (allUpper)
+			list.add(OrthographicType.ALL_UPPER);
+		else if (allLower)
+			list.add(OrthographicType.ALL_LOWER);
+		else if (allDigit)
+			list.add(OrthographicType.ALL_DIGIT);
+		else if (allPunct)
+			list.add(OrthographicType.ALL_PUNCT);
+		else if (allDigitOrPunct)
+			list.add(OrthographicType.ALL_DIGIT_OR_PUNCT);
+		else
+		{
+			if (hasDigit)	list.add(OrthographicType.HAS_DIGIT);
+			if (hasPunct)	list.add(OrthographicType.HAS_PUNCT);
+			if (noLower)	list.add(OrthographicType.NO_LOWER);
+			
+			if (fstUpper && !state.isFirstNode(node))
+				list.add(OrthographicType.FST_UPPER);
+			
+			if (countUpper == 1)
+				list.add(OrthographicType.UPPER_1);
+			else if (countUpper > 1)
+				list.add(OrthographicType.UPPER_2);
+		}
+	}
 }

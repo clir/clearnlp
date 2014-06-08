@@ -17,7 +17,7 @@ package com.clearnlp.component.morphology;
 
 import com.clearnlp.dependency.DEPNode;
 import com.clearnlp.dependency.DEPTree;
-import com.clearnlp.util.PatternUtils;
+import com.clearnlp.util.StringUtils;
 
 /**
  * @since 3.0.0
@@ -35,6 +35,6 @@ public class DefaultMPAnalyzer extends AbstractMPAnalyzer
 	@Override
 	public void analyze(DEPNode node)
 	{
-		node.setLemma(PatternUtils.getSimplifiedLowercaseWordForm(node.getWordForm()));
+		StringUtils.toLowerCase(StringUtils.toSimplifiedForm(node.getWordForm()));
 	}
 }

@@ -381,6 +381,25 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).setPOSTag(tags[i]);
 	}
 	
+	public String[] getNamedEntityTags()
+	{
+		int i, size = size();
+		String[] tags = new String[size];
+		
+		for (i=1; i<size; i++)
+			tags[i] = get(i).getNamedEntityTag();
+		
+		return tags;
+	}
+	
+	public void setNamedEntityTags(String[] tags)
+	{
+		int i, size = size();
+		
+		for (i=1; i<size; i++)
+			get(i).setNamedEntityTag(tags[i]);
+	}
+	
 	public void clearPOSTags()
 	{
 		int i, size = size();

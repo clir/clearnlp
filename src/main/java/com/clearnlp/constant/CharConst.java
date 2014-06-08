@@ -51,6 +51,8 @@ public interface CharConst
 	char LSB			= '[';
 	char RSB			= ']';
 	
+	char ZERO			= '0';
+	
 	char SPACE			= ' ';
 	char TAB			= '\t';
 	char NEW_LINE		= '\n';

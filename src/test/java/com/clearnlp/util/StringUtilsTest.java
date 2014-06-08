@@ -103,4 +103,31 @@ public class StringUtilsTest
 		assertFalse(CharUtils.regionMatches(c, d, 2));
 		assertFalse(CharUtils.regionMatches(c, d, 3));	
 	}
+	
+	@Test
+	public void testCollapseDigits()
+	{
+		String[] arr0 = {"10%","$10",".01","97.33","1,000,000","10:30","10-20","10/20","$12.34,56:78-90/12%",".1%-$2,#3+4-5=6/7.8:9,0"};
+		
+		for (String s : arr0)
+			assertEquals("0", StringUtils.collapseDigits(s));
+		
+		assertEquals("A.0", StringUtils.collapseDigits("A.12"));
+		assertEquals("A:0", StringUtils.collapseDigits("A:12"));
+		assertEquals("$A0", StringUtils.collapseDigits("$A12"));
+		assertEquals("A0$", StringUtils.collapseDigits("A12$"));
+		assertEquals("A0" , StringUtils.collapseDigits("A12%"));
+		assertEquals("%A0", StringUtils.collapseDigits("%A12"));
+	}
+	
+	@Test
+	public void testCollapsePunctuation()
+	{
+		String[] s = {"...","!!!","???","---","***","===","~~~",",,,",".!?-*=~,","..!!??--**==~~,,","....!!!!????----****====~~~~,,,,"};
+		String[] t = {"..","!!","??","--","**","==","~~",",,",".!?-*=~,","..!!??--**==~~,,","..!!??--**==~~,,"};
+		int i, size = s.length;
+		
+		for (i=0; i<size; i++)
+			assertEquals(t[i], StringUtils.collapsePunctuation(s[i]));
+	}
 }

@@ -18,9 +18,9 @@ package com.clearnlp.dictionary.universal;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.clearnlp.collection.tree.AffixTree;
-import com.clearnlp.constant.PatternConst;
 import com.clearnlp.dictionary.DTPath;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
@@ -31,6 +31,7 @@ import com.clearnlp.util.IOUtils;
  */
 public class DTEmoticon
 {
+	private final Pattern EMOTICON = Pattern.compile("[\\!\\|;:#%][-]*[\\(\\)\\[\\]\\{\\}\\|<>]+");
 	private Set<String> s_emoticon;
 	private AffixTree   t_prefix;
 	private AffixTree   t_suffix;
@@ -57,7 +58,7 @@ public class DTEmoticon
 		if (s_emoticon.contains(s))
 			return new int[]{0, s.length()};
 		
-		Matcher m = PatternConst.EMOTICON.matcher(s);
+		Matcher m = EMOTICON.matcher(s);
 		
 		if (m.find())
 			return new int[]{m.start(), m.end()};

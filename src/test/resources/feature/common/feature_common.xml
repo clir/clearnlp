@@ -1,0 +1,43 @@
+<!--Feature template for POS tagging in English -->
+<feature_template>
+	<feature f0="i:b0" note="is the first token"/>
+	<feature f0="i:b1" note="is the last token"/>
+
+	<feature f0="i-2:f"/>
+	<feature f0="i-1:f"/>
+	<feature f0="i:f"/>
+	<feature f0="i+1:f"/>
+	<feature f0="i+2:f"/>
+	
+	<feature f0="i_h:f"/>
+	<feature f0="i_lmd:f"/>
+	<feature f0="i_rmd:f"/>
+	<feature f0="i_lnd:f"/>
+	<feature f0="i_rnd:f"/>
+	<feature f0="i_lns:f"/>
+	<feature f0="i_rns:f"/>
+
+	<feature f0="i_h2:f"/>
+	<feature f0="i_lmd2:f"/>
+	<feature f0="i_rmd2:f"/>
+	<feature f0="i_lnd2:f"/>
+	<feature f0="i_rnd2:f"/>
+	<feature f0="i_lns2:f"/>
+	<feature f0="i_rns2:f"/>
+
+	<feature f0="i:f2"/>
+	<feature f0="i:m"/>
+	<feature f0="i:p"/>
+	<feature f0="i:n"/>
+	<feature f0="i:d"/>
+	<feature f0="i:ft=pb"/>
+	<feature f0="i:ds"/>
+	<feature f0="i:ds2"/>
+	
+	<feature f0="i-1:m" f1="i:m"/>
+	<feature f0="i:m" f1="i+1:m"/>
+	<feature f0="i-1:p" f1="i:p" f2="i+1:p"/>
+	
+	<feature f0="i:m" f1="i:ds"/>
+	<feature f0="i:orth"/>
+</feature_template>

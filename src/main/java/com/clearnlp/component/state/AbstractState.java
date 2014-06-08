@@ -17,90 +17,121 @@ package com.clearnlp.component.state;
 
 import com.clearnlp.dependency.DEPNode;
 import com.clearnlp.dependency.DEPTree;
+import com.clearnlp.feature.AbstractFeatureToken;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractState
+abstract public class AbstractState<GoldType,LabelType>
 {
-	protected DEPTree d_tree;
+	protected GoldType[] g_labels;
+	protected DEPTree    d_tree;
+	protected int        t_size;
+
+//	====================================== INITIALIZATION ======================================
 	
 	public AbstractState(DEPTree tree)
 	{
-		setTree(tree);
+		initTree(tree);
+		init(tree);
+	}
+
+	/** Initializes this processing state. */
+	abstract protected void init(DEPTree tree);
+	
+	/** Called by {@link #AbstractState(DEPTree)}. */
+	private void initTree(DEPTree tree)
+	{
+		d_tree = tree;
+		t_size = tree.size();
+	}
+
+//	====================================== LABEL ======================================
+
+	/** @return the gold-standard label for the current state. */
+	abstract public LabelType getGoldLabel();
+	
+	/** @return gold-standard labels for all tokens in {@link #d_tree}. */
+	public GoldType[] getGoldLabels()
+	{
+		return g_labels;
 	}
 	
-	abstract public Object   getGoldLabel();
-	abstract public Object[] getGoldLabels();
+	/** Sets the gold-standard labels for all tokens. */
+	public void setGoldLabels(GoldType[] labels)
+	{
+		g_labels = labels;
+	}
 	
 //	====================================== TREE ======================================
+	
+	/** @return the dependency node specified by the feature token. */
+	abstract public DEPNode getNode(AbstractFeatureToken<?> token);
 	
 	public DEPTree getTree()
 	{
 		return d_tree;
 	}
-	
-	public int getTreeSize()
-	{
-		return d_tree.size();
-	}
 
-	public void setTree(DEPTree tree)
+	public DEPNode getNode(int nodeID)
 	{
-		d_tree = tree;
+		return d_tree.get(nodeID);
 	}
 	
-//	====================================== NODE ======================================
-
-	public DEPNode getNode(int id)
+	/**
+	 * @param beginID  the leftmost  ID (inclusive).
+	 * @param endID the rightmost ID (exclusive).
+	 */
+	protected DEPNode getNode(AbstractFeatureToken<?> token, int nodeID, int beginID, int endID)
 	{
-		return d_tree.get(id);
+		nodeID += token.getOffset();
+		
+		if (beginID <= nodeID && nodeID < endID)
+			return getNodeAux(token, nodeID);
+		
+		return null;
+	}
+	
+	/** Called by {@link #getNode(AbstractFeatureToken, DEPTree, int, int, int)}. */
+	private DEPNode getNodeAux(AbstractFeatureToken<?> token, int nodeID)
+	{
+		DEPNode node = getNode(nodeID);
+		
+		if (token.hasRelation())
+		{
+			switch (token.getRelation())
+			{
+			case h   : return node.getHead();
+			case lmd : return node.getLeftMostDependent();
+			case rmd : return node.getRightMostDependent();
+			case lnd : return node.getLeftNearestDependent();
+			case rnd : return node.getRightNearestDependent();
+			case lns : return node.getLeftNearestSibling();
+			case rns : return node.getRightNearestSibling();
+			
+			case h2  : return node.getGrandHead();
+			case lmd2: return node.getLeftMostDependent(1);
+			case rmd2: return node.getRightMostDependent(1);
+			case lnd2: return node.getLeftNearestDependent(1);
+			case rnd2: return node.getRightNearestDependent(1);
+			case lns2: return node.getLeftNearestSibling(1);
+			case rns2: return node.getRightNearestSibling(1);
+			}
+		}
+		
+		return node;
+	}
+	
+//	====================================== BOOLEAN ======================================
+	
+	public boolean isFirstNode(DEPNode node)
+	{
+		return node.getID() == 1;
+	}
+	
+	public boolean isLastNode(DEPNode node)
+	{
+		return node.getID() + 1 == t_size;
 	}
 }
-
-//case a : break;
-//case f1: break;
-//case f2: break;
-//case prefix: break;
-//case suffix: break;
-//case subcat: break;
-//case path: break;
-//case argn: break;
-
-//@SuppressWarnings("incomplete-switch")
-//private String getPathAux(DEPNode top, DEPNode bottom, DEPFieldType type, String delim, boolean includeTop)
-//{
-//	StringBuilder build = new StringBuilder();
-//	DEPNode head = bottom;
-//	int dist = 0;
-//	
-//	do
-//	{
-//		switch (type)
-//		{
-//		case p: build.append(delim); build.append(head.getPOSTag()); break;
-//		case d: build.append(delim); build.append(head.getLabel());  break;
-//		case t: dist++; break;
-//		}
-//		
-//		head = head.getHead();
-//	}
-//	while (head != top && head != null);
-//	
-//	switch (type)
-//	{
-//	case p:
-//		if (includeTop)
-//		{
-//			build.append(delim);
-//			build.append(top.getPOSTag());	
-//		}	break;
-//	case t:
-//		build.append(delim);
-//		build.append(dist);
-//		break;
-//	}
-//	
-//	return build.length() == 0 ? null : build.toString();
-//}

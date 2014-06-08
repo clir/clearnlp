@@ -1,0 +1,11 @@
+1	He	he	PRP	PERSON	_	3	nsubj	3:A0
+2	already	already	RB	_	_	3	advmod	3:AM-TMP
+3	bought	buy	VBD	_	p2=VBN|pb=buy.01	0	root	_
+4	a	a	DT	_	_	5	det	_
+5	CAR-2	car	NN	_	_	3	dobj	3:A1;8:A1
+6	yesterday	yesterday	NN	TIME	_	3	npadvmod	3:AM-TMP
+7	thAt	that	WDT	_	_	8	nsubj	8:R-A1
+8	IS	be	VBZ	_	pb=be.01	5	rcmod	_
+9	Red	red	JJ	_	p2=VBN	8	acomp	8:A2
+10	...	..	.	_	_	3	punct	_
+11	123	0	CD	_	_	3	num	_

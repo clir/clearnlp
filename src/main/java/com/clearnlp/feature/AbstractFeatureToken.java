@@ -17,33 +17,32 @@ package com.clearnlp.feature;
 
 import java.io.Serializable;
 
+import com.clearnlp.feature.type.RelationType;
+import com.clearnlp.feature.type.SourceType;
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class FeatureToken<SourceType,RelationType,FieldType,ValueType> implements Serializable
+abstract public class AbstractFeatureToken<FieldType> implements Serializable
 {
 	static private final long serialVersionUID  = 4470851888237339877L;
 	
 	private SourceType		t_source;
 	private RelationType	t_relation;
 	private FieldType		t_field;
-	private ValueType		t_value;
-	private int             i_offset;
+	private Object			t_value;
+	private int				i_offset;
 	
-	public FeatureToken(SourceType source, RelationType relation, FieldType field, ValueType value, int offset)
-	{
-		set(source, relation, field, value, offset);
-	}
-	
-	public void set(SourceType source, RelationType relation, FieldType field, ValueType value, int offset)
+	public AbstractFeatureToken(SourceType source, RelationType relation, String field, int offset)
 	{
 		setSource(source);
 		setRelation(relation);
-		setField(field);
-		setValue(value);
+		initField(field);
 		setOffset(offset);
 	}
+	
+	abstract protected void initField(String field);
 	
 	public SourceType getSource()
 	{
@@ -60,7 +59,7 @@ public class FeatureToken<SourceType,RelationType,FieldType,ValueType> implement
 		return t_field;
 	}
 	
-	public ValueType getValue()
+	public Object getValue()
 	{
 		return t_value;
 	}
@@ -85,7 +84,7 @@ public class FeatureToken<SourceType,RelationType,FieldType,ValueType> implement
 		t_field = field;
 	}
 	
-	public void setValue(ValueType value)
+	public void setValue(Object value)
 	{
 		t_value = value;
 	}

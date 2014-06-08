@@ -125,11 +125,13 @@ public class CharUtils
 		return isUpperCase(c) || isLowerCase(c);
 	}
 	
+	/** About 10 times faster than {@link Character#isUpperCase(char)}. */
 	public static boolean isUpperCase(char c)
 	{
 		return isRange(c, 'A', 'Z');
 	}
 	
+	/** About 10 times faster than {@link Character#isLowerCase(char)}. */
 	public static boolean isLowerCase(char c)
 	{
 		return isRange(c, 'a', 'z');
@@ -251,14 +253,19 @@ public class CharUtils
 		return c == ')' || c == '}' ||c == ']' ||c == '>';
 	}
 	
-//	----------------------------------- Digit -----------------------------------
-	
 	public static boolean isDigit(char c)
 	{
 		return 48 <= c && c <= 57;
 	}
 	
-	public static boolean isDigitOrPunctuation(char[] cs, int beginIndex, int endIndex)
+	public static boolean isPreDigitSymbol(char c)
+	{
+		return c == '.' || c == '-' || c == '+' || c == '\u00B1' ||	isRange(c, '\u2212', '\u2213') || isRange(c, '\u221A', '\u221C');
+	}
+	
+//	----------------------------------- Boolean: char[] -----------------------------------
+	
+	public static boolean containsDigitPunctuationOnly(char[] cs, int beginIndex, int endIndex)
 	{
 		int i;
 		
@@ -270,18 +277,8 @@ public class CharUtils
 		
 		return true;
 	}
-	
-	public static boolean isPreDigitSymbol(char c)
-	{
-		return c == '.' || c == '-' || c == '+' || c == '\u00B1' ||	isRange(c, '\u2212', '\u2213') || isRange(c, '\u221A', '\u221C');
-	}
-	
-	public static boolean containsOnlyDigits(String s)
-	{
-		return containsOnlyDigits(s.toCharArray());
-	}
-	
-	public static boolean containsOnlyDigits(char[] cs)
+
+	public static boolean containsDigitOnly(char[] cs)
 	{
 		for (char c : cs)
 		{

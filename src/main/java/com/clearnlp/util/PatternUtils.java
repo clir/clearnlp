@@ -29,8 +29,6 @@ import com.clearnlp.util.pair.Pair;
  */
 public class PatternUtils implements PatternConst
 {
-	static public final String META_URL = "#url#";
-	
 //	====================================== Getters ======================================
 
 	static public Pattern createClosedPattern(String regex)
@@ -70,45 +68,14 @@ public class PatternUtils implements PatternConst
 	
 //	====================================== Booleans ======================================
 	
-	static public boolean containsHyperlink(String s)
-	{
-		return HYPERLINK.matcher(s).find();
-	}
-	
 	/** @return {@code true} if the specific string contains only digits. */
 	static public boolean containsPunctuation(String s)
 	{
 		return PUNCT.matcher(s).find();
 	}
 
-//	====================================== Digits ======================================
-	
-	/** Collapses all digit-like characters in the specific word-form to {@code "0"}. */
-	static public String collapseDigits(String form)
-	{
-		form = DIGITS_LIKE.matcher(form).replaceAll("0");
-		return DIGITS.matcher(form).replaceAll("0");
-	}
-	
 //	====================================== Punctuation ======================================
 	
-//	/** Collapses redundant punctuation in the specific word-form (e.g., {@code "!!!" -> "!!"}). */
-//	static public String collapsePunctuation(String form)
-//	{
-//		return R_PUNCT2.replace(form);
-//	}
-//	
-//	/** Called by {@link #collapsePunctuation(String)}. */
-//	static final private Replacer R_PUNCT2 = new jregex.Pattern("\\.{2,}|\\!{2,}|\\?{2,}|\\-{2,}|\\*{2,}|\\={2,}|\\~{2,}|\\,{2,}").replacer(new Substitution()
-//	{
-//		public void appendSubstitution(MatchResult match, TextBuffer dest)
-//		{
-//			char c = match.group(0).charAt(0);
-//			dest.append(c);
-//			dest.append(c);
-//		}
-//	});
-
 	/** Reverts coded brackets to their original forms (e.g., from {@code "-LBR-"} to {@code "("}). */
 	static public String revertBrackets(String form)
 	{
@@ -132,31 +99,4 @@ public class PatternUtils implements PatternConst
 	
 //	====================================== URL ======================================
 
-	static public boolean containsURL(String str)
-	{
-		return HYPERLINK.matcher(str).find();
-	}
-	
-//	====================================== Simplify ======================================
-
-	/**
-	 * @return a simplified form of the specific word-form.
-	 * @see #containsURL(String)
-	 * @see #collapseDigits(String)
-	 * @see #collapsePunctuation(String)
-	 */
-	static public String getSimplifiedWordForm(String form)
-	{
-		if (containsURL(form))	return META_URL;
-		
-		form = collapseDigits(form);
-//		form = collapsePunctuation(form);
-		
-		return form;
-	}
-	
-	static public String getSimplifiedLowercaseWordForm(String form)
-	{
-		return StringUtils.toLowerCase(getSimplifiedWordForm(form));
-	}
 }

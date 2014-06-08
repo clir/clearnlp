@@ -13,25 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.util;
+package com.clearnlp.feature.common;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
+import java.util.regex.Pattern;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class CharUtilsTest
+public enum CommonFieldType
 {
-	@Test
-	public void testContainsOnlyDigits()
+	f,		// word-form
+	f2, 	// simplified word-form
+	m,		// lemma
+	p,		// pos tag
+	n,		// named entity tag
+	d,		// dependency label to its head
+	ds,		// set of dependency labels of its dependents
+	ds2,	// set of dependency labels of its grand-dependents
+	orth,	// set of orthographic features
+	
+	b,		// boolean
+	ft;		// feats
+	
+	static public final Pattern P_BOOLEAN = Pattern.compile("^"+b+"(\\d+)$");
+	static public final Pattern P_FEAT    = Pattern.compile("^"+ft+"=(.+)$");
+	
+	static public boolean isSetField(CommonFieldType field)
 	{
-		assertTrue (StringUtils.containsDigitOnly("12"));
-		assertFalse(StringUtils.containsDigitOnly("a1"));
-		assertFalse(StringUtils.containsDigitOnly("1b"));
-		assertFalse(StringUtils.containsDigitOnly("1-2"));
+		return field == ds || field == ds2 || field == orth;
 	}
 }

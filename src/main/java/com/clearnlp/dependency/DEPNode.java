@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import com.clearnlp.collection.list.SortedArrayList;
 import com.clearnlp.collection.set.IntHashSet;
 import com.clearnlp.util.DSUtils;
+import com.clearnlp.util.StringUtils;
 import com.clearnlp.util.arc.AbstractArc;
 import com.clearnlp.util.arc.DEPArc;
 import com.clearnlp.util.arc.SRLArc;
@@ -42,6 +43,8 @@ public class DEPNode implements Comparable<DEPNode>
 	private int		n_id;
 	/** The word-form of this node. */
 	private String	s_wordForm;
+	/** The simplified word-form of this node. */
+	private String	s_simplifiedForm;
 	/** The lemma of the word-form. */
 	private String	s_lemma;
 	/** The part-of-speech tag of the word-form. */
@@ -141,6 +144,11 @@ public class DEPNode implements Comparable<DEPNode>
 		return s_wordForm;
 	}
 	
+	public String getSimplifiedForm()
+	{
+		return s_simplifiedForm;
+	}
+	
 	public String getLemma()
 	{
 		return s_lemma;
@@ -175,6 +183,7 @@ public class DEPNode implements Comparable<DEPNode>
 	public void setWordForm(String form)
 	{
 		s_wordForm = form;
+		s_simplifiedForm = StringUtils.toSimplifiedForm(form);
 	}
 	
 	public void setLemma(String lemma)
@@ -687,9 +696,14 @@ public class DEPNode implements Comparable<DEPNode>
 		return getFirstDependentByLabel(pattern) != null;
 	}
 	
-	public boolean isForm(String form)
+	public boolean isWordForm(String form)
 	{
 		return form.equals(s_wordForm);
+	}
+	
+	public boolean isSimplifiedForm(String form)
+	{
+		return form.equals(s_simplifiedForm);
 	}
 	
 	public boolean isLemma(String lemma)

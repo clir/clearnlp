@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.feature;
+package com.clearnlp.feature.type;
+
+import java.util.regex.Pattern;
 
 /**
  * @since 3.0.0
@@ -21,14 +23,7 @@ package com.clearnlp.feature;
  */
 public interface FeatureXml
 {
-	String E_FEATURE	= "feature";
-	String E_CUTOFF		= "cutoff";
-
-	String A_TYPE		= "t";
-	String A_LABEL		= "label";
-	String A_FEATURE	= "feature";
-	String A_VISIBLE	= "visible";
-	
-	String V_SET		= "s";
-	String V_BOOL		= "b";
+	String  E_FEATURE	= "feature";
+	Pattern A_FIELD		= Pattern.compile("^f[\\d]+$");
+	String  A_VISIBLE	= "visible";
 }

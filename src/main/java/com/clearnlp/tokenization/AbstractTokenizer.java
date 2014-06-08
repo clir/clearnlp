@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 
 import com.clearnlp.collection.set.CharHashSet;
 import com.clearnlp.constant.CharConst;
-import com.clearnlp.constant.PatternConst;
 import com.clearnlp.constant.StringConst;
 import com.clearnlp.dictionary.AbstractDTTokenizer;
 import com.clearnlp.dictionary.universal.DTCurrency;
@@ -34,6 +33,7 @@ import com.clearnlp.dictionary.universal.DTUnit;
 import com.clearnlp.util.CharUtils;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
+import com.clearnlp.util.MetaUtils;
 import com.clearnlp.util.PatternUtils;
 import com.clearnlp.util.StringUtils;
 import com.google.common.collect.Lists;
@@ -149,7 +149,7 @@ abstract public class AbstractTokenizer
 		if ((ps = d_emoticon.getEmoticonRange(s)) != null)
 			return ps;
 		
-		Matcher m = PatternConst.HYPERLINK.matcher(s);
+		Matcher m = MetaUtils.HYPERLINK.matcher(s);
 		
 		if (m.find())
 			return new int[]{m.start(), m.end()};
@@ -458,7 +458,7 @@ abstract public class AbstractTokenizer
 		int len = lcs.length;
 		if (len < 2) return false;
 		
-		if (tokenizeDigitAux(lcs[0]) && CharUtils.isDigitOrPunctuation(lcs, 1, len))
+		if (tokenizeDigitAux(lcs[0]) && CharUtils.containsDigitPunctuationOnly(lcs, 1, len))
 		{
 			tokens.add(original.substring(0, 1));
 			tokens.add(original.substring(1));
@@ -467,7 +467,7 @@ abstract public class AbstractTokenizer
 		
 		len--;
 		
-		if (tokenizeDigitAux(lcs[len]) && CharUtils.isDigitOrPunctuation(lcs, 0, len))
+		if (tokenizeDigitAux(lcs[len]) && CharUtils.containsDigitPunctuationOnly(lcs, 0, len))
 		{
 			tokens.add(original.substring(0, len));
 			tokens.add(original.substring(len));
