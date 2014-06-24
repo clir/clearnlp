@@ -19,6 +19,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.clearnlp.reader.TSVReader;
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
@@ -29,10 +31,10 @@ public class DEPFeatTest
 	public void testDEPFeat()
 	{
 		DEPFeat feat = new DEPFeat();
-		assertEquals(DEPReader.BLANK, feat.toString());
+		assertEquals(TSVReader.BLANK, feat.toString());
 		
-		feat = new DEPFeat(DEPReader.BLANK);
-		assertEquals(DEPReader.BLANK, feat.toString());
+		feat = new DEPFeat(TSVReader.BLANK);
+		assertEquals(TSVReader.BLANK, feat.toString());
 		
 		feat.add("lst=choi|fst=jinho");
 		assertEquals("fst=jinho|lst=choi", feat.toString());
@@ -41,7 +43,7 @@ public class DEPFeatTest
 		assertEquals("jinho", feat.get("fst"));
 		assertEquals(null   , feat.get("mid"));
 		
-		feat.add(DEPReader.BLANK);
+		feat.add(TSVReader.BLANK);
 		assertEquals("fst=jinho|lst=choi", feat.toString());
 	}
 }

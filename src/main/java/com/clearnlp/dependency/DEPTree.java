@@ -21,11 +21,11 @@ import java.util.List;
 
 import com.clearnlp.collection.list.IntArrayList;
 import com.clearnlp.collection.set.IntHashSet;
-import com.clearnlp.constant.StringConst;
 import com.clearnlp.srl.SRLTree;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.arc.DEPArc;
 import com.clearnlp.util.arc.SRLArc;
+import com.clearnlp.util.constant.StringConst;
 import com.google.common.collect.Lists;
 
 /**

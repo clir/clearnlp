@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.clearnlp.reader.TSVReader;
 import com.google.common.collect.Maps;
 
 
@@ -90,7 +91,7 @@ public class DEPFeat
 	 */
 	public void add(String feats)
 	{
-		if (feats.equals(DEPReader.BLANK))
+		if (feats.equals(TSVReader.BLANK))
 			return;
 		
 		String key, value;
@@ -112,7 +113,7 @@ public class DEPFeat
 	@Override
 	public String toString()
 	{
-		if (m_feats.isEmpty())	return DEPReader.BLANK;
+		if (m_feats.isEmpty())	return TSVReader.BLANK;
 		
 		StringBuilder build = new StringBuilder();
 		List<String>  keys  = new ArrayList<String>(m_feats.keySet());

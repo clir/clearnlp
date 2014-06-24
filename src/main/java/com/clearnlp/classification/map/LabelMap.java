@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.clearnlp.collection.map.ObjectIntHashMap;
-import com.clearnlp.util.pair.ObjectIntPair;
+import com.clearnlp.collection.pair.ObjectIntPair;
 import com.google.common.collect.Lists;
 
 /**

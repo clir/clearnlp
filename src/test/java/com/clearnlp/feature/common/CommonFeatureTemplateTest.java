@@ -17,9 +17,10 @@ package com.clearnlp.feature.common;
 
 import java.io.FileInputStream;
 
+import com.clearnlp.classification.feature.common.CommonFeatureExtractor;
 import com.clearnlp.classification.vector.StringFeatureVector;
 import com.clearnlp.component.state.CommonTaggingState;
-import com.clearnlp.dependency.DEPReader;
+import com.clearnlp.reader.TSVReader;
 import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.XmlUtils;
 
@@ -36,7 +37,7 @@ public class CommonFeatureTemplateTest
 		String deptreeFile = "src/test/resources/feature/common/dependency.txt";
 		
 		CommonFeatureExtractor fe = new CommonFeatureExtractor(XmlUtils.getDocumentElement(IOUtils.createFileInputStream(featureFile)));
-		DEPReader reader = new DEPReader(0, 1, 2, 3, 4, 5, 6, 7, 8);
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7, 8);
 		reader.open(new FileInputStream(deptreeFile));
 		StringFeatureVector vector;
 		CommonTaggingState state;

@@ -24,8 +24,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.clearnlp.collection.set.CharHashSet;
-import com.clearnlp.constant.CharConst;
-import com.clearnlp.constant.StringConst;
 import com.clearnlp.dictionary.AbstractDTTokenizer;
 import com.clearnlp.dictionary.universal.DTCurrency;
 import com.clearnlp.dictionary.universal.DTEmoticon;
@@ -36,6 +34,8 @@ import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.MetaUtils;
 import com.clearnlp.util.PatternUtils;
 import com.clearnlp.util.StringUtils;
+import com.clearnlp.util.constant.CharConst;
+import com.clearnlp.util.constant.StringConst;
 import com.google.common.collect.Lists;
 
 /**

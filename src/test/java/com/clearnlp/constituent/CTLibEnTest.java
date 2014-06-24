@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.clearnlp.propbank.PBLocation;
+import com.clearnlp.lexicon.propbank.PBLocation;
 import com.clearnlp.util.IOUtils;
 
 /**

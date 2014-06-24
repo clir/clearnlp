@@ -42,7 +42,7 @@ package com.clearnlp.component.dep;
 
 import java.io.Serializable;
 
-import com.clearnlp.constant.StringConst;
+import com.clearnlp.util.constant.StringConst;
 
 
 /**

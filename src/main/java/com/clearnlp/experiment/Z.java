@@ -31,19 +31,20 @@ import com.carrotsearch.hppc.ObjectIntOpenHashMap;
 import com.clearnlp.collection.list.DoubleArrayList;
 import com.clearnlp.collection.map.ObjectIntHashMap;
 import com.clearnlp.collection.map.StringIntMinimalPerfectHashMap;
-import com.clearnlp.constant.StringConst;
+import com.clearnlp.collection.pair.ObjectIntPair;
+import com.clearnlp.collection.pair.Pair;
+import com.clearnlp.collection.triple.ObjectIntIntTriple;
 import com.clearnlp.constituent.CTNode;
 import com.clearnlp.constituent.CTReader;
 import com.clearnlp.constituent.CTTree;
 import com.clearnlp.dictionary.DTPath;
+import com.clearnlp.lexicon.wordnet.WNMap;
+import com.clearnlp.lexicon.wordnet.WNPOSTag;
+import com.clearnlp.lexicon.wordnet.WNSynset;
+import com.clearnlp.reader.TReader;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
-import com.clearnlp.util.pair.ObjectIntPair;
-import com.clearnlp.util.pair.Pair;
-import com.clearnlp.util.triple.ObjectIntIntTriple;
-import com.clearnlp.wordnet.WNMap;
-import com.clearnlp.wordnet.WNPOSTag;
-import com.clearnlp.wordnet.WNSynset;
+import com.clearnlp.util.constant.StringConst;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -56,6 +57,9 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
+		TReader r = TReader.LINE;
+		System.out.println(TReader.valueOf("LINE") == r);
+		
 //		int i = 0, size = 20000000;
 //		long st, et;
 //

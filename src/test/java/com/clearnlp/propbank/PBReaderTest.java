@@ -23,6 +23,10 @@ import org.junit.Test;
 
 import com.clearnlp.constituent.CTNode;
 import com.clearnlp.constituent.CTTree;
+import com.clearnlp.lexicon.propbank.PBArgument;
+import com.clearnlp.lexicon.propbank.PBInstance;
+import com.clearnlp.lexicon.propbank.PBReader;
+import com.clearnlp.lexicon.propbank.PBTag;
 import com.clearnlp.util.IOUtils;
 
 

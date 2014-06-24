@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import com.clearnlp.reader.TSVReader;
 import com.clearnlp.util.PatternUtils;
 import com.google.common.collect.Sets;
 
@@ -85,7 +86,7 @@ public class DEPNodeTest
 	@Test
 	public void testDependency() throws Exception
 	{
-		DEPReader reader = new DEPReader(0, 1, 2, 3, 4, 5, 6, 7);
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
 		reader.open(new FileInputStream("src/test/resources/dependency/dependency.cnlp"));
 		DEPTree tree = reader.next();
 		DEPNode node;

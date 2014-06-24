@@ -21,13 +21,13 @@ import java.util.List;
 
 import com.carrotsearch.hppc.IntIntOpenHashMap;
 import com.clearnlp.collection.map.IntObjectHashMap;
-import com.clearnlp.constant.StringConst;
-import com.clearnlp.propbank.PBArgument;
-import com.clearnlp.propbank.PBInstance;
-import com.clearnlp.propbank.PBLib;
-import com.clearnlp.propbank.PBLocation;
+import com.clearnlp.collection.pair.ObjectIntPair;
+import com.clearnlp.lexicon.propbank.PBArgument;
+import com.clearnlp.lexicon.propbank.PBInstance;
+import com.clearnlp.lexicon.propbank.PBLib;
+import com.clearnlp.lexicon.propbank.PBLocation;
 import com.clearnlp.util.arc.PBArc;
-import com.clearnlp.util.pair.ObjectIntPair;
+import com.clearnlp.util.constant.StringConst;
 import com.google.common.collect.Lists;
 
 

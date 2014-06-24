@@ -34,23 +34,23 @@ import com.clearnlp.constituent.matcher.CTNodeMatcherC;
 import com.clearnlp.constituent.matcher.CTNodeMatcherCF;
 import com.clearnlp.constituent.matcher.CTNodeMatcherF;
 import com.clearnlp.constituent.matcher.CTNodeMatcherSet;
+import com.clearnlp.conversion.headrule.HeadRule;
+import com.clearnlp.conversion.headrule.HeadRuleMap;
 import com.clearnlp.dependency.DEPFeat;
 import com.clearnlp.dependency.DEPLib;
 import com.clearnlp.dependency.DEPLibEn;
 import com.clearnlp.dependency.DEPNode;
 import com.clearnlp.dependency.DEPTagEn;
 import com.clearnlp.dependency.DEPTree;
-import com.clearnlp.headrule.HeadRule;
-import com.clearnlp.headrule.HeadRuleMap;
+import com.clearnlp.lexicon.propbank.PBLib;
 import com.clearnlp.pos.POSTagEn;
-import com.clearnlp.propbank.PBLib;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.PatternUtils;
 import com.clearnlp.util.StringUtils;
 import com.clearnlp.util.arc.AbstractArc;
 import com.clearnlp.util.arc.PBArc;
 import com.clearnlp.util.arc.SRLArc;
-import com.clearnlp.util.language.UtilEn;
+import com.clearnlp.util.lang.ENUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -899,7 +899,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		
 		if (CTLibEn.isVerb(node) && (vp = node.getRightNearestSibling(CTLibEn.M_VP)) != null)
 		{
-			if (UtilEn.isPassiveAuxiliaryVerb(node.getWordForm()))
+			if (ENUtils.isPassiveAuxiliaryVerb(node.getWordForm()))
 			{
 				if (vp.containsChild(CTLibEn.M_VBD_VBN))
 					return DEPLibEn.DEP_AUXPASS;

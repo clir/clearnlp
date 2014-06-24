@@ -23,7 +23,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import com.clearnlp.dictionary.universal.DTCompound;
-import com.clearnlp.type.LanguageType;
+import com.clearnlp.util.lang.TLanguage;
 
 /**
  * @since 3.0.0
@@ -34,7 +34,7 @@ public class DTCompoundTest
 	@Test
 	public void test()
 	{
-		DTCompound dt = new DTCompound(LanguageType.ENGLISH);
+		DTCompound dt = new DTCompound(TLanguage.ENGLISH);
 		
 		assertEquals("[I, 'mmm]"   , Arrays.toString(dt.tokenize("I'mmm")));
 		assertEquals("[wha, d, ya]", Arrays.toString(dt.tokenize("whadya")));

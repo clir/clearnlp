@@ -18,9 +18,9 @@ package com.clearnlp.srl;
 import java.util.Collection;
 import java.util.List;
 
-import com.clearnlp.constant.StringConst;
+import com.clearnlp.util.Joiner;
 import com.clearnlp.util.arc.AbstractArc;
-import com.clearnlp.util.regex.Joiner;
+import com.clearnlp.util.constant.StringConst;
 import com.google.common.collect.Lists;
 
 /**

@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.clearnlp.lexicon.verbnet.VNClass;
+import com.clearnlp.lexicon.verbnet.VNFrame;
+import com.clearnlp.lexicon.verbnet.VNLib;
+import com.clearnlp.lexicon.verbnet.VNMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;

@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.clearnlp.util.IOUtils;
-import com.clearnlp.util.adapter.Adapter1;
 
 /**
  * @since 3.0.0
@@ -29,6 +28,13 @@ import com.clearnlp.util.adapter.Adapter1;
 abstract public class AbstractReader<T>
 {
 	protected BufferedReader b_reader;
+	protected InputStream    f_in;
+	private   TReader        r_type;
+	
+	public AbstractReader(TReader type)
+	{
+		setReaderType(type);
+	}
 	
 	/** @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in));}. */
 	public AbstractReader(InputStream in)
@@ -40,6 +46,7 @@ abstract public class AbstractReader<T>
 	public void open(InputStream in)
 	{
 		b_reader = IOUtils.createBufferedReader(in);
+		f_in = in;
 	}
 	
 	public void close()
@@ -51,25 +58,19 @@ abstract public class AbstractReader<T>
 		catch (IOException e) {e.printStackTrace();}
 	}
 	
-	public String readLine()
+	public InputStream getInputStream()
 	{
-		try
-		{
-			return b_reader.readLine();
-		}
-		catch (IOException e) {e.printStackTrace();}
-		
-		return null;
+		return f_in;
 	}
-
-	public void applyAll(Adapter1<T> adapter)
+	
+	public TReader getReaderType()
 	{
-		T item;
-		
-		while ((item = next()) != null)
-			adapter.apply(item);
-		
-		close();
+		return r_type;
+	}
+	
+	public void setReaderType(TReader type)
+	{
+		r_type = type;
 	}
 	
 	/** @return the next item if exists; otherwise, {@code null}. */

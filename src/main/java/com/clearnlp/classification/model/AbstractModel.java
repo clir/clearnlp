@@ -31,9 +31,9 @@ import com.clearnlp.classification.vector.AbstractWeightVector;
 import com.clearnlp.classification.vector.BinaryWeightVector;
 import com.clearnlp.classification.vector.MultiWeightVector;
 import com.clearnlp.collection.list.SortedArrayList;
+import com.clearnlp.collection.pair.DoubleIntPair;
+import com.clearnlp.collection.pair.Pair;
 import com.clearnlp.util.DSUtils;
-import com.clearnlp.util.pair.DoubleIntPair;
-import com.clearnlp.util.pair.Pair;
 import com.google.common.collect.Lists;
 
 /**

@@ -18,7 +18,7 @@ package com.clearnlp.util;
 import java.io.File;
 import java.util.List;
 
-import com.clearnlp.constant.StringConst;
+import com.clearnlp.util.constant.StringConst;
 import com.clearnlp.util.io.FileExtensionFilter;
 import com.google.common.collect.Lists;
 

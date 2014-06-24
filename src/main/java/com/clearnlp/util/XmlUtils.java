@@ -80,6 +80,12 @@ public class XmlUtils
 		return element.getTextContent().trim();
 	}
 	
+	static public String getTrimmedTextContentFromFirstElement(Element parent, String name)
+	{
+		Element element = getFirstElementByTagName(parent, name);
+		return (element != null) ? getTrimmedTextContent(element) : null;
+	}
+	
 	static public String getTrimmedAttribute(Element element, String name)
 	{
 		return element.getAttribute(name).trim();

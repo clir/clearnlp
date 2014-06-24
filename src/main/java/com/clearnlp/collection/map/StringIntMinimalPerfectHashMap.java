@@ -21,9 +21,9 @@ import java.util.Collections;
 
 import com.carrotsearch.hppc.IntArrayList;
 import com.carrotsearch.hppc.IntStack;
+import com.clearnlp.collection.pair.ObjectIntPair;
 import com.clearnlp.util.HashUtils;
 import com.clearnlp.util.MathUtils;
-import com.clearnlp.util.pair.ObjectIntPair;
 
 /**
  * @since 3.0.0

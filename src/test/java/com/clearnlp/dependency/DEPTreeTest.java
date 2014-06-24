@@ -22,9 +22,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.clearnlp.reader.TSVReader;
 import com.clearnlp.srl.SRLTree;
+import com.clearnlp.util.Joiner;
 import com.clearnlp.util.arc.SRLArc;
-import com.clearnlp.util.regex.Joiner;
 
 
 /**
@@ -36,7 +37,7 @@ public class DEPTreeTest
 	@Test
 	public void test() throws Exception
 	{
-		DEPReader reader = new DEPReader(0, 1, 2, 3, 4, 5, 6, 7);
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
 		reader.open(new FileInputStream("src/test/resources/dependency/dependency.cnlp"));
 		DEPTree tree = reader.next();
 		DEPTree copy = new DEPTree(tree);

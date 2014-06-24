@@ -21,11 +21,11 @@ import java.util.List;
 import com.clearnlp.constituent.CTNode;
 import com.clearnlp.constituent.CTTagEn;
 import com.clearnlp.constituent.CTTree;
+import com.clearnlp.conversion.headrule.HeadRule;
+import com.clearnlp.conversion.headrule.HeadRuleMap;
+import com.clearnlp.conversion.headrule.HeadTagSet;
 import com.clearnlp.dependency.DEPNode;
 import com.clearnlp.dependency.DEPTree;
-import com.clearnlp.headrule.HeadRule;
-import com.clearnlp.headrule.HeadRuleMap;
-import com.clearnlp.headrule.HeadTagSet;
 import com.clearnlp.util.PatternUtils;
 import com.google.common.collect.Lists;
 

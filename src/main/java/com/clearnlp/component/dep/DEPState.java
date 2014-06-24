@@ -15,9 +15,9 @@
  */
 package com.clearnlp.component.dep;
 
+import com.clearnlp.collection.pair.StringIntPair;
 import com.clearnlp.collection.set.IntHashSet;
 import com.clearnlp.util.MathUtils;
-import com.clearnlp.util.pair.StringIntPair;
 
 /**
  * @since 3.0.0

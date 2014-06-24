@@ -26,7 +26,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import com.clearnlp.constant.StringConst;
+import com.clearnlp.util.constant.StringConst;
 
 /**
  * @since 3.0.0

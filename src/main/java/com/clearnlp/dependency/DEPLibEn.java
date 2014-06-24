@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Set;
 
 import com.clearnlp.constituent.CTLibEn;
+import com.clearnlp.lexicon.propbank.PBLib;
 import com.clearnlp.pos.POSLibEn;
 import com.clearnlp.pos.POSTagEn;
-import com.clearnlp.propbank.PBLib;
 import com.clearnlp.util.arc.SRLArc;
-import com.clearnlp.util.language.UtilEn;
+import com.clearnlp.util.lang.ENUtils;
 import com.google.common.collect.Sets;
 
 /**
@@ -52,7 +52,7 @@ public class DEPLibEn implements DEPTagEn
 
 		for (DEPNode node : tree)
 		{
-			if (node.isLabel(DEP_ADVMOD) && UtilEn.isNegation(node.getWordForm()))
+			if (node.isLabel(DEP_ADVMOD) && ENUtils.isNegation(node.getWordForm()))
 				node.setLabel(DEP_NEG);
 			
 			if (node.containsDependent(DEPLibEn.DEP_AUXPASS))

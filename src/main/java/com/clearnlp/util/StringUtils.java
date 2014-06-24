@@ -15,9 +15,9 @@
  */
 package com.clearnlp.util;
 
-import com.clearnlp.constant.CharConst;
-import com.clearnlp.constant.MetaConst;
-import com.clearnlp.constant.StringConst;
+import com.clearnlp.util.constant.CharConst;
+import com.clearnlp.util.constant.MetaConst;
+import com.clearnlp.util.constant.StringConst;
 
 /**
  * @since 3.0.0

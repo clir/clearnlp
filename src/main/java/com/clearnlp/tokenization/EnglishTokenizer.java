@@ -19,13 +19,13 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.List;
 
-import com.clearnlp.constant.CharConst;
 import com.clearnlp.dictionary.english.DTAbbreviation;
 import com.clearnlp.dictionary.english.DTHyphen;
 import com.clearnlp.dictionary.universal.DTCompound;
 import com.clearnlp.tokenization.english.ApostropheEnglishTokenizer;
-import com.clearnlp.type.LanguageType;
 import com.clearnlp.util.StringUtils;
+import com.clearnlp.util.constant.CharConst;
+import com.clearnlp.util.lang.TLanguage;
 import com.google.common.collect.Lists;
 
 /**
@@ -46,7 +46,7 @@ public class EnglishTokenizer extends AbstractTokenizer
 	{
 		d_apostrophe   = new ApostropheEnglishTokenizer();
 		d_abbreviation = new DTAbbreviation();
-		d_compound     = new DTCompound(LanguageType.ENGLISH);
+		d_compound     = new DTCompound(TLanguage.ENGLISH);
 		d_hyphen       = new DTHyphen();
 	}
 	

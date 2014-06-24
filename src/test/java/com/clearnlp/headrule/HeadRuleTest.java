@@ -22,8 +22,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.clearnlp.constituent.CTNode;
-import com.clearnlp.headrule.HeadRule;
-import com.clearnlp.headrule.HeadTagSet;
+import com.clearnlp.conversion.headrule.HeadRule;
+import com.clearnlp.conversion.headrule.HeadTagSet;
 
 
 /** @author Jinho D. Choi ({@code jdchoi77@gmail.com}) */

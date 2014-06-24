@@ -18,13 +18,13 @@ package com.clearnlp.dictionary.universal;
 import java.io.InputStream;
 import java.util.Set;
 
-import com.clearnlp.constant.StringConst;
 import com.clearnlp.dictionary.AbstractDTTokenizer;
 import com.clearnlp.dictionary.DTPath;
 import com.clearnlp.util.CharUtils;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
-import com.clearnlp.util.regex.Splitter;
+import com.clearnlp.util.Splitter;
+import com.clearnlp.util.constant.StringConst;
 
 
 /**

@@ -18,8 +18,8 @@ package com.clearnlp.component;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import com.clearnlp.classification.feature.AbstractFeatureExtractor;
 import com.clearnlp.classification.model.StringModel;
-import com.clearnlp.feature.AbstractFeatureExtractor;
 
 
 

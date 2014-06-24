@@ -22,13 +22,13 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import com.clearnlp.constant.StringConst;
 import com.clearnlp.constituent.matcher.CTNodeMatcher;
 import com.clearnlp.conversion.C2DInfo;
-import com.clearnlp.propbank.PBLocation;
+import com.clearnlp.lexicon.propbank.PBLocation;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.StringUtils;
 import com.clearnlp.util.arc.PBArc;
+import com.clearnlp.util.constant.StringConst;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 

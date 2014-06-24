@@ -21,14 +21,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.clearnlp.constant.StringConst;
 import com.clearnlp.constituent.CTLibEn;
 import com.clearnlp.dependency.DEPLib;
 import com.clearnlp.dependency.DEPLibEn;
 import com.clearnlp.dependency.DEPNode;
+import com.clearnlp.lexicon.propbank.PBLib;
 import com.clearnlp.pos.POSLibEn;
-import com.clearnlp.propbank.PBLib;
 import com.clearnlp.util.arc.SRLArc;
+import com.clearnlp.util.constant.StringConst;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 

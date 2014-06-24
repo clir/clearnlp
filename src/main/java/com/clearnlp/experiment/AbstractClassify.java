@@ -36,7 +36,6 @@ import com.clearnlp.classification.model.StringModel;
 import com.clearnlp.classification.prediction.StringPrediction;
 import com.clearnlp.classification.train.AbstractTrainer;
 import com.clearnlp.classification.vector.AbstractFeatureVector;
-import com.clearnlp.reader.AbstractArgsReader;
 import com.clearnlp.util.BinUtils;
 import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.MathUtils;

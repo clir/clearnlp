@@ -17,6 +17,7 @@ package com.clearnlp.component.common;
 
 import java.io.ObjectInputStream;
 
+import com.clearnlp.classification.feature.common.CommonFeatureExtractor;
 import com.clearnlp.classification.instance.StringInstance;
 import com.clearnlp.classification.model.StringModel;
 import com.clearnlp.classification.prediction.StringPrediction;
@@ -24,7 +25,6 @@ import com.clearnlp.classification.vector.StringFeatureVector;
 import com.clearnlp.component.AbstractStatisticalComponent;
 import com.clearnlp.component.state.CommonTaggingState;
 import com.clearnlp.dependency.DEPTree;
-import com.clearnlp.feature.common.CommonFeatureExtractor;
 
 /**
  * @since 3.0.0

@@ -22,6 +22,8 @@ import java.io.FileInputStream;
 
 import org.junit.Test;
 
+import com.clearnlp.reader.TSVReader;
+
 
 /**
  * @since 3.0.0
@@ -32,12 +34,12 @@ public class DEPReaderTest
 	@Test
 	public void testPOS() throws Exception
 	{
-		DEPReader reader = new DEPReader(1, 3);
+		TSVReader reader = new TSVReader(1, 3);
 		reader.open(new FileInputStream("src/test/resources/dependency/dependency.cnlp"));
 		DEPTree tree = reader.next();
 		String str = tree.toStringPOS();
 		
-		reader = new DEPReader(0, 1);
+		reader = new TSVReader(0, 1);
 		reader.open(new ByteArrayInputStream(str.getBytes()));
 		tree = reader.next();
 		
@@ -47,7 +49,7 @@ public class DEPReaderTest
 	@Test
 	public void testDEP() throws Exception
 	{
-		DEPReader reader = new DEPReader(0, 1, 2, 3, 4, 5, 6);
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
 		reader.open(new FileInputStream("src/test/resources/dependency/dependency.cnlp"));
 		DEPTree tree = reader.next();
 		String str = tree.toStringDEP();
@@ -61,7 +63,7 @@ public class DEPReaderTest
 	@Test
 	public void testSRL() throws Exception
 	{
-		DEPReader reader = new DEPReader(0, 1, 2, 3, 4, 5, 6, 7);
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
 		reader.open(new FileInputStream("src/test/resources/dependency/dependency.cnlp"));
 		DEPTree tree = reader.next();
 		String str = tree.toStringSRL();

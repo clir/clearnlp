@@ -22,12 +22,12 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import com.clearnlp.constant.PatternConst;
-import com.clearnlp.constant.StringConst;
 import com.clearnlp.dictionary.DTPath;
 import com.clearnlp.util.IOUtils;
+import com.clearnlp.util.Splitter;
 import com.clearnlp.util.StringUtils;
-import com.clearnlp.util.regex.Splitter;
+import com.clearnlp.util.constant.PatternConst;
+import com.clearnlp.util.constant.StringConst;
 import com.google.common.collect.Maps;
 
 /**

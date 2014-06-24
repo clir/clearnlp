@@ -36,8 +36,8 @@ import com.clearnlp.classification.instance.StringInstanceReader;
 import com.clearnlp.classification.prediction.StringPrediction;
 import com.clearnlp.classification.vector.AbstractWeightVector;
 import com.clearnlp.classification.vector.StringFeatureVector;
+import com.clearnlp.collection.pair.Pair;
 import com.clearnlp.util.IOUtils;
-import com.clearnlp.util.pair.Pair;
 import com.google.common.collect.Lists;
 
 

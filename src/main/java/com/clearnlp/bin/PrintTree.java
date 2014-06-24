@@ -15,10 +15,10 @@
  */
 package com.clearnlp.bin;
 
-import com.clearnlp.constant.StringConst;
 import com.clearnlp.constituent.CTReader;
 import com.clearnlp.constituent.CTTree;
 import com.clearnlp.util.IOUtils;
+import com.clearnlp.util.constant.StringConst;
 
 /**
  * @since 3.0.0

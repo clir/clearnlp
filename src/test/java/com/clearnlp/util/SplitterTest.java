@@ -21,8 +21,6 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import com.clearnlp.util.regex.Splitter;
-
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})

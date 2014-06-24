@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.clearnlp.constant.PatternConst;
-import com.clearnlp.util.pair.Pair;
+import com.clearnlp.collection.pair.Pair;
+import com.clearnlp.util.constant.PatternConst;
 
 /**
  * @since 3.0.0

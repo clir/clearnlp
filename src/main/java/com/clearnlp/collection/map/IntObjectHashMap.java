@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
-import com.clearnlp.util.pair.ObjectIntPair;
+import com.clearnlp.collection.pair.ObjectIntPair;
 import com.google.common.collect.Lists;
 
 /**

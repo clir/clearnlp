@@ -22,10 +22,10 @@ import java.util.Map;
 
 import com.clearnlp.dictionary.AbstractDTTokenizer;
 import com.clearnlp.dictionary.DTPath;
-import com.clearnlp.type.LanguageType;
 import com.clearnlp.util.IOUtils;
+import com.clearnlp.util.Splitter;
 import com.clearnlp.util.StringUtils;
-import com.clearnlp.util.regex.Splitter;
+import com.clearnlp.util.lang.TLanguage;
 import com.google.common.collect.Maps;
 
 /**
@@ -36,7 +36,7 @@ public class DTCompound extends AbstractDTTokenizer
 {
 	private Map<String,int[]> m_compound;
 	
-	public DTCompound(LanguageType language)
+	public DTCompound(TLanguage language)
 	{
 		switch (language)
 		{

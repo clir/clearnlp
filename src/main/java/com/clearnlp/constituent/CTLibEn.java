@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.clearnlp.constant.StringConst;
 import com.clearnlp.constituent.matcher.CTNodeMatcher;
 import com.clearnlp.constituent.matcher.CTNodeMatcherC;
 import com.clearnlp.constituent.matcher.CTNodeMatcherCF;
@@ -30,7 +29,8 @@ import com.clearnlp.pos.POSLibEn;
 import com.clearnlp.pos.POSTagEn;
 import com.clearnlp.util.PatternUtils;
 import com.clearnlp.util.StringUtils;
-import com.clearnlp.util.language.UtilEn;
+import com.clearnlp.util.constant.StringConst;
+import com.clearnlp.util.lang.ENUtils;
 import com.google.common.collect.Sets;
 
 /**
@@ -253,7 +253,7 @@ public class CTLibEn implements CTTagEn, POSTagEn
 			CTNode comp = getRelativizer(curr);
 			CTNode sbar = curr.getHighestChainedAncestor(M_SBAR);
 			
-			if (comp != null && sbar != null && !sbar.hasFunctionTag(F_NOM) && UtilEn.isLinkingRelativizer(comp.getWordForm()))
+			if (comp != null && sbar != null && !sbar.hasFunctionTag(F_NOM) && ENUtils.isLinkingRelativizer(comp.getWordForm()))
 			{
 				if (sbar.getEmptyCategoryIndex() != -1)
 				{
@@ -336,7 +336,7 @@ public class CTLibEn implements CTTagEn, POSTagEn
 		
 		for (CTNode term : terminals)
 		{
-			if (UtilEn.isRelativizer(term.getWordForm()))
+			if (ENUtils.isRelativizer(term.getWordForm()))
 				return term;
 		}
 			
@@ -425,7 +425,7 @@ public class CTLibEn implements CTTagEn, POSTagEn
 	{
 		if (node.isConstituentTag(POS_CC))
 		{
-			return UtilEn.isCorrelativeConjunction(node.getWordForm());
+			return ENUtils.isCorrelativeConjunction(node.getWordForm());
 		}
 		else if (node.isConstituentTag(C_CONJP))
 		{

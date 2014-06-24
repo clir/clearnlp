@@ -17,7 +17,7 @@ package com.clearnlp.tokenization.english;
 
 import com.clearnlp.dictionary.AbstractDTTokenizer;
 import com.clearnlp.util.CharUtils;
-import com.clearnlp.util.regex.Splitter;
+import com.clearnlp.util.Splitter;
 
 /**
  * @since 3.0.0

@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.clearnlp.util.pair.ObjectIntPair;
+import com.clearnlp.collection.pair.ObjectIntPair;
 import com.google.common.collect.Lists;
 
 /**

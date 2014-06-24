@@ -25,7 +25,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.clearnlp.constant.StringConst;
+import com.clearnlp.util.constant.StringConst;
 import com.google.common.collect.Lists;
 
 /**

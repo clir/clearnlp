@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.clearnlp.conversion.headrule.HeadRuleMap;
 import com.clearnlp.util.IOUtils;
 
 

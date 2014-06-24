@@ -15,9 +15,9 @@
  */
 package com.clearnlp.component.state;
 
+import com.clearnlp.classification.feature.AbstractFeatureToken;
 import com.clearnlp.dependency.DEPNode;
 import com.clearnlp.dependency.DEPTree;
-import com.clearnlp.feature.AbstractFeatureToken;
 
 /**
  * @since 3.0.0

@@ -1,0 +1,29 @@
+<configuration>
+    <model>com/clearnlp/model/english/general</model>
+    <language>english</language>
+
+    <reader type="tsv">
+        <column index="1" field="id"/>
+        <column index="2" field="form"/>
+        <column index="3" field="lemma"/>
+        <column index="4" field="pos"/>
+        <column index="5" field="feats"/>
+        <column index="6" field="headId"/>
+        <column index="7" field="deprel"/>
+    </reader>
+
+    <pos>
+        <algorithm name="adagrad" type="hinge" alpha="0.01" rho="0.1" eps="0.1"/>
+        <bootstraps>1</bootstraps>
+        <threads>2</threads>
+    </pos>
+
+    <dep>
+        <algorithm name="adagrad" type="regression" alpha="0.1" rho="0.1" eps="0.1"/>
+        <bootstraps>1</bootstraps>
+        <beams>64</beams>
+        <margin>0.85</margin>
+        <threads>2</threads>
+    </dep>
+
+</configuration>

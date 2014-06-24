@@ -26,8 +26,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.clearnlp.util.pair.DoubleIntPair;
-import com.clearnlp.util.pair.Pair;
+import com.clearnlp.collection.pair.DoubleIntPair;
+import com.clearnlp.collection.pair.Pair;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 

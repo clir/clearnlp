@@ -16,7 +16,7 @@
 package com.clearnlp.util.arc;
 
 import com.clearnlp.constituent.CTNode;
-import com.clearnlp.propbank.PBArgument;
+import com.clearnlp.lexicon.propbank.PBArgument;
 
 /**
  * @since 3.0.0

@@ -20,8 +20,8 @@ import java.util.ArrayList;
 
 import com.clearnlp.collection.map.IntObjectHashMap;
 import com.clearnlp.collection.map.ObjectIntHashMap;
+import com.clearnlp.collection.pair.ObjectIntPair;
 import com.clearnlp.util.DSUtils;
-import com.clearnlp.util.pair.ObjectIntPair;
 import com.google.common.collect.Lists;
 
 /**

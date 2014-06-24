@@ -22,14 +22,14 @@ import java.util.List;
 
 import org.kohsuke.args4j.Option;
 
-import com.clearnlp.constant.StringConst;
-import com.clearnlp.nlp.NLPGetter;
 import com.clearnlp.tokenization.AbstractTokenizer;
-import com.clearnlp.type.LanguageType;
 import com.clearnlp.util.BinUtils;
 import com.clearnlp.util.FileUtils;
 import com.clearnlp.util.IOUtils;
-import com.clearnlp.util.regex.Joiner;
+import com.clearnlp.util.Joiner;
+import com.clearnlp.util.constant.StringConst;
+import com.clearnlp.util.lang.TLanguage;
+import com.clearnlp.util.nlp.NLPGetter;
 
 /**
  * @since 3.0.0
@@ -38,7 +38,7 @@ import com.clearnlp.util.regex.Joiner;
 public class Tokenize
 {
 	@Option(name="-l", usage="language (default: en)", required=false, metaVar="<language>")
-	private String s_language = LanguageType.ENGLISH.toString();
+	private String s_language = TLanguage.ENGLISH.toString();
 	@Option(name="-i", usage="input path (required)", required=true, metaVar="<filepath>")
 	private String s_inputPath;
 	@Option(name="-ie", usage="input file extension (default: .*)", required=false, metaVar="<regex>")
@@ -54,7 +54,7 @@ public class Tokenize
 		
 		try
 		{
-			AbstractTokenizer tokenizer = NLPGetter.getTokenizer(LanguageType.getType(s_language));
+			AbstractTokenizer tokenizer = NLPGetter.getTokenizer(TLanguage.getType(s_language));
 			
 			for (String inputFile : FileUtils.getFileList(s_inputPath, s_inputExt, false))
 			{

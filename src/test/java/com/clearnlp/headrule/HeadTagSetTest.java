@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.clearnlp.constituent.CTNode;
-import com.clearnlp.headrule.HeadTagSet;
+import com.clearnlp.conversion.headrule.HeadTagSet;
 
 /**
  * @since 3.0.0

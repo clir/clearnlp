@@ -18,7 +18,7 @@ package com.clearnlp.util;
 import java.util.regex.Pattern;
 
 import com.clearnlp.collection.tree.AffixTree;
-import com.clearnlp.constant.CharConst;
+import com.clearnlp.util.constant.CharConst;
 
 /**
  * @since 3.0.0

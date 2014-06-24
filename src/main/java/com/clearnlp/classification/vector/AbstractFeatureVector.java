@@ -18,8 +18,8 @@ package com.clearnlp.classification.vector;
 import java.util.regex.Pattern;
 
 import com.clearnlp.collection.list.DoubleArrayList;
-import com.clearnlp.constant.PatternConst;
-import com.clearnlp.constant.StringConst;
+import com.clearnlp.util.constant.PatternConst;
+import com.clearnlp.util.constant.StringConst;
 
 /**
  * @since 3.0.0

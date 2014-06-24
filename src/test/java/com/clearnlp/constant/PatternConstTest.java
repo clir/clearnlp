@@ -23,7 +23,8 @@ import java.util.regex.Matcher;
 
 import org.junit.Test;
 
-import com.clearnlp.util.regex.Joiner;
+import com.clearnlp.util.Joiner;
+import com.clearnlp.util.constant.PatternConst;
 
 /**
  * @since 3.0.0

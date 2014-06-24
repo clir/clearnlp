@@ -30,15 +30,15 @@ import com.clearnlp.conversion.AbstractC2DConverter;
 import com.clearnlp.dependency.DEPLibEn;
 import com.clearnlp.dependency.DEPNode;
 import com.clearnlp.dependency.DEPTree;
-import com.clearnlp.nlp.NLPGetter;
+import com.clearnlp.lexicon.propbank.PBInstance;
+import com.clearnlp.lexicon.propbank.PBReader;
 import com.clearnlp.pos.POSLibEn;
-import com.clearnlp.propbank.PBInstance;
-import com.clearnlp.propbank.PBReader;
-import com.clearnlp.type.LanguageType;
 import com.clearnlp.util.BinUtils;
 import com.clearnlp.util.FileUtils;
 import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.arc.SRLArc;
+import com.clearnlp.util.lang.TLanguage;
+import com.clearnlp.util.nlp.NLPGetter;
 
 
 public class C2DConvert
@@ -54,7 +54,7 @@ public class C2DConvert
 	@Option(name="-oe", usage="output file extension (default: cnlp)", required=false, metaVar="<string>")
 	private String s_outputExt = "cnlp";
 	@Option(name="-l", usage="language (default: en)", required=false, metaVar="<language>")
-	private String s_language = LanguageType.ENGLISH.toString();
+	private String s_language = TLanguage.ENGLISH.toString();
 	@Option(name="-n", usage="if set, normalize empty category indices", required=false, metaVar="<boolean>")
 	private boolean b_normalize = false;
 	@Option(name="-r", usage="if set, traverse parse files recursively", required=false, metaVar="<boolean>")
@@ -67,7 +67,7 @@ public class C2DConvert
 		BinUtils.initArgs(args, this);
 		
 		List<String> parseFiles = FileUtils.getFileList(s_inputPath, s_parseExt, b_recursive);
-		LanguageType language = LanguageType.getType(s_language);
+		TLanguage language = TLanguage.getType(s_language);
 		int n;
 		
 		AbstractC2DConverter converter = NLPGetter.getC2DConverter(language, IOUtils.createFileInputStream(s_headruleFile));

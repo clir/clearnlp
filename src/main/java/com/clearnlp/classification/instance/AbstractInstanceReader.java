@@ -15,10 +15,12 @@
  */
 package com.clearnlp.classification.instance;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import com.clearnlp.classification.vector.AbstractFeatureVector;
 import com.clearnlp.reader.AbstractReader;
+import com.clearnlp.util.adapter.Adapter1;
 
 /**
  * @since 3.0.0
@@ -52,5 +54,26 @@ abstract public class AbstractInstanceReader<I extends AbstractInstance<F>, F ex
 			addFeature(vector, AbstractFeatureVector.SPLIT_WEIGHT.split(cols[i]));
 		
 		return getInstance(cols[0], vector);
+	}
+	
+	private String readLine()
+	{
+		try
+		{
+			return b_reader.readLine();
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return null;
+	}
+
+	public void applyAll(Adapter1<I> adapter)
+	{
+		I item;
+		
+		while ((item = next()) != null)
+			adapter.apply(item);
+		
+		close();
 	}
 }

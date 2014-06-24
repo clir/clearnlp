@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import com.clearnlp.collection.list.SortedArrayList;
 import com.clearnlp.collection.set.IntHashSet;
+import com.clearnlp.reader.TSVReader;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.StringUtils;
 import com.clearnlp.util.arc.AbstractArc;
@@ -1050,8 +1051,8 @@ public class DEPNode implements Comparable<DEPNode>
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(s_wordForm);	build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_posTag);	build.append(DEPReader.DELIM_COLUMN);
+		build.append(s_wordForm);	build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_posTag);	build.append(TSVReader.DELIM_COLUMN);
 		build.append(d_feats.toString());
 		
 		return build.toString();
@@ -1061,9 +1062,9 @@ public class DEPNode implements Comparable<DEPNode>
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(s_wordForm);	build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_lemma);	build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_posTag);	build.append(DEPReader.DELIM_COLUMN);
+		build.append(s_wordForm);	build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_lemma);	build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_posTag);	build.append(TSVReader.DELIM_COLUMN);
 		build.append(d_feats.toString());
 		
 		return build.toString();
@@ -1073,11 +1074,11 @@ public class DEPNode implements Comparable<DEPNode>
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(n_id);					build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_wordForm);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_lemma);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(d_feats.toString());	build.append(DEPReader.DELIM_COLUMN);
+		build.append(n_id);					build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_wordForm);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_lemma);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(d_feats.toString());	build.append(TSVReader.DELIM_COLUMN);
 		build.append(toStringHead());
 		
 		return build.toString();
@@ -1087,12 +1088,12 @@ public class DEPNode implements Comparable<DEPNode>
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(n_id);					build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_wordForm);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_lemma);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(d_feats.toString());	build.append(DEPReader.DELIM_COLUMN);
-		build.append(toStringHead());		build.append(DEPReader.DELIM_COLUMN);
+		build.append(n_id);					build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_wordForm);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_lemma);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(d_feats.toString());	build.append(TSVReader.DELIM_COLUMN);
+		build.append(toStringHead());		build.append(TSVReader.DELIM_COLUMN);
 		build.append(toString(x_heads));
 		
 		return build.toString();
@@ -1102,12 +1103,12 @@ public class DEPNode implements Comparable<DEPNode>
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(n_id);					build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_wordForm);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_lemma);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(d_feats.toString());	build.append(DEPReader.DELIM_COLUMN);
-		build.append(toStringHead());		build.append(DEPReader.DELIM_COLUMN);
+		build.append(n_id);					build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_wordForm);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_lemma);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(d_feats.toString());	build.append(TSVReader.DELIM_COLUMN);
+		build.append(toStringHead());		build.append(TSVReader.DELIM_COLUMN);
 		build.append(toString(s_heads));
 		
 		return build.toString();
@@ -1117,13 +1118,13 @@ public class DEPNode implements Comparable<DEPNode>
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(n_id);					build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_wordForm);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_lemma);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(d_feats.toString());	build.append(DEPReader.DELIM_COLUMN);
-		build.append(toStringHead());		build.append(DEPReader.DELIM_COLUMN);
+		build.append(n_id);					build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_wordForm);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_lemma);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(d_feats.toString());	build.append(TSVReader.DELIM_COLUMN);
+		build.append(toStringHead());		build.append(TSVReader.DELIM_COLUMN);
 		
 		return build.toString();
 	}
@@ -1133,14 +1134,14 @@ public class DEPNode implements Comparable<DEPNode>
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(n_id);					build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_wordForm);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_lemma);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(DEPReader.DELIM_COLUMN);
-		build.append(s_namedEntityTag);		build.append(DEPReader.DELIM_COLUMN);
-		build.append(d_feats.toString());	build.append(DEPReader.DELIM_COLUMN);
-		build.append(toStringHead());		build.append(DEPReader.DELIM_COLUMN);
-		build.append(toString(x_heads));	build.append(DEPReader.DELIM_COLUMN);
+		build.append(n_id);					build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_wordForm);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_lemma);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
+		build.append(s_namedEntityTag);		build.append(TSVReader.DELIM_COLUMN);
+		build.append(d_feats.toString());	build.append(TSVReader.DELIM_COLUMN);
+		build.append(toStringHead());		build.append(TSVReader.DELIM_COLUMN);
+		build.append(toString(x_heads));	build.append(TSVReader.DELIM_COLUMN);
 		build.append(toString(s_heads));
 		
 		return build.toString();
@@ -1153,14 +1154,14 @@ public class DEPNode implements Comparable<DEPNode>
 		if (hasHead())
 		{
 			build.append(d_head.n_id);
-			build.append(DEPReader.DELIM_COLUMN);
+			build.append(TSVReader.DELIM_COLUMN);
 			build.append(s_label);
 		}
 		else
 		{
-			build.append(DEPReader.BLANK);
-			build.append(DEPReader.DELIM_COLUMN);
-			build.append(DEPReader.BLANK);
+			build.append(TSVReader.BLANK);
+			build.append(TSVReader.DELIM_COLUMN);
+			build.append(TSVReader.BLANK);
 		}
 		
 		return build.toString();
@@ -1169,18 +1170,18 @@ public class DEPNode implements Comparable<DEPNode>
 	private <T extends AbstractArc<DEPNode>>String toString(List<T> arcs)
 	{
 		if (arcs == null || arcs.isEmpty())
-			return DEPReader.BLANK;
+			return TSVReader.BLANK;
 		
 		StringBuilder build = new StringBuilder();
 		Collections.sort(arcs);
 		
 		for (T arc : arcs)
 		{
-			build.append(DEPReader.DELIM_ARCS);
+			build.append(TSVReader.DELIM_ARCS);
 			build.append(arc.toString());
 		}
 		
-		return build.substring(DEPReader.DELIM_ARCS.length());
+		return build.substring(TSVReader.DELIM_ARCS.length());
 	}
 		
 	@Override

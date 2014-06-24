@@ -16,7 +16,7 @@
 package com.clearnlp.util.arc;
 
 import com.clearnlp.dependency.DEPNode;
-import com.clearnlp.propbank.PBLib;
+import com.clearnlp.lexicon.propbank.PBLib;
 
 /**
  * @since 3.0.0
