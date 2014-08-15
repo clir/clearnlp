@@ -44,4 +44,10 @@ public class ObjectIntPair<T> implements Serializable, Comparable<ObjectIntPair<
 	{
 		return i - p.i;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "("+o.toString()+","+i+")";
+	}
 }

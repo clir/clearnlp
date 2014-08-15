@@ -23,7 +23,7 @@ import java.util.Set;
 import org.kohsuke.args4j.Option;
 
 import com.clearnlp.collection.map.IntObjectHashMap;
-import com.clearnlp.component.morphology.AbstractMPAnalyzer;
+import com.clearnlp.component.morph.AbstractMPAnalyzer;
 import com.clearnlp.constituent.CTReader;
 import com.clearnlp.constituent.CTTree;
 import com.clearnlp.conversion.AbstractC2DConverter;

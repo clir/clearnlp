@@ -57,6 +57,8 @@ public class ObjectIntHashMapTest
 		
 		for (ObjectIntPair<String> item : items)
 			assertEquals(item.i, map.get(item.o));
+		
+		assertEquals("[(C,3), (B,2), (A,1)]", map.toList().toString());
 	}
 	
 	@Test

@@ -17,9 +17,9 @@ package com.clearnlp.util.nlp;
 
 import java.io.InputStream;
 
-import com.clearnlp.component.morphology.AbstractMPAnalyzer;
-import com.clearnlp.component.morphology.DefaultMPAnalyzer;
-import com.clearnlp.component.morphology.EnglishMPAnalyzer;
+import com.clearnlp.component.morph.AbstractMPAnalyzer;
+import com.clearnlp.component.morph.DefaultMPAnalyzer;
+import com.clearnlp.component.morph.EnglishMPAnalyzer;
 import com.clearnlp.conversion.AbstractC2DConverter;
 import com.clearnlp.conversion.EnglishC2DConverter;
 import com.clearnlp.conversion.headrule.HeadRuleMap;

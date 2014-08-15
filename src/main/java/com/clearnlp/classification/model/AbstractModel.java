@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.clearnlp.classification.instance.AbstractInstance;
@@ -71,6 +72,12 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 
 	abstract public void addInstance(I instance);
 	
+	public void addInstances(Collection<I> instances)
+	{
+		for (I instance : instances)
+			addInstance(instance);
+	}
+	
 // =============================== Labels/Features/Weights ===============================
 	
 	public int getLabelSize()
@@ -91,6 +98,11 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	public AbstractWeightVector getWeightVector()
 	{
 		return w_vector;
+	}
+	
+	public boolean isBinaryLabel()
+	{
+		return w_vector.isBinaryLabel();
 	}
 	
 // =============================== Conversion ===============================
@@ -124,7 +136,7 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	/** @return the best prediction given the specific feature vector. */
 	public StringPrediction predictBest(F x)
 	{
-		return w_vector.isBinaryLabel() ? predictBestBinary(x) : predictBestMulti(x);
+		return isBinaryLabel() ? predictBestBinary(x) : predictBestMulti(x);
 	}
 	
 	private StringPrediction predictBestBinary(F x)
@@ -154,7 +166,7 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	/** @return the top 2 predictions given the specific feature vector. */
 	public Pair<StringPrediction,StringPrediction> predictTop2(F x)
 	{
-		return w_vector.isBinaryLabel() ? predictTop2Binary(x) : predictTop2Multi(x);
+		return isBinaryLabel() ? predictTop2Binary(x) : predictTop2Multi(x);
 	}
 	
 	private Pair<StringPrediction,StringPrediction> predictTop2Binary(F x)
@@ -177,7 +189,7 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	/** @return the list of predictions given the specific feature vector sorted in descending order. */
 	public List<StringPrediction> predictAll(F x)
 	{
-		return w_vector.isBinaryLabel() ? predictAllBinary(x) : predictAllMulti(x);
+		return isBinaryLabel() ? predictAllBinary(x) : predictAllMulti(x);
 	}
 	
 	private List<StringPrediction> predictAllBinary(F x)

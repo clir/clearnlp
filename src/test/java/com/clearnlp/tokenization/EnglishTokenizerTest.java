@@ -31,7 +31,7 @@ import com.clearnlp.util.IOUtils;
  */
 public class EnglishTokenizerTest
 {
-	@Test
+//	@Test
 	public void compare() throws Exception
 	{
 		BufferedReader in = IOUtils.createBufferedReader("/Users/jdchoi/Desktop/test.txt");

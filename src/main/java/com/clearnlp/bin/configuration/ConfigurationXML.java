@@ -26,10 +26,14 @@ public interface ConfigurationXML
 	String E_MODEL		= "model";
 	String E_COLUMN		= "column";
 	String E_ALGORITHM	= "algorithm";
+	String E_CUTOFF		= "cutoff";
 	
-	String A_TYPE  = "type";
-	String A_FIELD = "field";
-	String A_INDEX = "index";
+	String A_TYPE		= "type";
+	String A_FIELD		= "field";
+	String A_INDEX		= "index";
+	String A_NAME		= "name";
+	String A_LABEL		= "label";
+	String A_FEATURE	= "feature";
 	
 	String FIELD_ID		= "id";
 	String FIELD_FORM	= "form";
@@ -42,4 +46,10 @@ public interface ConfigurationXML
 	String FIELD_XHEADS	= "xheads";
 	String FIELD_NAMENT	= "nament";
 	String FIELD_COREF	= "coref";
+	
+	String ALG_ADAGRAD		= "adagrad";
+	String ALG_LIBLINEAR	= "liblinear";
+	
+	String V_SUPPORT_VECTOR_MACHINE	= "svm";
+	String V_LOGISTIC_REGRESSION	= "lr";
 }

@@ -55,6 +55,12 @@ public class NLPTrain
 //		catch (IOException e) {e.printStackTrace();}
 	}
 	
+	public void train(String[] trainFiles)
+	{
+		
+		
+	}
+	
 	static public void main(String[] args)
 	{
 		new NLPTrain(args);

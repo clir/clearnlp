@@ -40,9 +40,9 @@ abstract public class AbstractTrainer
 		logInfo();
 	}
 	
-	public AbstractTrainer(StringModel model, int labelCutoff, int featureCutoff)
+	public AbstractTrainer(StringModel model, int labelCutoff, int featureCutoff, boolean reset)
 	{
-		l_instances = model.initializeForTraining(labelCutoff, featureCutoff);
+		l_instances = model.initializeForTraining(labelCutoff, featureCutoff, reset);
 		w_vector    = model.getWeightVector();
 		logInfo();
 	}

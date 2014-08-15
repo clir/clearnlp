@@ -15,54 +15,38 @@
  */
 package com.clearnlp.component.state;
 
-import com.clearnlp.classification.feature.AbstractFeatureToken;
 import com.clearnlp.dependency.DEPNode;
 import com.clearnlp.dependency.DEPTree;
+import com.clearnlp.feature.AbstractFeatureToken;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractState<GoldType,LabelType>
+abstract public class AbstractState<LabelType>
 {
-	protected GoldType[] g_labels;
-	protected DEPTree    d_tree;
-	protected int        t_size;
+	protected LabelType[] g_labels;
+	protected DEPTree     d_tree;
+	protected int         t_size;
 
 //	====================================== INITIALIZATION ======================================
 	
-	public AbstractState(DEPTree tree)
-	{
-		initTree(tree);
-		init(tree);
-	}
-
-	/** Initializes this processing state. */
-	abstract protected void init(DEPTree tree);
-	
-	/** Called by {@link #AbstractState(DEPTree)}. */
-	private void initTree(DEPTree tree)
+	public AbstractState(DEPTree tree, boolean decode)
 	{
 		d_tree = tree;
 		t_size = tree.size();
+		if (!decode) initGoldLabels();
 	}
+	
+	abstract protected void initGoldLabels();
 
 //	====================================== LABEL ======================================
 
 	/** @return the gold-standard label for the current state. */
 	abstract public LabelType getGoldLabel();
 	
-	/** @return gold-standard labels for all tokens in {@link #d_tree}. */
-	public GoldType[] getGoldLabels()
-	{
-		return g_labels;
-	}
-	
-	/** Sets the gold-standard labels for all tokens. */
-	public void setGoldLabels(GoldType[] labels)
-	{
-		g_labels = labels;
-	}
+	/** @return the gold-standard label for the current state. */
+	abstract public void setAutoLabel(LabelType label);
 	
 //	====================================== TREE ======================================
 	
@@ -72,6 +56,11 @@ abstract public class AbstractState<GoldType,LabelType>
 	public DEPTree getTree()
 	{
 		return d_tree;
+	}
+	
+	public int getTreeSize()
+	{
+		return t_size;
 	}
 
 	public DEPNode getNode(int nodeID)

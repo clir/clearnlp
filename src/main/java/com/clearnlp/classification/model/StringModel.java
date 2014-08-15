@@ -43,7 +43,7 @@ public class StringModel extends AbstractModel<StringInstance,StringFeatureVecto
 	{
 		super(binary);
 		init();
-		m_features = new FeatureMap(1);
+		m_features = new FeatureMap();
 	}
 	
 	public StringModel(ObjectInputStream in)
@@ -81,12 +81,21 @@ public class StringModel extends AbstractModel<StringInstance,StringFeatureVecto
 		i_collector.addInstance(instance);
 	}
 
-	/** Initializes this model with the collected list of training instances. */
-	public List<IntInstance> initializeForTraining(int labelCutoff, int featureCutoff)
+	/**
+	 * Initializes this model with the collected list of training instances.
+	 * @param reset if {@code true}, label map, feature map, and weight vector are reset.
+	 */
+	public List<IntInstance> initializeForTraining(int labelCutoff, int featureCutoff, boolean reset)
 	{
+		if (reset)
+		{
+			m_labels.reset();
+			m_features.reset();
+			w_vector.reset();
+		}
+		
 		int labelSize   = m_labels  .expand(i_collector.getLabelMap()  , labelCutoff);
 		int featureSize = m_features.expand(i_collector.getFeatureMap(), featureCutoff);
-		
 		w_vector.expand(labelSize, featureSize);
 		
 		List<IntInstance> instances = toIntInstanceList(i_collector.getInstanceList());

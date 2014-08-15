@@ -24,6 +24,4 @@ import com.clearnlp.dependency.DEPTree;
 abstract public class AbstractComponent
 {
 	abstract public void process(DEPTree tree);
-	
-	
 }

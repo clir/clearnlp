@@ -36,14 +36,13 @@ public class FeatureMap implements Serializable
 	
 	public FeatureMap()
 	{
-		l_map = Lists.newArrayList();
-		n_features = 1;
+		reset();
 	}
 	
-	public FeatureMap(int beginIndex)
+	public void reset()
 	{
 		l_map = Lists.newArrayList();
-		n_features = beginIndex;
+		n_features = 1;
 	}
 	
 	public int expand(IntObjectHashMap<ObjectIntHashMap<String>> map, int cutoff)

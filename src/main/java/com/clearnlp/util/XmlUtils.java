@@ -96,6 +96,11 @@ public class XmlUtils
 		return Integer.parseInt(getTrimmedAttribute(element, name));
 	}
 	
+	static public double getDoubleAttribute(Element element, String name)
+	{
+		return Double.parseDouble(getTrimmedAttribute(element, name));
+	}
+	
 	static public List<Node> getAttributeNodeList(Element element, Pattern name)
 	{
 		NamedNodeMap nodes = element.getAttributes();

@@ -46,4 +46,10 @@ public class ObjectDoublePair<T> implements Serializable, Comparable<ObjectDoubl
 	{
 		return MathUtils.signum(d - p.d);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "("+o.toString()+","+d+")";
+	}
 }

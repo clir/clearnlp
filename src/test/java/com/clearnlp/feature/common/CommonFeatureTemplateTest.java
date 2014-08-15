@@ -17,9 +17,9 @@ package com.clearnlp.feature.common;
 
 import java.io.FileInputStream;
 
-import com.clearnlp.classification.feature.common.CommonFeatureExtractor;
 import com.clearnlp.classification.vector.StringFeatureVector;
-import com.clearnlp.component.state.CommonTaggingState;
+import com.clearnlp.component.pos.POSState;
+import com.clearnlp.component.state.SeqState;
 import com.clearnlp.reader.TSVReader;
 import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.XmlUtils;
@@ -40,9 +40,9 @@ public class CommonFeatureTemplateTest
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7, 8);
 		reader.open(new FileInputStream(deptreeFile));
 		StringFeatureVector vector;
-		CommonTaggingState state;
+		SeqState state;
 		
-		state = new CommonTaggingState(reader.next());
+		state = new POSState(reader.next(), true);
 		
 		while (!state.isTerminate())
 		{

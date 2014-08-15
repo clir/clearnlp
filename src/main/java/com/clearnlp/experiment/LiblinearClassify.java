@@ -23,7 +23,7 @@ import com.clearnlp.classification.model.AbstractModel;
 import com.clearnlp.classification.model.SparseModel;
 import com.clearnlp.classification.model.StringModel;
 import com.clearnlp.classification.train.AbstractTrainer;
-import com.clearnlp.classification.train.LiblinearL2Hinge;
+import com.clearnlp.classification.train.LiblinearL2SVM;
 
 /**
  * @since 3.0.0
@@ -55,9 +55,9 @@ public class LiblinearClassify extends AbstractClassifyOneVsAll
 		LiblinearTrainConfiguration c = (LiblinearTrainConfiguration)trainConfiguration;
 		
 		if (isSparseModel(model))
-			return new LiblinearL2Hinge((SparseModel)model, c.getNumberOfThreads(), c.getCost(), c.getEpsilon(), c.getBias());
+			return new LiblinearL2SVM((SparseModel)model, c.getNumberOfThreads(), c.getCost(), c.getEpsilon(), c.getBias());
 		else
-			return new LiblinearL2Hinge((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.getNumberOfThreads(), c.getCost(), c.getEpsilon(), c.getBias());
+			return new LiblinearL2SVM((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), false, c.getNumberOfThreads(), c.getCost(), c.getEpsilon(), c.getBias());
 	}
 	
 	static public void main(String[] args)

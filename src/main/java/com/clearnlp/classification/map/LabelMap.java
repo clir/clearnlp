@@ -35,6 +35,11 @@ public class LabelMap implements Serializable
 	
 	public LabelMap()
 	{
+		reset();
+	}
+	
+	public void reset()
+	{
 		m_labels = new ObjectIntHashMap<String>();
 		l_labels = Lists.newArrayList();
 	}

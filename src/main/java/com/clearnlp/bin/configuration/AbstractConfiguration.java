@@ -22,6 +22,14 @@ import java.nio.file.Paths;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.clearnlp.classification.model.StringModel;
+import com.clearnlp.classification.train.AbstractAdaGrad;
+import com.clearnlp.classification.train.AbstractLiblinear;
+import com.clearnlp.classification.train.AbstractTrainer;
+import com.clearnlp.classification.train.AdaGradLR;
+import com.clearnlp.classification.train.AdaGradSVM;
+import com.clearnlp.classification.train.LiblinearL2LR;
+import com.clearnlp.classification.train.LiblinearL2SVM;
 import com.clearnlp.collection.map.ObjectIntHashMap;
 import com.clearnlp.reader.AbstractReader;
 import com.clearnlp.reader.LineReader;
@@ -106,7 +114,7 @@ public class AbstractConfiguration implements ConfigurationXML
 		{
 			element = (Element)list.item(i);
 			field   = XmlUtils.getTrimmedAttribute(element, A_FIELD);
-			index   = Integer.parseInt(element.getAttribute(A_INDEX));
+			index   = XmlUtils.getIntegerAttribute(element, A_INDEX);
 			
 			map.put(field, index);
 		}
@@ -116,8 +124,52 @@ public class AbstractConfiguration implements ConfigurationXML
 	
 //	=================================== Algorithm ===================================
 	
+	protected AbstractTrainer getTrainer(Element eMode, StringModel model, int labelCutoff, int featureCutoff, boolean reset)
+	{
+		Element eAlgorithm = XmlUtils.getFirstElementByTagName(eMode, E_ALGORITHM);
+		String name = XmlUtils.getTrimmedAttribute(eAlgorithm, A_NAME);
+		
+		switch (name)
+		{
+		case ALG_ADAGRAD  : return getTrainerAdaGrad  (eMode, model, labelCutoff, featureCutoff, reset);
+		case ALG_LIBLINEAR: return getTrainerLiblinear(eMode, model, labelCutoff, featureCutoff, reset);
+		}
+		
+		throw new IllegalArgumentException(name+" is not a valid algorithm name.");
+	}
 	
+	private AbstractAdaGrad getTrainerAdaGrad(Element eMode, StringModel model, int labelCutoff, int featureCutoff, boolean reset)
+	{
+		boolean average = Boolean.parseBoolean(XmlUtils.getTrimmedAttribute(eMode, "average"));
+		double alpha = Double.parseDouble(XmlUtils.getTrimmedAttribute(eMode, "alpha"));
+		double rho   = Double.parseDouble(XmlUtils.getTrimmedAttribute(eMode, "rho"));
+		String type  = XmlUtils.getTrimmedAttribute(eMode, A_TYPE);
+		
+		switch (type)
+		{
+		case V_SUPPORT_VECTOR_MACHINE: return new AdaGradSVM(model, labelCutoff, featureCutoff, reset, average, alpha, rho);
+		case V_LOGISTIC_REGRESSION   : return new AdaGradLR (model, labelCutoff, featureCutoff, reset, average, alpha, rho);
+		}
+		
+		throw new IllegalArgumentException(type+" is not a valid algorithm type.");
+	}
 	
+	private AbstractLiblinear getTrainerLiblinear(Element eMode, StringModel model, int labelCutoff, int featureCutoff, boolean reset)
+	{
+		int numThreads = Integer.parseInt(XmlUtils.getTrimmedAttribute(eMode, "threads"));
+		double cost = Double.parseDouble(XmlUtils.getTrimmedAttribute(eMode, "cost"));
+		double eps  = Double.parseDouble(XmlUtils.getTrimmedAttribute(eMode, "eps"));
+		double bias = Double.parseDouble(XmlUtils.getTrimmedAttribute(eMode, "bias"));
+		String type = XmlUtils.getTrimmedAttribute(eMode, A_TYPE);
+		
+		switch (type)
+		{
+		case V_SUPPORT_VECTOR_MACHINE: return new LiblinearL2SVM(model, labelCutoff, featureCutoff, reset, numThreads, cost, eps, bias);
+		case V_LOGISTIC_REGRESSION   : return new LiblinearL2LR (model, labelCutoff, featureCutoff, reset, numThreads, cost, eps, bias);
+		}
+		
+		throw new IllegalArgumentException(type+" is not a valid algorithm type.");
+	}
 	
 //	=================================== Getters ===================================
 

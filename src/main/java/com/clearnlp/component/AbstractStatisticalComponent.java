@@ -17,9 +17,13 @@ package com.clearnlp.component;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
-import com.clearnlp.classification.feature.AbstractFeatureExtractor;
+import com.clearnlp.classification.instance.StringInstance;
 import com.clearnlp.classification.model.StringModel;
+import com.clearnlp.classification.vector.StringFeatureVector;
+import com.clearnlp.component.state.AbstractState;
+import com.clearnlp.feature.AbstractFeatureExtractor;
 
 
 
@@ -27,26 +31,38 @@ import com.clearnlp.classification.model.StringModel;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractStatisticalComponent<FeatureType extends AbstractFeatureExtractor<?,?>> extends AbstractComponent
+abstract public class AbstractStatisticalComponent<LabelType, StateType extends AbstractState<LabelType>, FeatureType extends AbstractFeatureExtractor<?,?,?>> extends AbstractComponent
 {
 	protected FeatureType[] f_extractors;
 	protected StringModel[] s_models;
+	private CFlag c_flag;
 	
-	/** Constructs a statistical component for collecting lexicons. */
+	/** Constructs a statistical component for collecting. */
 	public AbstractStatisticalComponent(FeatureType[] extractors)
 	{
 		setFeatureExtractors(extractors);
+		c_flag = CFlag.COLLECT;
 	}
 	
-	/** Constructs a statistical component for training and bootstrapping. */
+	/** Constructs a statistical component for training. */
 	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, boolean binary, int modelSize)
 	{
 		setFeatureExtractors(extractors);
-		setModels(initModels(binary, modelSize));
 		setLexicons(lexicons);
+		setModels(createModels(binary, modelSize));
+		c_flag = CFlag.TRAIN;
 	}
 	
-	/** Constructs a statistical component for bootstrapping and decoding. */
+	/** Constructs a statistical component for bootstrapping or evaluation. */
+	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	{
+		setFeatureExtractors(extractors);
+		setLexicons(lexicons);
+		setModels(models);
+		c_flag = bootstrap ? CFlag.BOOTSTRAP : CFlag.EVALUATE;
+	}
+	
+	/** Constructs a statistical component for decoding. */
 	public AbstractStatisticalComponent(ObjectInputStream in)
 	{
 		try
@@ -54,9 +70,11 @@ abstract public class AbstractStatisticalComponent<FeatureType extends AbstractF
 			load(in);
 		}
 		catch (Exception e) {e.printStackTrace();}
+		
+		c_flag = CFlag.DECODE;
 	}
 	
-	private StringModel[] initModels(boolean binary, int modelSize)
+	private StringModel[] createModels(boolean binary, int modelSize)
 	{
 		StringModel[] models = new StringModel[modelSize];
 		int i;
@@ -77,8 +95,8 @@ abstract public class AbstractStatisticalComponent<FeatureType extends AbstractF
 	public void load(ObjectInputStream in) throws Exception
 	{
 		setFeatureExtractors((FeatureType[])in.readObject());
-		setModels((StringModel[])in.readObject());
 		setLexicons((Object[])in.readObject());
+		setModels((StringModel[])in.readObject());
 	}
 	
 	/**
@@ -88,9 +106,17 @@ abstract public class AbstractStatisticalComponent<FeatureType extends AbstractF
 	public void save(ObjectOutputStream out) throws Exception
 	{
 		out.writeObject(f_extractors);
-		out.writeObject(s_models);
 		out.writeObject(getLexicons());
+		out.writeObject(s_models);
 	}
+	
+//	====================================== LEXICONS ======================================
+
+	/** @return all objects containing lexicons. */
+	abstract public Object[] getLexicons();
+	
+	/** Sets lexicons used for this component. */
+	abstract public void setLexicons(Object[] lexicons);
 
 //	====================================== FEATURES ======================================
 	
@@ -116,11 +142,69 @@ abstract public class AbstractStatisticalComponent<FeatureType extends AbstractF
 		s_models = models;
 	}
 	
-//	====================================== LEXICONS ======================================
-
-	/** @return all objects containing lexicons. */
-	abstract public Object[] getLexicons();
+//	====================================== PROCESS ======================================
 	
-	/** Sets lexicons used for this component. */
-	abstract public void setLexicons(Object[] lexicons);
+	protected void process(StateType state, List<StringInstance> instances)
+	{
+		switch (c_flag)
+		{
+		case TRAIN    : train(state, instances);
+		case BOOTSTRAP: bootstrap(state, instances);
+		default       : decode(state);
+		}
+	}
+	
+	protected void train(StateType state, List<StringInstance> instances)
+	{
+		StringFeatureVector vector = createStringFeatureVector(state);
+		LabelType label = state.getGoldLabel();
+		instances.add(new StringInstance(label.toString(), vector));
+		state.setAutoLabel(label);
+	}
+	
+	protected void bootstrap(StateType state, List<StringInstance> instances)
+	{
+		StringFeatureVector vector = createStringFeatureVector(state);
+		LabelType label = state.getGoldLabel();
+		instances.add(new StringInstance(label.toString(), vector));
+		state.setAutoLabel(getAutoLabel(vector));
+	}
+	
+	protected void decode(StateType state)
+	{
+		StringFeatureVector vector = createStringFeatureVector(state);
+		state.setAutoLabel(getAutoLabel(vector));
+	}
+	
+	abstract protected StringFeatureVector createStringFeatureVector(StateType state);
+	abstract protected LabelType getAutoLabel(StringFeatureVector vector);
+	
+//	====================================== FLAG ======================================
+
+	public boolean isCollect()
+	{
+		return c_flag == CFlag.COLLECT;
+	}
+	
+	public boolean isTrain()
+	{
+		return c_flag == CFlag.TRAIN;
+	}
+	
+	public boolean isBootstrap()
+	{
+		return c_flag == CFlag.BOOTSTRAP;
+	}
+	
+	public boolean isDecode()
+	{
+		return c_flag == CFlag.DECODE;
+	}
+	
+	public boolean isTrainOrBootstrap()
+	{
+		return isTrain() || isBootstrap();
+	}
+	
+	
 }

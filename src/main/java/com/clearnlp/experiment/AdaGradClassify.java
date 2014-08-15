@@ -23,8 +23,8 @@ import com.clearnlp.classification.model.AbstractModel;
 import com.clearnlp.classification.model.SparseModel;
 import com.clearnlp.classification.model.StringModel;
 import com.clearnlp.classification.train.AbstractTrainer;
-import com.clearnlp.classification.train.AdaGradHinge;
-import com.clearnlp.classification.train.AdaGradLogistic;
+import com.clearnlp.classification.train.AdaGradSVM;
+import com.clearnlp.classification.train.AdaGradLR;
 
 /**
  * @since 3.0.0
@@ -59,13 +59,13 @@ public class AdaGradClassify extends AbstractClassifyOnline
 		
 		if (isSparseModel(model))
 		{
-			if (b_logistic)	return new AdaGradLogistic((SparseModel)model, c.isAverage(), c.getLearningRate(), c.getRidge());
-			else			return new AdaGradHinge   ((SparseModel)model, c.isAverage(), c.getLearningRate(), c.getRidge());
+			if (b_logistic)	return new AdaGradLR((SparseModel)model, c.isAverage(), c.getLearningRate(), c.getRidge());
+			else			return new AdaGradSVM   ((SparseModel)model, c.isAverage(), c.getLearningRate(), c.getRidge());
 		}
 		else
 		{
-			if (b_average)	return new AdaGradLogistic((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge());
-			else			return new AdaGradHinge   ((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge());
+			if (b_average)	return new AdaGradLR((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), false, c.isAverage(), c.getLearningRate(), c.getRidge());
+			else			return new AdaGradSVM   ((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), false, c.isAverage(), c.getLearningRate(), c.getRidge());
 		}
 	}
 	

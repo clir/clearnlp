@@ -42,9 +42,9 @@ abstract public class AbstractAdaGrad extends AbstractOnlineTrainer
 	 * @param alpha the learning rate.
 	 * @param rho the smoothing denominator. 
 	 */
-	public AbstractAdaGrad(StringModel model, int labelCutoff, int featureCutoff, boolean average, double alpha, double rho)
+	public AbstractAdaGrad(StringModel model, int labelCutoff, int featureCutoff, boolean reset, boolean average, double alpha, double rho)
 	{
-		super(model, labelCutoff, featureCutoff, average);
+		super(model, labelCutoff, featureCutoff, reset, average);
 		init(alpha, rho);
 	}
 	

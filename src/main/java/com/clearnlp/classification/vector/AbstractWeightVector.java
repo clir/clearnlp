@@ -35,8 +35,13 @@ abstract public class AbstractWeightVector implements Serializable
 	
 	public AbstractWeightVector(boolean binary)
 	{
+		b_binary = binary;
+		reset();
+	}
+	
+	public void reset()
+	{
 		f_weights  = new FloatArrayList();
-		b_binary   = binary;
 		n_labels   = 0;
 		n_features = 0;
 	}

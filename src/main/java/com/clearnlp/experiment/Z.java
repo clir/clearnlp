@@ -15,10 +15,6 @@
  */
 package com.clearnlp.experiment;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +37,7 @@ import com.clearnlp.dictionary.DTPath;
 import com.clearnlp.lexicon.wordnet.WNMap;
 import com.clearnlp.lexicon.wordnet.WNPOSTag;
 import com.clearnlp.lexicon.wordnet.WNSynset;
-import com.clearnlp.reader.TReader;
+import com.clearnlp.nlp.NLPMode;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.constant.StringConst;
@@ -57,30 +53,7 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		TReader r = TReader.LINE;
-		System.out.println(TReader.valueOf("LINE") == r);
-		
-//		int i = 0, size = 20000000;
-//		long st, et;
-//
-//		st = System.currentTimeMillis();
-//		for (i=0; i<size; i++)
-//		{
-//		}
-//		et = System.currentTimeMillis();
-//		System.out.println(et-st);
-		
-		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("tmp.obj"));
-		Object[] arr = null;
-		
-		out.writeObject(arr);
-		out.close();
-		
-		ObjectInputStream in = new ObjectInputStream(new FileInputStream("tmp.obj"));
-		arr = (Object[])in.readObject();
-		in.close();
-		
-		System.out.println(arr == null);
+		System.out.println(NLPMode.pos.toString().equals("pos"));
 	}
 	
 	public void emoticon(String[] args) throws Exception

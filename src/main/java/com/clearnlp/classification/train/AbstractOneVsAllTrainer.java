@@ -42,9 +42,9 @@ abstract public class AbstractOneVsAllTrainer extends AbstractTrainer
 	}
 	
 	/** @param numThreads the number of threads. */
-	public AbstractOneVsAllTrainer(StringModel model, int labelCutoff, int featureCutoff, int numThreads)
+	public AbstractOneVsAllTrainer(StringModel model, int labelCutoff, int featureCutoff, boolean reset, int numThreads)
 	{
-		super(model, labelCutoff, featureCutoff);
+		super(model, labelCutoff, featureCutoff, reset);
 		setNumberOfThreads(numThreads);
 	}
 	
