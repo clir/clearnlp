@@ -37,9 +37,9 @@ abstract public class AbstractLiblinear extends AbstractOneVsAllTrainer
 		init(cost, eps, bias);
 	}
 	
-	public AbstractLiblinear(StringModel model, int labelCutoff, int featureCutoff, boolean reset, int numThreads, double cost, double eps, double bias)
+	public AbstractLiblinear(StringModel model, int labelCutoff, int featureCutoff, int numThreads, double cost, double eps, double bias)
 	{
-		super(model, labelCutoff, featureCutoff, reset, numThreads);
+		super(model, labelCutoff, featureCutoff, numThreads);
 		init(cost, eps, bias);
 	}
 	

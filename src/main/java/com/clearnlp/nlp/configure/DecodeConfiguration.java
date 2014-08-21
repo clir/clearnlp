@@ -13,32 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.component.pos;
+package com.clearnlp.nlp.configure;
 
-import com.clearnlp.component.evaluation.AbstractAccuracyEval;
-import com.clearnlp.dependency.DEPNode;
-import com.clearnlp.dependency.DEPTree;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import com.clearnlp.util.XmlUtils;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class POSEval extends AbstractAccuracyEval<String>
+public class DecodeConfiguration extends AbstractConfiguration
 {
-	@Override
-	public void countCorrect(DEPTree sTree, String[] gTags)
+	private final Path p_model;
+	
+	public DecodeConfiguration(InputStream in)
 	{
-		int i, size = sTree.size();
-		DEPNode node;
-		
-		n_total += size - 1;
-		
-		for (i=1; i<size; i++)
-		{
-			node = sTree.get(i);
-			
-			if (node.isPOSTag(gTags[i]))
-				n_correct++;
-		}
+		super(in);
+		p_model = initModelPath();
+	}
+
+//	=================================== MODEL PATH ===================================
+
+	private Path initModelPath()
+	{
+		String path = XmlUtils.getTrimmedTextContentFromFirstElement(x_top, E_MODEL);
+		return path != null ? Paths.get(path) : null;
+	}
+	
+	public Path getModelPath()
+	{
+		return p_model;
 	}
 }

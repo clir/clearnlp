@@ -22,6 +22,7 @@ import java.util.List;
 import com.clearnlp.classification.instance.StringInstance;
 import com.clearnlp.classification.model.StringModel;
 import com.clearnlp.classification.vector.StringFeatureVector;
+import com.clearnlp.component.evaluation.AbstractEval;
 import com.clearnlp.component.state.AbstractState;
 import com.clearnlp.feature.AbstractFeatureExtractor;
 
@@ -31,47 +32,48 @@ import com.clearnlp.feature.AbstractFeatureExtractor;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractStatisticalComponent<LabelType, StateType extends AbstractState<LabelType>, FeatureType extends AbstractFeatureExtractor<?,?,?>> extends AbstractComponent
+abstract public class AbstractStatisticalComponent<LabelType, StateType extends AbstractState<LabelType>, EvalType extends AbstractEval<LabelType>, FeatureType extends AbstractFeatureExtractor<?,?,?>> extends AbstractComponent
 {
 	protected FeatureType[] f_extractors;
 	protected StringModel[] s_models;
+	protected EvalType      c_eval;
 	private CFlag c_flag;
 	
 	/** Constructs a statistical component for collecting. */
 	public AbstractStatisticalComponent(FeatureType[] extractors)
 	{
-		setFeatureExtractors(extractors);
 		c_flag = CFlag.COLLECT;
+		setFeatureExtractors(extractors);
 	}
 	
 	/** Constructs a statistical component for training. */
 	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, boolean binary, int modelSize)
 	{
+		c_flag = CFlag.TRAIN;
 		setFeatureExtractors(extractors);
 		setLexicons(lexicons);
 		setModels(createModels(binary, modelSize));
-		c_flag = CFlag.TRAIN;
 	}
 	
 	/** Constructs a statistical component for bootstrapping or evaluation. */
 	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
 	{
+		c_flag = bootstrap ? CFlag.BOOTSTRAP : CFlag.EVALUATE;
 		setFeatureExtractors(extractors);
 		setLexicons(lexicons);
 		setModels(models);
-		c_flag = bootstrap ? CFlag.BOOTSTRAP : CFlag.EVALUATE;
 	}
 	
 	/** Constructs a statistical component for decoding. */
 	public AbstractStatisticalComponent(ObjectInputStream in)
 	{
+		c_flag = CFlag.DECODE;
+		
 		try
 		{
 			load(in);
 		}
 		catch (Exception e) {e.printStackTrace();}
-		
-		c_flag = CFlag.DECODE;
 	}
 	
 	private StringModel[] createModels(boolean binary, int modelSize)
@@ -196,6 +198,11 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 		return c_flag == CFlag.BOOTSTRAP;
 	}
 	
+	public boolean isEvaluate()
+	{
+		return c_flag == CFlag.EVALUATE;
+	}
+	
 	public boolean isDecode()
 	{
 		return c_flag == CFlag.DECODE;
@@ -205,6 +212,4 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	{
 		return isTrain() || isBootstrap();
 	}
-	
-	
 }

@@ -56,6 +56,14 @@ public class StringModel extends AbstractModel<StringInstance,StringFeatureVecto
 		i_collector = new StringInstanceCollector();
 	}
 	
+	/** Reinitializes the label map, the feature map, and the weight vector of this model. */
+	public void reset()
+	{
+		m_labels.reset();
+		m_features.reset();
+		w_vector.reset();
+	}
+	
 // =============================== Serialization ===============================
 	
 	public void load(ObjectInputStream in) throws IOException, ClassNotFoundException
@@ -81,19 +89,9 @@ public class StringModel extends AbstractModel<StringInstance,StringFeatureVecto
 		i_collector.addInstance(instance);
 	}
 
-	/**
-	 * Initializes this model with the collected list of training instances.
-	 * @param reset if {@code true}, label map, feature map, and weight vector are reset.
-	 */
-	public List<IntInstance> initializeForTraining(int labelCutoff, int featureCutoff, boolean reset)
+	/** Initializes this model with the collected list of training instances. */
+	public List<IntInstance> initializeForTraining(int labelCutoff, int featureCutoff)
 	{
-		if (reset)
-		{
-			m_labels.reset();
-			m_features.reset();
-			w_vector.reset();
-		}
-		
 		int labelSize   = m_labels  .expand(i_collector.getLabelMap()  , labelCutoff);
 		int featureSize = m_features.expand(i_collector.getFeatureMap(), featureCutoff);
 		w_vector.expand(labelSize, featureSize);

@@ -57,7 +57,7 @@ public class LiblinearClassify extends AbstractClassifyOneVsAll
 		if (isSparseModel(model))
 			return new LiblinearL2SVM((SparseModel)model, c.getNumberOfThreads(), c.getCost(), c.getEpsilon(), c.getBias());
 		else
-			return new LiblinearL2SVM((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), false, c.getNumberOfThreads(), c.getCost(), c.getEpsilon(), c.getBias());
+			return new LiblinearL2SVM((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.getNumberOfThreads(), c.getCost(), c.getEpsilon(), c.getBias());
 	}
 	
 	static public void main(String[] args)

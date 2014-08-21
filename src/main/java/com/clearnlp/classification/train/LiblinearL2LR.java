@@ -47,9 +47,9 @@ public class LiblinearL2LR extends AbstractLiblinear
 	 * @param eps the tolerance of termination criterion.
 	 * @param bias the bias.
 	 */
-	public LiblinearL2LR(StringModel model, int labelCutoff, int featureCutoff, boolean reset, int numThreads, double cost, double eps, double bias)
+	public LiblinearL2LR(StringModel model, int labelCutoff, int featureCutoff, int numThreads, double cost, double eps, double bias)
 	{
-		super(model, labelCutoff, featureCutoff, reset, numThreads, cost, eps, bias);
+		super(model, labelCutoff, featureCutoff, numThreads, cost, eps, bias);
 	}
 	
 	@Override

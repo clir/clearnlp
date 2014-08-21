@@ -22,7 +22,7 @@ import com.clearnlp.util.MathUtils;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractF1Eval extends AbstractEval
+abstract public class AbstractF1Eval<LabelType> extends AbstractEval<LabelType>
 {
 	protected int p_total;
 	protected int r_total;
@@ -42,7 +42,7 @@ abstract public class AbstractF1Eval extends AbstractEval
 	}
 	
 	@Override
-	public double[] getAccuracies()
+	public double[] getScores()
 	{
 		double precision = 100d * n_correct / p_total;
 		double recall    = 100d * n_correct / r_total;
@@ -53,7 +53,7 @@ abstract public class AbstractF1Eval extends AbstractEval
 	@Override
 	public String toString()
 	{
-		double[] d = getAccuracies();
+		double[] d = getScores();
 		return String.format("F1: %5.2f, P: %5.2f, R: %5.2f\n", d[0], d[1], d[2]);
 	}
 }

@@ -27,10 +27,10 @@ public class NLPTrain
 {
 	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<string>")
 	private String s_configurationFile;
-	@Option(name="-i", usage="path to training files (required)", required=true, metaVar="<filepath>")
-	private String s_inputPath;
-	@Option(name="-ie", usage="input file extension (default: .*)", required=false, metaVar="<regex>")
-	private String s_inputExt = ".*";
+	@Option(name="-t", usage="path to training files (required)", required=true, metaVar="<filepath>")
+	private String s_trainPath;
+	@Option(name="-te", usage="training file extension (default: .*)", required=false, metaVar="<regex>")
+	private String s_trainExt = ".*";
 	@Option(name="-d", usage="path to development files (optional)", required=false, metaVar="<filepath>")
 	private String s_developPath;
 	@Option(name="-de", usage="development file extension (default: .*)", required=false, metaVar="<regex>")

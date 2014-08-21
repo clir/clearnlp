@@ -42,6 +42,11 @@ abstract public class AbstractState<LabelType>
 
 //	====================================== LABEL ======================================
 
+	public LabelType[] getGoldLabels()
+	{
+		return g_labels;
+	}
+	
 	/** @return the gold-standard label for the current state. */
 	abstract public LabelType getGoldLabel();
 	

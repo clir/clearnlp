@@ -41,9 +41,9 @@ abstract public class AbstractOnlineTrainer extends AbstractTrainer
 	}
 	
 	/** @param average if {@code true}, weights are averaged. */
-	public AbstractOnlineTrainer(StringModel model, int labelCutoff, int featureCutoff, boolean reset, boolean average)
+	public AbstractOnlineTrainer(StringModel model, int labelCutoff, int featureCutoff, boolean average)
 	{
-		super(model, labelCutoff, featureCutoff, reset);
+		super(model, labelCutoff, featureCutoff);
 		init(average);
 	}
 

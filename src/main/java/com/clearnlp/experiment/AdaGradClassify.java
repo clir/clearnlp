@@ -23,8 +23,8 @@ import com.clearnlp.classification.model.AbstractModel;
 import com.clearnlp.classification.model.SparseModel;
 import com.clearnlp.classification.model.StringModel;
 import com.clearnlp.classification.train.AbstractTrainer;
-import com.clearnlp.classification.train.AdaGradSVM;
 import com.clearnlp.classification.train.AdaGradLR;
+import com.clearnlp.classification.train.AdaGradSVM;
 
 /**
  * @since 3.0.0
@@ -64,8 +64,8 @@ public class AdaGradClassify extends AbstractClassifyOnline
 		}
 		else
 		{
-			if (b_average)	return new AdaGradLR((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), false, c.isAverage(), c.getLearningRate(), c.getRidge());
-			else			return new AdaGradSVM   ((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), false, c.isAverage(), c.getLearningRate(), c.getRidge());
+			if (b_average)	return new AdaGradLR((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge());
+			else			return new AdaGradSVM   ((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge());
 		}
 	}
 	

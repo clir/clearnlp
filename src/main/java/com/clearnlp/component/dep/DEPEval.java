@@ -24,7 +24,7 @@ import com.clearnlp.dependency.DEPTree;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class DEPEval extends AbstractEval
+public class DEPEval extends AbstractEval<StringIntPair>
 {
 	private int n_total;
 	private int n_las;
@@ -46,7 +46,7 @@ public class DEPEval extends AbstractEval
 	}
 	
 	@Override
-	public void countAccuracy(DEPTree sTree, Object[] gHeads)
+	public void countCorrect(DEPTree sTree, StringIntPair[] gHeads)
 	{
 		StringIntPair[] heads = (StringIntPair[])gHeads;
 		int i, size = sTree.size();
@@ -71,7 +71,7 @@ public class DEPEval extends AbstractEval
 	}
 	
 	@Override
-	public double[] getAccuracies()
+	public double[] getScores()
 	{
 		double[] acc = new double[3];
 		
@@ -85,7 +85,7 @@ public class DEPEval extends AbstractEval
 	@Override
 	public String toString()
 	{
-		double[] d = getAccuracies();
+		double[] d = getScores();
 		return String.format("LAS: %5.2f (%d), UAS: %5.2f (%d), LS: %5.2f (%d), TOTAL: %d", d[0], n_las, d[1], n_uas, d[2], n_ls, n_total);
 	}
 }

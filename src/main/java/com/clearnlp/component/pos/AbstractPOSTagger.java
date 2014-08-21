@@ -31,7 +31,7 @@ import com.clearnlp.dependency.DEPTree;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSFeatureExtractor>
+public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSEval, POSFeatureExtractor>
 {
 	private final int LEXICON_LOWER_SIMPLIFIED_WORD_FORM = 0;
 	private final int LEXICON_AMBIGUITY_CLASS = 1;
@@ -57,6 +57,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	public AbstractPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
 	{
 		super(extractors, lexicons, models, bootstrap);
+		if (isEvaluate()) c_eval = new POSEval();
 	}
 	
 	/** Creates a pos tagger for decode. */
@@ -109,13 +110,9 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 		else
 		{
 			List<StringInstance> instances = processAux(state);
-			if (isTrainOrBootstrap()) s_models[0].addInstances(instances);
-			
-			
+			if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
+			else if (isEvaluate())		c_eval.countCorrect(tree, state.getGoldLabels());
 		}
-		
-		
-		
 	}
 	
 	private List<StringInstance> processAux(POSState state)

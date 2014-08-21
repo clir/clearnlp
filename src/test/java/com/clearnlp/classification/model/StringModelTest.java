@@ -65,7 +65,7 @@ public class StringModelTest
 		for (StringInstance inst : instances)
 			model.addInstance(inst);
 
-		model.initializeForTraining(2, 1, false);
+		model.initializeForTraining(2, 1);
 		assertEquals(   1, model.getLabelSize());
 		assertEquals(   4, model.getFeatureSize());
 		assertEquals(   4, vector.size());
@@ -74,7 +74,7 @@ public class StringModelTest
 		for (StringInstance inst : instances)
 			model.addInstance(inst);
 		
-		List<IntInstance> list = model.initializeForTraining(0, 0, false);
+		List<IntInstance> list = model.initializeForTraining(0, 0);
 		
 		assertEquals(   2, model.getLabelSize());
 		assertEquals(  13, model.getFeatureSize());
@@ -184,7 +184,7 @@ public class StringModelTest
 		for (StringInstance inst : instances)
 			model.addInstance(inst);
 
-		model.initializeForTraining(1, 1, false);
+		model.initializeForTraining(1, 1);
 		assertEquals(2, model.getLabelSize());
 		assertEquals(4, model.getFeatureSize());
 		assertEquals(8, vector.size());
@@ -193,7 +193,7 @@ public class StringModelTest
 		for (StringInstance inst : instances)
 			model.addInstance(inst);
 		
-		List<IntInstance> list = model.initializeForTraining(0, 0, false);
+		List<IntInstance> list = model.initializeForTraining(0, 0);
 		
 		assertEquals( 3, model.getLabelSize());
 		assertEquals( 7, model.getFeatureSize());

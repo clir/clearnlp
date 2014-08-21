@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.bin.configuration;
+package com.clearnlp.nlp.configure;
 
 import java.io.InputStream;
 
@@ -27,11 +27,11 @@ import com.clearnlp.util.XmlUtils;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public class POSConfiguration extends AbstractConfiguration
+public class DefaultConfiguration extends AbstractConfiguration
 {
 	private POSConfig pos_config;
 	
-	public POSConfiguration(InputStream in)
+	public DefaultConfiguration(InputStream in)
 	{
 		super(in);
 		init();
@@ -39,7 +39,7 @@ public class POSConfiguration extends AbstractConfiguration
 	
 	private void init()
 	{
-		Element eTop = XmlUtils.getFirstElementByTagName(x_document, NLPMode.pos.toString());
+		Element eTop = XmlUtils.getFirstElementByTagName(x_top, NLPMode.pos.toString());
 		pos_config = getPOSConfig(eTop);
 	}
 

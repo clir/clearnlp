@@ -41,9 +41,9 @@ public class AdaGradLR extends AbstractAdaGrad
 	 * @param alpha the learning rate.
 	 * @param rho the smoothing denominator.
 	 */
-	public AdaGradLR(StringModel model, int labelCutoff, int featureCutoff, boolean reset, boolean average, double alpha, double rho)
+	public AdaGradLR(StringModel model, int labelCutoff, int featureCutoff, boolean average, double alpha, double rho)
 	{
-		super(model, labelCutoff, featureCutoff, reset, average, alpha, rho);
+		super(model, labelCutoff, featureCutoff, average, alpha, rho);
 	}
 	
 	@Override

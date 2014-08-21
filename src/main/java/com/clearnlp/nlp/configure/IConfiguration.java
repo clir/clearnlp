@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.bin.configuration;
+package com.clearnlp.nlp.configure;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-public interface ConfigurationXML
+public interface IConfiguration
 {
 	String E_LANGUAGE	= "language";
 	String E_READER		= "reader";
 	String E_MODEL		= "model";
 	String E_COLUMN		= "column";
-	String E_ALGORITHM	= "algorithm";
+	
 	String E_CUTOFF		= "cutoff";
 	
 	String A_TYPE		= "type";
@@ -47,9 +47,19 @@ public interface ConfigurationXML
 	String FIELD_NAMENT	= "nament";
 	String FIELD_COREF	= "coref";
 	
-	String ALG_ADAGRAD		= "adagrad";
-	String ALG_LIBLINEAR	= "liblinear";
+	
 	
 	String V_SUPPORT_VECTOR_MACHINE	= "svm";
 	String V_LOGISTIC_REGRESSION	= "lr";
+	
+	
+//	========================== TRAINER ==========================
+	
+	String E_TRAINER			= "trainer";
+	String A_ALGORITHM			= "algorithm";
+	String A_LABEL_CUTOFF		= "labelCutoff";
+	String A_FEATURE_CUTOFF		= "featureCutoff";
+	String A_NUMBER_OF_THREADS	= "threads";
+	String ALG_ADAGRAD			= "adagrad";
+	String ALG_LIBLINEAR		= "liblinear";
 }

@@ -91,6 +91,11 @@ public class XmlUtils
 		return element.getAttribute(name).trim();
 	}
 	
+	static public boolean getBooleanAttribute(Element element, String name)
+	{
+		return Boolean.parseBoolean(getTrimmedAttribute(element, name));
+	}
+	
 	static public int getIntegerAttribute(Element element, String name)
 	{
 		return Integer.parseInt(getTrimmedAttribute(element, name));

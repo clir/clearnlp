@@ -20,7 +20,7 @@ package com.clearnlp.component.evaluation;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractAccuracyEval extends AbstractEval
+abstract public class AbstractAccuracyEval<LabelType> extends AbstractEval<LabelType>
 {
 	protected int n_total;
 	protected int n_correct;
@@ -38,7 +38,7 @@ abstract public class AbstractAccuracyEval extends AbstractEval
 	}
 	
 	@Override
-	public double[] getAccuracies()
+	public double[] getScores()
 	{
 		return new double[]{100d * n_correct / n_total};
 	}

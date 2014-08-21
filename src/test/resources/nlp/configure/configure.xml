@@ -14,8 +14,8 @@
     </reader>
 
     <pos>
-        <cutoff label="0" feature="2" ambiguityClass="0.4" documentFrequency="1" documentBoundary="1500"/>
-        <algorithm name="adagrad" type="svm" alpha="0.01" rho="0.1" eps="0.1"/>
+        <trainer algorithm="adagrad" type="svm" labelCutoff="0" featureCutoff="2" alpha="0.01" rho="0.1" eps="0.1"/>
+        <cutoff ambiguityClass="0.4" documentFrequency="1" documentBoundary="1500"/>
         <bootstraps>1</bootstraps>
         <threads>2</threads>
     </pos>

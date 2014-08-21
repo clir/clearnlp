@@ -21,10 +21,10 @@ import com.clearnlp.dependency.DEPTree;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
  */
-abstract public class AbstractEval
+abstract public class AbstractEval<LabelType>
 {
-	abstract public void countAccuracy(DEPTree sTree, Object[] gLabels);
-	abstract public double[] getAccuracies();
+	abstract public void countCorrect(DEPTree sTree, LabelType[] gLabels);
+	abstract public double[] getScores();
 	abstract public String toString();
 	abstract public void clear();
 }
