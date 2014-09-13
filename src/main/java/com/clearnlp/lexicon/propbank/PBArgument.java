@@ -28,7 +28,7 @@ import com.sun.xml.internal.txw2.IllegalAnnotationException;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class PBArgument implements Serializable, Comparable<PBArgument>
 {

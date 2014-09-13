@@ -21,32 +21,28 @@ import org.junit.Test;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class Increment1DMapTest
+public class IncMap2Test
 {
 	@Test
 	public void test()
 	{
-		Increment1DMap<String> map = new Increment1DMap<>();
+		IncMap2<String,String> map = new IncMap2<>();
 		
-		map.add("A");
-		map.add("B", 2);
-		map.add("C");
-		map.add("A");
-		map.add("B", 2);
-		map.add("D");
+		map.add("A", "a1");
+		map.add("A", "a2");
+		map.add("A", "a1");
+		map.add("A", "a3");
 		
-		assertEquals("[(C,1), (D,1), (B,4), (A,2)]", map.toList(0).toString());
-		assertEquals("[(C,0.125), (D,0.125), (B,0.5), (A,0.25)]", map.toList(0d).toString());
+		map.add("B", "b1");
+		map.add("B", "b2", 2);
+		map.add("B", "b3");
+
+		assertEquals("[A, B]", map.getKeySet1().toString());
 		
-		assertEquals("[(B,4), (A,2)]", map.toList(1).toString());
-		assertEquals("[(B,0.5), (A,0.25)]", map.toList(0.2).toString());
-		
-		assertEquals("[D, A, B, C]", map.keySet(0).toString());
-		assertEquals("[D, A, B, C]", map.keySet(0d).toString());
-		
-		assertEquals("[A, B]", map.keySet(1).toString());
-		assertEquals("[A, B]", map.keySet(0.2).toString());
+		assertEquals("[(a3,1), (a1,2), (a2,1)]", map.toList("A", 0).toString());
+		assertEquals("[(b1,1), (b2,2), (b3,1)]", map.toList("B", 0).toString());
+		assertEquals("[(a1,2)]", map.toList("A", 1).toString());
 	}
 }

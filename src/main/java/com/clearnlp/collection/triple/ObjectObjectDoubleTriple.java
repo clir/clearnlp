@@ -44,7 +44,7 @@ import com.clearnlp.util.MathUtils;
 
 /**
  * @since 2.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class ObjectObjectDoubleTriple<T1,T2> implements Comparable<ObjectObjectDoubleTriple<T1,T2>>
 {

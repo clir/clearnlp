@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.clearnlp.collection.map.Increment2DMap;
+import com.clearnlp.collection.map.IncMap2;
 import com.clearnlp.collection.map.ObjectIntHashMap;
 import com.clearnlp.collection.pair.ObjectDoublePair;
 import com.clearnlp.dependency.DEPNode;
@@ -33,13 +33,13 @@ import com.google.common.collect.Sets;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class POSCollector implements Serializable
 {
 	private static final long serialVersionUID = -1309316221225281613L;
 	
-	private Increment2DMap<String,String> m_ambi;
+	private IncMap2<String,String> m_ambi;
 	private ObjectIntHashMap<String>      m_lswf;
 	private Set<String>                   s_lswf;
 	private int                           n_trees;
@@ -50,7 +50,7 @@ public class POSCollector implements Serializable
 	
 	public POSCollector(POSConfig config)
 	{
-		m_ambi  = new Increment2DMap<>();
+		m_ambi  = new IncMap2<>();
 		m_lswf  = new ObjectIntHashMap<>();
 		s_lswf  = Sets.newHashSet();
 		n_trees = 0;

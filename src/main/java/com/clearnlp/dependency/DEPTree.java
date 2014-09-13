@@ -30,7 +30,7 @@ import com.google.common.collect.Lists;
 
 /**
  * @since 1.0.0.
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class DEPTree implements Iterable<DEPNode>
 {

@@ -25,7 +25,7 @@ import java.util.ListIterator;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class SortedArrayList<T extends Comparable<T>> implements List<T>, Serializable, Iterable<T>
 {
@@ -247,7 +247,7 @@ public class SortedArrayList<T extends Comparable<T>> implements List<T>, Serial
 	}
 	
 	/** @deprecated Use {@link #indexOf(Comparable)} instead. */
-	@Override @Deprecated
+	@Override
 	public int indexOf(Object o)
 	{
 		throw new UnsupportedOperationException();

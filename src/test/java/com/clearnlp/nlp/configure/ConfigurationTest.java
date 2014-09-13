@@ -29,7 +29,7 @@ import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.lang.TLanguage;
 
 
-/** @author Jinho D. Choi ({@code jdchoi77@gmail.com}) */
+/** @author Jinho D. Choi ({@code jinho.choi@emory.edu}) */
 public class ConfigurationTest
 {
 	@Test

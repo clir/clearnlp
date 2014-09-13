@@ -24,7 +24,7 @@ import com.clearnlp.util.adapter.Adapter1;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 abstract public class AbstractInstanceReader<I extends AbstractInstance<F>, F extends AbstractFeatureVector> extends AbstractReader<I>
 {

@@ -21,7 +21,7 @@ import com.clearnlp.dependency.DEPNode;
 /**
  * Default morphological analyzer.
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 abstract public class AbstractMPAnalyzer extends AbstractComponent
 {

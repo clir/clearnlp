@@ -36,7 +36,7 @@ import com.google.common.collect.Sets;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class DEPNode implements Comparable<DEPNode>
 {

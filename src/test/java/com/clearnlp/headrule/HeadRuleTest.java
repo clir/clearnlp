@@ -26,7 +26,7 @@ import com.clearnlp.conversion.headrule.HeadRule;
 import com.clearnlp.conversion.headrule.HeadTagSet;
 
 
-/** @author Jinho D. Choi ({@code jdchoi77@gmail.com}) */
+/** @author Jinho D. Choi ({@code jinho.choi@emory.edu}) */
 public class HeadRuleTest
 {
 	@Test

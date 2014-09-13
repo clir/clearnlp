@@ -20,7 +20,7 @@ import java.io.Serializable;
 /**
  * The Enum DEPRelationType.
  *
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  * @since 3.0.0
  */
 public enum RelationType implements Serializable

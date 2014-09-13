@@ -30,7 +30,7 @@ import com.clearnlp.feature.AbstractFeatureExtractor;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 abstract public class AbstractStatisticalComponent<LabelType, StateType extends AbstractState<LabelType>, EvalType extends AbstractEval<LabelType>, FeatureType extends AbstractFeatureExtractor<?,?,?>> extends AbstractComponent
 {

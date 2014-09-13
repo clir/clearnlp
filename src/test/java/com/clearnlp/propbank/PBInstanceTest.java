@@ -24,7 +24,7 @@ import com.clearnlp.lexicon.propbank.PBInstance;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class PBInstanceTest
 {

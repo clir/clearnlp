@@ -29,7 +29,7 @@ import com.clearnlp.classification.vector.SparseFeatureVector;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class SparseModel extends AbstractModel<SparseInstance,SparseFeatureVector>
 {

@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class ObjectIntPair<T> implements Serializable, Comparable<ObjectIntPair<T>>
 {

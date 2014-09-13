@@ -17,63 +17,63 @@ package com.clearnlp.component.pos;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class POSConfig
 {
-	private int n_label;
-	private int n_feature;
-	private int n_documentFrequency;
-	private int n_documentBoundary;
-	private double t_ambiguityClass;
+	private int    cutoff_label;
+	private int    cutoff_feature;
+	private int    cutoff_documentFrequency;
+	private int    cutoff_documentBoundary;
+	private double threshold_ambiguityClass;
 	
 	public int getLabelCutoff()
 	{
-		return n_label;
+		return cutoff_label;
 	}
 	
 	public int getFeatureCutoff()
 	{
-		return n_feature;
+		return cutoff_feature;
 	}
 	
 	public int getDocumentFrequencyCutoff()
 	{
-		return n_documentFrequency;
+		return cutoff_documentFrequency;
 	}
 	
 	public int getDocumentBoundaryCutoff()
 	{
-		return n_documentBoundary;
+		return cutoff_documentBoundary;
 	}
 	
 	public double getAmbiguityClassThreshold()
 	{
-		return t_ambiguityClass;
+		return threshold_ambiguityClass;
 	}
 	
 	public void setLabelCutoff(int cutoff)
 	{
-		n_label = cutoff;
+		cutoff_label = cutoff;
 	}
 	
 	public void setFeatureCutoff(int cutoff)
 	{
-		n_feature = cutoff;
+		cutoff_feature = cutoff;
 	}
 	
 	public void setDocumentFrequencyCutoff(int cutoff)
 	{
-		n_documentFrequency = cutoff;
+		cutoff_documentFrequency = cutoff;
 	}
 	
 	public void setDocumentBoundaryCutoff(int cutoff)
 	{
-		n_documentBoundary = cutoff;
+		cutoff_documentBoundary = cutoff;
 	}
 	
 	public void setAmbiguityClassThreshold(double threshold)
 	{
-		t_ambiguityClass = threshold;
+		threshold_ambiguityClass = threshold;
 	}
 }

@@ -25,13 +25,13 @@ import com.clearnlp.util.MathUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class Increment1DMap<T> implements Serializable
+public class IncMap1<T> implements Serializable
 {
 	private static final long serialVersionUID = 2431106431004828434L;
 	private ObjectIntHashMap<T> g_map;
 	private int i_total;
 
-	public Increment1DMap()
+	public IncMap1()
 	{
 		g_map = new ObjectIntHashMap<>();
 		i_total = 0;

@@ -15,6 +15,7 @@
  */
 package com.clearnlp.experiment;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +38,6 @@ import com.clearnlp.dictionary.DTPath;
 import com.clearnlp.lexicon.wordnet.WNMap;
 import com.clearnlp.lexicon.wordnet.WNPOSTag;
 import com.clearnlp.lexicon.wordnet.WNSynset;
-import com.clearnlp.nlp.NLPMode;
 import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.IOUtils;
 import com.clearnlp.util.constant.StringConst;
@@ -47,13 +47,56 @@ import com.google.common.collect.Sets;
 
 /**
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		System.out.println(NLPMode.pos.toString().equals("pos"));
+		int i, j, iter = 1000000, size = 5;
+		ArrayList<String> list = null;
+		ArrayDeque<String> deque = null;
+		long st, et;
+		
+		st = System.currentTimeMillis();
+		for (i=0; i<iter; i++)
+		{
+			list = new ArrayList<>();
+			for (j=0; j<size; j++)
+				list.add("a");
+		}
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
+		
+		st = System.currentTimeMillis();
+		for (i=0; i<iter; i++)
+		{
+			deque = new ArrayDeque<>();
+			for (j=0; j<size; j++)
+				deque.add("a");
+		}
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
+		
+		st = System.currentTimeMillis();
+		for (i=0; i<iter; i++)
+		{
+			list = new ArrayList<>();
+			for (j=0; j<size; j++)
+				list.add(0, "a");
+		}
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
+		
+		st = System.currentTimeMillis();
+		for (i=0; i<iter; i++)
+		{
+			deque = new ArrayDeque<>();
+			for (j=0; j<size; j++)
+				deque.push("a");
+		}
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
 	}
 	
 	public void emoticon(String[] args) throws Exception

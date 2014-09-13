@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.clearnlp.tokenization.english;
+package com.clearnlp.collection.map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -26,19 +23,30 @@ import org.junit.Test;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class ApostropheTokenizerTest
+public class IncMap1Test
 {
 	@Test
 	public void test()
 	{
-		ApostropheEnglishTokenizer dt = new ApostropheEnglishTokenizer();
+		IncMap1<String> map = new IncMap1<>();
 		
-		assertEquals("[he, 's]" , Arrays.toString(dt.tokenize("he's")));
-		assertEquals("[he, 'S]" , Arrays.toString(dt.tokenize("he'S")));
-		assertEquals("[do, n't]", Arrays.toString(dt.tokenize("don't")));
-		assertEquals("[do, 'nt]", Arrays.toString(dt.tokenize("do'nt")));
+		map.add("A");
+		map.add("B", 2);
+		map.add("C");
+		map.add("A");
+		map.add("B", 2);
+		map.add("D");
 		
-		assertTrue(dt.tokenize("he'dd") == null);
-		assertTrue(dt.tokenize("dont")  == null);
+		assertEquals("[(C,1), (D,1), (B,4), (A,2)]", map.toList(0).toString());
+		assertEquals("[(C,0.125), (D,0.125), (B,0.5), (A,0.25)]", map.toList(0d).toString());
+		
+		assertEquals("[(B,4), (A,2)]", map.toList(1).toString());
+		assertEquals("[(B,0.5), (A,0.25)]", map.toList(0.2).toString());
+		
+		assertEquals("[D, A, B, C]", map.keySet(0).toString());
+		assertEquals("[D, A, B, C]", map.keySet(0d).toString());
+		
+		assertEquals("[A, B]", map.keySet(1).toString());
+		assertEquals("[A, B]", map.keySet(0.2).toString());
 	}
 }

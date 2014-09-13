@@ -59,7 +59,7 @@ import com.google.common.collect.Sets;
 /**
  * Constituent to dependency converter for English.
  * @since 3.0.0
- * @author Jinho D. Choi ({@code jdchoi77@gmail.com})
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class EnglishC2DConverter extends AbstractC2DConverter
 {
