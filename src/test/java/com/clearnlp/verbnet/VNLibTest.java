@@ -23,11 +23,12 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.clearnlp.lexicon.verbnet.VNClass;
-import com.clearnlp.lexicon.verbnet.VNFrame;
-import com.clearnlp.lexicon.verbnet.VNLib;
-import com.clearnlp.lexicon.verbnet.VNMap;
 import com.google.common.collect.Lists;
+
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNClass;
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNFrame;
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNLib;
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNMap;
 
 
 /**

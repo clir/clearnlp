@@ -24,17 +24,19 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import com.clearnlp.constituent.matcher.CTNodeMatcherC;
-import com.clearnlp.constituent.matcher.CTNodeMatcherCFa;
-import com.clearnlp.constituent.matcher.CTNodeMatcherCFo;
-import com.clearnlp.constituent.matcher.CTNodeMatcherCo;
-import com.clearnlp.constituent.matcher.CTNodeMatcherF;
-import com.clearnlp.constituent.matcher.CTNodeMatcherFa;
-import com.clearnlp.constituent.matcher.CTNodeMatcherFo;
-import com.clearnlp.constituent.matcher.CTNodeMatcherP;
-import com.clearnlp.constituent.matcher.CTNodeMatcherPFa;
-import com.clearnlp.constituent.matcher.CTNodeMatcherPFo;
-import com.clearnlp.util.PatternUtils;
+import edu.emory.clir.clearnlp.constituent.CTNode;
+import edu.emory.clir.clearnlp.constituent.CTTagEn;
+import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherC;
+import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherCFa;
+import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherCFo;
+import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherCo;
+import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherF;
+import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherFa;
+import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherFo;
+import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherP;
+import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherPFa;
+import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherPFo;
+import edu.emory.clir.clearnlp.util.PatternUtils;
 
 /**
  * @since 3.0.0

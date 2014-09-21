@@ -22,8 +22,10 @@ import java.io.BufferedReader;
 
 import org.junit.Test;
 
-import com.clearnlp.util.CharUtils;
-import com.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
+import edu.emory.clir.clearnlp.tokenization.EnglishTokenizer;
+import edu.emory.clir.clearnlp.util.CharUtils;
+import edu.emory.clir.clearnlp.util.IOUtils;
 
 /**
  * @since 3.0.0

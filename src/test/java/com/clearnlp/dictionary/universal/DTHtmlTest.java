@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.clearnlp.dictionary.universal.DTHtml;
+import edu.emory.clir.clearnlp.dictionary.universal.DTHtml;
 
 /**
  * @since 3.0.0

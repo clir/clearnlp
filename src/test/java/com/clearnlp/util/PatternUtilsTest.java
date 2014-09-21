@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import edu.emory.clir.clearnlp.util.PatternUtils;
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

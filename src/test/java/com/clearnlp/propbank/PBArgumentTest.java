@@ -20,8 +20,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.clearnlp.lexicon.propbank.PBArgument;
-import com.clearnlp.lexicon.propbank.PBLocation;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBArgument;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBLocation;
 
 /**
  * @since 3.0.0

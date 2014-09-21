@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.clearnlp.dictionary.universal.DTUnit;
+import edu.emory.clir.clearnlp.dictionary.universal.DTUnit;
 
 /**
  * @since 3.0.0

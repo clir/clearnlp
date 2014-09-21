@@ -21,13 +21,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.clearnlp.constituent.CTNode;
-import com.clearnlp.constituent.CTTree;
-import com.clearnlp.lexicon.propbank.PBArgument;
-import com.clearnlp.lexicon.propbank.PBInstance;
-import com.clearnlp.lexicon.propbank.PBReader;
-import com.clearnlp.lexicon.propbank.PBTag;
-import com.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.constituent.CTNode;
+import edu.emory.clir.clearnlp.constituent.CTTree;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBArgument;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBInstance;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBReader;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBTag;
+import edu.emory.clir.clearnlp.util.IOUtils;
 
 
 /**

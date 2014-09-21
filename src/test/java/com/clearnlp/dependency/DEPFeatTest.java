@@ -19,7 +19,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.dependency.DEPFeat;
+import edu.emory.clir.clearnlp.reader.TSVReader;
 
 /**
  * @since 3.0.0

@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.clearnlp.lexicon.verbnet.VNTag;
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNTag;
 
 /**
  * @since 3.0.0

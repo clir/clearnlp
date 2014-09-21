@@ -28,7 +28,7 @@ import java.io.ObjectOutputStream;
 
 import org.junit.Test;
 
-import com.clearnlp.collection.set.IntHashSet;
+import edu.emory.clir.clearnlp.collection.set.IntHashSet;
 
 /**
  * @since 3.0.0

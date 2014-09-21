@@ -19,6 +19,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import edu.emory.clir.clearnlp.collection.list.Stack;
+
 
 /**
  * @since 3.0.0

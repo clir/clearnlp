@@ -22,8 +22,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.clearnlp.dictionary.universal.DTCompound;
-import com.clearnlp.util.lang.TLanguage;
+import edu.emory.clir.clearnlp.dictionary.universal.DTCompound;
+import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
 /**
  * @since 3.0.0

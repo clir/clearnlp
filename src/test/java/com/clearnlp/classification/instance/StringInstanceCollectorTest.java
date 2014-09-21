@@ -19,13 +19,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.clearnlp.classification.instance.StringInstanceCollector;
-import com.clearnlp.classification.instance.StringInstance;
-import com.clearnlp.classification.map.FeatureMap;
-import com.clearnlp.classification.map.LabelMap;
-import com.clearnlp.classification.vector.StringFeatureVector;
-import com.clearnlp.collection.map.IntObjectHashMap;
-import com.clearnlp.collection.map.ObjectIntHashMap;
+import edu.emory.clir.clearnlp.classification.instance.StringInstance;
+import edu.emory.clir.clearnlp.classification.instance.StringInstanceCollector;
+import edu.emory.clir.clearnlp.classification.map.FeatureMap;
+import edu.emory.clir.clearnlp.classification.map.LabelMap;
+import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
+import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
+import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 
 /**
  * @since 3.0.0

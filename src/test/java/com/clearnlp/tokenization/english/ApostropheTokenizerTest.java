@@ -22,6 +22,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import edu.emory.clir.clearnlp.tokenization.english.ApostropheEnglishTokenizer;
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

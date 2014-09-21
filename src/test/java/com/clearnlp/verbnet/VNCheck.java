@@ -20,13 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.clearnlp.lexicon.verbnet.VNClass;
-import com.clearnlp.lexicon.verbnet.VNFrame;
-import com.clearnlp.lexicon.verbnet.VNLib;
-import com.clearnlp.lexicon.verbnet.VNMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNClass;
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNFrame;
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNLib;
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNMap;
 
 /**
  * @since 3.0.0

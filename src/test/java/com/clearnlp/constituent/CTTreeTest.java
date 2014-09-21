@@ -25,6 +25,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import edu.emory.clir.clearnlp.constituent.CTNode;
+import edu.emory.clir.clearnlp.constituent.CTReader;
+import edu.emory.clir.clearnlp.constituent.CTTree;
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

@@ -21,8 +21,11 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.clearnlp.util.IOUtils;
 import com.google.common.collect.Lists;
+
+import edu.emory.clir.clearnlp.constituent.CTReader;
+import edu.emory.clir.clearnlp.constituent.CTTree;
+import edu.emory.clir.clearnlp.util.IOUtils;
 
 
 /**

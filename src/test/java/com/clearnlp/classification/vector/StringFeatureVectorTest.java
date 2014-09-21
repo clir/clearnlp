@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.clearnlp.classification.vector.StringFeatureVector;
+import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 
 
 /**

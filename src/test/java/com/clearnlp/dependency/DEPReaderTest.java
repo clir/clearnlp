@@ -22,7 +22,8 @@ import java.io.FileInputStream;
 
 import org.junit.Test;
 
-import com.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.reader.TSVReader;
 
 
 /**

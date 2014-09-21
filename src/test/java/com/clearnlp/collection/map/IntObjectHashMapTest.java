@@ -27,8 +27,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.clearnlp.collection.pair.ObjectIntPair;
 import com.google.common.collect.Lists;
+
+import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
+import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 
 /**
  * @since 3.0.0

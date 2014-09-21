@@ -19,7 +19,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.util.arc.SRLArc;
 
 /**
  * @since 3.0.0

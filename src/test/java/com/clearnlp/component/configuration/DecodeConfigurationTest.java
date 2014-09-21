@@ -22,12 +22,12 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import com.clearnlp.dependency.DEPTree;
-import com.clearnlp.nlp.configuration.DecodeConfiguration;
-import com.clearnlp.reader.TReader;
-import com.clearnlp.reader.TSVReader;
-import com.clearnlp.util.IOUtils;
-import com.clearnlp.util.lang.TLanguage;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.nlp.configuration.DecodeConfiguration;
+import edu.emory.clir.clearnlp.reader.TReader;
+import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
 
 /** @author Jinho D. Choi ({@code jinho.choi@emory.edu}) */

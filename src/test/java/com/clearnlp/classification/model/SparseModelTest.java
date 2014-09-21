@@ -20,10 +20,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.clearnlp.classification.instance.SparseInstance;
-import com.clearnlp.classification.instance.SparseInstanceReader;
-import com.clearnlp.classification.vector.AbstractWeightVector;
-import com.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.classification.instance.SparseInstance;
+import edu.emory.clir.clearnlp.classification.instance.SparseInstanceReader;
+import edu.emory.clir.clearnlp.classification.model.SparseModel;
+import edu.emory.clir.clearnlp.classification.vector.AbstractWeightVector;
+import edu.emory.clir.clearnlp.util.IOUtils;
 
 
 /**

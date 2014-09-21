@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import edu.emory.clir.clearnlp.util.Splitter;
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

@@ -19,7 +19,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.clearnlp.classification.vector.SparseFeatureVector;
+import edu.emory.clir.clearnlp.classification.instance.SparseInstance;
+import edu.emory.clir.clearnlp.classification.instance.SparseInstanceCollector;
+import edu.emory.clir.clearnlp.classification.vector.SparseFeatureVector;
 
 /**
  * @since 3.0.0

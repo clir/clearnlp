@@ -17,11 +17,12 @@ package com.clearnlp.feature.common;
 
 import java.io.FileInputStream;
 
-import com.clearnlp.classification.vector.StringFeatureVector;
-import com.clearnlp.component.mode.pos.POSState;
-import com.clearnlp.component.state.SeqState;
-import com.clearnlp.reader.TSVReader;
-import com.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
+import edu.emory.clir.clearnlp.component.mode.pos.POSState;
+import edu.emory.clir.clearnlp.component.state.SeqState;
+import edu.emory.clir.clearnlp.feature.common.CommonFeatureExtractor;
+import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.util.IOUtils;
 
 /**
  * @since 3.0.0

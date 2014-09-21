@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.clearnlp.dictionary.universal.DTCurrency;
+import edu.emory.clir.clearnlp.dictionary.universal.DTCurrency;
 
 /**
  * @since 3.0.0

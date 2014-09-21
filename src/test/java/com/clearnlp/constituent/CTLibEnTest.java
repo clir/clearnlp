@@ -21,8 +21,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.clearnlp.lexicon.propbank.PBLocation;
-import com.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.constituent.CTLibEn;
+import edu.emory.clir.clearnlp.constituent.CTReader;
+import edu.emory.clir.clearnlp.constituent.CTTree;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBLocation;
+import edu.emory.clir.clearnlp.util.IOUtils;
 
 /**
  * @since 3.0.0

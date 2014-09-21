@@ -26,10 +26,12 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.clearnlp.collection.pair.DoubleIntPair;
-import com.clearnlp.collection.pair.Pair;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
+import edu.emory.clir.clearnlp.collection.pair.DoubleIntPair;
+import edu.emory.clir.clearnlp.collection.pair.Pair;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.0

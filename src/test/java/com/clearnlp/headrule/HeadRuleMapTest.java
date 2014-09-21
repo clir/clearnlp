@@ -19,8 +19,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.clearnlp.conversion.headrule.HeadRuleMap;
-import com.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.conversion.headrule.HeadRuleMap;
+import edu.emory.clir.clearnlp.util.IOUtils;
 
 
 /** @author Jinho D. Choi ({@code jinho.choi@emory.edu}) */

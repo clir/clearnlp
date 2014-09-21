@@ -22,11 +22,15 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.clearnlp.reader.TSVReader;
-import com.clearnlp.srl.SRLTree;
-import com.clearnlp.util.Joiner;
-import com.clearnlp.util.arc.SRLArc;
 import com.google.common.collect.Lists;
+
+import edu.emory.clir.clearnlp.dependency.DEPFeat;
+import edu.emory.clir.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.srl.SRLTree;
+import edu.emory.clir.clearnlp.util.Joiner;
+import edu.emory.clir.clearnlp.util.arc.SRLArc;
 
 
 /**

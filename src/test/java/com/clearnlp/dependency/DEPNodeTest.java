@@ -25,9 +25,14 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import com.clearnlp.reader.TSVReader;
-import com.clearnlp.util.PatternUtils;
 import com.google.common.collect.Sets;
+
+import edu.emory.clir.clearnlp.dependency.DEPFeat;
+import edu.emory.clir.clearnlp.dependency.DEPLib;
+import edu.emory.clir.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.util.PatternUtils;
 
 /**
  * @since 3.0.0

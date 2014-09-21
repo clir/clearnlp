@@ -30,15 +30,17 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.clearnlp.classification.instance.IntInstance;
-import com.clearnlp.classification.instance.StringInstance;
-import com.clearnlp.classification.instance.StringInstanceReader;
-import com.clearnlp.classification.prediction.StringPrediction;
-import com.clearnlp.classification.vector.AbstractWeightVector;
-import com.clearnlp.classification.vector.StringFeatureVector;
-import com.clearnlp.collection.pair.Pair;
-import com.clearnlp.util.IOUtils;
 import com.google.common.collect.Lists;
+
+import edu.emory.clir.clearnlp.classification.instance.IntInstance;
+import edu.emory.clir.clearnlp.classification.instance.StringInstance;
+import edu.emory.clir.clearnlp.classification.instance.StringInstanceReader;
+import edu.emory.clir.clearnlp.classification.model.StringModel;
+import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
+import edu.emory.clir.clearnlp.classification.vector.AbstractWeightVector;
+import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
+import edu.emory.clir.clearnlp.collection.pair.Pair;
+import edu.emory.clir.clearnlp.util.IOUtils;
 
 
 /**

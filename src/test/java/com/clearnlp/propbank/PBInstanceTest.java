@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.clearnlp.lexicon.propbank.PBInstance;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBInstance;
 
 
 /**

@@ -26,6 +26,8 @@ import java.io.ObjectOutputStream;
 
 import org.junit.Test;
 
+import edu.emory.clir.clearnlp.collection.list.CharArrayList;
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

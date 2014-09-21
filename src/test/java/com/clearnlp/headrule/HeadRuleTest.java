@@ -21,9 +21,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.clearnlp.constituent.CTNode;
-import com.clearnlp.conversion.headrule.HeadRule;
-import com.clearnlp.conversion.headrule.HeadTagSet;
+import edu.emory.clir.clearnlp.constituent.CTNode;
+import edu.emory.clir.clearnlp.conversion.headrule.HeadRule;
+import edu.emory.clir.clearnlp.conversion.headrule.HeadTagSet;
 
 
 /** @author Jinho D. Choi ({@code jinho.choi@emory.edu}) */

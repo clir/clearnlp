@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.clearnlp.dictionary.english.DTAbbreviation;
+import edu.emory.clir.clearnlp.dictionary.english.DTAbbreviation;
 
 /**
  * @since 3.0.0
