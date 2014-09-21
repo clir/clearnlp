@@ -15,7 +15,6 @@
  */
 package com.clearnlp.experiment;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,50 +52,33 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
+		long st, et, t1 = 0, t2 = 0;
 		int i, j, iter = 1000000, size = 5;
-		ArrayList<String> list = null;
-		ArrayDeque<String> deque = null;
-		long st, et;
 		
-		st = System.currentTimeMillis();
 		for (i=0; i<iter; i++)
 		{
-			list = new ArrayList<>();
-			for (j=0; j<size; j++)
-				list.add("a");
+			List<Integer> list = Lists.newArrayList();
+			st = System.currentTimeMillis();
+			for (j=0; j<size; j++) list.add(j);
+			j = list.get(0);
+			j = list.get(4);
+			et = System.currentTimeMillis();
+			t2 += et - st;
 		}
-		et = System.currentTimeMillis();
-		System.out.println(et-st);
+		System.out.println(t2);
 		
-		st = System.currentTimeMillis();
 		for (i=0; i<iter; i++)
 		{
-			deque = new ArrayDeque<>();
-			for (j=0; j<size; j++)
-				deque.add("a");
+			Integer[] array = new Integer[size];
+			st = System.currentTimeMillis();
+			for (j=0; j<size; j++) array[j] = j;
+			j = array[0];
+			j = array[4];
+			et = System.currentTimeMillis();
+			t1 += et - st;
 		}
-		et = System.currentTimeMillis();
-		System.out.println(et-st);
-		
-		st = System.currentTimeMillis();
-		for (i=0; i<iter; i++)
-		{
-			list = new ArrayList<>();
-			for (j=0; j<size; j++)
-				list.add(0, "a");
-		}
-		et = System.currentTimeMillis();
-		System.out.println(et-st);
-		
-		st = System.currentTimeMillis();
-		for (i=0; i<iter; i++)
-		{
-			deque = new ArrayDeque<>();
-			for (j=0; j<size; j++)
-				deque.push("a");
-		}
-		et = System.currentTimeMillis();
-		System.out.println(et-st);
+		System.out.println(t1);
+
 	}
 	
 	public void emoticon(String[] args) throws Exception

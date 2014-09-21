@@ -1272,8 +1272,8 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	
 	public DEPTree getDEPTreeWithoutEdited(CTTree cTree, DEPTree dTree)
 	{
+		List<DEPNode> nodes = Lists.newArrayList();
 		IntHashSet set = new IntHashSet();
-		DEPTree tree = new DEPTree();
 		int id = 1;
 			
 		addEditedTokensAux(cTree.getRoot(), set);
@@ -1285,11 +1285,11 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 				removeEditedHeads(node.getSecondaryHeadArcList(), set);
 				removeEditedHeads(node.getSemanticHeadArcList() , set);
 				node.setID(id++);
-				tree.add(node);
+				nodes.add(node);
 			}
 		}
-			
-		return (tree.size() > 1) ? tree : null;
+		
+		return (nodes.size() > 1) ? new DEPTree(nodes) : null;
 	}
 		
 	/** Called by {@link #getDEPTreeWithoutEdited(CTTree, DEPTree)}. */

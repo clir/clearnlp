@@ -37,16 +37,16 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	protected FeatureType[] f_extractors;
 	protected StringModel[] s_models;
 	protected EvalType      c_eval;
-	private CFlag c_flag;
+	private   CFlag         c_flag;
 	
-	/** Constructs a statistical component for collecting. */
+	/** Constructs a statistical component for collect. */
 	public AbstractStatisticalComponent(FeatureType[] extractors)
 	{
 		c_flag = CFlag.COLLECT;
 		setFeatureExtractors(extractors);
 	}
 	
-	/** Constructs a statistical component for training. */
+	/** Constructs a statistical component for train. */
 	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, boolean binary, int modelSize)
 	{
 		c_flag = CFlag.TRAIN;
@@ -55,16 +55,26 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 		setModels(createModels(binary, modelSize));
 	}
 	
-	/** Constructs a statistical component for bootstrapping or evaluation. */
-	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	/** Constructs a statistical component for bootstrap. */
+	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, StringModel[] models)
 	{
-		c_flag = bootstrap ? CFlag.BOOTSTRAP : CFlag.EVALUATE;
+		c_flag = CFlag.BOOTSTRAP;
 		setFeatureExtractors(extractors);
 		setLexicons(lexicons);
 		setModels(models);
 	}
 	
-	/** Constructs a statistical component for decoding. */
+	/** Constructs a statistical component for evaluate. */
+	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, StringModel[] models, EvalType eval)
+	{
+		c_flag = CFlag.EVALUATE;
+		setFeatureExtractors(extractors);
+		setLexicons(lexicons);
+		setModels(models);
+		setEval(eval);
+	}
+	
+	/** Constructs a statistical component for decode. */
 	public AbstractStatisticalComponent(ObjectInputStream in)
 	{
 		c_flag = CFlag.DECODE;
@@ -180,6 +190,18 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	
 	abstract protected StringFeatureVector createStringFeatureVector(StateType state);
 	abstract protected LabelType getAutoLabel(StringFeatureVector vector);
+	
+//	====================================== EVAL ======================================
+	
+	public EvalType getEval()
+	{
+		return c_eval;
+	}
+	
+	public void setEval(EvalType eval)
+	{
+		c_eval = eval;
+	}
 	
 //	====================================== FLAG ======================================
 

@@ -15,9 +15,31 @@
  */
 package com.clearnlp.bin;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.kohsuke.args4j.Option;
 
+import com.clearnlp.classification.model.StringModel;
+import com.clearnlp.classification.trainer.AbstractOneVsAllTrainer;
+import com.clearnlp.classification.trainer.AbstractOnlineTrainer;
+import com.clearnlp.classification.trainer.AbstractTrainer;
+import com.clearnlp.classification.trainer.TrainerType;
+import com.clearnlp.collection.list.FloatArrayList;
+import com.clearnlp.component.AbstractStatisticalComponent;
+import com.clearnlp.component.CFlag;
+import com.clearnlp.component.evaluation.AbstractEval;
+import com.clearnlp.dependency.DEPTree;
+import com.clearnlp.nlp.configuration.AbstractTrainConfiguration;
+import com.clearnlp.nlp.factory.AbstractNLPFactory;
+import com.clearnlp.reader.TSVReader;
 import com.clearnlp.util.BinUtils;
+import com.clearnlp.util.IOUtils;
 
 /**
  * @since 3.0.0
@@ -27,6 +49,8 @@ public class NLPTrain
 {
 	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<string>")
 	private String s_configurationFile;
+	@Option(name="-f", usage="feature template files (required, delimited by \":\")", required=true, metaVar="<string>")
+	private String s_featureTemplateFile;
 	@Option(name="-t", usage="path to training files (required)", required=true, metaVar="<filepath>")
 	private String s_trainPath;
 	@Option(name="-te", usage="training file extension (default: .*)", required=false, metaVar="<regex>")
@@ -42,23 +66,137 @@ public class NLPTrain
 	{
 		BinUtils.initArgs(args, this);
 		
-//		try
-//		{
-//			AbstractTokenizer tokenizer = NLPGetter.getTokenizer(TLanguage.getType(s_language));
-//			
-//			for (String inputFile : FileUtils.getFileList(s_inputPath, s_inputExt, false))
-//			{
-//				System.out.println(inputFile);
-//				tokenize(tokenizer, inputFile, inputFile+"."+s_outputExt);
-//			}
-//		}
-//		catch (IOException e) {e.printStackTrace();}
+		
 	}
 	
-	public void train(String[] trainFiles)
+	protected void collect(AbstractNLPFactory factory, String[] featureFiles, String[] trainFiles, String[] developFiles, String modelFile) throws Exception
 	{
+		AbstractTrainConfiguration configuration = factory.getTrainConfiguration();
+		TSVReader reader = (TSVReader)configuration.getReader();
+		AbstractStatisticalComponent<?,?,?,?> component;
+		AbstractTrainer[] trainers;
 		
+		// collect
+		component = factory.createComponent(featureFiles);
+		process(component, reader, trainFiles);
 		
+		// train
+		component = factory.createComponent(component, CFlag.TRAIN);
+		process(component, reader, trainFiles);
+		
+		component = factory.createComponent(component, CFlag.EVALUATE);
+		trainers = configuration.getTrainers(component.getModels());
+		train(trainers, developFiles, reader, component);
+		
+		// bootstrap
+		ByteArrayOutputStream bos = null;
+		double prevScore = 0, currScore;
+		ObjectOutputStream oos;
+		
+		while (true)
+		{
+			component = factory.createComponent(component, CFlag.BOOTSTRAP);
+			process(component, reader, trainFiles);
+
+			component = factory.createComponent(component, CFlag.EVALUATE);
+			trainers  = configuration.getTrainers(component.getModels());
+			currScore = train(trainers, developFiles, reader, component);
+			
+			if (prevScore < currScore)
+			{
+				bos = new ByteArrayOutputStream();
+				oos = new ObjectOutputStream(new BufferedOutputStream(bos));
+				component.save(oos);
+				oos.close();
+			}
+			else
+			{
+				ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new ByteArrayInputStream(bos.toByteArray())));
+				component.load(ois);
+				ois.close();		
+				break;
+			}
+		}
+		
+		if (modelFile != null)
+		{
+			oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(modelFile)));
+			component.save(oos);
+			oos.close();
+		}
+	}
+	
+	private double train(AbstractTrainer[] trainers, String[] developFiles, TSVReader reader, AbstractStatisticalComponent<?,?,?,?> component)
+	{
+		if (trainers[0].getTrainerType() == TrainerType.ONLINE)
+			return trainOnline((AbstractOnlineTrainer[])trainers, developFiles, reader, component);
+		else
+			return trainOneVsAll((AbstractOneVsAllTrainer[])trainers, developFiles, reader, component);
+	}
+	
+	private double trainOnline(AbstractOnlineTrainer[] trainers, String[] developFiles, TSVReader reader, AbstractStatisticalComponent<?,?,?,?> component)
+	{
+		int i, count, size = trainers.length;
+		
+		FloatArrayList[] weights = new FloatArrayList[size];
+		StringModel[] models = component.getModels();
+		AbstractEval<?> eval = component.getEval();
+		double[] prevScores = new double[size];
+		double[] currScores = new double[size];
+		boolean[] train = {true, true};
+		
+		do
+		{
+			count = 0;
+			
+			for (i=0; i<size; i++)
+			{
+				if (train[i])
+				{
+					trainers[i].train();
+					eval.clear();
+					process(component, reader, developFiles);
+					currScores[i] = eval.getScore();
+					
+					if (prevScores[i] < currScores[i])
+					{
+						count++;
+						prevScores[i] = currScores[i];
+						weights[i] = models[i].getWeightVector().cloneWeights();
+					}
+					else
+					{
+						train[i] = false;
+						models[i].getWeightVector().setWeights(weights[i]);
+					}
+				}
+			}			
+		}
+		while (0 < count);
+		
+		return currScores[size-1];
+	}
+	
+	private double trainOneVsAll(AbstractOneVsAllTrainer[] trainers, String[] developFiles, TSVReader reader, AbstractStatisticalComponent<?,?,?,?> component)
+	{
+		return 0;
+	}
+	
+	public void process(AbstractStatisticalComponent<?,?,?,?> component, TSVReader reader, String[] filelist)
+	{
+		for (String filename : filelist)
+			process(component, reader, filename);
+	}
+	
+	public void process(AbstractStatisticalComponent<?,?,?,?> component, TSVReader reader, String filename)
+	{
+		reader.open(IOUtils.createFileInputStream(filename));
+		DEPTree tree;
+		
+		while ((tree = reader.next()) != null)
+			component.process(tree);
+		
+		reader.close();
 	}
 	
 	static public void main(String[] args)

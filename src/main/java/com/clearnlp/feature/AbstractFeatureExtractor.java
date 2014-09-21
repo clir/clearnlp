@@ -15,6 +15,7 @@
  */
 package com.clearnlp.feature;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,19 +46,15 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType extends Abstr
 	public  static final String DELIM = StringConst.UNDERSCORE;
 	
 	private ArrayList<FeatureTemplateType> f_templates;
-
+	
 //	====================================== Initialization ======================================
 	
-	public AbstractFeatureExtractor(Element eRoot)
-	{
-		try
-		{
-			init(eRoot);
-		}
-		catch (Exception e) {e.printStackTrace();}
+	public AbstractFeatureExtractor(InputStream in)
+	{	
+		init(XmlUtils.getDocumentElement(in));
 	}
 	
-	public void init(Element eRoot) throws Exception
+	public void init(Element eRoot)
 	{
 		NodeList eList = eRoot.getElementsByTagName(E_FEATURE);
 		int i, size = eList.getLength();

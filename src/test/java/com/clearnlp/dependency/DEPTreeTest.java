@@ -26,6 +26,7 @@ import com.clearnlp.reader.TSVReader;
 import com.clearnlp.srl.SRLTree;
 import com.clearnlp.util.Joiner;
 import com.clearnlp.util.arc.SRLArc;
+import com.google.common.collect.Lists;
 
 
 /**
@@ -35,6 +36,35 @@ import com.clearnlp.util.arc.SRLArc;
 public class DEPTreeTest
 {
 	@Test
+	public void testTree() throws Exception
+	{
+		DEPTree tree = new DEPTree(Lists.newArrayList(new DEPNode(1, "A")));
+		assertEquals(2, tree.size());
+		
+		tree.add(new DEPNode(2, "B"));
+		tree.add(new DEPNode(3, "C"));
+		assertEquals(4, tree.size());
+		
+		tree.insert(1, new DEPNode(0, "a"));
+		assertEquals(5, tree.size());
+		
+		tree.insert(3, new DEPNode(0, "b"));
+		assertEquals(6, tree.size());
+		
+		tree.insert(6, new DEPNode(0, "c"));
+		assertEquals(7, tree.size());
+		
+		tree.remove(1);
+		assertEquals(6, tree.size());
+		
+		tree.remove(5);
+		assertEquals(5, tree.size());
+
+		tree.remove(2);
+		assertEquals(4, tree.size());
+	}
+	
+//	@Test
 	public void test() throws Exception
 	{
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);

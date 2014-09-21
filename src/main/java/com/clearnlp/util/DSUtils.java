@@ -147,17 +147,28 @@ public class DSUtils
 		return isRange(list, index) ? list.get(index) : null;
 	}
 	
+	/** @return the index'th item if exists; otherwise, {@code null}. */
+	static public <T>T get(T[] array, int index)
+	{
+		return isRange(array, index) ? array[index] : null;
+	}
+	
 	/** @return the last item in the list if exists; otherwise, {@code null}. */
 	static public <T>T getLast(List<T> list)
 	{
 		return list.isEmpty() ? null : list.get(list.size()-1);
 	}
 
-	static public boolean isRange(List<?> list, int index)
+	static public <T>boolean isRange(List<T> list, int index)
 	{
 		return 0 <= index && index < list.size();
 	}
-
+	
+	static public <T>boolean isRange(T[] array, int index)
+	{
+		return 0 <= index && index < array.length;
+	}
+	
 	/**
 	 * @param beginIndex inclusive
 	 * @param endIndex exclusive

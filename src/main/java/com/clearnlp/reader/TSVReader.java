@@ -182,9 +182,9 @@ public class TSVReader extends AbstractReader<DEPTree>
 
 	protected DEPTree getDEPTree(List<String[]> lines)
 	{
+		List<DEPNode> nodes = Lists.newArrayList();
 		String form, lemma, pos, feats, nament;
 		int id, i, size = lines.size();
-		DEPTree tree = new DEPTree();
 		DEPNode node;
 		String[] tmp;
 		
@@ -200,8 +200,10 @@ public class TSVReader extends AbstractReader<DEPTree>
 			nament = (i_namedEntityTag < 0) ? null : tmp[i_namedEntityTag]; 
 
 			node = new DEPNode(id, form, lemma, pos, nament, new DEPFeat(feats));
-			tree.add(node);			
+			nodes.add(node);			
 		}
+		
+		DEPTree tree = new DEPTree(nodes);
 
 		// add heads
 		for (i=0; i<size; i++)

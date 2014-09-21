@@ -15,6 +15,8 @@
  */
 package com.clearnlp.feature.common;
 
+import java.io.InputStream;
+
 import org.w3c.dom.Element;
 
 import com.clearnlp.component.state.SeqState;
@@ -29,11 +31,11 @@ public class CommonFeatureExtractor extends AbstractFeatureExtractor<CommonFeatu
 {
 	private static final long serialVersionUID = -3522042349865325347L;
 
-	public CommonFeatureExtractor(Element eRoot)
+	public CommonFeatureExtractor(InputStream in)
 	{
-		super(eRoot);
+		super(in);
 	}
-
+	
 	@Override
 	protected CommonFeatureTemplate createFeatureTemplate(Element eFeature)
 	{

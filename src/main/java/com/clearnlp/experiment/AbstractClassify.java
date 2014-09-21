@@ -25,7 +25,7 @@ import java.io.ObjectOutputStream;
 
 import org.kohsuke.args4j.Option;
 
-import com.clearnlp.classification.configuration.AbstractTrainConfiguration;
+import com.clearnlp.classification.configuration.AbstractTrainerConfiguration;
 import com.clearnlp.classification.instance.AbstractInstance;
 import com.clearnlp.classification.instance.AbstractInstanceReader;
 import com.clearnlp.classification.instance.SparseInstanceReader;
@@ -34,7 +34,7 @@ import com.clearnlp.classification.model.AbstractModel;
 import com.clearnlp.classification.model.SparseModel;
 import com.clearnlp.classification.model.StringModel;
 import com.clearnlp.classification.prediction.StringPrediction;
-import com.clearnlp.classification.train.AbstractTrainer;
+import com.clearnlp.classification.trainer.AbstractTrainer;
 import com.clearnlp.classification.vector.AbstractFeatureVector;
 import com.clearnlp.util.BinUtils;
 import com.clearnlp.util.IOUtils;
@@ -71,9 +71,9 @@ abstract public class AbstractClassify
 	protected byte i_vectorType = AbstractClassify.TYPE_STRING;
 	
 	/** Called by {@link #AbstractClassify(String[])}. */
-	abstract protected AbstractTrainConfiguration createTrainConfiguration();
-	/** Called by {@link #train(AbstractTrainConfiguration, String)}. */
-	abstract protected AbstractTrainer getTrainer(AbstractTrainConfiguration trainConfiguration, AbstractModel<?,?> model);
+	abstract protected AbstractTrainerConfiguration createTrainConfiguration();
+	/** Called by {@link #train(AbstractTrainerConfiguration, String)}. */
+	abstract protected AbstractTrainer getTrainer(AbstractTrainerConfiguration trainConfiguration, AbstractModel<?,?> model);
 	
 	@SuppressWarnings("unchecked")
 	/** Called by {@link #trainModel(AbstractTrainConfiguration, String)}. */
@@ -119,7 +119,7 @@ abstract public class AbstractClassify
 		return acc;
 	}
 	
-	/** Called by {@link #train(AbstractTrainConfiguration, String)}. */
+	/** Called by {@link #train(AbstractTrainerConfiguration, String)}. */
 	protected <I extends AbstractInstance<F>, F extends AbstractFeatureVector>void readInstances(AbstractModel<I,F> model, String trainFile)
 	{
 		BinUtils.LOG.info("Reading: "+trainFile+"\n");

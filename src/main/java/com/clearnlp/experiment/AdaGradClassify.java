@@ -17,14 +17,14 @@ package com.clearnlp.experiment;
 
 import org.kohsuke.args4j.Option;
 
-import com.clearnlp.classification.configuration.AbstractTrainConfiguration;
-import com.clearnlp.classification.configuration.AdaGradTrainConfiguration;
+import com.clearnlp.classification.configuration.AbstractTrainerConfiguration;
+import com.clearnlp.classification.configuration.AdaGradTrainerConfiguration;
 import com.clearnlp.classification.model.AbstractModel;
 import com.clearnlp.classification.model.SparseModel;
 import com.clearnlp.classification.model.StringModel;
-import com.clearnlp.classification.train.AbstractTrainer;
-import com.clearnlp.classification.train.AdaGradLR;
-import com.clearnlp.classification.train.AdaGradSVM;
+import com.clearnlp.classification.trainer.AbstractTrainer;
+import com.clearnlp.classification.trainer.AdaGradLR;
+import com.clearnlp.classification.trainer.AdaGradSVM;
 
 /**
  * @since 3.0.0
@@ -47,15 +47,15 @@ public class AdaGradClassify extends AbstractClassifyOnline
 	}
 
 	@Override
-	protected AbstractTrainConfiguration createTrainConfiguration()
+	protected AbstractTrainerConfiguration createTrainConfiguration()
 	{
-		return new AdaGradTrainConfiguration(i_vectorType, b_binary, i_labelCutoff, i_featureCutoff, i_numberOfThreads, b_average, d_alpha, d_rho);
+		return new AdaGradTrainerConfiguration(i_vectorType, b_binary, i_labelCutoff, i_featureCutoff, i_numberOfThreads, b_average, d_alpha, d_rho);
 	}
 
 	@Override
-	protected AbstractTrainer getTrainer(AbstractTrainConfiguration trainConfiguration, AbstractModel<?, ?> model)
+	protected AbstractTrainer getTrainer(AbstractTrainerConfiguration trainConfiguration, AbstractModel<?, ?> model)
 	{
-		AdaGradTrainConfiguration c = (AdaGradTrainConfiguration)trainConfiguration;
+		AdaGradTrainerConfiguration c = (AdaGradTrainerConfiguration)trainConfiguration;
 		
 		if (isSparseModel(model))
 		{

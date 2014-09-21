@@ -60,6 +60,12 @@ public class XmlUtils
 		return null;
 	}
 	
+	static public Element getElementByTagName(Element element, String name, int index)
+	{
+		NodeList list = element.getElementsByTagName(name);
+		return (Element)list.item(index);
+	}
+	
 	static public Element getFirstElementByTagName(Document document, String name)
 	{
 		return getFirstElement(document.getElementsByTagName(name));
@@ -77,13 +83,7 @@ public class XmlUtils
 	
 	static public String getTrimmedTextContent(Element element)
 	{
-		return element.getTextContent().trim();
-	}
-	
-	static public String getTrimmedTextContentFromFirstElement(Element parent, String name)
-	{
-		Element element = getFirstElementByTagName(parent, name);
-		return (element != null) ? getTrimmedTextContent(element) : null;
+		return (element != null) ? element.getTextContent().trim() : null;
 	}
 	
 	static public String getTrimmedAttribute(Element element, String name)

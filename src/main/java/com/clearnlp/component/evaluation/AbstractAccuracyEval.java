@@ -40,12 +40,18 @@ abstract public class AbstractAccuracyEval<LabelType> extends AbstractEval<Label
 	@Override
 	public double[] getScores()
 	{
-		return new double[]{100d * n_correct / n_total};
+		return new double[]{getScore()};
+	}
+	
+	@Override
+	public double getScore()
+	{
+		return 100d * n_correct / n_total;
 	}
 	
 	@Override
 	public String toString()
 	{
-		return String.format("ACC: %5.2f (%d/%d)", 100d*n_correct/n_total, n_correct, n_total);
+		return String.format("ACC: %5.2f (%d/%d)", getScore(), n_correct, n_total);
 	}
 }

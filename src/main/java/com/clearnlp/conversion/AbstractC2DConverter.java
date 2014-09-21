@@ -177,12 +177,13 @@ abstract public class AbstractC2DConverter
 	/** @return the dependency tree converted from the specific constituent tree without head information. */
 	protected DEPTree initDEPTree(CTTree cTree)
 	{
-		DEPTree dTree = new DEPTree();
+		List<CTNode>  cNodes = cTree.getTokenList();
+		List<DEPNode> dNodes = Lists.newArrayList();
 		String form, pos;
 		DEPNode dNode;
 		int id;
 		
-		for (CTNode cNode : cTree.getTokenList())
+		for (CTNode cNode : cNodes)
 		{
 			id   = cNode.getTokenID() + 1;
 			form = PatternUtils.revertBrackets(cNode.getWordForm());
@@ -190,10 +191,10 @@ abstract public class AbstractC2DConverter
 			
 			dNode = new DEPNode(id, form, pos, cNode.getC2DInfo().getDEPFeat());
 			dNode.initSecondaryHeads();
-			dTree.add(dNode);
+			dNodes.add(dNode);
 		}
 		
-		return dTree;
+		return new DEPTree(dNodes);
 	}
 	
 	/**

@@ -17,13 +17,13 @@ package com.clearnlp.experiment;
 
 import org.kohsuke.args4j.Option;
 
-import com.clearnlp.classification.configuration.AbstractTrainConfiguration;
-import com.clearnlp.classification.configuration.LiblinearTrainConfiguration;
+import com.clearnlp.classification.configuration.AbstractTrainerConfiguration;
+import com.clearnlp.classification.configuration.LiblinearTrainerConfiguration;
 import com.clearnlp.classification.model.AbstractModel;
 import com.clearnlp.classification.model.SparseModel;
 import com.clearnlp.classification.model.StringModel;
-import com.clearnlp.classification.train.AbstractTrainer;
-import com.clearnlp.classification.train.LiblinearL2SVM;
+import com.clearnlp.classification.trainer.AbstractTrainer;
+import com.clearnlp.classification.trainer.LiblinearL2SVM;
 
 /**
  * @since 3.0.0
@@ -44,15 +44,15 @@ public class LiblinearClassify extends AbstractClassifyOneVsAll
 	}
 
 	@Override
-	protected AbstractTrainConfiguration createTrainConfiguration()
+	protected AbstractTrainerConfiguration createTrainConfiguration()
 	{
-		return new LiblinearTrainConfiguration(i_vectorType, b_binary, i_labelCutoff, i_featureCutoff, i_numberOfThreads, d_cost, d_epsilon, d_bias);
+		return new LiblinearTrainerConfiguration(i_vectorType, b_binary, i_labelCutoff, i_featureCutoff, i_numberOfThreads, d_cost, d_epsilon, d_bias);
 	}
 
 	@Override
-	protected AbstractTrainer getTrainer(AbstractTrainConfiguration trainConfiguration, AbstractModel<?, ?> model)
+	protected AbstractTrainer getTrainer(AbstractTrainerConfiguration trainConfiguration, AbstractModel<?, ?> model)
 	{
-		LiblinearTrainConfiguration c = (LiblinearTrainConfiguration)trainConfiguration;
+		LiblinearTrainerConfiguration c = (LiblinearTrainerConfiguration)trainConfiguration;
 		
 		if (isSparseModel(model))
 			return new LiblinearL2SVM((SparseModel)model, c.getNumberOfThreads(), c.getCost(), c.getEpsilon(), c.getBias());

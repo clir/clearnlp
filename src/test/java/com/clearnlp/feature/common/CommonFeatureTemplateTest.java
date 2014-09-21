@@ -18,11 +18,10 @@ package com.clearnlp.feature.common;
 import java.io.FileInputStream;
 
 import com.clearnlp.classification.vector.StringFeatureVector;
-import com.clearnlp.component.pos.POSState;
+import com.clearnlp.component.mode.pos.POSState;
 import com.clearnlp.component.state.SeqState;
 import com.clearnlp.reader.TSVReader;
 import com.clearnlp.util.IOUtils;
-import com.clearnlp.util.XmlUtils;
 
 /**
  * @since 3.0.0
@@ -36,7 +35,7 @@ public class CommonFeatureTemplateTest
 		String featureFile = "src/test/resources/feature/common/feature_common.xml";
 		String deptreeFile = "src/test/resources/feature/common/dependency.txt";
 		
-		CommonFeatureExtractor fe = new CommonFeatureExtractor(XmlUtils.getDocumentElement(IOUtils.createFileInputStream(featureFile)));
+		CommonFeatureExtractor fe = new CommonFeatureExtractor(IOUtils.createFileInputStream(featureFile));
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7, 8);
 		reader.open(new FileInputStream(deptreeFile));
 		StringFeatureVector vector;

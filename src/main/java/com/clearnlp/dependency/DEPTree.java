@@ -22,7 +22,6 @@ import java.util.List;
 import com.clearnlp.collection.list.IntArrayList;
 import com.clearnlp.collection.set.IntHashSet;
 import com.clearnlp.srl.SRLTree;
-import com.clearnlp.util.DSUtils;
 import com.clearnlp.util.arc.DEPArc;
 import com.clearnlp.util.arc.SRLArc;
 import com.clearnlp.util.constant.StringConst;
@@ -34,21 +33,31 @@ import com.google.common.collect.Lists;
  */
 public class DEPTree implements Iterable<DEPNode>
 {
-	private List<DEPNode> d_tree;
+	private DEPNode[] d_tree;
+	private int n_size;
 	
 //	====================================== Constructors ======================================
 
 	/** The artificial root node is inserted front automatically. */
-	public DEPTree()
+	public DEPTree(int size)
 	{
-		init();
+		init(size);
+	}
+	
+	public DEPTree(List<DEPNode> nodes)
+	{
+		int i, size = nodes.size();
+		init(size);
+		
+		for (i=0; i<size; i++)
+			add(nodes.get(i));
 	}
 	
 	public DEPTree(DEPTree oTree)
 	{
 		DEPNode oNode, nNode, oHead, nHead;
 		int i, size = oTree.size();
-		init();
+		init(size-1);
 		
 		for (i=1; i<size; i++)
 		{
@@ -92,11 +101,12 @@ public class DEPTree implements Iterable<DEPNode>
 		}
 	}
 	
-	private void init()
+	private void init(int size)
 	{
-		d_tree = Lists.newArrayList();
+		d_tree = new DEPNode[size+1];
 		DEPNode root = new DEPNode();
 		root.initRoot();
+		n_size = 0;
 		add(root);
 	}
 	
@@ -105,38 +115,69 @@ public class DEPTree implements Iterable<DEPNode>
 	/** @return the dependency node with the specific ID if exists; otherwise, {@code null}. */
 	public DEPNode get(int id)
 	{
-		return DSUtils.get(d_tree, id); 
+		return (0 <= id && id < n_size) ? d_tree[id] : null;
 	}
 	
 	public void add(DEPNode node)
 	{
-		d_tree.add(node);
+		increaseSize();
+		d_tree[n_size++] = node;
+	}
+	
+	private void increaseSize()
+	{
+		if (n_size == d_tree.length)
+		{
+			DEPNode[] nTree = new DEPNode[n_size+5];
+			System.arraycopy(d_tree, 0, nTree, 0, n_size);
+			d_tree = nTree;
+		}
 	}
 	
 	public int size()
 	{
-		return d_tree.size();
+		return n_size;
 	}
 	
 	/** Removes the node with the specific id from this tree. */
 	public void remove(int id)
 	{
+		if (id <= 0 || id >= n_size)
+			throw new IndexOutOfBoundsException();
+		
 		try
 		{
-			DEPNode node = d_tree.remove(id);
-			node.clearHead();
-			resetNodeIDs(id);
+			d_tree[id].clearHead();
+			n_size--;
+			
+			for (int i=id; i<n_size; i++)
+			{
+				d_tree[i] = d_tree[i+1];
+				d_tree[i].setID(i);
+			}
 		}
 		catch (IndexOutOfBoundsException e) {e.printStackTrace();}
 	}
 	
 	/** Inserts the specific node at the specific index of this tree. */
-	public void insert(int index, DEPNode node)
+	public void insert(int id, DEPNode node)
 	{
+		if (id <= 0 || id > n_size)
+			throw new IndexOutOfBoundsException();
+		
 		try
 		{
-			d_tree.add(index, node);
-			resetNodeIDs(index);
+			increaseSize();
+			
+			for (int i=n_size; i>id; i--)
+			{
+				d_tree[i] = d_tree[i-1];
+				d_tree[i].setID(i);
+			}
+				
+			d_tree[id] = node;
+			node.setID(id);
+			n_size++;
 		}
 		catch (IndexOutOfBoundsException e) {e.printStackTrace();}
 	}
@@ -155,7 +196,7 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).setID(i);
 	}
 	
-//	====================================== Intialization ======================================
+//	====================================== Initialization ======================================
 
 	public void initSecondaryHeads()
 	{
@@ -622,7 +663,7 @@ public class DEPTree implements Iterable<DEPNode>
 			@Override
 			public DEPNode next()
 			{
-				return d_tree.get(current_index++);
+				return d_tree[current_index++];
 			}
 			
 			@Override

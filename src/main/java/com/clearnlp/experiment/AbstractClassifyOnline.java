@@ -17,9 +17,9 @@ package com.clearnlp.experiment;
 
 import org.kohsuke.args4j.Option;
 
-import com.clearnlp.classification.configuration.AbstractTrainConfiguration;
+import com.clearnlp.classification.configuration.AbstractTrainerConfiguration;
 import com.clearnlp.classification.model.AbstractModel;
-import com.clearnlp.classification.train.AbstractTrainer;
+import com.clearnlp.classification.trainer.AbstractTrainer;
 import com.clearnlp.collection.list.FloatArrayList;
 
 /**
@@ -35,7 +35,7 @@ abstract public class AbstractClassifyOnline extends AbstractClassify
 	{
 		new ArgsReader(args, this);
 		
-		AbstractTrainConfiguration trainConfiguration = createTrainConfiguration();
+		AbstractTrainerConfiguration trainConfiguration = createTrainConfiguration();
 		AbstractModel<?,?> model = null;
 		
 		if (s_trainFile != null)
@@ -53,7 +53,7 @@ abstract public class AbstractClassifyOnline extends AbstractClassify
 	}
 	
 	/** @return a trained model using the specific training file. */
-	public AbstractModel<?,?> train(AbstractTrainConfiguration trainConfiguration, String trainFile, String developFile)
+	public AbstractModel<?,?> train(AbstractTrainerConfiguration trainConfiguration, String trainFile, String developFile)
 	{
 		AbstractModel<?,?> model = createModel(trainConfiguration.getVectorType(), trainConfiguration.isBinary());
 		readInstances(model, trainFile);
