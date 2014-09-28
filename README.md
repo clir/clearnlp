@@ -1,4 +1,3 @@
-ClearNLP
-=============
+<img src="http://mathcs.emory.edu/~choi/img/clearnlp-logo.png" height="150" width="150" align="middle">
 
-The ClearNLP project provides Natural Language Processing tools developed by the [Center for Language and Information Research (CLIR)](http://clir.emory.edu) at [Emory University](http://emory.edu). Please join our [group](https://groups.google.com/forum/?fromgroups#!forum/clearnlp) if you wish to get notifications about new updates or post issues, suggestions, questions, etc. You can also contact directly to [support@clearnlp.com](support@clearnlp.com).
+The ClearNLP project provides software, resources, and APIs for natural language processing developed by the [Center for Language and Information Research (CLIR)](http://clir.emory.edu) at [Emory University](http://emory.edu). Please join our [discussion forum](https://groups.google.com/forum/?fromgroups#!forum/clearnlp) if you want to get notifications about new updates or post issues, suggestions, questions, etc. You can also contact directly to [support@clearnlp.com](support@clearnlp.com).

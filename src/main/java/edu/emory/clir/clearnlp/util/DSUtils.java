@@ -215,7 +215,7 @@ public class DSUtils
 		list.set(index1, tmp);
 	}
 	
-	static public <T>void shuffle(int[] array, Random rand)
+	static public void shuffle(int[] array, Random rand)
 	{
 		shuffle(array, rand, array.length);
 	}
@@ -226,7 +226,7 @@ public class DSUtils
 		shuffle(list, rand, list.size());
 	}
 	
-	static public <T>void shuffle(int[] array, Random rand, int lastIndex)
+	static public void shuffle(int[] array, Random rand, int lastIndex)
 	{
 		int i, j, size = lastIndex - 1;
 		
