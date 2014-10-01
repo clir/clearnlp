@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.experiment;
-
-import org.kohsuke.args4j.Option;
+package edu.emory.clir.clearnlp.bin.classify;
 
 import edu.emory.clir.clearnlp.classification.configuration.AbstractTrainerConfiguration;
 import edu.emory.clir.clearnlp.classification.model.AbstractModel;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractTrainer;
-import edu.emory.clir.clearnlp.collection.list.FloatArrayList;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractClassifyOnline extends AbstractClassify
+abstract public class AbstractClassifyOneVsAll extends AbstractClassify
 {
-	@Option(name="-developFile", usage="the development file (optional)", required=false, metaVar="<filename>")
-	protected String s_developFile;
-	
-	public AbstractClassifyOnline(String[] args)
+	public AbstractClassifyOneVsAll(String[] args)
 	{
 		new ArgsReader(args, this);
 		
@@ -40,7 +34,7 @@ abstract public class AbstractClassifyOnline extends AbstractClassify
 		
 		if (s_trainFile != null)
 		{
-			model = train(trainConfiguration, s_trainFile, s_developFile);
+			model = train(trainConfiguration, s_trainFile);
 			if (s_modelFile != null) saveModel(model, s_modelFile);
 		}
 		else if (s_modelFile != null)
@@ -53,28 +47,14 @@ abstract public class AbstractClassifyOnline extends AbstractClassify
 	}
 	
 	/** @return a trained model using the specific training file. */
-	public AbstractModel<?,?> train(AbstractTrainerConfiguration trainConfiguration, String trainFile, String developFile)
+	public AbstractModel<?,?> train(AbstractTrainerConfiguration trainConfiguration, String trainFile)
 	{
 		AbstractModel<?,?> model = createModel(trainConfiguration.getVectorType(), trainConfiguration.isBinary());
 		readInstances(model, trainFile);
 		
 		AbstractTrainer trainer = getTrainer(trainConfiguration, model);
-		double prevScore, currScore = 0;
-		FloatArrayList weights = null;
+		trainer.train();
 		
-		while (true)
-		{
-			trainer.train();
-			prevScore = currScore;
-			currScore = evaluate(model, developFile);
-			
-			if (prevScore < currScore)
-				weights = model.getWeightVector().cloneWeights(); 
-			else
-				break;
-		}
-		
-		model.getWeightVector().setWeights(weights);
 		return model;
 	}
 }
