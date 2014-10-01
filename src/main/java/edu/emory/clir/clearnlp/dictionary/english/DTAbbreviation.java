@@ -18,8 +18,7 @@ package edu.emory.clir.clearnlp.dictionary.english;
 import java.io.InputStream;
 import java.util.Set;
 
-import com.clearnlp.dictionary.DTPath;
-
+import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
 
@@ -33,7 +32,7 @@ public class DTAbbreviation
 	
 	public DTAbbreviation()
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.EN_ABBREVIATION_PERIOD));
+		init(IOUtils.getInputStreamsFromClasspath(PathTokenizer.EN_ABBREVIATION_PERIOD));
 	}
 	
 	public DTAbbreviation(InputStream abbreviationPeriod)

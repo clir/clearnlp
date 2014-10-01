@@ -20,4 +20,4 @@ The ClearNLP project provides software and resources for natural language proces
 * Dependency parser.
 * Semantic role labeler.
 
-<br><p align="center"><img src="http://mathcs.emory.edu/~choi/img/clearnlp-logo.png" width="250" height="250"/></p>
+<p align="center"><img src="http://mathcs.emory.edu/~choi/img/clearnlp-logo.png" width="200" height="200"/></p>

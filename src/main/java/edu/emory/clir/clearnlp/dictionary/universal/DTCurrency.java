@@ -18,9 +18,8 @@ package edu.emory.clir.clearnlp.dictionary.universal;
 import java.io.InputStream;
 import java.util.Set;
 
-import com.clearnlp.dictionary.DTPath;
-
 import edu.emory.clir.clearnlp.dictionary.AbstractDTTokenizer;
+import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.CharUtils;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
@@ -39,8 +38,8 @@ public class DTCurrency extends AbstractDTTokenizer
 	
 	public DTCurrency()
 	{
-		InputStream currency = IOUtils.getInputStreamsFromClasspath(DTPath.CURRENCY);
-		InputStream dollar   = IOUtils.getInputStreamsFromClasspath(DTPath.CURRENCY_DOLLAR);
+		InputStream currency = IOUtils.getInputStreamsFromClasspath(PathTokenizer.CURRENCY);
+		InputStream dollar   = IOUtils.getInputStreamsFromClasspath(PathTokenizer.CURRENCY_DOLLAR);
 
 		init(currency, dollar);
 	}

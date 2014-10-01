@@ -22,9 +22,9 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import com.clearnlp.dictionary.DTPath;
 import com.google.common.collect.Maps;
 
+import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.StringUtils;
@@ -41,7 +41,7 @@ public class DTHtml
 	
 	public DTHtml()
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.HTML_TAGS));
+		init(IOUtils.getInputStreamsFromClasspath(PathTokenizer.HTML_TAGS));
 	}
 	
 	/** @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}. */

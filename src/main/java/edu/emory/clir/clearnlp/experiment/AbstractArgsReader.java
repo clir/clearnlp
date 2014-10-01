@@ -24,6 +24,7 @@ import org.kohsuke.args4j.CmdLineParser;
  */
 abstract public class AbstractArgsReader
 {
+	@SuppressWarnings("deprecation")
 	public AbstractArgsReader(String[] args, Object obj)
 	{
 		CmdLineParser cmd = new CmdLineParser(obj);

@@ -20,10 +20,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import com.clearnlp.dictionary.DTPath;
 import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.dictionary.AbstractDTTokenizer;
+import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.StringUtils;
@@ -41,7 +41,7 @@ public class DTCompound extends AbstractDTTokenizer
 	{
 		switch (language)
 		{
-		case ENGLISH: init(IOUtils.getInputStreamsFromClasspath(DTPath.EN_COMPOUNDS)); break;
+		case ENGLISH: init(IOUtils.getInputStreamsFromClasspath(PathTokenizer.EN_COMPOUNDS)); break;
 		default: throw new IllegalArgumentException(language.toString());
 		}
 	}

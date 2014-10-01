@@ -4,8 +4,8 @@
   <artifactId>clearnlp</artifactId>
   <version>3.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <url>http://www.clearnlp.com</url>
   <name>clearnlp</name>
+  <url>http://www.clearnlp.com</url>
 
   <scm>
     <url>https://github.com/clir/clearnlp</url>

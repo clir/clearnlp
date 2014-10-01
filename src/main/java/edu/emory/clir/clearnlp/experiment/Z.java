@@ -24,7 +24,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.carrotsearch.hppc.ObjectIntOpenHashMap;
-import com.clearnlp.dictionary.DTPath;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -37,6 +36,7 @@ import edu.emory.clir.clearnlp.collection.triple.ObjectIntIntTriple;
 import edu.emory.clir.clearnlp.constituent.CTNode;
 import edu.emory.clir.clearnlp.constituent.CTReader;
 import edu.emory.clir.clearnlp.constituent.CTTree;
+import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.lexicon.wordnet.WNMap;
 import edu.emory.clir.clearnlp.lexicon.wordnet.WNPOSTag;
 import edu.emory.clir.clearnlp.lexicon.wordnet.WNSynset;
@@ -84,7 +84,7 @@ public class Z
 	
 	public void emoticon(String[] args) throws Exception
 	{
-		Set<String> set = DSUtils.createStringHashSet(IOUtils.getInputStreamsFromClasspath(DTPath.EMOTICONS), true, true);
+		Set<String> set = DSUtils.createStringHashSet(IOUtils.getInputStreamsFromClasspath(PathTokenizer.EMOTICONS), true, true);
 		Pattern e0 = Pattern.compile("^[\\!\\|;:#%][-]*[\\(\\)\\[\\]\\{\\}\\|<>]+$");
 		int count = set.size();
 		List<String> list = Lists.newArrayList(set);

@@ -20,9 +20,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.clearnlp.dictionary.DTPath;
-
 import edu.emory.clir.clearnlp.collection.tree.AffixTree;
+import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
 
@@ -39,7 +38,7 @@ public class DTEmoticon
 	
 	public DTEmoticon()
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.EMOTICONS));
+		init(IOUtils.getInputStreamsFromClasspath(PathTokenizer.EMOTICONS));
 	}
 	
 	public DTEmoticon(InputStream in)

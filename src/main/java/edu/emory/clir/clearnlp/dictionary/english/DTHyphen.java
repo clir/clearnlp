@@ -19,8 +19,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Set;
 
-import com.clearnlp.dictionary.DTPath;
-
+import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.CharUtils;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
@@ -36,8 +35,8 @@ public class DTHyphen
 	
 	public DTHyphen()
 	{
-		InputStream prefix = IOUtils.getInputStreamsFromClasspath(DTPath.EN_HYPHEN_PREFIX);
-		InputStream suffix = IOUtils.getInputStreamsFromClasspath(DTPath.EN_HYPHEN_SUFFIX);
+		InputStream prefix = IOUtils.getInputStreamsFromClasspath(PathTokenizer.EN_HYPHEN_PREFIX);
+		InputStream suffix = IOUtils.getInputStreamsFromClasspath(PathTokenizer.EN_HYPHEN_SUFFIX);
 		init(prefix, suffix);
 	}
 	

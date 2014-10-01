@@ -18,9 +18,8 @@ package edu.emory.clir.clearnlp.dictionary.universal;
 import java.io.InputStream;
 import java.util.Set;
 
-import com.clearnlp.dictionary.DTPath;
-
 import edu.emory.clir.clearnlp.dictionary.AbstractDTTokenizer;
+import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.CharUtils;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
@@ -36,7 +35,7 @@ public class DTUnit extends AbstractDTTokenizer
 	
 	public DTUnit()
 	{
-		init(IOUtils.getInputStreamsFromClasspath(DTPath.UNITS));
+		init(IOUtils.getInputStreamsFromClasspath(PathTokenizer.UNITS));
 	}
 	
 	public DTUnit(InputStream in)
