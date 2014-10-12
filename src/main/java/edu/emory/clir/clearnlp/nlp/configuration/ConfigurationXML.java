@@ -25,15 +25,15 @@ public interface ConfigurationXML
 	String E_READER		= "reader";
 	String E_MODEL		= "model";
 	String E_COLUMN		= "column";
-	
 	String E_CUTOFF		= "cutoff";
+	String E_BOOTSTRAP	= "bootstrap";
 	
 	String A_TYPE		= "type";
 	String A_FIELD		= "field";
 	String A_INDEX		= "index";
 	String A_NAME		= "name";
-	String A_LABEL		= "label";
-	String A_FEATURE	= "feature";
+//	String A_LABEL		= "label";
+//	String A_FEATURE	= "feature";
 	
 	String FIELD_ID		= "id";
 	String FIELD_FORM	= "form";

@@ -35,6 +35,7 @@ import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
  */
 public class StringModel extends AbstractModel<StringInstance,StringFeatureVector>
 {
+	private static final long serialVersionUID = -5836424308513378097L;
 	protected StringInstanceCollector i_collector;
 	protected FeatureMap m_features;
 

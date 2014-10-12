@@ -38,15 +38,15 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	private final int LEXICON_LOWER_SIMPLIFIED_WORD_FORM = 0;
 	private final int LEXICON_AMBIGUITY_CLASS = 1;
 	
-	protected Set<String> s_lowerSimplifiedWordForms;
-	protected Map<String,String> m_ambiguityClasses;
-	protected POSCollector p_collector;
+	private Set<String> s_lowerSimplifiedWordForms;
+	private Map<String,String> m_ambiguityClasses;
+	private POSCollector p_collector;
 
 	/** Creates a pos tagger for collect. */
-	public AbstractPOSTagger(POSTrainConfiguration config, POSFeatureExtractor[] extractors)
+	public AbstractPOSTagger(POSTrainConfiguration configuration)
 	{
-		super(extractors);
-		p_collector = new POSCollector(config);
+		super();
+		p_collector = new POSCollector(configuration);
 	}
 	
 	/** Creates a pos tagger for train. */
@@ -108,7 +108,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	@Override
 	public void process(DEPTree tree)
 	{
-		POSState state = new POSState(tree, isDecode());
+		POSState state = new POSState(tree, c_flag, s_lowerSimplifiedWordForms, m_ambiguityClasses);
 		
 		if (isCollect())
 		{

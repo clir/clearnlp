@@ -33,6 +33,8 @@ import edu.emory.clir.clearnlp.classification.vector.SparseFeatureVector;
  */
 public class SparseModel extends AbstractModel<SparseInstance,SparseFeatureVector>
 {
+	private static final long serialVersionUID = 8098957794392840008L;
+
 	/** Initializes this model for training. */
 	public SparseModel(boolean binary)
 	{

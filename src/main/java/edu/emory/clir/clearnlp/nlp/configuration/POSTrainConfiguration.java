@@ -28,8 +28,6 @@ import edu.emory.clir.clearnlp.util.XmlUtils;
  */
 public class POSTrainConfiguration extends AbstractTrainConfiguration
 {
-	private int    cutoff_label;
-	private int    cutoff_feature;
 	private int    cutoff_documentFrequency;
 	private int    cutoff_documentBoundary;
 	private double threshold_ambiguityClass;
@@ -52,24 +50,12 @@ public class POSTrainConfiguration extends AbstractTrainConfiguration
 		Element eMode = getFirstElement(n_mode.toString());
 		Element eCutoff = XmlUtils.getFirstElementByTagName(eMode, E_CUTOFF);
 		
-		setLabelCutoff  (XmlUtils.getIntegerAttribute(eCutoff, A_LABEL));
-		setFeatureCutoff(XmlUtils.getIntegerAttribute(eCutoff, A_FEATURE));
 		setDocumentFrequencyCutoff(XmlUtils.getIntegerAttribute(eCutoff, "documentFrequency"));
 		setDocumentBoundaryCutoff (XmlUtils.getIntegerAttribute(eCutoff, "documentBoundary"));
 		setAmbiguityClassThreshold(XmlUtils.getDoubleAttribute (eCutoff, "ambiguityClass"));
 	}
 	
 //	============================== Getters ==============================
-	
-	public int getLabelCutoff()
-	{
-		return cutoff_label;
-	}
-	
-	public int getFeatureCutoff()
-	{
-		return cutoff_feature;
-	}
 	
 	public int getDocumentFrequencyCutoff()
 	{
@@ -87,16 +73,6 @@ public class POSTrainConfiguration extends AbstractTrainConfiguration
 	}
 	
 //	============================== Setters ==============================
-	
-	public void setLabelCutoff(int cutoff)
-	{
-		cutoff_label = cutoff;
-	}
-	
-	public void setFeatureCutoff(int cutoff)
-	{
-		cutoff_feature = cutoff;
-	}
 	
 	public void setDocumentFrequencyCutoff(int cutoff)
 	{

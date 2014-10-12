@@ -1,0 +1,19 @@
+1	He	he	PRP	_	3	nsubj	3:A0
+2	already	already	RB	_	3	advmod	3:AM-TMP
+3	bought	buy	VBD	p2=VBN|pb=buy.01	0	root	_
+4	a	a	DT	_	5	det	_
+5	car	car	NN	_	3	dobj	3:A1;8:A1
+6	yesterday	yesterday	NN	_	3	npadvmod	3:AM-TMP
+7	that	that	WDT	_	8	nsubj	8:R-A1
+8	is	be	VBZ	pb=be.01	5	rcmod	_
+9	red	red	JJ	p2=VBN	8	acomp	8:A2
+10	.	.	.	_	3	punct	_
+
+1	She	she	PRP	_	2	nsubj	2:A0
+2	sold	buy	VBD	p2=VBN|pb=buy.01	0	root	_
+3	a	a	CD	_	4	det	_
+4	car	car	NN	_	2	dobj	2:A1;6:A1
+5	that	that	DT	_	6	nsubj	6:R-A1
+6	is	be	VBZ	pb=be.01	4	rcmod	_
+7	blue	red	RB	p2=VBN	6	acomp	6:A2
+8	.	.	.	_	2	punct	_

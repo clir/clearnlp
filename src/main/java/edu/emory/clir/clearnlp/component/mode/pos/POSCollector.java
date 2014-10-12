@@ -29,7 +29,6 @@ import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
 import edu.emory.clir.clearnlp.util.DSUtils;
-import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -120,10 +119,25 @@ public class POSCollector implements Serializable
 			if (!ps.isEmpty())
 			{
 				DSUtils.sortReverseOrder(ps);
-				map.put(key, Joiner.join(ps, StringConst.UNDERSCORE));
+				map.put(key, join(ps, StringConst.UNDERSCORE));
 			}
 		}
 		
 		return map;
 	}
+	
+	private String join(List<ObjectDoublePair<String>> ps, String delim)
+	{
+		StringBuilder build = new StringBuilder();
+		
+		for (ObjectDoublePair<String> p : ps)
+		{
+			build.append(delim);
+			build.append(p.o);
+		}
+		
+		return build.substring(delim.length());
+	}
 }
+
+

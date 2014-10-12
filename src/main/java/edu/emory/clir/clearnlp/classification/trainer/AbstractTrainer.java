@@ -21,7 +21,6 @@ import edu.emory.clir.clearnlp.classification.instance.IntInstance;
 import edu.emory.clir.clearnlp.classification.model.SparseModel;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.vector.AbstractWeightVector;
-import edu.emory.clir.clearnlp.util.BinUtils;
 
 /**
  * @since 3.0.0
@@ -39,7 +38,6 @@ abstract public class AbstractTrainer
 		l_instances = model.initializeForTraining();
 		w_vector    = model.getWeightVector();
 		t_type      = type;
-		logInfo();
 	}
 	
 	public AbstractTrainer(TrainerType type, StringModel model, int labelCutoff, int featureCutoff)
@@ -47,21 +45,21 @@ abstract public class AbstractTrainer
 		l_instances = model.initializeForTraining(labelCutoff, featureCutoff);
 		w_vector    = model.getWeightVector();
 		t_type      = type;
-		logInfo();
 	}
 	
-	private void logInfo()
+	public String trainerInfoFull()
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append("Training\n");
+		build.append(trainerInfo());	build.append("\n");
 		build.append("- Labels   : ");	build.append(getLabelSize());		build.append("\n");
 		build.append("- Features : ");	build.append(getFeatureSize());		build.append("\n");
-		build.append("- Instances: ");	build.append(getInstanceSize());	build.append("\n");
+		build.append("- Instances: ");	build.append(getInstanceSize());
 		
-		BinUtils.LOG.info(build.toString());
+		return build.toString();
 	}
 	
+	abstract public String trainerInfo();
 	abstract public void train();
 	
 	public int getLabelSize()

@@ -36,7 +36,7 @@ public class DecodeConfigurationTest
 	@Test
 	public void test() throws IOException
 	{
-		String filename = "src/test/resources/nlp/configure/configure.xml";
+		String filename = "src/test/resources/nlp/configuration/configure.xml";
 		DecodeConfiguration config = new DecodeConfiguration(IOUtils.createFileInputStream(filename));
 		
 		assertEquals(TLanguage.ENGLISH, config.getLanguage());

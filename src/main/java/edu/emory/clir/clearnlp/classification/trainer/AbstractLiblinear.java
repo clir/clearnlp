@@ -49,4 +49,9 @@ abstract public class AbstractLiblinear extends AbstractOneVsAllTrainer
 		d_eps  = eps;
 		d_bias = (bias > 0) ? bias : 0;
 	}
+	
+	public String trainerInfo(String type)
+	{
+		return String.format("Liblinear-%s: cost = %4.3f, eps = %4.3f, bias = %b", type, d_cost, d_eps, d_bias);
+	}
 }

@@ -35,7 +35,7 @@ import edu.emory.clir.clearnlp.util.StringUtils;
  */
 public class WikiExtractor
 {
-	static public void main(String[] args) throws Exception
+	public void extractNames(String[] args) throws Exception
 	{
 		List<String> filelist = FileUtils.getFileList(args[0], args[1], false);
 		Set<String> names = getNameSet(args[2]);
@@ -70,7 +70,7 @@ public class WikiExtractor
 		}
 	}
 	
-	static Set<String> getNameSet(String filename) throws Exception
+	Set<String> getNameSet(String filename) throws Exception
 	{
 		BufferedReader reader = IOUtils.createBufferedReader(filename);
 		Set<String> set = Sets.newHashSet();
@@ -80,5 +80,9 @@ public class WikiExtractor
 			set.add(line.trim());
 		
 		return set;
+	}
+	
+	static public void main(String[] args) throws Exception
+	{
 	}
 }

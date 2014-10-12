@@ -15,6 +15,7 @@
  */
 package edu.emory.clir.clearnlp.component.state;
 
+import edu.emory.clir.clearnlp.component.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
@@ -31,11 +32,11 @@ abstract public class AbstractState<LabelType>
 
 //	====================================== INITIALIZATION ======================================
 	
-	public AbstractState(DEPTree tree, boolean decode)
+	public AbstractState(DEPTree tree, CFlag flag)
 	{
 		d_tree = tree;
 		t_size = tree.size();
-		if (!decode) initGoldLabels();
+		if (flag != CFlag.COLLECT && flag != CFlag.DECODE) initGoldLabels();
 	}
 	
 	abstract protected void initGoldLabels();

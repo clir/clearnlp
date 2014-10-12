@@ -15,6 +15,7 @@
  */
 package edu.emory.clir.clearnlp.component.state;
 
+import edu.emory.clir.clearnlp.component.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
@@ -29,9 +30,9 @@ abstract public class SeqState extends AbstractState<String>
 
 //	====================================== INITIALIZATION ======================================
 	
-	public SeqState(DEPTree tree, boolean decode)
+	public SeqState(DEPTree tree, CFlag flag)
 	{
-		super(tree, decode);
+		super(tree, flag);
 		init(tree);
 	}
 	

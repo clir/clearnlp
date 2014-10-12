@@ -15,6 +15,10 @@
  */
 package edu.emory.clir.clearnlp.component.mode.pos;
 
+import java.util.Map;
+import java.util.Set;
+
+import edu.emory.clir.clearnlp.component.CFlag;
 import edu.emory.clir.clearnlp.component.state.SeqState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
@@ -26,13 +30,17 @@ import edu.emory.clir.clearnlp.util.StringUtils;
  */
 public class POSState extends SeqState
 {
-	private String[] s_lowerSimplifiedWordForms;
+	private Set<String> s_lowerSimplifiedWordForms;
+	private Map<String,String> m_ambiguityClasses;
+	private String[] a_lowerSimplifiedWordForms;
 	
 //	====================================== INITIALIZATION ======================================
 	
-	public POSState(DEPTree tree, boolean decode)
+	public POSState(DEPTree tree, CFlag flag, Set<String> lowerSimplifiedWordForms, Map<String,String> ambiguityClasses)
 	{
-		super(tree, decode);
+		super(tree, flag);
+		s_lowerSimplifiedWordForms = lowerSimplifiedWordForms;
+		m_ambiguityClasses = ambiguityClasses;
 		initLowerSimplifiedWordForms(tree);
 	}
 
@@ -45,10 +53,10 @@ public class POSState extends SeqState
 
 	private void initLowerSimplifiedWordForms(DEPTree tree)
 	{
-		s_lowerSimplifiedWordForms = new String[t_size];
+		a_lowerSimplifiedWordForms = new String[t_size];
 		
 		int i; for (i=1; i<t_size; i++)
-			s_lowerSimplifiedWordForms[i] = StringUtils.toLowerCase(getNode(i).getSimplifiedForm());
+			a_lowerSimplifiedWordForms[i] = StringUtils.toLowerCase(getNode(i).getSimplifiedForm());
 	}
 	
 //	====================================== LABEL ======================================
@@ -63,11 +71,26 @@ public class POSState extends SeqState
 	
 	public String getLowerSimplifiedWordForm(DEPNode node)
 	{
-		return getLowerSimplifiedWordForm(node.getID());
+		return a_lowerSimplifiedWordForms[node.getID()];
 	}
 	
 	public String getLowerSimplifiedWordForm(int nodeID)
 	{
-		return s_lowerSimplifiedWordForms[nodeID];
+		return a_lowerSimplifiedWordForms[nodeID];
+	}
+	
+	public String getAmbiguityClass(DEPNode node)
+	{
+		return m_ambiguityClasses.get(node.getSimplifiedForm());
+	}
+	
+	public boolean includeForm(int nodeID)
+	{
+		return s_lowerSimplifiedWordForms.contains(a_lowerSimplifiedWordForms[nodeID]); 
+	}
+	
+	public boolean includeForm(DEPNode node)
+	{
+		return includeForm(node.getID());
 	}
 }

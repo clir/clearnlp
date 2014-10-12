@@ -53,33 +53,11 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		long st, et, t1 = 0, t2 = 0;
-		int i, j, iter = 1000000, size = 5;
-		
-		for (i=0; i<iter; i++)
-		{
-			List<Integer> list = Lists.newArrayList();
-			st = System.currentTimeMillis();
-			for (j=0; j<size; j++) list.add(j);
-			j = list.get(0);
-			j = list.get(4);
-			et = System.currentTimeMillis();
-			t2 += et - st;
-		}
-		System.out.println(t2);
-		
-		for (i=0; i<iter; i++)
-		{
-			Integer[] array = new Integer[size];
-			st = System.currentTimeMillis();
-			for (j=0; j<size; j++) array[j] = j;
-			j = array[0];
-			j = array[4];
-			et = System.currentTimeMillis();
-			t1 += et - st;
-		}
-		System.out.println(t1);
-
+		System.out.println((int)(Math.log(1)/Math.log(10)));
+		System.out.println((int)(Math.log(9)/Math.log(10)));
+		System.out.println((int)(Math.log(10)/Math.log(10)));
+		System.out.println((int)(Math.log(99)/Math.log(10)));
+		System.out.println((int)(Math.log(100)/Math.log(10)));
 	}
 	
 	public void emoticon(String[] args) throws Exception

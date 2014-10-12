@@ -35,6 +35,7 @@ public class Joiner
 	
 	static public <T>String join(Collection<T> collection, String delim)
 	{
+		if (collection.isEmpty()) return StringConst.EMPTY;
 		StringBuilder build = new StringBuilder();
 		
 		for (T item : collection)
@@ -43,11 +44,12 @@ public class Joiner
 			build.append(item.toString());
 		}
 		
-		return collection.isEmpty() ? StringConst.EMPTY : build.substring(delim.length());
+		return build.substring(delim.length());
 	}
 	
 	static public <T>String join(T[] array, String delim)
 	{
+		if (array.length == 0) return StringConst.EMPTY;
 		StringBuilder build = new StringBuilder();
 		
 		for (T item : array)
@@ -56,6 +58,6 @@ public class Joiner
 			build.append(item.toString());
 		}
 		
-		return array.length == 0 ? StringConst.EMPTY : build.substring(delim.length());
+		return build.substring(delim.length());
 	}
 }

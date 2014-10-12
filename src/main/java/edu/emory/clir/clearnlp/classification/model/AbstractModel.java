@@ -18,6 +18,7 @@ package edu.emory.clir.clearnlp.classification.model;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,8 +43,9 @@ import edu.emory.clir.clearnlp.util.DSUtils;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractModel<I extends AbstractInstance<F>, F extends AbstractFeatureVector>
+abstract public class AbstractModel<I extends AbstractInstance<F>, F extends AbstractFeatureVector> implements Serializable
 {
+	private static final long serialVersionUID = 6096015874433178106L;
 	protected AbstractInstanceCollector<I,F> i_collector;
 	protected AbstractWeightVector w_vector;
 	protected LabelMap m_labels;
@@ -65,6 +67,16 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	}
 	
 // =============================== Serialization ===============================
+	
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+	{
+		load(in);
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException
+	{
+		save(out);
+	}
 	
 	abstract public void load(ObjectInputStream  in ) throws IOException, ClassNotFoundException;
 	abstract public void save(ObjectOutputStream out) throws IOException;

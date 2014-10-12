@@ -1,0 +1,7 @@
+<!--Feature template for POS tagging in English -->
+<feature_template>
+	<!-- 1-gram features -->
+	<feature f0="i:f"/>
+	<feature f0="i-1:p"/>
+	<feature f0="i:a"/>
+</feature_template>

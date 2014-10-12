@@ -39,6 +39,8 @@ public class AbstractConfiguration implements ConfigurationXML
 	private TLanguage         t_language;
 	private AbstractReader<?> d_reader;
 	
+//	=================================== CONSTRUCTORS ===================================
+	
 	public AbstractConfiguration() {}
 	
 	public AbstractConfiguration(InputStream in)
@@ -48,20 +50,11 @@ public class AbstractConfiguration implements ConfigurationXML
 		d_reader   = initReader();
 	}
 	
-//	=================================== LANGUAGE ===================================  
-	
 	private TLanguage initLanguage()
 	{
 		String language = XmlUtils.getTrimmedTextContent(getFirstElement(E_LANGUAGE));
 		return TLanguage.getType(language);
 	}
-	
-	public TLanguage getLanguage()
-	{
-		return t_language;
-	}
-	
-//	=================================== READER ===================================
 	
 	private AbstractReader<?> initReader()
 	{
@@ -111,6 +104,13 @@ public class AbstractConfiguration implements ConfigurationXML
 		}
 		
 		return map;
+	}
+	
+//	=================================== GETTERS ===================================  
+	
+	public TLanguage getLanguage()
+	{
+		return t_language;
 	}
 	
 	public AbstractReader<?> getReader()

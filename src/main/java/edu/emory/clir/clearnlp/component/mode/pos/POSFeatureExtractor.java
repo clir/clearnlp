@@ -48,13 +48,16 @@ public class POSFeatureExtractor extends AbstractFeatureExtractor<CommonFeatureT
 	@Override
 	protected String getFeature(CommonFeatureToken token, POSState state, DEPNode node)
 	{
+		boolean includeForm = state.includeForm(node);
+		
 		switch (token.getField())
 		{
-		case f : return node.getWordForm();
-		case f2: return node.getSimplifiedForm();
-		case f3: return state.getLowerSimplifiedWordForm(node);
-		case m : return node.getLemma();
+		case f : return includeForm ? node.getWordForm() : null;
+		case f2: return includeForm ? node.getSimplifiedForm() : null;
+		case f3: return includeForm ? state.getLowerSimplifiedWordForm(node) : null;
+		case m : return includeForm ? node.getLemma() : null;
 		case p : return node.getPOSTag();
+		case a : return state.getAmbiguityClass(node);
 		case n : return node.getNamedEntityTag();
 		case d : return node.getLabel();
 		case b : return getBooleanFeatureValue(token, state, node);

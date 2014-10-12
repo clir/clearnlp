@@ -61,8 +61,20 @@ public abstract class AbstractTrainConfiguration extends AbstractConfiguration
 	{
 		n_mode = mode;
 	}
+	
+	private Element getModeElement()
+	{
+		return getFirstElement(n_mode.toString());
+	}
 
 //	=================================== TRAINER ===================================
+	
+	public boolean isBootstrap()
+	{
+		Element eMode = getModeElement();
+		Element eBootstrap = XmlUtils.getFirstElementByTagName(eMode, E_BOOTSTRAP);
+		return (eBootstrap != null) && Boolean.parseBoolean(XmlUtils.getTrimmedTextContent(eBootstrap));
+	}
 	
 	public AbstractTrainer[] getTrainers(StringModel[] models)
 	{
@@ -72,7 +84,7 @@ public abstract class AbstractTrainConfiguration extends AbstractConfiguration
 	public AbstractTrainer[] getTrainers(StringModel[] models, boolean reset)
 	{
 		AbstractTrainer[] trainers = new AbstractTrainer[models.length];
-		Element eMode = getFirstElement(n_mode.toString());
+		Element eMode = getModeElement();
 		
 		for (int i=0; i<models.length; i++)
 			trainers[i] = getTrainer(eMode, models, i, reset);
@@ -82,15 +94,15 @@ public abstract class AbstractTrainConfiguration extends AbstractConfiguration
 	
 	private AbstractTrainer getTrainer(Element eMode, StringModel[] models, int index, boolean reset)
 	{
-		Element eTrainer = XmlUtils.getFirstElementByTagName(eMode, E_TRAINER);
-		String algorithm = XmlUtils.getTrimmedAttribute(eTrainer, A_ALGORITHM);
-
-		if (reset) models[index].reset();
+		Element  eTrainer = XmlUtils.getElementByTagName(eMode, E_TRAINER, index);
+		String  algorithm = XmlUtils.getTrimmedAttribute(eTrainer, A_ALGORITHM);
+		StringModel model = models[index];
+		if (reset) model.reset();
 		
 		switch (algorithm)
 		{
-		case ALG_ADAGRAD  : return getTrainerAdaGrad  (eTrainer, models[index]);
-		case ALG_LIBLINEAR: return getTrainerLiblinear(eTrainer, models[index]);
+		case ALG_ADAGRAD  : return getTrainerAdaGrad  (eTrainer, model);
+		case ALG_LIBLINEAR: return getTrainerLiblinear(eTrainer, model);
 		}
 		
 		throw new IllegalArgumentException(algorithm+" is not a valid algorithm name.");

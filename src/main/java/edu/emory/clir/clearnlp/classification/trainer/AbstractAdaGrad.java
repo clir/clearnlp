@@ -66,4 +66,9 @@ abstract public class AbstractAdaGrad extends AbstractOnlineTrainer
 	{
 		return d_alpha / (d_rho + Math.sqrt(d_gradients[weightIndex]));
 	}
+
+	protected String getTrainerInfo(String type)
+	{
+		return String.format("AdaGrad-%s: alpha = %4.3f, rho = %4.3f, average = %b", type, d_alpha, d_rho, d_average != null);
+	}
 }

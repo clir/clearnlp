@@ -71,6 +71,17 @@ public class IOUtils
 		return in;
 	}
 	
+	static public FileInputStream[] createFileInputStreams(String[] filelist)
+	{
+		int i, len = filelist.length;
+		FileInputStream[] in = new FileInputStream[len];
+		
+		for (i=0; i<len; i++)
+			in[i] = IOUtils.createFileInputStream(filelist[i]);
+		
+		return in;
+	}
+	
 	static public FileOutputStream createFileOutputStream(String filename)
 	{
 		FileOutputStream out = null;

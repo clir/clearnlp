@@ -37,13 +37,12 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	protected FeatureType[] f_extractors;
 	protected StringModel[] s_models;
 	protected EvalType      c_eval;
-	private   CFlag         c_flag;
+	protected CFlag         c_flag;
 	
 	/** Constructs a statistical component for collect. */
-	public AbstractStatisticalComponent(FeatureType[] extractors)
+	public AbstractStatisticalComponent()
 	{
 		c_flag = CFlag.COLLECT;
-		setFeatureExtractors(extractors);
 	}
 	
 	/** Constructs a statistical component for train. */
@@ -108,7 +107,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	{
 		setFeatureExtractors((FeatureType[])in.readObject());
 		setLexicons((Object[])in.readObject());
-		setModels((StringModel[])in.readObject());
+		setModels(loadModels(in));
 	}
 	
 	/**
@@ -119,7 +118,26 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	{
 		out.writeObject(f_extractors);
 		out.writeObject(getLexicons());
-		out.writeObject(s_models);
+		saveModels(out);
+	}
+	
+	private StringModel[] loadModels(ObjectInputStream in) throws Exception
+	{
+		int i, len = in.readInt();
+		StringModel[] models = new StringModel[len];
+		
+		for (i=0; i<len; i++)
+			models[i] = new StringModel(in);
+
+		return models;
+	}
+	
+	private void saveModels(ObjectOutputStream out) throws Exception
+	{
+		out.writeInt(s_models.length);
+		
+		for (StringModel model : s_models)
+			model.save(out);
 	}
 	
 //	====================================== LEXICONS ======================================
@@ -160,9 +178,9 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	{
 		switch (c_flag)
 		{
-		case TRAIN    : train(state, instances);
-		case BOOTSTRAP: bootstrap(state, instances);
-		default       : decode(state);
+		case TRAIN    : train(state, instances); break;
+		case BOOTSTRAP: bootstrap(state, instances); break;
+		default       : decode(state); break;
 		}
 	}
 	
@@ -170,7 +188,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	{
 		StringFeatureVector vector = createStringFeatureVector(state);
 		LabelType label = state.getGoldLabel();
-		instances.add(new StringInstance(label.toString(), vector));
+		if (!vector.isEmpty()) instances.add(new StringInstance(label.toString(), vector));
 		state.setAutoLabel(label);
 	}
 	
@@ -178,7 +196,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	{
 		StringFeatureVector vector = createStringFeatureVector(state);
 		LabelType label = state.getGoldLabel();
-		instances.add(new StringInstance(label.toString(), vector));
+		if (!vector.isEmpty()) instances.add(new StringInstance(label.toString(), vector));
 		state.setAutoLabel(getAutoLabel(vector));
 	}
 	

@@ -115,4 +115,10 @@ public class AdaGradSVM extends AbstractAdaGrad
 			}
 		}
 	}
+	
+	@Override
+	public String trainerInfo()
+	{
+		return getTrainerInfo("SVM");
+	}
 }

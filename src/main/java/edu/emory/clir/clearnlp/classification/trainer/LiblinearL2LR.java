@@ -161,5 +161,11 @@ public class LiblinearL2LR extends AbstractLiblinear
 
 		BinUtils.LOG.info(build.toString());
 	}
+	
+	@Override
+	public String trainerInfo()
+	{
+		return trainerInfo("LR");
+	}
 }
 	

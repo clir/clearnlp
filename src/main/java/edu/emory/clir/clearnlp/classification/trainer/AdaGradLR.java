@@ -107,4 +107,10 @@ public class AdaGradLR extends AbstractAdaGrad
 				updateWeight(w_vector.getWeightIndex(j, xi), vi*gradients[j], averageCount);
 		}
 	}
+	
+	@Override
+	public String trainerInfo()
+	{
+		return getTrainerInfo("LR");
+	}
 }

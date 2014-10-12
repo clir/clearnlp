@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
+import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 
 /**
@@ -111,6 +112,7 @@ public class StringFeatureVector extends AbstractFeatureVector
 	@Override
 	public String toString()
 	{
+		if (isEmpty()) return StringConst.EMPTY;
 		StringBuilder build = new StringBuilder();
 		int i, size = size();
 		

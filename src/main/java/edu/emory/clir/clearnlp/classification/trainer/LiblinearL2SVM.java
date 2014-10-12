@@ -161,4 +161,10 @@ public class LiblinearL2SVM extends AbstractLiblinear
 		
 		BinUtils.LOG.info(build.toString());
 	}
+	
+	@Override
+	public String trainerInfo()
+	{
+		return trainerInfo("SVM");
+	}
 }

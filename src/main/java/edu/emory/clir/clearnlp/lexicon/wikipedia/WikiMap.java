@@ -87,9 +87,8 @@ public class WikiMap implements Serializable
 	{
 		String[] s = Splitter.splitTabs(line);
 		String title  = s[1].trim();
-		String source = s[2].trim();
 		String url    = s[3].trim();
-		return new WikiPage(title, source, url.substring(0, url.length()-1));
+		return new WikiPage(title, url.substring(0, url.length()-1));
 	}
 	
 	private WikiPage nextPage(BufferedReader reader, WikiPage page) throws Exception
