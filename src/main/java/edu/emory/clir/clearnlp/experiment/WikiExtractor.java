@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.lexicon.wikipedia.WikiMap;
@@ -40,7 +39,6 @@ public class WikiExtractor
 		List<String> filelist = FileUtils.getFileList(args[0], args[1], false);
 		Set<String> names = getNameSet(args[2]);
 		Collections.sort(filelist);
-		List<String> remove;
 		PrintStream out;
 		WikiPage page;
 		WikiMap map;
@@ -48,24 +46,20 @@ public class WikiExtractor
 		for (String filename : filelist)
 		{
 			System.out.println(filename);
-			map = new WikiMap();
-			map.addPages(IOUtils.createFileInputStream(filename));
-			remove = Lists.newArrayList();
+			map = new WikiMap(IOUtils.createFileInputStream(filename));
 			
-			for (String name : names)
+			for (String title : map.getTitles())
 			{
-				page = map.getPage(name);
+				page = map.getPage(title);
 				
 				if (page != null)
 				{
-					out = IOUtils.createBufferedPrintStream(args[3]+"/"+StringUtils.toLowerCase(name).replaceAll(" ","_")+".txt");
+					out = IOUtils.createBufferedPrintStream(args[3]+"/"+StringUtils.toLowerCase(title).replaceAll(" ","_")+".txt");
 					out.print(page.toString());
 					out.close();
-					remove.add(name);
 				}
 			}
 			
-			names.removeAll(remove);
 			if (names.isEmpty()) break;
 		}
 	}
@@ -84,5 +78,7 @@ public class WikiExtractor
 	
 	static public void main(String[] args) throws Exception
 	{
+//		String filepath  = args[0];
+//		String extension = args[1];
 	}
 }

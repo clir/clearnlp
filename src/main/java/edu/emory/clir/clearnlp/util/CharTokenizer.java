@@ -19,6 +19,8 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import edu.emory.clir.clearnlp.util.constant.StringConst;
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -37,7 +39,7 @@ public class CharTokenizer
 		c_delim = delim;
 	}
 	
-	public String[] tokenize(String s)
+	public String[] tokenize(String s, boolean includeEmpty)
 	{
 		List<String> list = Lists.newArrayList();
 		int i, bIndex = 0, len = s.length();
@@ -47,7 +49,8 @@ public class CharTokenizer
 		{
 			if (cs[i] == c_delim)
 			{
-				if (bIndex < i) list.add(s.substring(bIndex, i));
+				if      (bIndex < i)	list.add(s.substring(bIndex, i));
+				else if (includeEmpty)	list.add(StringConst.EMPTY);
 				bIndex = i + 1;
 			}
 		}
@@ -59,6 +62,12 @@ public class CharTokenizer
 			list.add(s.substring(bIndex));
 		
 		return list.toArray(new String[list.size()]);
+	}
+	
+	/** Not including empty strings. */
+	public String[] tokenize(String s)
+	{
+		return tokenize(s, false);
 	}
 
 //	public String[] tokenize(String s, boolean includeDelim)

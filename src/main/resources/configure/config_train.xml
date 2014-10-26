@@ -3,6 +3,11 @@
     <language>english</language>
 
     <reader type="tsv">
+        <column index="2" field="form"/>
+        <column index="4" field="pos"/>
+    </reader>
+
+    <reader type="tsv">
         <column index="1" field="id"/>
         <column index="2" field="form"/>
         <column index="3" field="lemma"/>
@@ -14,10 +19,9 @@
     </reader>
 
     <pos>
-        <cutoff label="0" feature="2" ambiguityClass="0.4" documentFrequency="1" documentBoundary="1500"/>
-        <algorithm name="adagrad" type="svm" alpha="0.01" rho="0.1" eps="0.1"/>
+        <trainer algorithm="adagrad" type="svm" labelCutoff="2" featureCutoff="2" alpha="0.01" rho="0.1" average="false"/>
+        <cutoff ambiguityClass="0.4" documentFrequency="0" documentBoundary="0"/>
         <bootstraps>1</bootstraps>
-        <threads>2</threads>
     </pos>
 
     <dep>

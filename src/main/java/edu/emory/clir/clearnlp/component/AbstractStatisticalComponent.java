@@ -15,15 +15,25 @@
  */
 package edu.emory.clir.clearnlp.component;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
+import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
+import edu.emory.clir.clearnlp.classification.trainer.AdaGradSVM;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
 
 
@@ -42,47 +52,44 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	/** Constructs a statistical component for collect. */
 	public AbstractStatisticalComponent()
 	{
-		c_flag = CFlag.COLLECT;
+		setFlag(CFlag.COLLECT);
 	}
 	
 	/** Constructs a statistical component for train. */
 	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, boolean binary, int modelSize)
 	{
-		c_flag = CFlag.TRAIN;
+		setFlag(CFlag.TRAIN);
 		setFeatureExtractors(extractors);
 		setLexicons(lexicons);
 		setModels(createModels(binary, modelSize));
 	}
 	
-	/** Constructs a statistical component for bootstrap. */
-	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, StringModel[] models)
+	/** Constructs a statistical component for bootstrap or evaluate. */
+	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
 	{
-		c_flag = CFlag.BOOTSTRAP;
+		if (bootstrap)
+			setFlag(CFlag.BOOTSTRAP);
+		else
+		{
+			setFlag(CFlag.EVALUATE);
+			initEval();
+		}
+		
 		setFeatureExtractors(extractors);
 		setLexicons(lexicons);
 		setModels(models);
-	}
-	
-	/** Constructs a statistical component for evaluate. */
-	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, StringModel[] models, EvalType eval)
-	{
-		c_flag = CFlag.EVALUATE;
-		setFeatureExtractors(extractors);
-		setLexicons(lexicons);
-		setModels(models);
-		setEval(eval);
 	}
 	
 	/** Constructs a statistical component for decode. */
 	public AbstractStatisticalComponent(ObjectInputStream in)
 	{
-		c_flag = CFlag.DECODE;
-		
-		try
-		{
-			load(in);
-		}
-		catch (Exception e) {e.printStackTrace();}
+		initDecode(in);
+	}
+	
+	/** Constructs a statistical component for decode. */
+	public AbstractStatisticalComponent(byte[] models)
+	{
+		initDecode(models);
 	}
 	
 	private StringModel[] createModels(boolean binary, int modelSize)
@@ -94,6 +101,27 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 			models[i] = new StringModel(binary);
 		
 		return models;
+	}
+	
+	protected void initDecode(ObjectInputStream in)
+	{
+		setFlag(CFlag.DECODE);
+		
+		try
+		{
+			load(in);
+		}
+		catch (Exception e) {e.printStackTrace();}
+	}
+	
+	protected void initDecode(byte[] models)
+	{
+		try
+		{
+			ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new ByteArrayInputStream(models))));
+			initDecode(ois);
+		}
+		catch (IOException e) {e.printStackTrace();}
 	}
 	
 //	====================================== LOAD/SAVE ======================================
@@ -140,6 +168,15 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 			model.save(out);
 	}
 	
+	public byte[] toByteArray() throws Exception
+	{
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(bos)));
+		save(oos);
+		oos.close();
+		return bos.toByteArray();
+	}
+	
 //	====================================== LEXICONS ======================================
 
 	/** @return all objects containing lexicons. */
@@ -161,7 +198,12 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	}
 	
 //	====================================== MODELS ======================================
-
+	
+	public StringModel getModel(int index)
+	{
+		return s_models[index];
+	}
+	
 	public StringModel[] getModels()
 	{
 		return s_models;
@@ -216,13 +258,15 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 		return c_eval;
 	}
 	
-	public void setEval(EvalType eval)
-	{
-		c_eval = eval;
-	}
-	
+	abstract protected void initEval();
+
 //	====================================== FLAG ======================================
 
+	protected void setFlag(CFlag flag)
+	{
+		c_flag = flag;
+	}
+	
 	public boolean isCollect()
 	{
 		return c_flag == CFlag.COLLECT;
@@ -252,4 +296,68 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	{
 		return isTrain() || isBootstrap();
 	}
+	
+//	====================================== ONLINE TRAIN ======================================
+	
+	abstract public void onlineTrain(List<DEPTree> trees);
+	
+	protected void onlineTrainSingleAdaGrad(List<DEPTree> trees)
+	{
+		double currScore = onlineScore(trees);
+		if (currScore == 100) return;
+		onlineBootstrap(trees);
+		
+		AbstractOnlineTrainer trainer = new AdaGradSVM(s_models[0], 0, 0, false, 0.01, 0.1);
+		byte[] prevModels;
+		double prevScore;
+		
+		try
+		{
+			while (true)
+			{
+				prevModels = toByteArray();
+				prevScore  = currScore;
+				
+				trainer.train();
+				currScore = onlineScore(trees);
+				
+				if (prevScore >= currScore)
+				{
+					initDecode(prevModels);
+					break;
+				}
+			}			
+		}
+		catch (Exception e) {e.printStackTrace();}
+	}
+	
+	protected double onlineScore(List<DEPTree> trees)
+	{
+		CFlag originalFlag = c_flag;
+		c_flag = CFlag.EVALUATE;
+		initEval();
+		
+		for (DEPTree tree : trees)
+			process(tree);
+		
+		c_flag = originalFlag;
+		return c_eval.getScore();
+	}
+	
+	protected void onlineBootstrap(List<DEPTree> trees)
+	{
+		CFlag originalFlag = c_flag;
+		c_flag = CFlag.BOOTSTRAP;
+		
+		for (DEPTree tree : trees)
+		{
+			onlineLexicons(tree);
+			process(tree);
+		}
+		
+		c_flag = originalFlag;
+	}
+	
+	abstract protected void onlineLexicons(DEPTree tree);
 }
+

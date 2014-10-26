@@ -15,6 +15,10 @@
  */
 package edu.emory.clir.clearnlp.classification.model;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -22,6 +26,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import com.google.common.collect.Lists;
 
@@ -113,9 +119,29 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 		return w_vector;
 	}
 	
+	public void setWeightVector(AbstractWeightVector vector)
+	{
+		w_vector = vector;
+	}
+	
 	public boolean isBinaryLabel()
 	{
 		return w_vector.isBinaryLabel();
+	}
+	
+	public void loadWeightVectorFromByteArray(byte[] array) throws Exception
+	{
+		ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new ByteArrayInputStream(array))));
+		setWeightVector((AbstractWeightVector)ois.readObject());
+	}
+	
+	public byte[] saveWeightVectorToByteArray() throws Exception
+	{
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(bos)));
+		oos.writeObject(w_vector);
+		oos.close();
+		return bos.toByteArray();
 	}
 	
 // =============================== Conversion ===============================

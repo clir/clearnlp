@@ -15,23 +15,14 @@
  */
 package edu.emory.clir.clearnlp.nlp.trainer;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOneVsAllTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.TrainerType;
-import edu.emory.clir.clearnlp.collection.list.FloatArrayList;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
@@ -67,11 +58,9 @@ public abstract class AbstractNLPTrainer
 	public AbstractStatisticalComponent<?,?,?,?> train(List<String> trainFiles, List<String> developFiles, Object[] lexicons)
 	{
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> prev = train(trainFiles, developFiles, lexicons, null, 0);
-		if (!t_configuration.isBootstrap()) return prev.o;
-		
+		if (t_configuration.getNumberOfBootstraps() <= 0) return prev.o;
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> curr;
-		ByteArrayOutputStream bos;
-		ObjectOutputStream oos;
+		byte[] backup;
 		int boot = 1;
 		
 		try
@@ -79,18 +68,13 @@ public abstract class AbstractNLPTrainer
 			while (true)
 			{
 				// save the previous model
-				bos = new ByteArrayOutputStream();
-				oos = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(bos)));
-				prev.o.save(oos);
-				oos.close();
-				
+				backup = prev.o.toByteArray();
 				curr = train(trainFiles, developFiles, lexicons, prev.o.getModels(), boot++);
 				
 				if (prev.d >= curr.d)
 				{
-					ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new ByteArrayInputStream(bos.toByteArray()))));
 					BinUtils.LOG.info(String.format("Final score: %4.2f\n", prev.d));
-					return createComponentForDecode(ois);
+					return createComponentForDecode(backup);
 				}
 				
 				prev = curr;
@@ -110,11 +94,7 @@ public abstract class AbstractNLPTrainer
 		// evaluate
 		AbstractTrainer[] trainers = t_configuration.getTrainers(component.getModels());
 		component = createComponentForEvaluate(lexicons, component.getModels());
-		for (AbstractTrainer trainer : trainers)
-			BinUtils.LOG.info(trainer.trainerInfoFull()+"\n\n");
-		
-		double score = train(component, trainers, developFiles);
-		BinUtils.LOG.info("\n");
+		double score = trainPipeline(component, trainers, developFiles);
 		
 		return new ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>>(component, score); 
 	}
@@ -135,87 +115,117 @@ public abstract class AbstractNLPTrainer
 	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object[] lexicons, StringModel[] models);
 	
 	/** Creates an NLP component for decode. */
-	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(ObjectInputStream in);
+	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models);
 	
-	private double train(AbstractStatisticalComponent<?,?,?,?> component, AbstractTrainer[] trainers, List<String> developFiles)
+	private double trainPipeline(AbstractStatisticalComponent<?,?,?,?> component, AbstractTrainer[] trainers, List<String> developFiles)
 	{
-		if (trainers[0].getTrainerType() == TrainerType.ONLINE)
-			return trainOnline(component, toAbstractOnlineTrainers(trainers), developFiles);
-		else
-			return trainOneVsAll(component, toAbstractOneVsAllTrainers(trainers), developFiles);
-	}
-	
-	private AbstractOnlineTrainer[] toAbstractOnlineTrainers(AbstractTrainer[] trainers)
-	{
-		int i, len = trainers.length;
-		AbstractOnlineTrainer[] t = new AbstractOnlineTrainer[len];
+		AbstractTrainer trainer;
+		double score = 0;
 		
-		for (i=0; i<len; i++)
-			t[i] = (AbstractOnlineTrainer)trainers[i];
-		
-		return t;
-	}
-	
-	private AbstractOneVsAllTrainer[] toAbstractOneVsAllTrainers(AbstractTrainer[] trainers)
-	{
-		int i, len = trainers.length;
-		AbstractOneVsAllTrainer[] t = new AbstractOneVsAllTrainer[len];
-		
-		for (i=0; i<len; i++)
-			t[i] = (AbstractOneVsAllTrainer)trainers[i];
-		
-		return t;
-	}
-	
-	private double trainOnline(AbstractStatisticalComponent<?,?,?,?> component, AbstractOnlineTrainer[] trainers, List<String> developFiles)
-	{
-		int i, count, iter = 0, size = trainers.length;
-		
-		FloatArrayList[] weights = new FloatArrayList[size];
-		StringModel[] models = component.getModels();
-		AbstractEval<?> eval = component.getEval();
-		double[] prevScores = new double[size];
-		boolean[] train = {true, true};
-		double currScore;
-		
-		do
+		try
 		{
-			BinUtils.LOG.info("Iteration: "+(++iter)+"\n");
-			count = 0;
-			
-			for (i=0; i<size; i++)
+			for (int i=0; i<trainers.length; i++)
 			{
-				if (train[i])
-				{
-					trainers[i].train();
-					eval.clear();
-					process(component, developFiles, false);
-					currScore = eval.getScore();
-					BinUtils.LOG.info(String.format("%3d: %f\n", i, currScore));
-					
-					if (prevScores[i] < currScore)
-					{
-						count++;
-						prevScores[i] = currScore;
-						weights[i] = models[i].getWeightVector().cloneWeights();
-					}
-					else
-					{
-						train[i] = false;
-						models[i].getWeightVector().setWeights(weights[i]);
-					}
-				}
+				trainer = trainers[i];
+				BinUtils.LOG.info(trainer.trainerInfoFull()+"\n");
+				
+				if (trainer.getTrainerType() == TrainerType.ONLINE)
+					score = trainOnline(component, (AbstractOnlineTrainer)trainer, developFiles, i);
+				else
+					score = trainOneVsAll(component, (AbstractOneVsAllTrainer)trainer, developFiles, i);
 			}			
 		}
-		while (count > 0);
+		catch (Exception e) {e.printStackTrace();}
 		
-		return prevScores[size-1];
+		BinUtils.LOG.info("\n");
+		return score;
 	}
 	
-	private double trainOneVsAll(AbstractStatisticalComponent<?,?,?,?> component, AbstractOneVsAllTrainer[] trainers, List<String> developFiles)
+	private double trainOnline(AbstractStatisticalComponent<?,?,?,?> component, AbstractOnlineTrainer trainer, List<String> developFiles, int modelID) throws Exception
+	{
+		StringModel model = component.getModel(modelID);
+		AbstractEval<?> eval = component.getEval();
+		double currScore, prevScore = 0;
+		byte[] prevWeights = null;
+		
+		for (int iter=1; ; iter++)
+		{
+			trainer.train();
+			eval.clear();
+			process(component, developFiles, false);
+			currScore = eval.getScore();
+			BinUtils.LOG.info(String.format("%3d: %4.2f\n", iter, currScore));
+			
+			if (prevScore < currScore)
+			{
+				prevScore = currScore;
+				prevWeights = model.saveWeightVectorToByteArray();
+			}
+			else
+			{
+				model.loadWeightVectorFromByteArray(prevWeights);
+				break;
+			}			
+		}
+		
+		return prevScore;
+	}
+	
+	private double trainOneVsAll(AbstractStatisticalComponent<?,?,?,?> component, AbstractOneVsAllTrainer trainer, List<String> developFiles, int modelID)
 	{
 		return 0;
 	}
+	
+//	private double evaluate(AbstractStatisticalComponent<?,?,?,?> component, List<String> developFiles, int modelID)
+//	
+//	{
+//		
+//	}
+	
+//	private double trainOnline(AbstractStatisticalComponent<?,?,?,?> component, AbstractOnlineTrainer[] trainers, List<String> developFiles)
+//	{
+//		int i, count, iter = 0, size = trainers.length;
+//		
+//		FloatArrayList[] weights = new FloatArrayList[size];
+//		StringModel[] models = component.getModels();
+//		AbstractEval<?> eval = component.getEval();
+//		double[] prevScores = new double[size];
+//		boolean[] train = {true, true};
+//		double currScore;
+//		
+//		do
+//		{
+//			BinUtils.LOG.info("Iteration: "+(++iter)+"\n");
+//			count = 0;
+//			
+//			for (i=0; i<size; i++)
+//			{
+//				if (train[i])
+//				{
+//					trainers[i].train();
+//					eval.clear();
+//					process(component, developFiles, false);
+//					currScore = eval.getScore();
+//					BinUtils.LOG.info(String.format("%3d: %f\n", i, currScore));
+//					
+//					if (prevScores[i] < currScore)
+//					{
+//						count++;
+//						prevScores[i] = currScore;
+//						weights[i] = models[i].getWeightVector().cloneWeights();
+//					}
+//					else
+//					{
+//						train[i] = false;
+//						models[i].getWeightVector().setWeights(weights[i]);
+//					}
+//				}
+//			}			
+//		}
+//		while (count > 0);
+//		
+//		return prevScores[size-1];
+//	}
 	
 	public void process(AbstractStatisticalComponent<?,?,?,?> component, List<String> filelist, boolean log)
 	{

@@ -67,6 +67,11 @@ public class Splitter implements PatternConst
 		return T_COMMA.tokenize(s);
 	}
 	
+	static public String[] splitCommas(String s, boolean includeEmpty)
+	{
+		return T_COMMA.tokenize(s, includeEmpty);
+	}
+	
 	static public String[] splitColons(String s)
 	{
 		return T_COLON.tokenize(s);

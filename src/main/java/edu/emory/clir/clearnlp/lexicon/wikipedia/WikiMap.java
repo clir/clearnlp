@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.Maps;
 
@@ -39,6 +40,17 @@ public class WikiMap implements Serializable
 	public WikiMap()
 	{
 		m_wiki = Maps.newHashMap();
+	}
+	
+	public WikiMap(InputStream in)
+	{
+		m_wiki = Maps.newHashMap();
+		addPages(in);
+	}
+	
+	public Set<String> getTitles()
+	{
+		return m_wiki.keySet();
 	}
 	
 	public WikiPage getPage(String title)

@@ -69,11 +69,11 @@ public abstract class AbstractTrainConfiguration extends AbstractConfiguration
 
 //	=================================== TRAINER ===================================
 	
-	public boolean isBootstrap()
+	public int getNumberOfBootstraps()
 	{
 		Element eMode = getModeElement();
-		Element eBootstrap = XmlUtils.getFirstElementByTagName(eMode, E_BOOTSTRAP);
-		return (eBootstrap != null) && Boolean.parseBoolean(XmlUtils.getTrimmedTextContent(eBootstrap));
+		Element eBootstrap = XmlUtils.getFirstElementByTagName(eMode, E_BOOTSTRAPS);
+		return (eBootstrap != null) ? Integer.parseInt(XmlUtils.getTrimmedTextContent(eBootstrap)) : 0;
 	}
 	
 	public AbstractTrainer[] getTrainers(StringModel[] models)

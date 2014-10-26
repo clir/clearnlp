@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.kohsuke.args4j.Option;
 
+import edu.emory.clir.clearnlp.nlp.NLPGetter;
 import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
@@ -29,7 +30,6 @@ import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
-import edu.emory.clir.clearnlp.util.nlp.NLPGetter;
 
 /**
  * @since 3.0.0

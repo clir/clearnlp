@@ -26,7 +26,7 @@ public interface ConfigurationXML
 	String E_MODEL		= "model";
 	String E_COLUMN		= "column";
 	String E_CUTOFF		= "cutoff";
-	String E_BOOTSTRAP	= "bootstrap";
+	String E_BOOTSTRAPS	= "bootstraps";
 	
 	String A_TYPE		= "type";
 	String A_FIELD		= "field";

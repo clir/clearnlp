@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import edu.emory.clir.clearnlp.util.StringUtils;
+import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
  * @since 3.0.0
@@ -37,6 +38,6 @@ public class FileExtensionFilter implements FilenameFilter
 	@Override
 	public boolean accept(File dir, String name)
 	{
-		return StringUtils.toLowerCase(name).endsWith(s_extension); 
+		return s_extension.equals(StringConst.ASTERISK) || StringUtils.toLowerCase(name).endsWith(s_extension); 
 	}
 }

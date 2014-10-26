@@ -26,8 +26,11 @@ import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.evaluation.TagEval;
+import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
+import edu.emory.clir.clearnlp.util.StringUtils;
+import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
  * @since 3.0.0
@@ -55,22 +58,22 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 		super(extractors, lexicons, false, 1);
 	}
 	
-	/** Creates a pos tagger for bootstrap. */
-	public AbstractPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models)
-	{
-		super(extractors, lexicons, models);
-	}
-	
 	/** Creates a pos tagger for bootstrap or evaluate. */
-	public AbstractPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, TagEval eval)
+	public AbstractPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
 	{
-		super(extractors, lexicons, models, eval);
+		super(extractors, lexicons, models, bootstrap);
 	}
 	
 	/** Creates a pos tagger for decode. */
 	public AbstractPOSTagger(ObjectInputStream in)
 	{
 		super(in);
+	}
+	
+	/** Creates a pos tagger for decode. */
+	public AbstractPOSTagger(byte[] models)
+	{
+		super(models);
 	}
 	
 //	====================================== LEXICONS ======================================
@@ -102,6 +105,13 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 		s_lowerSimplifiedWordForms = p_collector.finalizeLowerSimplifiedWordForms();
 		m_ambiguityClasses = p_collector.finalizeAmbiguityClasses(s_lowerSimplifiedWordForms);
 	}
+	
+//	====================================== EVAL ======================================
+
+	protected void initEval()
+	{
+		c_eval = new TagEval();
+	}
 
 //	====================================== PROCESS ======================================
 	
@@ -120,6 +130,9 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 			if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
 			else if (isEvaluate())		c_eval.countCorrect(tree, state.getGoldLabels());
 		}
+		
+		String[] goldTags = state.getGoldLabels();
+		if (goldTags != null) tree.setPOSTags(goldTags);
 	}
 	
 	private List<StringInstance> process(POSState state)
@@ -145,5 +158,31 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	protected String getAutoLabel(StringFeatureVector vector)
 	{
 		return s_models[0].predictBest(vector).getLabel();
+	}
+	
+//	====================================== ONLINE TRAIN ======================================
+	
+	@Override
+	public void onlineTrain(List<DEPTree> trees)
+	{
+		onlineTrainSingleAdaGrad(trees);
+	}
+	
+	@Override
+	protected void onlineLexicons(DEPTree tree)
+	{
+		for (DEPNode node : tree)
+		{
+			String simplifiedForm = node.getSimplifiedForm();
+			String ambiguityClass = m_ambiguityClasses.get(simplifiedForm);
+			String pos = node.getPOSTag();
+			
+			if (ambiguityClass == null)
+				m_ambiguityClasses.put(simplifiedForm, pos);
+			else if (!ambiguityClass.startsWith(StringConst.UNDERSCORE+pos) && !ambiguityClass.startsWith(pos+StringConst.UNDERSCORE) && !ambiguityClass.startsWith(StringConst.UNDERSCORE+pos+StringConst.UNDERSCORE))
+				m_ambiguityClasses.put(simplifiedForm, pos+StringConst.UNDERSCORE+ambiguityClass);
+			
+			s_lowerSimplifiedWordForms.add(StringUtils.toLowerCase(simplifiedForm));
+		}		
 	}
 }

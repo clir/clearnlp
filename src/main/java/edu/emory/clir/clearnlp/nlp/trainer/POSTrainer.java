@@ -16,11 +16,9 @@
 package edu.emory.clir.clearnlp.nlp.trainer;
 
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.component.evaluation.TagEval;
 import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.POSFeatureExtractor;
 import edu.emory.clir.clearnlp.nlp.configuration.AbstractTrainConfiguration;
@@ -33,6 +31,11 @@ import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
 public class POSTrainer extends AbstractNLPTrainer
 {
 	protected POSFeatureExtractor[] f_extractors;
+	
+	public POSTrainer(InputStream configuration)
+	{
+		super(configuration);
+	}
 	
 	public POSTrainer(InputStream configuration, InputStream[] features)
 	{
@@ -61,18 +64,18 @@ public class POSTrainer extends AbstractNLPTrainer
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object[] lexicons, StringModel[] models)
 	{
-		return new DefaultPOSTagger(f_extractors, lexicons, models);
+		return new DefaultPOSTagger(f_extractors, lexicons, models, true);
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object[] lexicons, StringModel[] models)
 	{
-		return new DefaultPOSTagger(f_extractors, lexicons, models, new TagEval());
+		return new DefaultPOSTagger(f_extractors, lexicons, models, false);
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(ObjectInputStream in)
+	protected AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models)
 	{
-		return new DefaultPOSTagger(in);
+		return new DefaultPOSTagger(models);
 	}
 }

@@ -18,13 +18,20 @@ package edu.emory.clir.clearnlp.util;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -35,6 +42,30 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
 public class IOUtils
 {
 	private IOUtils() {}
+	
+	public static Map<String,byte[]> toByteMap(ZipInputStream stream) throws IOException
+	{
+		Map<String,byte[]> map = Maps.newHashMap();
+		ZipEntry zEntry;
+		
+		while ((zEntry = stream.getNextEntry()) != null)
+			map.put(zEntry.getName(), toByteArray(stream));
+
+		stream.close();
+		return map;
+	}
+	
+	public static byte[] toByteArray(ZipInputStream in) throws IOException
+	{
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int count;
+		
+		while ((count = in.read(buffer)) != -1)
+			bout.write(buffer, 0, count);
+         
+		return bout.toByteArray();
+	}
 	
 	/** @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}. */
 	static public BufferedReader createBufferedReader(InputStream in)

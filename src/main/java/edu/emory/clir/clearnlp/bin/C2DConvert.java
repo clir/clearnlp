@@ -32,13 +32,13 @@ import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBInstance;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBReader;
+import edu.emory.clir.clearnlp.nlp.NLPGetter;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
-import edu.emory.clir.clearnlp.util.nlp.NLPGetter;
 
 
 public class C2DConvert

@@ -3,58 +3,51 @@
 	<cutoff label="0" feature="2" df="1" ambiguity="0.4"/>
 
 	<!-- 1-gram features -->
-	<feature f="i-3:sf"/>
-	<feature f="i-2:sf"/>
-	<feature f="i-1:sf"/>
-	<feature f="i:sf"/>
-	<feature f="i+1:sf"/>
-	<feature f="i+2:sf"/>
-	<feature f="i+3:sf"/>
+	<feature f0="i-3:f2"/>
+	<feature f0="i-2:f2"/>
+	<feature f0="i-1:f2"/>
+	<feature f0="i:f2"/>
+	<feature f0="i+1:f2"/>
+	<feature f0="i+2:f2"/>
+	<feature f0="i+3:f2"/>
 
-	<feature f="i-3:p"/>
-	<feature f="i-2:p"/>
-	<feature f="i-1:p"/>
-	<feature f="i:a"/>
-	<feature f="i+1:a"/>
-	<feature f="i+2:a"/>
-	<feature f="i+3:a"/>
+	<feature f0="i-3:p"/>
+	<feature f0="i-2:p"/>
+	<feature f0="i-1:p"/>
+	<feature f0="i:a"/>
+	<feature f0="i+1:a"/>
+	<feature f0="i+2:a"/>
+	<feature f0="i+3:a"/>
 
 	<!-- 2-gram features -->
-	<feature f="i-2:lsf" f="i-1:lsf"/>
-	<feature f="i-1:lsf" f="i:lsf"/>
-	<feature f="i:lsf"   f="i+1:lsf"/>
-	<feature f="i+1:lsf" f="i+2:lsf"/>
-	<feature f="i-1:lsf" f="i+1:lsf"/>
+	<feature f0="i-2:f3" f1="i-1:f3"/>
+	<feature f0="i-1:f3" f1="i:f3"/>
+	<feature f0="i:f3"   f1="i+1:f3"/>
+	<feature f0="i+1:f3" f1="i+2:f3"/>
+	<feature f0="i-1:f3" f1="i+1:f3"/>
 
-	<feature f="i-2:p" f="i-1:p"/>
-	<feature f="i+1:a" f="i+2:a"/>
-	<feature f="i-1:p" f="i+1:a"/>
+	<feature f0="i-2:p" f1="i-1:p"/>
+	<feature f0="i+1:a" f1="i+2:a"/>
+	<feature f0="i-1:p" f1="i+1:a"/>
 
 	<!-- 3-gram features -->
-	<feature f="i-2:lsf" f="i-1:lsf" f="i:lsf"/>
-	<feature f="i-1:lsf" f="i:lsf"   f="i+1:lsf"/>
-	<feature f="i:lsf"   f="i+1:lsf" f="i+2:lsf"/>
-	<feature f="i-2:lsf" f="i-1:lsf" f="i+1:lsf"/>
-	<feature f="i-1:lsf" f="i+1:lsf" f="i+2:lsf"/>
+	<feature f0="i-2:f3" f1="i-1:f3" f2="i:f3"/>
+	<feature f0="i-1:f3" f1="i:f3"   f2="i+1:f3"/>
+	<feature f0="i:f3"   f1="i+1:f3" f2="i+2:f3"/>
+	<feature f0="i-2:f3" f1="i-1:f3" f2="i+1:f3"/>
+	<feature f0="i-1:f3" f1="i+1:f3" f2="i+2:f3"/>
 
-	<feature f="i-2:p" f="i-1:p" f="i:a"/>
-	<feature f="i-1:p" f="i:a"   f="i+1:a"/>
-	<feature f="i-2:p" f="i-1:p" f="i+1:a"/>
-	<feature f="i-1:p" f="i+1:a" f="i+2:a"/>
+	<feature f0="i-2:p" f1="i-1:p" f2="i:a"/>
+	<feature f0="i-1:p" f1="i:a"   f2="i+1:a"/>
+	<feature f0="i-2:p" f1="i-1:p" f2="i+1:a"/>
+	<feature f0="i-1:p" f1="i+1:a" f2="i+2:a"/>
 
-	<!-- prefix/suffix features -->
-	<feature t="s" f="i:pf3"/>
-	<feature t="s" f="i:sf4"/>
+	<!-- set features -->
+	<feature t="s" f0="i:pf3"/>
+	<feature t="s" f0="i:sf4"/>
+	<feature t="s" f0="i:orth"/>
 
 	<!-- binary features -->
-	<feature t="b" f="i:b0" note="all upper case"/>
-	<feature t="b" f="i:b1" note="all lower case"/>
-	<feature t="b" f="i:b2" note="begins with a capital letter"/>
-	<feature t="b" f="i:b3" note="contains a capital letter not at the beginning"/>
-	<feature t="b" f="i:b4" note="contains more than one capital letters not at the beginning"/>
-	<feature t="b" f="i:b5" note="contains a period"/>
-	<feature t="b" f="i:b6" note="contains a number"/>
-	<feature t="b" f="i:b7" note="contains a hyphen"/>
-	<feature t="b" f="i:b8" note="input is the last token"/>
-	<feature t="b" f="i:b9" note="input is the first token" visible="false"/>
+	<feature t="b" f0="i:b0" note="input is the first token" visible="false"/>
+	<feature t="b" f0="i:b1" note="input is the last token"/>
 </feature_template>

@@ -18,7 +18,6 @@ package edu.emory.clir.clearnlp.component.mode.pos;
 import java.io.ObjectInputStream;
 
 import edu.emory.clir.clearnlp.classification.model.StringModel;
-import edu.emory.clir.clearnlp.component.evaluation.TagEval;
 import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
 
 /**
@@ -39,21 +38,21 @@ public class DefaultPOSTagger extends AbstractPOSTagger
 		super(extractors, lexicons);
 	}
 	
-	/** Creates a pos tagger for bootstrap. */
-	public DefaultPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models)
+	/** Creates a pos tagger for bootstrap or evaluate. */
+	public DefaultPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
 	{
-		super(extractors, lexicons, models);
+		super(extractors, lexicons, models, bootstrap);
 	}
 
-	
-	/** Creates a pos tagger for evaluate. */
-	public DefaultPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, TagEval eval)
-	{
-		super(extractors, lexicons, models, eval);
-	}
 	/** Creates a pos tagger for decode. */
 	public DefaultPOSTagger(ObjectInputStream in)
 	{
 		super(in);
+	}
+	
+	/** Creates a pos tagger for decode. */
+	public DefaultPOSTagger(byte[] models)
+	{
+		super(models);
 	}
 }

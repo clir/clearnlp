@@ -17,6 +17,7 @@ package edu.emory.clir.clearnlp.component.mode.morph;
 
 import edu.emory.clir.clearnlp.component.AbstractComponent;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
 
 /**
  * Default morphological analyzer.
@@ -25,5 +26,12 @@ import edu.emory.clir.clearnlp.dependency.DEPNode;
  */
 abstract public class AbstractMPAnalyzer extends AbstractComponent
 {
+	@Override
+	public void process(DEPTree tree)
+	{
+		for (DEPNode node : tree)
+			analyze(node);
+	}
+	
 	abstract public void analyze(DEPNode node);
 }

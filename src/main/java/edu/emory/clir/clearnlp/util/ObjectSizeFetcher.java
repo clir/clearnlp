@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.morph;
+package edu.emory.clir.clearnlp.util;
 
-import edu.emory.clir.clearnlp.dependency.DEPNode;
-import edu.emory.clir.clearnlp.util.StringUtils;
+import java.lang.instrument.Instrumentation;
 
 /**
- * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DefaultMPAnalyzer extends AbstractMPAnalyzer
+public class ObjectSizeFetcher
 {
-	@Override
-	public void analyze(DEPNode node)
+	private static Instrumentation instrumentation;
+	
+	public static void premain(String args, Instrumentation inst)
 	{
-		StringUtils.toLowerCase(StringUtils.toSimplifiedForm(node.getWordForm()));
+		instrumentation = inst;
+	}
+	
+	public static long getObjectSize(Object o)
+	{
+		return instrumentation.getObjectSize(o);
 	}
 }

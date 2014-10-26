@@ -42,6 +42,11 @@ public class DSUtils
 {
 	private DSUtils() {}
 	
+	static public Set<String> createStringHashSet(InputStream in)
+	{
+		return createStringHashSet(in, true, false);
+	}
+	
 	/**
 	 * @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}.
 	 * The file that the input-stream is created from consists of one entry per line. 
@@ -71,6 +76,11 @@ public class DSUtils
 		catch (IOException e) {e.printStackTrace();}
 		
 		return set;
+	}
+	
+	static public Map<String,String> createStringHashMap(InputStream in, CharTokenizer tokenizer)
+	{
+		return createStringHashMap(in, tokenizer, true);
 	}
 	
 	/**
