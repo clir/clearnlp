@@ -87,6 +87,11 @@ public class SparseFeatureVector extends AbstractFeatureVector
 		
 		return size();
 	}
+
+    public int [] getIndexes()
+    {
+        return i_indices.toArray();
+    }
 	
 	@Override
 	public int size()
