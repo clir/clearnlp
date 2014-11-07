@@ -1,6 +1,6 @@
 # ClearNLP
 
-<img align="right" src="http://mathcs.emory.edu/~choi/img/clearnlp-logo.png" width="200" height="200"/>
+<img align="right" src="http://mathcs.emory.edu/~choi/img/clearnlp-logo.png" width="150" height="150"/>
 The ClearNLP project provides software and resources for natural language processing developed by the [Center for Language and Information Research (CLIR)](http://clir.emory.edu) at [Emory University](http://emory.edu).
 
 * [Documents](https://github.com/clir/clearnlp/wiki).
