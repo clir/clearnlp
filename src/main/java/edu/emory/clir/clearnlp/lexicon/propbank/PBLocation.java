@@ -18,8 +18,6 @@ package edu.emory.clir.clearnlp.lexicon.propbank;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
-import com.sun.xml.internal.txw2.IllegalAnnotationException;
-
 import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.constant.PatternConst;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -58,7 +56,7 @@ public class PBLocation implements Serializable, Comparable<PBLocation>
 		String[] loc = SPLIT.split(str);
 		
 		if (!StringUtils.containsDigitOnly(loc[0]) || !StringUtils.containsDigitOnly(loc[1]))
-			throw new IllegalAnnotationException(str);
+			throw new IllegalArgumentException(str);
 		
 		i_terminalID = Integer.parseInt(loc[0]);
 		i_height     = Integer.parseInt(loc[1]);

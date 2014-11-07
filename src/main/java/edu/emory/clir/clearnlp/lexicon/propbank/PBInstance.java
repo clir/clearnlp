@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
-import com.sun.xml.internal.txw2.IllegalAnnotationException;
 
 import edu.emory.clir.clearnlp.constituent.CTLibEn;
 import edu.emory.clir.clearnlp.constituent.CTTree;
@@ -64,7 +63,7 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 		String[] tmp = SPLIT.split(str);
 		
 		if (tmp.length < 7 || !StringUtils.containsDigitOnly(tmp[1]) || !StringUtils.containsDigitOnly(tmp[2]))
-			throw new IllegalAnnotationException(str);
+			throw new IllegalArgumentException(str);
 		
 		s_treePath 		= tmp[0];
 		i_treeID		= Integer.parseInt(tmp[1]);

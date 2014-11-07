@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import com.google.common.collect.Lists;
-import com.sun.xml.internal.txw2.IllegalAnnotationException;
 
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -53,13 +52,13 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 		String type;
 		
 		if (idx == -1)
-			throw new IllegalAnnotationException(str);
+			throw new IllegalArgumentException(str);
 		
 		StringTokenizer tok = new StringTokenizer(str.substring(0, idx), "*&,;", true);
 		s_label = str.substring(idx+1);
 		
 		if (!tok.hasMoreTokens())
-			throw new IllegalAnnotationException(str);
+			throw new IllegalArgumentException(str);
 		
 		addLocation(new PBLocation(tok.nextToken(), StringConst.EMPTY));
 		
@@ -68,7 +67,7 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 			type = tok.nextToken();
 		
 			if (!tok.hasMoreTokens())
-				throw new IllegalAnnotationException(str);
+				throw new IllegalArgumentException(str);
 			
 			addLocation(new PBLocation(tok.nextToken(), type));
 		}

@@ -16,7 +16,6 @@
 package edu.emory.clir.clearnlp.experiment;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +35,6 @@ import edu.emory.clir.clearnlp.collection.triple.ObjectIntIntTriple;
 import edu.emory.clir.clearnlp.constituent.CTNode;
 import edu.emory.clir.clearnlp.constituent.CTReader;
 import edu.emory.clir.clearnlp.constituent.CTTree;
-import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.lexicon.wordnet.WNMap;
 import edu.emory.clir.clearnlp.lexicon.wordnet.WNPOSTag;
 import edu.emory.clir.clearnlp.lexicon.wordnet.WNSynset;
@@ -58,32 +56,6 @@ public class Z
 		System.out.println((int)(Math.log(10)/Math.log(10)));
 		System.out.println((int)(Math.log(99)/Math.log(10)));
 		System.out.println((int)(Math.log(100)/Math.log(10)));
-	}
-	
-	public void emoticon(String[] args) throws Exception
-	{
-		Set<String> set = DSUtils.createStringHashSet(IOUtils.getInputStreamsFromClasspath(PathTokenizer.EMOTICONS), true, true);
-		Pattern e0 = Pattern.compile("^[\\!\\|;:#%][-]*[\\(\\)\\[\\]\\{\\}\\|<>]+$");
-		int count = set.size();
-		List<String> list = Lists.newArrayList(set);
-		Collections.sort(list);
-		
-		for (String s : list)
-		{
-			if (e0.matcher(s).find())
-			{
-				System.out.println(s);
-				set.remove(s);
-			}
-		}
-		
-		System.out.println(count+" -> "+set.size());
-		
-		list = Lists.newArrayList(set);
-		Collections.sort(list);
-		
-		for (String s : list)
-			System.out.println(s);
 	}
 	
 	public void minimalHash(String[] args) throws Exception

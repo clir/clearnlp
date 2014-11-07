@@ -77,7 +77,7 @@ public class CTNodeTest
 	private void testGetTags(CTNode curr)
 	{
 		assertEquals("NP-LOC-PRD-1=2", curr.getTags());
-		assertEquals("[PRD, LOC]", curr.getFunctionTagSet().toString());
+		assertEquals("[LOC, PRD]", curr.getFunctionTagSet().toString());
 		assertEquals(1, curr.getEmptyCategoryIndex());
 		assertEquals(2, curr.getGappingRelationIndex());
 	}

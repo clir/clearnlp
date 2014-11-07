@@ -45,8 +45,8 @@ public class IncMap1Test
 		assertEquals("[(B,4), (A,2)]", map.toList(1).toString());
 		assertEquals("[(B,0.5), (A,0.25)]", map.toList(0.2).toString());
 		
-		assertEquals("[D, A, B, C]", map.keySet(0).toString());
-		assertEquals("[D, A, B, C]", map.keySet(0d).toString());
+		assertEquals("[A, B, C, D]", map.keySet(0).toString());
+		assertEquals("[A, B, C, D]", map.keySet(0d).toString());
 		
 		assertEquals("[A, B]", map.keySet(1).toString());
 		assertEquals("[A, B]", map.keySet(0.2).toString());

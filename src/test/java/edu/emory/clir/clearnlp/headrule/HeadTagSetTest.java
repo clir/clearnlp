@@ -52,6 +52,6 @@ public class HeadTagSetTest
 		node.addFunctionTag("SBJ");
 		assertTrue(set.matches(node));
 		
-		assertEquals(tags, set.toString());
+		assertEquals(tags, "NN.*|NP|-SBJ|-TPC");
 	}
 }
