@@ -24,6 +24,8 @@ import edu.emory.clir.clearnlp.lexicon.propbank.PBArgument;
  */
 public class PBArc extends AbstractArc<CTNode>
 {
+	private static final long serialVersionUID = 8603308004980285093L;
+
 	public PBArc(CTNode node, String label)
 	{
 		set(node, label);

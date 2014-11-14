@@ -23,6 +23,8 @@ import edu.emory.clir.clearnlp.dependency.DEPNode;
  */
 public class DEPArc extends AbstractArc<DEPNode>
 {
+	private static final long serialVersionUID = -9099516205158258095L;
+
 	public DEPArc(DEPNode node, String label)
 	{
 		set(node, label);

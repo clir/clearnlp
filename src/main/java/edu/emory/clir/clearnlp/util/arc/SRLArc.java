@@ -24,6 +24,7 @@ import edu.emory.clir.clearnlp.lexicon.propbank.PBLib;
  */
 public class SRLArc extends AbstractArc<DEPNode>
 {
+	private static final long serialVersionUID = -5382621610169266179L;
 	private String s_numberedArgumentTag;
 	
 	public SRLArc(DEPNode node, String label)

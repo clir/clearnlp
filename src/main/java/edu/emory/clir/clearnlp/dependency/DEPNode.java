@@ -15,6 +15,7 @@
  */
 package edu.emory.clir.clearnlp.dependency;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,8 +40,9 @@ import edu.emory.clir.clearnlp.util.arc.SRLArc;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPNode implements Comparable<DEPNode>
+public class DEPNode implements Comparable<DEPNode>, Serializable
 {
+	private static final long serialVersionUID = 3794720014142939766L;
 	/** The ID of this node (default: {@link DEPLib#NULL_ID}). */
 	private int		n_id;
 	/** The word-form of this node. */

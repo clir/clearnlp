@@ -15,6 +15,7 @@
  */
 package edu.emory.clir.clearnlp.dependency;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,8 +31,9 @@ import edu.emory.clir.clearnlp.reader.TSVReader;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPFeat
+public class DEPFeat implements Serializable
 {
+	private static final long serialVersionUID = 4093725541292286982L;
 	/** The delimiter between feature values ({@code ","}). */
 	static public final String DELIM_VALUES    = ",";
 	/** The delimiter between features ({@code "|"}). */

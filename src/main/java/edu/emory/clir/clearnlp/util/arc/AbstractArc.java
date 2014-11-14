@@ -15,17 +15,18 @@
  */
 package edu.emory.clir.clearnlp.util.arc;
 
+import java.io.Serializable;
 import java.util.regex.Pattern;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractArc<NodeType> implements Comparable<AbstractArc<NodeType>>
+abstract public class AbstractArc<NodeType> implements Comparable<AbstractArc<NodeType>>, Serializable
 {
+	private static final long serialVersionUID = -2230309327619045746L;
 	/** The delimiter between node and label. */
 	static public final String DELIM  = ":";
-	
 	protected NodeType n_node;
 	protected String   s_label;
 	
