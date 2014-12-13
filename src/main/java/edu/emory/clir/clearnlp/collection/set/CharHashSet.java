@@ -20,41 +20,35 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import com.carrotsearch.hppc.CharLookupContainer;
 import com.carrotsearch.hppc.CharOpenHashSet;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class CharHashSet implements Serializable
+public class CharHashSet extends CharOpenHashSet implements Serializable
 {
 	private static final long serialVersionUID = -3796053685010557911L;
-	private CharOpenHashSet g_set;
 	
 	public CharHashSet()
 	{
-		g_set = new CharOpenHashSet();
-	}
-	
-	public CharHashSet(char... characters)
-	{
-		g_set = new CharOpenHashSet();
-		
-		for (char c : characters)
-			g_set.add(c);
+		super();
 	}
 	
 	public CharHashSet(int initialCapacity)
 	{
-		g_set = new CharOpenHashSet(initialCapacity);
+		super(initialCapacity);
 	}
-
+	
+	public CharHashSet(char... characters)
+	{
+		for (char c : characters)
+			add(c);
+	}
+	
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
-		char[] array = (char[])in.readObject();
-		g_set = new CharOpenHashSet(array.length);
-		addAll(array);
+		addAll((char[])in.readObject());
 	}
 
 	private void writeObject(ObjectOutputStream o) throws IOException
@@ -66,46 +60,5 @@ public class CharHashSet implements Serializable
 	{
 		for (char item : array)
 			add(item);
-	}
-	
-	public char[] toArray()
-	{
-		return g_set.toArray();
-	}
-	
-	public void add(char item)
-	{
-		g_set.add(item);
-	}
-	
-	public boolean remove(char item)
-	{
-		return g_set.remove(item);
-	}
-	
-	public int removeAll(CharHashSet set)
-	{
-		return g_set.removeAll(set.g_set);
-	}
-	
-	public boolean contains(char item)
-	{
-		return g_set.contains(item);
-	}
-	
-	public int size()
-	{
-		return g_set.size();
-	}
-	
-	public CharLookupContainer getCharLookupContainer()
-	{
-		return g_set;
-	}
-	
-	@Override
-	public String toString()
-	{
-		return g_set.toString();
 	}
 }

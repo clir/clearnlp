@@ -21,6 +21,7 @@ import org.w3c.dom.Element;
 
 import edu.emory.clir.clearnlp.feature.AbstractFeatureTemplate;
 import edu.emory.clir.clearnlp.feature.type.FeatureType;
+import edu.emory.clir.clearnlp.feature.type.FieldType;
 import edu.emory.clir.clearnlp.feature.type.RelationType;
 import edu.emory.clir.clearnlp.feature.type.SourceType;
 
@@ -52,15 +53,15 @@ public class CommonFeatureTemplate extends AbstractFeatureTemplate<CommonFeature
 	@Override
 	protected FeatureType initFeatureType()
 	{
-		CommonFieldType field;
+		FieldType field;
 		
 		for (CommonFeatureToken token : getFeatureTokens())
 		{
 			field = token.getField();
 			
-			if (CommonFieldType.isSetField(field))
+			if (FieldType.isSetField(field))
 				return FeatureType.SET;
-			else if (CommonFieldType.isBooleanField(field))
+			else if (FieldType.isBooleanField(field))
 				return FeatureType.BINARY;
 		}
 		

@@ -41,7 +41,6 @@ import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.Splitter;
-import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 import edu.emory.clir.clearnlp.util.constant.MetaConst;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -192,7 +191,7 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 	@Override
 	public void analyze(DEPNode node)
 	{
-		String lswf = StringUtils.toLowerCase(node.getSimplifiedForm()); 
+		String lswf = node.getLowerSimplifiedWordForm(); 
 		String pos  = node.getPOSTag();
 		String lemma;
 		

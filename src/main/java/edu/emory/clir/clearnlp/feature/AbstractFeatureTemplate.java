@@ -35,7 +35,7 @@ import edu.emory.clir.clearnlp.util.constant.CharConst;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractFeatureTemplate<FeatureTokenType extends AbstractFeatureToken<?>> implements Serializable, FeatureXml
+abstract public class AbstractFeatureTemplate<FeatureTokenType extends AbstractFeatureToken> implements Serializable, FeatureXml
 {
 	private static final long serialVersionUID = 6926688863000363869L;
 	private FeatureTokenType[] f_tokens;

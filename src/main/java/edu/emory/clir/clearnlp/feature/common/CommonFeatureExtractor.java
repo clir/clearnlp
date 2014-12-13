@@ -19,15 +19,16 @@ import java.io.InputStream;
 
 import org.w3c.dom.Element;
 
-import edu.emory.clir.clearnlp.component.state.SeqState;
+import edu.emory.clir.clearnlp.component.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
+import edu.emory.clir.clearnlp.util.StringUtils;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class CommonFeatureExtractor extends AbstractFeatureExtractor<CommonFeatureTemplate,CommonFeatureToken,SeqState>
+public class CommonFeatureExtractor<StateType extends AbstractState<?,?>> extends AbstractFeatureExtractor<CommonFeatureTemplate,CommonFeatureToken,StateType>
 {
 	private static final long serialVersionUID = -3522042349865325347L;
 
@@ -43,16 +44,21 @@ public class CommonFeatureExtractor extends AbstractFeatureExtractor<CommonFeatu
 	}
 
 	@Override
-	protected String getFeature(CommonFeatureToken token, SeqState state, DEPNode node)
+	protected String getFeature(CommonFeatureToken token, StateType state, DEPNode node)
 	{
+		boolean includeForm = state.extractWordFormFeature(node);
+		
 		switch (token.getField())
 		{
-		case f : return node.getWordForm();
-		case f2: return node.getSimplifiedForm();
-		case m : return node.getLemma();
+		case f : return includeForm ? node.getWordForm() : null;
+		case f2: return includeForm ? node.getSimplifiedWordForm() : null;
+		case f3: return includeForm ? StringUtils.toLowerCase(node.getSimplifiedWordForm()) : null;
+		case m : return includeForm ? node.getLemma() : null; 
 		case p : return node.getPOSTag();
 		case n : return node.getNamedEntityTag();
 		case d : return node.getLabel();
+		case lv: return Integer.toString(node.getLeftValency());
+		case rv: return Integer.toString(node.getRightValency());
 		case b : return getBooleanFeatureValue(token, state, node);
 		case ft: return node.getFeat((String)token.getValue());
 		default: return null;
@@ -60,10 +66,12 @@ public class CommonFeatureExtractor extends AbstractFeatureExtractor<CommonFeatu
 	}
 	
 	@Override
-	protected String[] getFeatures(CommonFeatureToken token, SeqState state, DEPNode node)
+	protected String[] getFeatures(CommonFeatureToken token, StateType state, DEPNode node)
 	{
 		switch (token.getField())
 		{
+		case pf  : return StringUtils.getPrefixes(node.getLowerSimplifiedWordForm(), (int)token.getValue());
+		case sf  : return StringUtils.getSuffixes(node.getLowerSimplifiedWordForm(), (int)token.getValue());
 		case ds  : return toLabelArray(node.getDependentList());
 		case ds2 : return toLabelArray(node.getGrandDependentList());
 		case orth: return getOrthographicFeatures(state, node);
@@ -71,7 +79,7 @@ public class CommonFeatureExtractor extends AbstractFeatureExtractor<CommonFeatu
 		}
 	}
 	
-	private String getBooleanFeatureValue(CommonFeatureToken token, SeqState state, DEPNode node)
+	protected String getBooleanFeatureValue(CommonFeatureToken token, StateType state, DEPNode node)
 	{
 		int field = (int)token.getValue();
 		boolean b = false;
@@ -83,6 +91,6 @@ public class CommonFeatureExtractor extends AbstractFeatureExtractor<CommonFeatu
 		default: throw new IllegalArgumentException("Unsupported feature: b"+token.getValue());
 		}
 		
-		return b ? Integer.toString(field) : null;
+		return b ? token.getKey() : null;
 	}
 }

@@ -20,46 +20,32 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import edu.emory.clir.clearnlp.collection.set.CharHashSet;
-
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class CharArrayList implements Serializable
+public class CharArrayList extends com.carrotsearch.hppc.CharArrayList implements Serializable
 {
 	private static final long serialVersionUID = -5613054695850264301L;
-	private com.carrotsearch.hppc.CharArrayList g_list;
 
 	public CharArrayList()
 	{
-		g_list = new com.carrotsearch.hppc.CharArrayList();
+		super();
 	}
 	
 	public CharArrayList(int initialCapacity)
 	{
-		g_list = new com.carrotsearch.hppc.CharArrayList(initialCapacity);
-	}
-	
-	public void init(char[] array)
-	{
-		g_list = new com.carrotsearch.hppc.CharArrayList(array.length);
-		addAll(array);
+		super(initialCapacity);
 	}
 	
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
-		init((char[])in.readObject());
+		addAll((char[])in.readObject());
 	}
 
 	private void writeObject(ObjectOutputStream o) throws IOException
 	{
 		o.writeObject(toArray());
-	}
-	
-	public void add(char item)
-	{
-		g_list.add(item);
 	}
 	
 	public void addAll(char[] array)
@@ -68,31 +54,6 @@ public class CharArrayList implements Serializable
 		
 		for (i=0; i<size; i++) add(array[i]);
 		trimToSize();
-	}
-	
-	public void insert(int index, char item)
-	{
-		g_list.insert(index, item);
-	}
-	
-	public char get(int index)
-	{
-		return g_list.get(index);
-	}
-	
-	public int set(int index, char item)
-	{
-		return g_list.set(index, item);
-	}
-	
-	public char remove(int index)
-	{
-		return g_list.remove(index);
-	}
-	
-	public void removeAll(CharHashSet set)
-	{
-		g_list.removeAll(set.getCharLookupContainer());
 	}
 	
 	public char[] toArray()
@@ -115,32 +76,11 @@ public class CharArrayList implements Serializable
 		return array;
 	}
 	
-	public void trimToSize()
-	{
-		g_list.trimToSize();
-	}
-	
-	public boolean isEmpty()
-	{
-		return g_list.isEmpty();
-	}
-	
-	public int size()
-	{
-		return g_list.size();
-	}
-	
 	public CharArrayList clone()
 	{
 		int i, size = size();
 		CharArrayList list = new CharArrayList(size);
 		for (i=0; i<size; i++) list.add(get(i));
 		return list;
-	}
-	
-	@Override
-	public String toString()
-	{
-		return g_list.toString();
 	}
 }

@@ -25,7 +25,6 @@ import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.component.evaluation.TagEval;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
@@ -36,7 +35,7 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, TagEval, POSFeatureExtractor>
+public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSEval, POSFeatureExtractor>
 {
 	private final int LEXICON_LOWER_SIMPLIFIED_WORD_FORM = 0;
 	private final int LEXICON_AMBIGUITY_CLASS = 1;
@@ -110,7 +109,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 
 	protected void initEval()
 	{
-		c_eval = new TagEval();
+		c_eval = new POSEval();
 	}
 
 //	====================================== PROCESS ======================================
@@ -127,25 +126,14 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 		else
 		{
 			List<StringInstance> instances = process(state);
-			if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
-			else if (isEvaluate())		c_eval.countCorrect(tree, state.getGoldLabels());
+			
+			if (!isDecode())
+			{
+				if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
+				else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
+				state.resetOracle();
+			}
 		}
-		
-		String[] goldTags = state.getGoldLabels();
-		if (goldTags != null) tree.setPOSTags(goldTags);
-	}
-	
-	private List<StringInstance> process(POSState state)
-	{
-		List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<StringInstance>() : null;
-		
-		while (!state.isTerminate())
-		{
-			process(state, instances);
-			state.shift();
-		}
-		
-		return instances;
 	}
 
 	@Override
@@ -155,7 +143,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	}
 	
 	@Override
-	protected String getAutoLabel(StringFeatureVector vector)
+	protected String getAutoLabel(POSState state, StringFeatureVector vector)
 	{
 		return s_models[0].predictBest(vector).getLabel();
 	}
@@ -173,7 +161,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	{
 		for (DEPNode node : tree)
 		{
-			String simplifiedForm = node.getSimplifiedForm();
+			String simplifiedForm = node.getSimplifiedWordForm();
 			String ambiguityClass = m_ambiguityClasses.get(simplifiedForm);
 			String pos = node.getPOSTag();
 			

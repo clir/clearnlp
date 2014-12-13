@@ -13,46 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.collection.set;
+package edu.emory.clir.clearnlp.collection.stack;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import com.carrotsearch.hppc.IntOpenHashSet;
+import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class IntHashSet extends IntOpenHashSet implements Serializable
+public class IntStack extends IntArrayList implements Serializable
 {
-	private static final long serialVersionUID = 8220093021280571821L;
+	private static final long serialVersionUID = -8603527717926741739L;
+	private int i_lastIndex;
 	
-	public IntHashSet()
+	public IntStack()
 	{
-		super();
+		i_lastIndex = -1;
 	}
 	
-	public IntHashSet(int initialCapacity)
+	public IntStack(int initialCapacity)
 	{
 		super(initialCapacity);
-	}
-
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
-	{
-		addAll((int[])in.readObject());
-	}
-
-	private void writeObject(ObjectOutputStream o) throws IOException
-	{
-		o.writeObject(toArray());
+		i_lastIndex = -1;
 	}
 	
-	public void addAll(int[] array)
+	public IntStack(IntStack stack)
 	{
-		for (int item : array)
-			add(item);
+		super(stack.size());
+		addAll(stack);
+		i_lastIndex = stack.i_lastIndex;
+	}
+	
+	public void push(int element)
+	{
+		add(element);
+		i_lastIndex++;
+	}
+	
+	public int pop()
+	{
+		return remove(i_lastIndex--);
+	}
+	
+	public int peek()
+	{
+		return get(i_lastIndex);
+	}
+	
+	public int peek(int n)
+	{
+		return get(i_lastIndex - n);
 	}
 }

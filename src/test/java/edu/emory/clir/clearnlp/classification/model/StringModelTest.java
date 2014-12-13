@@ -35,11 +35,9 @@ import com.google.common.collect.Lists;
 import edu.emory.clir.clearnlp.classification.instance.IntInstance;
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.instance.StringInstanceReader;
-import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.AbstractWeightVector;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
-import edu.emory.clir.clearnlp.collection.pair.Pair;
 import edu.emory.clir.clearnlp.util.IOUtils;
 
 
@@ -256,8 +254,8 @@ public class StringModelTest
 	private void testMultiAux(StringModel model)
 	{
 		AbstractWeightVector vector = model.getWeightVector();
-		Pair<StringPrediction,StringPrediction> p2;
-		List<StringPrediction> pl;
+		StringPrediction[] p2;
+		StringPrediction[] pl;
 		StringFeatureVector x0;
 		StringPrediction p;
 		double[] scores;
@@ -278,25 +276,25 @@ public class StringModelTest
 		
 		p2 = model.predictTop2(x0);
 		
-		p = p2.o1;
+		p = p2[0];
 		assertEquals("sunny", p.getLabel());
 		assertEquals(1, p.getScore(), 0);
 		
-		p = p2.o2;
+		p = p2[1];
 		assertEquals("cloudy", p.getLabel());
 		assertEquals(0, p.getScore(), 0);
 		
 		pl = model.predictAll(x0);
 		
-		p = pl.get(0);
+		p = pl[0];
 		assertEquals("sunny", p.getLabel());
 		assertEquals(1, p.getScore(), 0);
 		
-		p = pl.get(1);
+		p = pl[1];
 		assertEquals("cloudy", p.getLabel());
 		assertEquals(0, p.getScore(), 0);
 		
-		p = pl.get(2);
+		p = pl[2];
 		assertEquals("rainy", p.getLabel());
 		assertEquals(-3, p.getScore(), 0);
 		
@@ -323,25 +321,25 @@ public class StringModelTest
 		
 		p2 = model.predictTop2(x0);
 		
-		p = p2.o1;
+		p = p2[0];
 		assertEquals("rainy", p.getLabel());
 		assertEquals(12, p.getScore(), 0);
 		
-		p = p2.o2;
+		p = p2[1];
 		assertEquals("cloudy", p.getLabel());
 		assertEquals(12, p.getScore(), 0);
 		
 		pl = model.predictAll(x0);
 		
-		p = pl.get(0);
+		p = pl[0];
 		assertEquals("rainy", p.getLabel());
 		assertEquals(12, p.getScore(), 0);
 		
-		p = pl.get(1);
+		p = pl[1];
 		assertEquals("cloudy", p.getLabel());
 		assertEquals(12, p.getScore(), 0);
 		
-		p = pl.get(2);
+		p = pl[2];
 		assertEquals("sunny", p.getLabel());
 		assertEquals(8, p.getScore(), 0);
 	}

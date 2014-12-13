@@ -13,19 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.morph;
+package edu.emory.clir.clearnlp.component.mode.pos;
 
+import edu.emory.clir.clearnlp.component.evaluation.AbstractAccuracyEval;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DefaultMPAnalyzer extends AbstractMPAnalyzer
+public class POSEval extends AbstractAccuracyEval<String>
 {
 	@Override
-	public void analyze(DEPNode node)
+	public void countCorrect(DEPTree sTree, String[] gTags)
 	{
-		node.setLemma(node.getLowerSimplifiedWordForm());
+		int i, size = sTree.size();
+		DEPNode node;
+		
+		n_total += size - 1;
+		
+		for (i=1; i<size; i++)
+		{
+			node = sTree.get(i);
+			
+			if (node.isPOSTag(gTags[i]))
+				n_correct++;
+		}
 	}
 }

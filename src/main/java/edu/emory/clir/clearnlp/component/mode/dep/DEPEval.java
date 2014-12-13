@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.evaluation;
+package edu.emory.clir.clearnlp.component.mode.dep;
 
-import edu.emory.clir.clearnlp.collection.pair.StringIntPair;
+import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.util.arc.DEPArc;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPEval extends AbstractEval<StringIntPair>
+public class DEPEval extends AbstractEval<DEPArc>
 {
 	private int n_total;
 	private int n_las;
@@ -45,27 +46,26 @@ public class DEPEval extends AbstractEval<StringIntPair>
 	}
 	
 	@Override
-	public void countCorrect(DEPTree sTree, StringIntPair[] gHeads)
+	public void countCorrect(DEPTree sTree, DEPArc[] gHeads)
 	{
-		StringIntPair[] heads = (StringIntPair[])gHeads;
 		int i, size = sTree.size();
-		StringIntPair p;
 		DEPNode node;
+		DEPArc g;
 		
 		n_total += size - 1;
 		
 		for (i=1; i<size; i++)
 		{
 			node = sTree.get(i);
-			p = heads[i];
+			g = gHeads[i];
 			
-			if (node.isDependentOf(sTree.get(p.i)))
+			if (node.isDependentOf(sTree.get(g.getNode().getID())))
 			{
 				n_uas++;
-				if (node.isLabel(p.o)) n_las++;
+				if (node.isLabel(g.getLabel())) n_las++;
 			}
 			
-			if (node.isLabel(p.o)) n_ls++;
+			if (node.isLabel(g.getLabel())) n_ls++;
 		}
 	}
 	

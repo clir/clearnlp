@@ -26,6 +26,7 @@ import com.google.common.collect.Sets;
 import edu.emory.clir.clearnlp.collection.map.IncMap2;
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
+import edu.emory.clir.clearnlp.component.ICollector;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
 import edu.emory.clir.clearnlp.util.DSUtils;
@@ -36,7 +37,7 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSCollector implements Serializable
+public class POSCollector implements ICollector<POSState>, Serializable
 {
 	private static final long serialVersionUID = -1309316221225281613L;
 	
@@ -85,8 +86,8 @@ public class POSCollector implements Serializable
 		{
 			node = state.getNode(i);
 			
-			m_ambi.add(node.getSimplifiedForm(), node.getPOSTag());
-			s_lswf.add(state.getLowerSimplifiedWordForm(i));
+			m_ambi.add(node.getSimplifiedWordForm(), node.getPOSTag());
+			s_lswf.add(node.getLowerSimplifiedWordForm());
 		}
 		
 		if (++n_trees >= db_cutoff)

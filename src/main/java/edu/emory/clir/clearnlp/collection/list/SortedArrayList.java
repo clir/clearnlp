@@ -19,43 +19,42 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SortedArrayList<T extends Comparable<T>> implements List<T>, Serializable, Iterable<T>
+public class SortedArrayList<T extends Comparable<T>> extends ArrayList<T> implements Serializable, Iterable<T>
 {
 	private static final long serialVersionUID = 3219296829240273911L;
-	private ArrayList<T> t_list;
 	private boolean b_ascending;
 	
 	public SortedArrayList()
 	{
-		init(0, true);
+		super();
+		setDirection(true);
 	}
 	
 	public SortedArrayList(int initialCapacity)
 	{
-		init(initialCapacity, true);
+		super(initialCapacity);
+		setDirection(true);
 	}
 	
 	public SortedArrayList(boolean ascending)
 	{
-		init(0, ascending);
+		super();
+		setDirection(ascending);
 	}
 	
 	public SortedArrayList(int initialCapacity, boolean ascending)
 	{
-		init(initialCapacity, ascending);
+		super(initialCapacity);
+		setDirection(ascending);
 	}
 	
-	private void init(int initialCapacity, boolean ascending)
+	private void setDirection(boolean ascending)
 	{
-		t_list = (initialCapacity > 0) ? new ArrayList<T>(initialCapacity) : new ArrayList<T>();
 		b_ascending = ascending;
 	}
 	
@@ -63,10 +62,11 @@ public class SortedArrayList<T extends Comparable<T>> implements List<T>, Serial
 	 * Adds the specific item to this list in a sorted order.
 	 * @return {@code true}.
 	 */
+	@Override
 	public boolean add(T e)
 	{
 		int index = getInsertIndex(e);
-		t_list.add(index, e);
+		super.add(index, e);
 		return true;
 	}
 	
@@ -74,7 +74,7 @@ public class SortedArrayList<T extends Comparable<T>> implements List<T>, Serial
 	public int addItem(T e)
 	{
 		int index = getInsertIndex(e);
-		t_list.add(index, e);
+		super.add(index, e);
 		return index;
 	}
 	
@@ -86,7 +86,7 @@ public class SortedArrayList<T extends Comparable<T>> implements List<T>, Serial
 	public boolean addAll(Collection<? extends T> c)
 	{
 		for (T t : c) add(t);
-		return false;
+		return true;
 	}
 	
 	/**
@@ -96,7 +96,7 @@ public class SortedArrayList<T extends Comparable<T>> implements List<T>, Serial
 	public int remove(T item)
 	{
 		int index = indexOf(item);
-		if (index >= 0) t_list.remove(index);
+		if (index >= 0) super.remove(index);
 		return index;
 	}
 	
@@ -109,7 +109,7 @@ public class SortedArrayList<T extends Comparable<T>> implements List<T>, Serial
 	/** @return the index of the first occurrence of the specific item if exists; otherwise, a negative number. */
 	public int indexOf(T item)
 	{
-		return b_ascending ? Collections.binarySearch(t_list, item) : Collections.binarySearch(t_list, item, Collections.reverseOrder());
+		return b_ascending ? Collections.binarySearch(this, item) : Collections.binarySearch(this, item, Collections.reverseOrder());
 	}
 	
 	/** @return the index of the specific item if it is added to this list. */
@@ -118,102 +118,7 @@ public class SortedArrayList<T extends Comparable<T>> implements List<T>, Serial
 		int index = indexOf(item);
 		return (index < 0) ? -(index+1) : index+1;
 	}
-	
-	public void trimToSize()
-	{
-		t_list.trimToSize();
-	}
 
-	@Override
-	public int size()
-	{
-		return t_list.size();
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		return t_list.isEmpty();
-	}
-
-	@Override
-	public boolean containsAll(Collection<?> c)
-	{
-		return t_list.containsAll(c);
-	}
-
-	@Override
-	public Iterator<T> iterator()
-	{
-		return t_list.iterator();
-	}
-
-	@Override
-	public Object[] toArray()
-	{
-		return t_list.toArray();
-	}
-
-	@Override @SuppressWarnings("hiding")
-	public <T>T[] toArray(T[] a)
-	{
-		return t_list.toArray(a);
-	}
-
-	@Override
-	public T remove(int index)
-	{
-		return t_list.remove(index);
-	}
-
-	@Override
-	public boolean removeAll(Collection<?> c)
-	{
-		return t_list.removeAll(c);
-	}
-
-	@Override
-	public boolean retainAll(Collection<?> c)
-	{
-		return t_list.retainAll(c);
-	}
-
-	@Override
-	public void clear()
-	{
-		t_list.clear();
-	}
-
-	@Override
-	public T get(int index)
-	{
-		return t_list.get(index);
-	}
-	
-	@Override
-	public ListIterator<T> listIterator()
-	{
-		return t_list.listIterator();
-	}
-
-	@Override
-	public ListIterator<T> listIterator(int index)
-	{
-		return t_list.listIterator(index);
-	}
-
-	@Override
-	public List<T> subList(int fromIndex, int toIndex)
-	{
-		return t_list.subList(fromIndex, toIndex);
-	}
-	
-	@Override
-	public String toString()
-	{
-		return t_list.toString();
-	}
-	
 	@Override @Deprecated
 	public void add(int index, T element)
 	{
@@ -236,7 +141,7 @@ public class SortedArrayList<T extends Comparable<T>> implements List<T>, Serial
 	@Override
 	public boolean remove(Object o)
 	{
-		return t_list.remove(o);
+		return super.remove(o);
 	}
 	
 	/** @deprecated Use {@link #contains(Comparable)} instead. */

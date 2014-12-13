@@ -57,14 +57,14 @@ public class DEPLabel implements Serializable
 	private String s_arc;
 	private String s_list;
 	private String s_deprel;
-	private double d_score;
 
 	public DEPLabel() {}
 	
-	public DEPLabel(String label, double score)
+	public DEPLabel(String arc, String list, String deprel)
 	{
-		set(label);
-		setScore(score);
+		setArc(arc);
+		setList(list);
+		setDeprel(deprel);
 	}
 	
 	public DEPLabel(String label)
@@ -81,6 +81,21 @@ public class DEPLabel implements Serializable
 		setDeprel(label.substring(idx+1));
 	}
 	
+	public String getArc()
+	{
+		return s_arc;
+	}
+	
+	public String getList()
+	{
+		return s_list;
+	}
+	
+	public String getDeprel()
+	{
+		return s_deprel;
+	}
+	
 	public void setArc(String arc)
 	{
 		s_arc = arc;
@@ -94,11 +109,6 @@ public class DEPLabel implements Serializable
 	public void setDeprel(String deprel)
 	{
 		s_deprel = deprel;
-	}
-	
-	public void setScore(double score)
-	{
-		d_score = score;
 	}
 	
 	public boolean isArc(String label)
@@ -119,11 +129,6 @@ public class DEPLabel implements Serializable
 	public boolean equalsAll(DEPLabel label)
 	{
 		return isArc(label.s_arc) && isList(label.s_list) && isDeprel(label.s_deprel);
-	}
-	
-	public double getScore()
-	{
-		return d_score;
 	}
 	
 	public String toString()

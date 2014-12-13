@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.feature.common;
+package edu.emory.clir.clearnlp.feature.type;
 
 import java.util.regex.Pattern;
 
@@ -21,20 +21,23 @@ import java.util.regex.Pattern;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public enum CommonFieldType
+public enum FieldType
 {
 	f,		// word-form
 	f2, 	// simplified word-form
-	f3,		// lower simplified word-form (POS tagging) 
+	f3,		// lower simplified word-form
 	m,		// lemma
 	p,		// pos tag
 	n,		// named entity tag
 	d,		// dependency label to its head
+	lv,		// left valency
+	rv,		// right valency
 	ft,		// feats
-	a,		// ambiguity class (POS tagging)
+	a,		// ambiguity class (part-of-speech tagging)
+	s2i,	// distance between stack to input (dependency parsing)
 
-	pf,		// set of prefixes (POS tagging)
-	sf,		// set of suffixes (POS tagging)
+	pf,		// set of prefixes
+	sf,		// set of suffixes
 	ds,		// set of dependency labels of its dependents
 	ds2,	// set of dependency labels of its grand-dependents
 	orth,	// set of orthographic features
@@ -46,12 +49,12 @@ public enum CommonFieldType
 	static public final Pattern P_PREFIX  = Pattern.compile("^"+pf+"(\\d+)$");
 	static public final Pattern P_SUFFIX  = Pattern.compile("^"+sf+"(\\d+)$");
 	
-	static public boolean isBooleanField(CommonFieldType field)
+	static public boolean isBooleanField(FieldType field)
 	{
 		return field == b;
 	}
 	
-	static public boolean isSetField(CommonFieldType field)
+	static public boolean isSetField(FieldType field)
 	{
 		return field == pf || field == sf || field == ds || field == ds2 || field == orth;
 	}

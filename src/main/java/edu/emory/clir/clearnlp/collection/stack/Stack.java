@@ -13,71 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.collection.list;
+package edu.emory.clir.clearnlp.collection.stack;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.ArrayList;
 
-import com.google.common.collect.Lists;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class Stack<T>
+public class Stack<T> extends ArrayList<T> implements Serializable
 {
-	private List<T> t_list;
-	private int i_lastIndex;
+	private static final long serialVersionUID = -8603527717926741739L;
 	
 	public Stack()
 	{
-		t_list = Lists.newArrayList();
-		i_lastIndex = -1;
+		super();
 	}
 	
-	public Stack(@SuppressWarnings("unchecked")T... elements)
+	public Stack(int initialCapacity)
 	{
-		t_list = Lists.newArrayList();
-		
-		for (T element : elements)
-			t_list.add(element);
-		
-		i_lastIndex = elements.length - 1;
+		super(initialCapacity);
+	}
+	
+	public Stack(Stack<T> stack)
+	{
+		super(stack);
 	}
 	
 	public void push(T element)
 	{
-		t_list.add(element);
-		i_lastIndex++;
+		add(element);
 	}
 	
 	public T pop()
 	{
-		return t_list.remove(i_lastIndex--);
+		int n = size() - 1;
+		return DSUtils.isRange(this, n) ? remove(n) : null;
 	}
 	
 	public T peek()
 	{
-		return t_list.get(i_lastIndex);
+		return peek(0);
 	}
 	
 	public T peek(int n)
 	{
-		n = i_lastIndex - n;
-		return (0 <= n && n < size()) ? t_list.get(n) : null;
-	}
-	
-	public int size()
-	{
-		return t_list.size();
-	}
-	
-	public Stack<T> clone()
-	{
-		Stack<T> stack = new Stack<T>();
-		
-		stack.t_list = Lists.newArrayList(t_list);
-		stack.i_lastIndex = i_lastIndex;
-		
-		return stack;
+		n = size() - 1 - n;
+		return DSUtils.isRange(this, n) ? get(n) : null;
 	}
 }

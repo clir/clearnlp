@@ -21,6 +21,8 @@ package edu.emory.clir.clearnlp.util;
  */
 public class MathUtils
 {
+	static public double DOUBLE_NEGATIVE_MIN = 4.9E-324;
+	
 	private MathUtils() {}
 	
 	static public double average(double... array)

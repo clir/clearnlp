@@ -17,14 +17,16 @@ package edu.emory.clir.clearnlp.feature;
 
 import java.io.Serializable;
 
+import edu.emory.clir.clearnlp.feature.type.FieldType;
 import edu.emory.clir.clearnlp.feature.type.RelationType;
 import edu.emory.clir.clearnlp.feature.type.SourceType;
+import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractFeatureToken<FieldType> implements Serializable
+abstract public class AbstractFeatureToken implements Serializable
 {
 	static private final long serialVersionUID  = 4470851888237339877L;
 	
@@ -97,5 +99,18 @@ abstract public class AbstractFeatureToken<FieldType> implements Serializable
 	public boolean hasRelation()
 	{
 		return t_relation != null;
+	}
+	
+	public String getKey()
+	{
+		StringBuilder build = new StringBuilder();
+		
+		build.append(t_source);
+		build.append(i_offset);
+		build.append(t_relation);
+		build.append(StringConst.COLON);
+		build.append(t_field);
+		
+		return build.toString();
 	}
 }

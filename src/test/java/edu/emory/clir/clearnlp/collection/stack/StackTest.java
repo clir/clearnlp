@@ -13,31 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.evaluation;
+package edu.emory.clir.clearnlp.collection.stack;
 
-import edu.emory.clir.clearnlp.dependency.DEPNode;
-import edu.emory.clir.clearnlp.dependency.DEPTree;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+import edu.emory.clir.clearnlp.collection.stack.Stack;
+
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class TagEval extends AbstractAccuracyEval<String>
+public class StackTest
 {
-	@Override
-	public void countCorrect(DEPTree sTree, String[] gTags)
+	@Test
+	public void test()
 	{
-		int i, size = sTree.size();
-		DEPNode node;
+		Stack<String> stack = new Stack<String>(3);
+		stack.push("1");
+		stack.push("2");
+		stack.push("3");
 		
-		n_total += size - 1;
+		assertEquals("3", stack.peek());
+		assertEquals("2", stack.peek(1));
 		
-		for (i=1; i<size; i++)
-		{
-			node = sTree.get(i);
-			
-			if (node.isPOSTag(gTags[i]))
-				n_correct++;
-		}
+		assertEquals("3", stack.pop());
+		Stack<String> clone = new Stack<String>(stack);
+		
+		assertEquals("2", stack.pop());
+		assertEquals("1", stack.pop());
+		
+		assertEquals("2", clone.pop());
+		assertEquals("1", clone.pop());
 	}
 }

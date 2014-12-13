@@ -16,7 +16,6 @@
 package edu.emory.clir.clearnlp.classification.map;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -32,7 +31,7 @@ public class LabelMap implements Serializable
 {
 	private static final long serialVersionUID = -1553968137533402523L;
 	private ObjectIntHashMap<String> m_labels;
-	private ArrayList<String> l_labels;
+	private String[] l_labels;
 	
 	public LabelMap()
 	{
@@ -42,22 +41,25 @@ public class LabelMap implements Serializable
 	public void reset()
 	{
 		m_labels = new ObjectIntHashMap<String>();
-		l_labels = Lists.newArrayList();
+		l_labels = new String[0];
 	}
 	
 	public int expand(ObjectIntHashMap<String> map, int cutoff)
 	{
+		List<String> list = Lists.newArrayList(l_labels);
+		
 		for (ObjectIntPair<String> p : map)
 		{
 			if (!m_labels.containsKey(p.o) && p.i > cutoff)
 			{
-				l_labels.add(p.o);
-				m_labels.put(p.o, l_labels.size());
+				list.add(p.o);
+				m_labels.put(p.o, list.size());
 			}
 		}
 		
-		l_labels.trimToSize();
-		return l_labels.size();
+		l_labels = new String[list.size()];
+		list.toArray(l_labels);
+		return l_labels.length;
 	}
 	
 	public int getLabelIndex(String label)
@@ -65,19 +67,19 @@ public class LabelMap implements Serializable
 		return m_labels.get(label) - 1;
 	}
 	
-	public List<String> getLabelList()
+	public String[] getLabels()
 	{
 		return l_labels;
 	}
 	
 	public String getLabel(int index)
 	{
-		return l_labels.get(index);
+		return l_labels[index];
 	}
 	
 	public int size()
 	{
-		return l_labels.size();
+		return l_labels.length;
 	}
 	
 	@Override

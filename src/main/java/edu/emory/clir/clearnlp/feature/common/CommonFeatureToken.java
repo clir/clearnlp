@@ -18,6 +18,7 @@ package edu.emory.clir.clearnlp.feature.common;
 import java.util.regex.Matcher;
 
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
+import edu.emory.clir.clearnlp.feature.type.FieldType;
 import edu.emory.clir.clearnlp.feature.type.RelationType;
 import edu.emory.clir.clearnlp.feature.type.SourceType;
 
@@ -25,7 +26,7 @@ import edu.emory.clir.clearnlp.feature.type.SourceType;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class CommonFeatureToken extends AbstractFeatureToken<CommonFieldType>
+public class CommonFeatureToken extends AbstractFeatureToken
 {
 	private static final long serialVersionUID = 9088239407612336580L;
 
@@ -39,29 +40,29 @@ public class CommonFeatureToken extends AbstractFeatureToken<CommonFieldType>
 	{
 		Matcher m;
 		
-		if ((m = CommonFieldType.P_BOOLEAN.matcher(field)).find())
+		if ((m = FieldType.P_BOOLEAN.matcher(field)).find())
 		{
-			setField(CommonFieldType.b);
+			setField(FieldType.b);
 			setValue(Integer.parseInt(m.group(1)));
 		}
-		else if ((m = CommonFieldType.P_FEAT.matcher(field)).find())
+		else if ((m = FieldType.P_FEAT.matcher(field)).find())
 		{
-			setField(CommonFieldType.ft);
+			setField(FieldType.ft);
 			setValue(m.group(1));
 		}
-		else if ((m = CommonFieldType.P_PREFIX.matcher(field)).find())
+		else if ((m = FieldType.P_PREFIX.matcher(field)).find())
 		{
-			setField(CommonFieldType.pf);
+			setField(FieldType.pf);
 			setValue(Integer.parseInt(m.group(1)));
 		}
-		else if ((m = CommonFieldType.P_SUFFIX.matcher(field)).find())
+		else if ((m = FieldType.P_SUFFIX.matcher(field)).find())
 		{
-			setField(CommonFieldType.sf);
+			setField(FieldType.sf);
 			setValue(Integer.parseInt(m.group(1)));
 		}
 		else
 		{
-			setField(CommonFieldType.valueOf(field));
+			setField(FieldType.valueOf(field));
 		}
 	}
 }

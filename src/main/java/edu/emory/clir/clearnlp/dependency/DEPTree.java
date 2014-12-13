@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.carrotsearch.hppc.cursors.IntCursor;
 import com.google.common.collect.Lists;
 
-import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 import edu.emory.clir.clearnlp.collection.set.IntHashSet;
 import edu.emory.clir.clearnlp.srl.SRLTree;
 import edu.emory.clir.clearnlp.util.arc.DEPArc;
@@ -241,32 +241,38 @@ public class DEPTree implements Iterable<DEPNode>
 		return null;
 	}
 	
-	public void projectivize(String nonProjectiveLabel)
+	public void projectivize(String left, String right)
 	{
-		IntArrayList ids = new IntArrayList();
+		IntHashSet ids = new IntHashSet();
+		DEPNode nonProj, head, gHead;
 		int i, size = size();
-		DEPNode nonProj;
+		String dir;
 
 		for (i=1; i<size; i++)
 			ids.add(i);
 
 		while ((nonProj = getSmallestNonProjectiveArc(ids)) != null)
-			nonProj.setHead(nonProj.getHead().getHead(), nonProjectiveLabel);
+		{
+			head  = nonProj.getHead();
+			gHead = head.getHead();
+			dir = (head.getID() < gHead.getID()) ? left : right;
+			nonProj.setHead(gHead, nonProj.getLabel()+dir+head.getLabel());
+		}
 	}
 
 	/** Called by {@link #projectivize(String)}. */
-	private DEPNode getSmallestNonProjectiveArc(IntArrayList ids)
+	private DEPNode getSmallestNonProjectiveArc(IntHashSet ids)
 	{
-		int i, id, np, max = 0, size = ids.size();
 		IntHashSet remove = new IntHashSet();
 		DEPNode wk, nonProj = null;
+		int id, np, max = 0;
 
-		for (i=0; i<size; i++)
+		for (IntCursor cur : ids)
 		{
-			id = ids.get(i);
+			id = cur.value;
 			wk = get(id);
-			np = isNonProjective(wk);
-
+			np = getNonProjectiveDistance(wk);
+			
 			if (np == 0)
 			{
 				remove.add(id);
@@ -277,28 +283,28 @@ public class DEPTree implements Iterable<DEPNode>
 				max = np;
 			}
 		}
-
+		
 		ids.removeAll(remove);
 		return nonProj;
 	}
 
 	/** @return > 0 if w_k is non-projective. */
-	public int isNonProjective(DEPNode node)
+	private int getNonProjectiveDistance(DEPNode node)
 	{
-		DEPNode wi = node.getHead();
-		if (wi == null) return 0;
+		DEPNode head = node.getHead();
+		if (head == null) return 0;
 		DEPNode wj;
 
 		int bId, eId, j;
 
-		if (node.getID() < wi.getID())
+		if (node.getID() < head.getID())
 		{
 			bId = node.getID();
-			eId = wi.getID();
+			eId = head.getID();
 		}
 		else
 		{
-			bId = wi.getID();
+			bId = head.getID();
 			eId = node.getID();
 		}
 
@@ -306,11 +312,45 @@ public class DEPTree implements Iterable<DEPNode>
 		{
 			wj = get(j);
 
-			if (!wj.isDescendantOf(wi))
-				return Math.abs(wi.getID() - node.getID());
+			if (!wj.isDescendantOf(head))
+				return Math.abs(head.getID() - node.getID());
 		}
 
 		return 0;
+	}
+	
+	public boolean isNonProjective()
+	{
+		DEPNode head, wj, wh;
+		int bId, eId, j;
+		
+		for (DEPNode node : this)
+		{
+			head = node.getHead();
+			if (head == null) continue;
+			
+			if (node.getID() < head.getID())
+			{
+				bId = node.getID();
+				eId = head.getID();
+			}
+			else
+			{
+				bId = head.getID();
+				eId = node.getID();
+			}
+
+			for (j=bId+1; j<eId; j++)
+			{
+				wj = get(j);
+				wh = wj.getHead();
+				
+				if (wh != null && (wh.getID() < bId || wh.getID() > eId))
+					return true;
+			}
+		}
+
+		return false;
 	}
 	
 	/** @return {@code true} if this tree contains a cycle. */
@@ -423,6 +463,14 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).setPOSTag(tags[i]);
 	}
 	
+	public void clearPOSTags()
+	{
+		int i, size = size();
+		
+		for (i=1; i<size; i++)
+			get(i).setPOSTag(null);
+	}
+	
 	public String[] getNamedEntityTags()
 	{
 		int i, size = size();
@@ -442,12 +490,12 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).setNamedEntityTag(tags[i]);
 	}
 	
-	public void clearPOSTags()
+	public void clearNamedEntityTags()
 	{
 		int i, size = size();
 		
 		for (i=1; i<size; i++)
-			get(i).setPOSTag(null);
+			get(i).setNamedEntityTag(null);
 	}
 	
 	public DEPArc[] getHeads()
@@ -503,6 +551,33 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).clearHead();
 	}
 	
+	public String[] getFeatureTags(String key)
+	{
+		int i, size = size();
+		String[] tags = new String[size];
+		
+		for (i=1; i<size; i++)
+			tags[i] = get(i).getFeat(key);
+		
+		return tags;
+	}
+	
+	public void setFeatureTags(String key, String[] tags)
+	{
+		int i, size = size();
+		
+		for (i=1; i<size; i++)
+			get(i).putFeat(key, tags[i]);
+	}
+	
+	public void clearFeatureTags(String key)
+	{
+		int i, size = size();
+		
+		for (i=1; i<size; i++)
+			get(i).removeFeat(key);
+	}
+
 	public String[] getRolesetIDs()
 	{
 		int i, size = size();

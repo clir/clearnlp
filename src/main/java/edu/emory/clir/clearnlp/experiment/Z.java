@@ -15,6 +15,14 @@
  */
 package edu.emory.clir.clearnlp.experiment;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.magicwerk.brownies.collections.primitive.IntGapList;
+
+import com.google.common.collect.Lists;
+
+import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 
 
 /**
@@ -25,11 +33,106 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		System.out.println((int)(Math.log(1)/Math.log(10)));
-		System.out.println((int)(Math.log(9)/Math.log(10)));
-		System.out.println((int)(Math.log(10)/Math.log(10)));
-		System.out.println((int)(Math.log(99)/Math.log(10)));
-		System.out.println((int)(Math.log(100)/Math.log(10)));
+		int i, j, size = 1000000, len = 100;
+		long st, et;
+		String s;
+		
+		List<String> list  = new ArrayList<>(len);
+		String[] array = new String[len];
+		
+		for (i=0; i<len; i++)
+		{
+			s = Integer.toString(i);
+			array[i] = s;
+			list.add(s);
+		}
+		
+		st = System.currentTimeMillis();
+		
+		for (i=0; i<size; i++)
+		{
+			for (j=0; j<len; j++)
+				s = array[j];
+		}
+		
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
+
+		st = System.currentTimeMillis();
+		
+		for (i=0; i<size; i++)
+		{
+			for (j=0; j<len; j++)
+				s = list.get(j);
+		}
+		
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
+	}
+	
+	void compareAddAll()
+	{
+		List<Integer> tmp = Lists.newArrayList(0,1,2,3,4,5);
+		int i, j, size = 1000000;
+		List<Integer> list;
+		long st, et;
+		
+		st = System.currentTimeMillis();
+		
+		for (i=0; i<size; i++)
+		{
+			list = new ArrayList<>(tmp);
+			for (j=5; j>=0; j--)
+				list.remove(j);
+		}
+		
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
+		
+		st = System.currentTimeMillis();
+		
+		for (i=0; i<size; i++)
+		{
+			list = new ArrayList<>(tmp);
+			list.clear();
+		}
+		
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
+	}
+	
+	void compare(String[] args)
+	{
+		int i, j, size = 1000000;
+		IntGapList glist;
+		IntArrayList alist;
+		long st, et;
+		
+		st = System.currentTimeMillis();
+		
+		for (i=0; i<size; i++)
+		{
+			alist = new IntArrayList();
+			for (j=0; j<20; j++) alist.add(0, j);
+//			while (!alist.isEmpty()) alist.remove(0);
+		}
+		
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
+		
+		st = System.currentTimeMillis();
+		
+		for (i=0; i<size; i++)
+		{
+			glist = new IntGapList();
+			for (j=0; j<20; j++) glist.add(0, j);
+//			while (!glist.isEmpty()) glist.remove(0);
+		}
+		
+		et = System.currentTimeMillis();
+		System.out.println(et-st);
+		
+		
 	}
 	
 	static public void main(String[] args)

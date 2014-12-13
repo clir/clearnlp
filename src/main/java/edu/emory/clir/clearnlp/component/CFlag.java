@@ -16,6 +16,7 @@
 package edu.emory.clir.clearnlp.component;
 
 /**
+ * @see <a href="https://github.com/clir/clearnlp/wiki/Component-Flags">Component-Flags</a>
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */

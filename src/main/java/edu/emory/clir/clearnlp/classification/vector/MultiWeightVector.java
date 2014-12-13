@@ -19,6 +19,7 @@ import java.io.Serializable;
 
 import edu.emory.clir.clearnlp.collection.list.FloatArrayList;
 import edu.emory.clir.clearnlp.util.DSUtils;
+import edu.emory.clir.clearnlp.util.MathUtils;
 
 
 /**
@@ -90,6 +91,39 @@ public class MultiWeightVector extends AbstractWeightVector implements Serializa
 				weight = x.getWeight(i);
 				
 				for (j=0; j<n_labels; j++)
+					scores[j] += get(index+j) * weight;
+			}
+		}
+		
+		return scores;
+	}
+	
+	@Override
+	public double[] getScores(SparseFeatureVector x, int[] include)
+	{
+		double[] scores = f_weights.toDoubleArray(0, n_labels);
+		int i = 0, index, len = x.size();
+		double weight;
+		
+		for (int j : include)
+		{
+			for (; i<j; i++) scores[i] = MathUtils.DOUBLE_NEGATIVE_MIN;
+			i = j+1;
+		}
+		
+		for (; i<n_labels; i++)
+			scores[i] = MathUtils.DOUBLE_NEGATIVE_MIN;
+		
+		for (i=0; i<len; i++)
+		{
+			index = x.getIndex(i);
+			
+			if (isValidFeatureIndex(index))
+			{
+				index  = getWeightIndex(index);
+				weight = x.getWeight(i);
+				
+				for (int j : include)
 					scores[j] += get(index+j) * weight;
 			}
 		}

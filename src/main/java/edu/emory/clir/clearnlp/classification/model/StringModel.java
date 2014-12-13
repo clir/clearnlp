@@ -151,4 +151,9 @@ public class StringModel extends AbstractModel<StringInstance,StringFeatureVecto
 	{
 		return w_vector.getScores(toSparseFeatureVector(x));
 	}
+	
+	public double[] getScores(StringFeatureVector x, int[] include)
+	{
+		return w_vector.getScores(toSparseFeatureVector(x), include);
+	}
 }

@@ -44,12 +44,12 @@ package edu.emory.clir.clearnlp.component.mode.dep;
  * @since 2.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public interface IDEPLabel
+public interface DEPTransition
 {
-	String LEFT   = "L";
-	String RIGHT  = "R";
-	String NO     = "N";
-	String SHIFT  = "S";
-	String REDUCE = "R";
-	String PASS   = "P";
+	String T_LEFT   = "L";
+	String T_RIGHT  = "R";
+	String T_NO     = "N";
+	String T_SHIFT  = "S";
+	String T_REDUCE = "R";
+	String T_PASS   = "P";
 }

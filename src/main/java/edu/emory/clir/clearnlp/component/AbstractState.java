@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.state;
+package edu.emory.clir.clearnlp.component;
 
-import edu.emory.clir.clearnlp.component.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
@@ -24,11 +23,11 @@ import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractState<LabelType>
+abstract public class AbstractState<OracleType,LabelType>
 {
-	protected LabelType[] g_labels;
-	protected DEPTree     d_tree;
-	protected int         t_size;
+	protected OracleType[] g_oracle;
+	protected DEPTree d_tree;
+	protected int     t_size;
 
 //	====================================== INITIALIZATION ======================================
 	
@@ -36,28 +35,28 @@ abstract public class AbstractState<LabelType>
 	{
 		d_tree = tree;
 		t_size = tree.size();
-		if (flag != CFlag.COLLECT && flag != CFlag.DECODE) initGoldLabels();
+		if (flag != CFlag.COLLECT && flag != CFlag.DECODE) initOracle();
 	}
 	
-	abstract protected void initGoldLabels();
-
-//	====================================== LABEL ======================================
-
-	public LabelType[] getGoldLabels()
+//	====================================== ORACLE/LABEL ======================================
+	
+	protected abstract void initOracle();
+	public abstract void resetOracle();
+	
+	public OracleType[] getOracle()
 	{
-		return g_labels;
+		return g_oracle;
 	}
 	
+	protected OracleType getOracle(int id)
+	{
+		return g_oracle[id];
+	}
+
 	/** @return the gold-standard label for the current state. */
-	abstract public LabelType getGoldLabel();
+	public abstract LabelType getGoldLabel();
 	
-	/** @return the gold-standard label for the current state. */
-	abstract public void setAutoLabel(LabelType label);
-	
-//	====================================== TREE ======================================
-	
-	/** @return the dependency node specified by the feature token. */
-	abstract public DEPNode getNode(AbstractFeatureToken<?> token);
+//	====================================== TREE/NODE ======================================
 	
 	public DEPTree getTree()
 	{
@@ -69,29 +68,18 @@ abstract public class AbstractState<LabelType>
 		return t_size;
 	}
 
-	public DEPNode getNode(int nodeID)
-	{
-		return d_tree.get(nodeID);
-	}
+	/** @return the dependency node specified by the feature token. */
+	abstract public DEPNode getNode(AbstractFeatureToken token);
 	
-	/**
-	 * @param beginID  the leftmost  ID (inclusive).
-	 * @param endID the rightmost ID (exclusive).
-	 */
-	protected DEPNode getNode(AbstractFeatureToken<?> token, int nodeID, int beginID, int endID)
+	public DEPNode getNode(int id)
 	{
-		nodeID += token.getOffset();
-		
-		if (beginID <= nodeID && nodeID < endID)
-			return getNodeAux(token, nodeID);
-		
-		return null;
+		return d_tree.get(id);
 	}
 	
 	/** Called by {@link #getNode(AbstractFeatureToken, DEPTree, int, int, int)}. */
-	private DEPNode getNodeAux(AbstractFeatureToken<?> token, int nodeID)
+	protected DEPNode getNodeRelation(AbstractFeatureToken token, DEPNode node)
 	{
-		DEPNode node = getNode(nodeID);
+		if (node == null) return null;
 		
 		if (token.hasRelation())
 		{
@@ -118,7 +106,14 @@ abstract public class AbstractState<LabelType>
 		return node;
 	}
 	
-//	====================================== BOOLEAN ======================================
+//	====================================== TRANSITION ======================================
+	
+	/** Sets the label of the current state, and move to the next state. */
+	public abstract void next(LabelType label);
+	/** {@code true} if the process should terminate. */
+	public abstract boolean isTerminate();
+	
+//	====================================== HELPER ======================================
 	
 	public boolean isFirstNode(DEPNode node)
 	{
@@ -129,4 +124,6 @@ abstract public class AbstractState<LabelType>
 	{
 		return node.getID() + 1 == t_size;
 	}
+	
+	public abstract boolean extractWordFormFeature(DEPNode node);
 }

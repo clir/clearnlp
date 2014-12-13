@@ -27,7 +27,7 @@ import org.w3c.dom.NodeList;
 import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
-import edu.emory.clir.clearnlp.component.state.AbstractState;
+import edu.emory.clir.clearnlp.component.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.common.OrthographicType;
@@ -41,7 +41,7 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractFeatureExtractor<FeatureTemplateType extends AbstractFeatureTemplate<FeatureTokenType>, FeatureTokenType extends AbstractFeatureToken<?>, StateType extends AbstractState<?>> implements Serializable, FeatureXml
+abstract public class AbstractFeatureExtractor<FeatureTemplateType extends AbstractFeatureTemplate<FeatureTokenType>, FeatureTokenType extends AbstractFeatureToken, StateType extends AbstractState<?,?>> implements Serializable, FeatureXml
 {
 	private static final long serialVersionUID = 1558293248573950051L;
 	public  static final String DELIM = StringConst.UNDERSCORE;

@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -116,6 +118,11 @@ public class DSUtils
 	static public <T extends Comparable<? extends T>>void sortReverseOrder(List<T> list)
 	{
 		Collections.sort(list, Collections.reverseOrder());
+	}
+	
+	static public <T extends Comparable<? extends T>>void sortReverseOrder(T[] array)
+	{
+		Arrays.sort(array, Collections.reverseOrder());
 	}
 
 	static public <T>boolean hasIntersection(Collection<T> col1, Collection<T> col2)
@@ -327,5 +334,15 @@ public class DSUtils
 	static public DoubleIntPair toDoubleIntPair(double[] array, int index)
 	{
 		return new DoubleIntPair(array[index], index);
+	}
+	
+	static public <T>List<?>[] createEmptyListArray(int size)
+	{
+		List<?>[] array = new ArrayList<?>[size];
+		
+		for (int i=0; i<size; i++)
+			array[i] = new ArrayList<T>();
+		
+		return array;
 	}
 }

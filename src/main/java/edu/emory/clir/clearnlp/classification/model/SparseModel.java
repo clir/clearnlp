@@ -104,4 +104,10 @@ public class SparseModel extends AbstractModel<SparseInstance,SparseFeatureVecto
 	{
 		return w_vector.getScores(x);
 	}
+	
+	@Override
+	public double[] getScores(SparseFeatureVector x, int[] include)
+	{
+		return w_vector.getScores(x);
+	}
 }

@@ -48,7 +48,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	/** The word-form of this node. */
 	private String	s_wordForm;
 	/** The simplified word-form of this node. */
-	private String	s_simplifiedForm;
+	private String	s_simplifiedWordForm;
 	/** The lemma of the word-form. */
 	private String	s_lemma;
 	/** The part-of-speech tag of the word-form. */
@@ -148,9 +148,14 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return s_wordForm;
 	}
 	
-	public String getSimplifiedForm()
+	public String getSimplifiedWordForm()
 	{
-		return s_simplifiedForm;
+		return s_simplifiedWordForm;
+	}
+	
+	public String getLowerSimplifiedWordForm()
+	{
+		return StringUtils.toLowerCase(s_simplifiedWordForm);
 	}
 	
 	public String getLemma()
@@ -187,7 +192,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	public void setWordForm(String form)
 	{
 		s_wordForm = form;
-		s_simplifiedForm = StringUtils.toSimplifiedForm(form);
+		s_simplifiedWordForm = StringUtils.toSimplifiedForm(form);
 	}
 	
 	public void setLemma(String lemma)
@@ -238,7 +243,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	{
 		return d_head;
 	}
-	
+
 	/** @return the dependency grand-head of this node if exists; otherwise, {@code null}. */
 	public DEPNode getGrandHead()
 	{
@@ -707,7 +712,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public boolean isSimplifiedForm(String form)
 	{
-		return form.equals(s_simplifiedForm);
+		return form.equals(s_simplifiedWordForm);
 	}
 	
 	public boolean isLemma(String lemma)

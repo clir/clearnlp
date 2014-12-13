@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -32,7 +33,6 @@ import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AdaGradSVM;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
-import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
 
@@ -42,8 +42,9 @@ import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractStatisticalComponent<LabelType, StateType extends AbstractState<LabelType>, EvalType extends AbstractEval<LabelType>, FeatureType extends AbstractFeatureExtractor<?,?,?>> extends AbstractComponent
+abstract public class AbstractStatisticalComponent<LabelType, StateType extends AbstractState<?,LabelType>, EvalType extends AbstractEval<?>, FeatureType extends AbstractFeatureExtractor<?,?,?>> extends AbstractComponent
 {
+	protected ICollector<StateType> l_collector;
 	protected FeatureType[] f_extractors;
 	protected StringModel[] s_models;
 	protected EvalType      c_eval;
@@ -184,7 +185,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	
 	/** Sets lexicons used for this component. */
 	abstract public void setLexicons(Object[] lexicons);
-
+	
 //	====================================== FEATURES ======================================
 	
 	public FeatureType[] getFeatureExtractors()
@@ -218,38 +219,52 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	
 	protected void process(StateType state, List<StringInstance> instances)
 	{
+		LabelType label;
+		
 		switch (c_flag)
 		{
-		case TRAIN    : train(state, instances); break;
-		case BOOTSTRAP: bootstrap(state, instances); break;
-		default       : decode(state); break;
+		case TRAIN    : label = train(state, instances); break;
+		case BOOTSTRAP: label = bootstrap(state, instances); break;
+		default       : label = decode(state); break;
 		}
+		
+		state.next(label);
 	}
 	
-	protected void train(StateType state, List<StringInstance> instances)
+	protected List<StringInstance> process(StateType state)
+	{
+		List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<StringInstance>() : null;
+		
+		while (!state.isTerminate())
+			process(state, instances);
+		
+		return instances;
+	}
+	
+	protected LabelType train(StateType state, List<StringInstance> instances)
 	{
 		StringFeatureVector vector = createStringFeatureVector(state);
 		LabelType label = state.getGoldLabel();
 		if (!vector.isEmpty()) instances.add(new StringInstance(label.toString(), vector));
-		state.setAutoLabel(label);
+		return label;
 	}
 	
-	protected void bootstrap(StateType state, List<StringInstance> instances)
+	protected LabelType bootstrap(StateType state, List<StringInstance> instances)
 	{
 		StringFeatureVector vector = createStringFeatureVector(state);
 		LabelType label = state.getGoldLabel();
 		if (!vector.isEmpty()) instances.add(new StringInstance(label.toString(), vector));
-		state.setAutoLabel(getAutoLabel(vector));
+		return getAutoLabel(state, vector);
 	}
 	
-	protected void decode(StateType state)
+	protected LabelType decode(StateType state)
 	{
 		StringFeatureVector vector = createStringFeatureVector(state);
-		state.setAutoLabel(getAutoLabel(vector));
+		return getAutoLabel(state, vector);
 	}
 	
 	abstract protected StringFeatureVector createStringFeatureVector(StateType state);
-	abstract protected LabelType getAutoLabel(StringFeatureVector vector);
+	abstract protected LabelType getAutoLabel(StateType state, StringFeatureVector vector);
 	
 //	====================================== EVAL ======================================
 	

@@ -70,6 +70,12 @@ public class BinaryWeightVector extends AbstractWeightVector implements Serializ
 	}
 	
 	@Override
+	public double[] getScores(SparseFeatureVector x, int[] include)
+	{
+		return getScores(x);
+	}
+	
+	@Override
 	public int getWeightIndex(int labelIndex, int featureIndex)
 	{
 		return featureIndex;

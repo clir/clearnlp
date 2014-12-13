@@ -18,79 +18,101 @@ package edu.emory.clir.clearnlp.component.mode.pos;
 import java.util.Map;
 import java.util.Set;
 
+import edu.emory.clir.clearnlp.component.AbstractState;
 import edu.emory.clir.clearnlp.component.CFlag;
-import edu.emory.clir.clearnlp.component.state.SeqState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.util.StringUtils;
+import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSState extends SeqState
+public class POSState extends AbstractState<String,String>
 {
 	private Set<String> s_lowerSimplifiedWordForms;
 	private Map<String,String> m_ambiguityClasses;
-	private String[] a_lowerSimplifiedWordForms;
+	private int i_input;
 	
 //	====================================== INITIALIZATION ======================================
 	
 	public POSState(DEPTree tree, CFlag flag, Set<String> lowerSimplifiedWordForms, Map<String,String> ambiguityClasses)
 	{
 		super(tree, flag);
+		init(lowerSimplifiedWordForms, ambiguityClasses);
+	}
+	
+	private void init(Set<String> lowerSimplifiedWordForms, Map<String,String> ambiguityClasses)
+	{
 		s_lowerSimplifiedWordForms = lowerSimplifiedWordForms;
 		m_ambiguityClasses = ambiguityClasses;
-		initLowerSimplifiedWordForms(tree);
+		i_input = 1;
 	}
-
+	
+//	====================================== ORACLE/LABEL ======================================
+	
 	@Override
-	protected void initGoldLabels()
+	protected void initOracle()
 	{
-		g_labels = d_tree.getPOSTags();
+		g_oracle = d_tree.getPOSTags();
  		d_tree.clearPOSTags();
 	}
-
-	private void initLowerSimplifiedWordForms(DEPTree tree)
-	{
-		a_lowerSimplifiedWordForms = new String[t_size];
-		
-		int i; for (i=1; i<t_size; i++)
-			a_lowerSimplifiedWordForms[i] = StringUtils.toLowerCase(getNode(i).getSimplifiedForm());
-	}
-	
-//	====================================== LABEL ======================================
 	
 	@Override
-	public void setAutoLabel(String label)
+	public void resetOracle()
+	{
+		d_tree.setPOSTags(g_oracle);
+	}
+	
+	@Override
+	public String getGoldLabel()
+	{
+		return g_oracle[i_input];
+	}
+	
+//	====================================== NODE ======================================
+	
+	@Override
+	public DEPNode getNode(AbstractFeatureToken token)
+	{
+		int id = i_input + token.getOffset();
+		return (0 < id) ? getNodeRelation(token, getNode(id)) : null;
+	}
+	
+	public DEPNode getInput()
+	{
+		return getNode(i_input);
+	}
+
+//	====================================== TRANSITION ======================================
+	
+	@Override
+	public void next(String label)
 	{
 		getInput().setPOSTag(label);
+		shift();
 	}
 	
-//	====================================== GETTER ======================================
-	
-	public String getLowerSimplifiedWordForm(DEPNode node)
+	@Override
+	public boolean isTerminate()
 	{
-		return a_lowerSimplifiedWordForms[node.getID()];
+		return i_input >= t_size;
 	}
 	
-	public String getLowerSimplifiedWordForm(int nodeID)
+	private void shift()
 	{
-		return a_lowerSimplifiedWordForms[nodeID];
+		i_input++;
 	}
+	
+//	====================================== HELPER ======================================
 	
 	public String getAmbiguityClass(DEPNode node)
 	{
-		return m_ambiguityClasses.get(node.getSimplifiedForm());
+		return m_ambiguityClasses.get(node.getSimplifiedWordForm());
 	}
 	
-	public boolean includeForm(int nodeID)
+	public boolean extractWordFormFeature(DEPNode node)
 	{
-		return s_lowerSimplifiedWordForms.contains(a_lowerSimplifiedWordForms[nodeID]); 
-	}
-	
-	public boolean includeForm(DEPNode node)
-	{
-		return includeForm(node.getID());
+		return s_lowerSimplifiedWordForms.contains(node.getLowerSimplifiedWordForm());
 	}
 }

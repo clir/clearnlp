@@ -51,6 +51,11 @@ abstract public class AbstractWeightVector implements Serializable
 	/** @return the array of scores of all labels given the feature vector. */
 	abstract public double[] getScores(SparseFeatureVector x);
 	/**
+	 * @param include get scores for only these indices.
+	 * @return the array of scores of all labels given the feature vector.
+	 */
+	abstract public double[] getScores(SparseFeatureVector x, int[] include);
+	/**
 	 * @return the index of the weight vector given the label and feature indices.
 	 * If this is a binary model, returns the {@code featureIndex}.
 	 */
