@@ -19,8 +19,8 @@ import java.util.List;
 
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.collection.stack.Stack;
-import edu.emory.clir.clearnlp.component.AbstractState;
 import edu.emory.clir.clearnlp.component.CFlag;
+import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;

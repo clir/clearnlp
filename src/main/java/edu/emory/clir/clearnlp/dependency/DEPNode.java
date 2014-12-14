@@ -224,6 +224,13 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		d_feats.put(key, value);
 	}
 	
+	public String clearPOSTag()
+	{
+		String pos = s_posTag;
+		setPOSTag(null);
+		return pos;
+	}
+	
 	/** Removes the feature with the specific key. */
 	public String removeFeat(String key)
 	{

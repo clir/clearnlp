@@ -57,6 +57,12 @@ public class TSVReader extends AbstractReader<DEPTree>
 	protected int i_xheads;
 	protected int i_sheads;
 	
+	public TSVReader(int iForm)
+	{
+		super(TReader.TSV);
+		init(-1, iForm, -1, -1, -1, -1, -1, -1, -1, -1);
+	}
+	
 	/**
 	 * For part-of-speech tagging.
 	 * @see #init(int, int, int, int, int, int, int, int, int, int)

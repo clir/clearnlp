@@ -19,7 +19,7 @@ import java.io.InputStream;
 
 import org.w3c.dom.Element;
 
-import edu.emory.clir.clearnlp.component.AbstractState;
+import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
 import edu.emory.clir.clearnlp.util.StringUtils;
@@ -91,6 +91,6 @@ public class CommonFeatureExtractor<StateType extends AbstractState<?,?>> extend
 		default: throw new IllegalArgumentException("Unsupported feature: b"+token.getValue());
 		}
 		
-		return b ? token.getKey() : null;
+		return b ? token.getBinaryFeatureKey() : null;
 	}
 }

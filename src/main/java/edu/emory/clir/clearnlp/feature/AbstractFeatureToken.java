@@ -101,15 +101,15 @@ abstract public class AbstractFeatureToken implements Serializable
 		return t_relation != null;
 	}
 	
-	public String getKey()
+	public String getBinaryFeatureKey()
 	{
 		StringBuilder build = new StringBuilder();
 		
 		build.append(t_source);
 		build.append(i_offset);
-		build.append(t_relation);
+		if (t_relation != null) build.append(t_relation);
 		build.append(StringConst.COLON);
-		build.append(t_field);
+		build.append(t_value);
 		
 		return build.toString();
 	}

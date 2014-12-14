@@ -15,8 +15,12 @@
  */
 package edu.emory.clir.clearnlp.nlp.trainer;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -24,6 +28,9 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
+import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.reader.TSVReader;
 import edu.emory.clir.clearnlp.util.IOUtils;
 
 /**
@@ -37,7 +44,9 @@ public class POSTrainerTest
 	{
 		String configurationFile = "src/test/resources/nlp/configuration/configure.xml";
 		String featureFile = "src/test/resources/nlp/trainer/feature_pos.xml";
-		List<String> trainFiles = Lists.newArrayList("src/test/resources/nlp/trainer/dependency.cnlp");
+		String trainFile = "src/test/resources/nlp/trainer/pos.cnlp";
+		List<String> trainFiles   = Lists.newArrayList(trainFile);
+		List<String> developFiles = Lists.newArrayList(trainFile);
 		
 		InputStream configuration = IOUtils.createFileInputStream(configurationFile);
 		InputStream[] features = {IOUtils.createFileInputStream(featureFile)};
@@ -45,8 +54,23 @@ public class POSTrainerTest
 		AbstractStatisticalComponent<?,?,?,?> component;
 		
 		component = trainer.collect(trainFiles);
-		Object[] lexicons = component.getLexicons();
+		component = trainer.train(trainFiles, developFiles, component.getLexicons());
 		
-		component = trainer.train(trainFiles, trainFiles, lexicons);
+		byte[] model = component.toByteArray();
+		ObjectInputStream in = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new ByteArrayInputStream(model))));
+		component = new DefaultPOSTagger(in);
+		in.close();
+		
+		TSVReader reader = new TSVReader(1);
+		reader.open(IOUtils.createFileInputStream(trainFile));
+		DEPTree tree;
+		
+		while ((tree = reader.next()) != null)
+		{
+			component.process(tree);
+			System.out.println(tree.toString()+"\n");
+		}
+		
+		reader.close();
 	}
 }

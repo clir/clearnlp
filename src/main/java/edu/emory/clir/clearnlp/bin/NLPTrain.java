@@ -16,6 +16,7 @@
 package edu.emory.clir.clearnlp.bin;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -38,7 +39,9 @@ import edu.emory.clir.clearnlp.nlp.NLPMode;
 import edu.emory.clir.clearnlp.nlp.trainer.AbstractNLPTrainer;
 import edu.emory.clir.clearnlp.nlp.trainer.POSTrainer;
 import edu.emory.clir.clearnlp.util.BinUtils;
+import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.util.Splitter;
 
 /**
  * @since 3.0.0
@@ -68,13 +71,57 @@ public class NLPTrain
 	public NLPTrain(String[] args)
 	{
 		BinUtils.initArgs(args, this);
-//		NLPMode mode = NLPMode.valueOf(s_mode);
-//		List<String> trainFiles   = FileUtils.getFileList(s_trainPath  , s_trainExt  , false);
-//		List<String> developFiles = FileUtils.getFileList(s_developPath, s_developExt, false);
-//	
-//		AbstractStatisticalComponent<?,?,?,?> component = train(mode, s_configurationFile, Splitter.splitColons(s_featureTemplateFile), trainFiles, developFiles);
-//		if (s_modelFile != null) saveModel(component, s_modelFile);
+		NLPMode mode = NLPMode.valueOf(s_mode);
+		List<String> trainFiles   = FileUtils.getFileList(s_trainPath  , s_trainExt  , false);
+		List<String> developFiles = FileUtils.getFileList(s_developPath, s_developExt, false);
+	
+		AbstractStatisticalComponent<?,?,?,?> component = train(mode, s_configurationFile, Splitter.splitColons(s_featureTemplateFile), trainFiles, developFiles);
+		if (s_modelFile != null) saveModel(component, s_modelFile);
+	}
+	
+	public AbstractStatisticalComponent<?,?,?,?> train(NLPMode mode, String configurationFile, String[] featureFiles, List<String> trainFiles, List<String> developFiles)
+	{
+		InputStream configuration  = IOUtils.createFileInputStream(configurationFile);
+		InputStream[] features     = IOUtils.createFileInputStreams(featureFiles);
+		AbstractNLPTrainer trainer = getTrainer(mode, configuration, features);
+		AbstractStatisticalComponent<?,?,?,?> component;
 		
+		component = trainer.collect(trainFiles);
+		return trainer.train(trainFiles, developFiles, component.getLexicons());
+	}
+	
+	public void saveModel(AbstractStatisticalComponent<?,?,?,?> component, String modelFile)
+	{
+		ObjectOutputStream out;
+		
+		try
+		{
+			out = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(s_modelFile))));
+			component.save(out);
+			out.close();
+		}
+		catch (Exception e) {e.printStackTrace();}
+	}
+	
+	private AbstractNLPTrainer getTrainer(NLPMode mode, InputStream configuration, InputStream[] features)
+	{
+		switch (mode)
+		{
+		case pos: return new POSTrainer(configuration, features);
+		case dep: return null;
+		case srl: return null;
+		default :throw new IllegalArgumentException("Invalid mode: "+mode.toString()); 
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	void onlineTrain()
+	{
 		try
 		{
 			DefaultPOSTagger tagger = new DefaultPOSTagger(new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new FileInputStream(s_modelFile)))));
@@ -115,43 +162,6 @@ public class NLPTrain
 		list.add(tree);
 		
 		return list;
-	}
-	
-	public AbstractStatisticalComponent<?,?,?,?> train(NLPMode mode, String configurationFile, String[] featureFiles, List<String> trainFiles, List<String> developFiles)
-	{
-		InputStream configuration  = IOUtils.createFileInputStream(configurationFile);
-		InputStream[] features     = IOUtils.createFileInputStreams(featureFiles);
-		AbstractNLPTrainer trainer = getTrainer(mode, configuration, features);
-		AbstractStatisticalComponent<?,?,?,?> component;
-		
-		component = trainer.collect(trainFiles);
-		Object[] lexicons = component.getLexicons();
-		
-		return trainer.train(trainFiles, developFiles, lexicons);
-	}
-	
-	public void saveModel(AbstractStatisticalComponent<?,?,?,?> component, String modelFile)
-	{
-		ObjectOutputStream out;
-		
-		try
-		{
-			out = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(s_modelFile)));
-			component.save(out);
-			out.close();
-		}
-		catch (Exception e) {e.printStackTrace();}
-	}
-	
-	private AbstractNLPTrainer getTrainer(NLPMode mode, InputStream configuration, InputStream[] features)
-	{
-		switch (mode)
-		{
-		case pos: return new POSTrainer(configuration, features);
-		case dep: return null;
-		case srl: return null;
-		default :throw new IllegalArgumentException("Invalid mode: "+mode.toString()); 
-		}
 	}
 		
 	static public void main(String[] args)

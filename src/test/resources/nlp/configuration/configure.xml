@@ -14,9 +14,9 @@
     </reader>
 
     <pos>
-        <trainer algorithm="adagrad" type="svm" labelCutoff="0" featureCutoff="2" alpha="0.01" rho="0.1" average="false"/>
-        <cutoff ambiguityClass="0" documentFrequency="0" documentBoundary="0"/>
-        <bootstraps>true</bootstraps>
+        <trainer algorithm="adagrad" type="svm" labelCutoff="0" featureCutoff="0" alpha="0.01" rho="0.1" average="true"/>
+        <cutoff ambiguityClass="0" documentFrequency="0" documentBoundary="1"/>
+        <bootstraps>1</bootstraps>
     </pos>
 
     <dep>

@@ -28,9 +28,11 @@ public interface OrthographicType
 	String ALL_PUNCT			= "4";
 	String ALL_DIGIT_OR_PUNCT	= "5";
 	String HAS_DIGIT			= "6";
-	String HAS_PUNCT			= "7";
-	String NO_LOWER				= "8";
-	String FST_UPPER			= "9";
-	String UPPER_1				= "10";
-	String UPPER_2				= "11";
+	String HAS_PERIOD			= "7";
+	String HAS_HYPHEN			= "8";
+	String HAS_OTHER_PUNCT		= "9";
+	String NO_LOWER				= "10";
+	String FST_UPPER			= "11";
+	String UPPER_1				= "12";
+	String UPPER_2				= "13";
 }

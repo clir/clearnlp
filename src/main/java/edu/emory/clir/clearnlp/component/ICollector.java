@@ -15,6 +15,8 @@
  */
 package edu.emory.clir.clearnlp.component;
 
+import edu.emory.clir.clearnlp.component.state.AbstractState;
+
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

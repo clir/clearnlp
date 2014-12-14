@@ -16,7 +16,6 @@
 package edu.emory.clir.clearnlp.component.mode.pos;
 
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,8 +36,8 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  */
 public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSEval, POSFeatureExtractor>
 {
-	private final int LEXICON_LOWER_SIMPLIFIED_WORD_FORM = 0;
-	private final int LEXICON_AMBIGUITY_CLASS = 1;
+	static public final int LEXICON_LOWER_SIMPLIFIED_WORD_FORM = 0;
+	static public final int LEXICON_AMBIGUITY_CLASS = 1;
 	
 	private Set<String> s_lowerSimplifiedWordForms;
 	private Map<String,String> m_ambiguityClasses;

@@ -27,7 +27,7 @@ import org.w3c.dom.NodeList;
 import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
-import edu.emory.clir.clearnlp.component.AbstractState;
+import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.common.OrthographicType;
@@ -35,6 +35,7 @@ import edu.emory.clir.clearnlp.feature.type.FeatureXml;
 import edu.emory.clir.clearnlp.util.CharUtils;
 import edu.emory.clir.clearnlp.util.MetaUtils;
 import edu.emory.clir.clearnlp.util.XmlUtils;
+import edu.emory.clir.clearnlp.util.constant.CharConst;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
@@ -237,14 +238,16 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType extends Abstr
 	/** Called by {@link #getOrthographicFeatures(AbstractState, DEPNode)}. */
 	private void getOrthographicFeautureAux(StateType state, DEPNode node, List<String> list, char[] cs)
 	{
-		boolean hasDigit = false;
-		boolean hasPunct = false;
-		boolean fstUpper = false;
-		boolean allDigit = true;
-		boolean allPunct = true;
-		boolean allUpper = true;
-		boolean allLower = true;
-		boolean noLower  = true;
+		boolean hasDigit  = false;
+		boolean hasPeriod = false;
+		boolean hasHyphen = false;
+		boolean hasPunct  = false;
+		boolean fstUpper  = false;
+		boolean allDigit  = true;
+		boolean allPunct  = true;
+		boolean allUpper  = true;
+		boolean allLower  = true;
+		boolean noLower   = true;
 		boolean allDigitOrPunct = true;
 		int countUpper = 0;
 		
@@ -275,10 +278,17 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType extends Abstr
 			if (digit)	hasDigit = true;
 			else		allDigit = false;
 
-			if (punct)	hasPunct = true;
-			else		allPunct = false;
+			if (punct)
+			{
+				hasPunct = true;
+				if (c == CharConst.PERIOD) hasPeriod = true;
+				if (c == CharConst.HYPHEN) hasHyphen = true;
+			}
+			else
+				allPunct = false;
 			
-			if (!digit && !punct) allDigitOrPunct = false;
+			if (!digit && !punct)
+				allDigitOrPunct = false;
 		}
 		
 		if (allUpper)
@@ -291,19 +301,26 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType extends Abstr
 			list.add(OrthographicType.ALL_PUNCT);
 		else if (allDigitOrPunct)
 			list.add(OrthographicType.ALL_DIGIT_OR_PUNCT);
-		else
+		else if (noLower)
+			list.add(OrthographicType.NO_LOWER);
+		
+		if (!allUpper)
 		{
-			if (hasDigit)	list.add(OrthographicType.HAS_DIGIT);
-			if (hasPunct)	list.add(OrthographicType.HAS_PUNCT);
-			if (noLower)	list.add(OrthographicType.NO_LOWER);
-			
 			if (fstUpper && !state.isFirstNode(node))
 				list.add(OrthographicType.FST_UPPER);
-			
 			if (countUpper == 1)
 				list.add(OrthographicType.UPPER_1);
 			else if (countUpper > 1)
 				list.add(OrthographicType.UPPER_2);
 		}
+		
+		if (!allDigit && hasDigit)
+			list.add(OrthographicType.HAS_DIGIT);
+		
+		if (hasPeriod)	list.add(OrthographicType.HAS_PERIOD);
+		if (hasHyphen)	list.add(OrthographicType.HAS_HYPHEN);
+		
+		if (!allPunct && !hasPeriod && !hasHyphen && hasPunct)
+			list.add(OrthographicType.HAS_OTHER_PUNCT);
 	}
 }
