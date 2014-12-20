@@ -32,7 +32,7 @@ import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBInstance;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBReader;
-import edu.emory.clir.clearnlp.nlp.NLPGetter;
+import edu.emory.clir.clearnlp.nlp.NLPUtils;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
@@ -70,8 +70,8 @@ public class C2DConvert
 		TLanguage language = TLanguage.getType(s_language);
 		int n;
 		
-		AbstractC2DConverter converter = NLPGetter.getC2DConverter(language, IOUtils.createFileInputStream(s_headruleFile));
-		AbstractMPAnalyzer   analyzer  = NLPGetter.getMPAnalyzer(language);
+		AbstractC2DConverter converter = NLPUtils.getC2DConverter(language, IOUtils.createFileInputStream(s_headruleFile));
+		AbstractMPAnalyzer   analyzer  = NLPUtils.getMPAnalyzer(language);
 		
 		for (String parseFile : parseFiles)
 		{

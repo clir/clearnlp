@@ -15,7 +15,8 @@
 
     <pos>
         <trainer algorithm="adagrad" type="svm" labelCutoff="0" featureCutoff="0" alpha="0.01" rho="0.1" average="true"/>
-        <cutoff ambiguityClass="0" documentFrequency="0" documentBoundary="1"/>
+        <ambiguity_class_threshold>0.4</ambiguity_class_threshold>
+        <proper_noun_tagset>NNP,NNPS</proper_noun_tagset>
         <bootstraps>1</bootstraps>
     </pos>
 

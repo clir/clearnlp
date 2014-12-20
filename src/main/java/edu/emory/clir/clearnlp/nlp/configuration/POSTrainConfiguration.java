@@ -16,10 +16,15 @@
 package edu.emory.clir.clearnlp.nlp.configuration;
 
 import java.io.InputStream;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 
+import com.google.common.collect.Sets;
+
+import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.nlp.NLPMode;
+import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 
 /**
@@ -28,9 +33,8 @@ import edu.emory.clir.clearnlp.util.XmlUtils;
  */
 public class POSTrainConfiguration extends AbstractTrainConfiguration
 {
-	private int    cutoff_documentFrequency;
-	private int    cutoff_documentBoundary;
 	private double threshold_ambiguityClass;
+	private Set<String> proper_noun_tagset;
 
 //	============================== Initialization ==============================
 	
@@ -48,44 +52,42 @@ public class POSTrainConfiguration extends AbstractTrainConfiguration
 	private void init()
 	{
 		Element eMode = getFirstElement(n_mode.toString());
-		Element eCutoff = XmlUtils.getFirstElementByTagName(eMode, E_CUTOFF);
 		
-		setDocumentFrequencyCutoff(XmlUtils.getIntegerAttribute(eCutoff, "documentFrequency"));
-		setDocumentBoundaryCutoff (XmlUtils.getIntegerAttribute(eCutoff, "documentBoundary"));
-		setAmbiguityClassThreshold(XmlUtils.getDoubleAttribute (eCutoff, "ambiguityClass"));
+		double ac = XmlUtils.getDoubleTextContent(XmlUtils.getFirstElementByTagName(eMode, "ambiguity_class_threshold"));
+		String[] nnp = Splitter.splitCommas(XmlUtils.getTrimmedTextContent(XmlUtils.getFirstElementByTagName(eMode, "proper_noun_tagset")));
+		
+		setAmbiguityClassThreshold(ac);
+		setProperNounTagset(Sets.newHashSet(nnp));
 	}
 	
 //	============================== Getters ==============================
-	
-	public int getDocumentFrequencyCutoff()
-	{
-		return cutoff_documentFrequency;
-	}
-	
-	public int getDocumentBoundaryCutoff()
-	{
-		return cutoff_documentBoundary;
-	}
 	
 	public double getAmbiguityClassThreshold()
 	{
 		return threshold_ambiguityClass;
 	}
 	
+	public Set<String> getProperNounTagset()
+	{
+		return proper_noun_tagset;
+	}
+	
 //	============================== Setters ==============================
-	
-	public void setDocumentFrequencyCutoff(int cutoff)
-	{
-		cutoff_documentFrequency = cutoff;
-	}
-	
-	public void setDocumentBoundaryCutoff(int cutoff)
-	{
-		cutoff_documentBoundary = cutoff;
-	}
 	
 	public void setAmbiguityClassThreshold(double threshold)
 	{
 		threshold_ambiguityClass = threshold;
+	}
+	
+	public void setProperNounTagset(Set<String> set)
+	{
+		proper_noun_tagset = set;
+	}
+	
+//	============================== Booleans ==============================
+	
+	public boolean isProperNoun(DEPNode node)
+	{
+		return proper_noun_tagset.contains(node.getPOSTag());
 	}
 }

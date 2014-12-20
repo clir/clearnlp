@@ -29,6 +29,7 @@ abstract public class AbstractState<OracleType,LabelType>
 	protected OracleType[] g_oracle;
 	protected DEPTree d_tree;
 	protected int     t_size;
+	protected CFlag   c_flag;
 
 //	====================================== INITIALIZATION ======================================
 	
@@ -36,6 +37,7 @@ abstract public class AbstractState<OracleType,LabelType>
 	{
 		d_tree = tree;
 		t_size = tree.size();
+		c_flag = flag;
 		if (flag != CFlag.COLLECT && flag != CFlag.DECODE) initOracle();
 	}
 	

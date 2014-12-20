@@ -35,9 +35,9 @@ import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
 import edu.emory.clir.clearnlp.dependency.DEPFeat;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.nlp.NLPUtils;
 import edu.emory.clir.clearnlp.nlp.NLPMode;
 import edu.emory.clir.clearnlp.nlp.trainer.AbstractNLPTrainer;
-import edu.emory.clir.clearnlp.nlp.trainer.POSTrainer;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
@@ -83,11 +83,8 @@ public class NLPTrain
 	{
 		InputStream configuration  = IOUtils.createFileInputStream(configurationFile);
 		InputStream[] features     = IOUtils.createFileInputStreams(featureFiles);
-		AbstractNLPTrainer trainer = getTrainer(mode, configuration, features);
-		AbstractStatisticalComponent<?,?,?,?> component;
-		
-		component = trainer.collect(trainFiles);
-		return trainer.train(trainFiles, developFiles, component.getLexicons());
+		AbstractNLPTrainer trainer = NLPUtils.getTrainer(mode, configuration, features);
+		return trainer.train(trainFiles, developFiles);
 	}
 	
 	public void saveModel(AbstractStatisticalComponent<?,?,?,?> component, String modelFile)
@@ -102,18 +99,6 @@ public class NLPTrain
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}
-	
-	private AbstractNLPTrainer getTrainer(NLPMode mode, InputStream configuration, InputStream[] features)
-	{
-		switch (mode)
-		{
-		case pos: return new POSTrainer(configuration, features);
-		case dep: return null;
-		case srl: return null;
-		default :throw new IllegalArgumentException("Invalid mode: "+mode.toString()); 
-		}
-	}
-	
 	
 	
 	

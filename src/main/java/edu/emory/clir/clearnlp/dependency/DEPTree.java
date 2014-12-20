@@ -54,6 +54,16 @@ public class DEPTree implements Iterable<DEPNode>
 			add(nodes.get(i));
 	}
 	
+	/** @param string dummy parameter. */
+	public DEPTree(List<String> tokens, boolean string)
+	{
+		int i, size = tokens.size();
+		init(size);
+		
+		for (i=0; i<size; i++)
+			add(new DEPNode(i+1, tokens.get(i)));
+	}
+	
 	public DEPTree(DEPTree oTree)
 	{
 		DEPNode oNode, nNode, oHead, nHead;

@@ -316,4 +316,47 @@ public class StringUtils
 		
 		return suffixes;
 	}
+	
+	static public String getPrefix(String form, int n)
+	{
+		return (n < form.length()) ? toLowerCase(form.substring(0, n)) : null;
+	}
+	
+	static public String getSuffix(String form, int n)
+	{
+		return (n < form.length()) ? toLowerCase(form.substring(form.length()-n)) : null;
+	}
+	
+	static public String getShape(String form, int maxRepetitions)
+	{
+		StringBuilder build = new StringBuilder();
+		char curr, prev = CharConst.EMPTY;
+		char cs[] = form.toCharArray();
+		int i, len = cs.length;
+		int repetition = 0;
+		
+		for (i=0; i<len; i++)
+		{
+			curr = cs[i];
+			
+			if      (CharUtils.isUpperCase(curr)) 	curr = 'A';
+			else if (CharUtils.isLowerCase(curr))	curr = 'a';
+			else if (CharUtils.isDigit(curr))		curr = '1';
+			else if (CharUtils.isPunctuation(curr))	curr = '.';
+			else									curr = 'x';
+			
+			if (curr == prev)
+				repetition++;
+			else
+			{
+				prev = curr;
+				repetition = 0;
+			}
+			
+			if (repetition < maxRepetitions)
+				build.append(curr);
+		}
+		
+		return build.toString();
+	}
 }

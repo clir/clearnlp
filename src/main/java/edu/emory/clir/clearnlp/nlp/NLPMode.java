@@ -22,6 +22,7 @@ package edu.emory.clir.clearnlp.nlp;
 public enum NLPMode
 {
 	pos,
+	morph,
 	dep,
 	srl;
 }

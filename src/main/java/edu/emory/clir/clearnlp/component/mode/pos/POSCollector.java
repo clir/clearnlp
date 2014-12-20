@@ -16,21 +16,16 @@
 package edu.emory.clir.clearnlp.component.mode.pos;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.collection.map.IncMap2;
-import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.component.ICollector;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
 import edu.emory.clir.clearnlp.util.DSUtils;
-import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
@@ -40,41 +35,13 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
 public class POSCollector implements ICollector<POSState>, Serializable
 {
 	private static final long serialVersionUID = -1309316221225281613L;
+	private IncMap2<String,String> m_ambiguity_classes;
+	private POSTrainConfiguration p_config;
 	
-	private IncMap2<String,String>		m_ambi;
-	private ObjectIntHashMap<String>    m_lswf;
-	private Set<String>					s_lswf;
-	private int							n_trees;
-	
-	private double ac_threshold;	// ambiguity classes
-	private int    db_cutoff;		// document boundary
-	private int    df_cutoff;		// document frequency
-	
-	public POSCollector(POSTrainConfiguration config)
+	public POSCollector(POSTrainConfiguration configuration)
 	{	
-		m_ambi  = new IncMap2<>();
-		m_lswf  = new ObjectIntHashMap<>();
-		s_lswf  = Sets.newHashSet();
-		n_trees = 0;
-		
-		setAmbiguityClassThreshold(config.getAmbiguityClassThreshold());
-		setDocumentBoundaryCutoff (config.getDocumentBoundaryCutoff());
-		setDocumentFrequencyCutoff(config.getDocumentFrequencyCutoff());
-	}
-	
-	public void setAmbiguityClassThreshold(double threshold)
-	{
-		ac_threshold = threshold;
-	}
-	
-	public void setDocumentBoundaryCutoff(int cutoff)
-	{
-		db_cutoff = cutoff;
-	}
-	
-	public void setDocumentFrequencyCutoff(int cutoff)
-	{
-		df_cutoff = cutoff;
+		m_ambiguity_classes = new IncMap2<>();
+		p_config = configuration;
 	}
 	
 	public void collect(POSState state)
@@ -85,37 +52,18 @@ public class POSCollector implements ICollector<POSState>, Serializable
 		for (i=1; i<size; i++)
 		{
 			node = state.getNode(i);
-			
-			m_ambi.add(node.getSimplifiedWordForm(), node.getPOSTag());
-			s_lswf.add(node.getLowerSimplifiedWordForm());
+			m_ambiguity_classes.add(node.getSimplifiedWordForm(), node.getPOSTag());
 		}
-		
-		if (++n_trees >= db_cutoff)
-			addToMap();
 	}
 	
-	private void addToMap()
+	public Map<String,String> finalizeAmbiguityClasses()
 	{
-		m_lswf.addAll(s_lswf);
-		s_lswf  = Sets.newHashSet();
-		n_trees = 0;
-	}
-	
-	public Set<String> finalizeLowerSimplifiedWordForms()
-	{
-		if (!s_lswf.isEmpty()) addToMap();
-		return m_lswf.keySet(df_cutoff);
-	}
-	
-	public Map<String,String> finalizeAmbiguityClasses(Set<String> lowerSimplifiedWordForms)
-	{
-		Map<String,String> map = Maps.newHashMap();
+		Map<String,String> map = new HashMap<>();
 		List<ObjectDoublePair<String>> ps;
 		
-		for (String key : m_ambi.getKeySet1())
+		for (String key : m_ambiguity_classes.getKeySet1())
 		{
-			if (!lowerSimplifiedWordForms.contains(StringUtils.toLowerCase(key))) continue;
-			ps = m_ambi.toList(key, ac_threshold);
+			ps = m_ambiguity_classes.toList(key, p_config.getAmbiguityClassThreshold());
 			
 			if (!ps.isEmpty())
 			{

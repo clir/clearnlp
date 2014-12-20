@@ -97,7 +97,7 @@ public class StringModel extends AbstractModel<StringInstance,StringFeatureVecto
 		int featureSize = m_features.expand(i_collector.getFeatureMap(), featureCutoff);
 		w_vector.expand(labelSize, featureSize);
 		
-		List<IntInstance> instances = toIntInstanceList(i_collector.getInstanceList());
+		List<IntInstance> instances = toIntInstanceList(i_collector.getInstances());
 		i_collector.init();
 		
 		return instances;

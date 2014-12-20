@@ -158,6 +158,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return StringUtils.toLowerCase(s_simplifiedWordForm);
 	}
 	
+	public String getWordShape(int maxRepetitions)
+	{
+		return StringUtils.getShape(s_simplifiedWordForm, maxRepetitions);
+	}
+	
 	public String getLemma()
 	{
 		return s_lemma;

@@ -82,7 +82,7 @@ public class SparseModel extends AbstractModel<SparseInstance,SparseFeatureVecto
 		
 		w_vector.expand(labelSize, featureSize);
 		
-		List<IntInstance> instances = toIntInstanceList(i_collector.getInstanceList());
+		List<IntInstance> instances = toIntInstanceList(i_collector.getInstances());
 		i_collector.init();
 		
 		return instances;

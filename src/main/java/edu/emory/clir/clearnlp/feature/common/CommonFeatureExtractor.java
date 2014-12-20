@@ -52,8 +52,12 @@ public class CommonFeatureExtractor<StateType extends AbstractState<?,?>> extend
 		{
 		case f : return includeForm ? node.getWordForm() : null;
 		case f2: return includeForm ? node.getSimplifiedWordForm() : null;
-		case f3: return includeForm ? StringUtils.toLowerCase(node.getSimplifiedWordForm()) : null;
-		case m : return includeForm ? node.getLemma() : null; 
+		case f3: return includeForm ? node.getLowerSimplifiedWordForm() : null;
+		case m : return includeForm ? node.getLemma() : null;
+		case f4: return node.getWordShape(2);
+		case pf: return StringUtils.getPrefix(node.getSimplifiedWordForm(), (int)token.getValue());
+		case sf: return StringUtils.getSuffix(node.getSimplifiedWordForm(), (int)token.getValue());
+		
 		case p : return node.getPOSTag();
 		case n : return node.getNamedEntityTag();
 		case d : return node.getLabel();
@@ -70,8 +74,6 @@ public class CommonFeatureExtractor<StateType extends AbstractState<?,?>> extend
 	{
 		switch (token.getField())
 		{
-		case pf  : return StringUtils.getPrefixes(node.getLowerSimplifiedWordForm(), (int)token.getValue());
-		case sf  : return StringUtils.getSuffixes(node.getLowerSimplifiedWordForm(), (int)token.getValue());
 		case ds  : return toLabelArray(node.getDependentList());
 		case ds2 : return toLabelArray(node.getGrandDependentList());
 		case orth: return getOrthographicFeatures(state, node);

@@ -26,6 +26,7 @@ public enum FieldType
 	f,		// word-form
 	f2, 	// simplified word-form
 	f3,		// lower simplified word-form
+	f4,		// word-form shape
 	m,		// lemma
 	p,		// pos tag
 	n,		// named entity tag
@@ -56,6 +57,6 @@ public enum FieldType
 	
 	static public boolean isSetField(FieldType field)
 	{
-		return field == pf || field == sf || field == ds || field == ds2 || field == orth;
+		return field == ds || field == ds2 || field == orth;
 	}
 }

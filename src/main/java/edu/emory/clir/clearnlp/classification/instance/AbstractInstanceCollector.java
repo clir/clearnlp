@@ -15,9 +15,8 @@
  */
 package edu.emory.clir.clearnlp.classification.instance;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import edu.emory.clir.clearnlp.classification.vector.AbstractFeatureVector;
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
@@ -29,7 +28,7 @@ import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 abstract public class AbstractInstanceCollector<I extends AbstractInstance<F>, F extends AbstractFeatureVector>
 {
 	private ObjectIntHashMap<String> m_labels;
-	private List<I> i_instances;
+	private Deque<I> i_instances;
 	protected int n_features;
 	
 	public AbstractInstanceCollector()
@@ -41,7 +40,7 @@ abstract public class AbstractInstanceCollector<I extends AbstractInstance<F>, F
 	
 	protected void initDefault()
 	{
-		i_instances = Lists.newArrayList();
+		i_instances = new ArrayDeque<>();
 		m_labels    = new ObjectIntHashMap<String>();
 		n_features  = 0;
 	}
@@ -77,7 +76,7 @@ abstract public class AbstractInstanceCollector<I extends AbstractInstance<F>, F
 		return m_labels;
 	}
 	
-	public List<I> getInstanceList()
+	public Deque<I> getInstances()
 	{
 		return i_instances;
 	}

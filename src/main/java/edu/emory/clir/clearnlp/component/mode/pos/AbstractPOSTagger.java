@@ -27,7 +27,6 @@ import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
-import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
@@ -36,11 +35,11 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  */
 public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSEval, POSFeatureExtractor>
 {
-	static public final int LEXICON_LOWER_SIMPLIFIED_WORD_FORM = 0;
-	static public final int LEXICON_AMBIGUITY_CLASS = 1;
+	static public final int LEXICON_AMBIGUITY_CLASS = 0;
+	static public final int LEXICON_PROPER_NOUN_TAG = 1;
 	
-	private Set<String> s_lowerSimplifiedWordForms;
-	private Map<String,String> m_ambiguityClasses;
+	private Map<String,String> m_ambiguity_classes;
+	private Set<String> s_proper_noun_tags;
 	private POSCollector p_collector;
 
 	/** Creates a pos tagger for collect. */
@@ -48,6 +47,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	{
 		super();
 		p_collector = new POSCollector(configuration);
+		s_proper_noun_tags = configuration.getProperNounTagset();
 	}
 	
 	/** Creates a pos tagger for train. */
@@ -79,13 +79,13 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	@Override
 	public Object[] getLexicons()
 	{
-		if (s_lowerSimplifiedWordForms == null)
-			finalizeLexicons();
+		if (m_ambiguity_classes == null)
+			m_ambiguity_classes = p_collector.finalizeAmbiguityClasses();
 		
 		Object[] lexicons = new Object[2];
 		
-		lexicons[LEXICON_LOWER_SIMPLIFIED_WORD_FORM] = s_lowerSimplifiedWordForms;
-		lexicons[LEXICON_AMBIGUITY_CLASS] = m_ambiguityClasses;
+		lexicons[LEXICON_AMBIGUITY_CLASS] = m_ambiguity_classes;
+		lexicons[LEXICON_PROPER_NOUN_TAG] = s_proper_noun_tags;
 		
 		return lexicons;
 	}
@@ -94,14 +94,8 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	@SuppressWarnings("unchecked")
 	public void setLexicons(Object[] lexicons)
 	{
-		s_lowerSimplifiedWordForms = (Set<String>)lexicons[LEXICON_LOWER_SIMPLIFIED_WORD_FORM];
-		m_ambiguityClasses = (Map<String,String>)lexicons[LEXICON_AMBIGUITY_CLASS];
-	}
-	
-	private void finalizeLexicons()
-	{
-		s_lowerSimplifiedWordForms = p_collector.finalizeLowerSimplifiedWordForms();
-		m_ambiguityClasses = p_collector.finalizeAmbiguityClasses(s_lowerSimplifiedWordForms);
+		m_ambiguity_classes = (Map<String,String>)lexicons[LEXICON_AMBIGUITY_CLASS];
+		s_proper_noun_tags  = (Set<String>)lexicons[LEXICON_PROPER_NOUN_TAG];
 	}
 	
 //	====================================== EVAL ======================================
@@ -116,7 +110,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	@Override
 	public void process(DEPTree tree)
 	{
-		POSState state = new POSState(tree, c_flag, s_lowerSimplifiedWordForms, m_ambiguityClasses);
+		POSState state = new POSState(tree, c_flag, m_ambiguity_classes, s_proper_noun_tags);
 		
 		if (isCollect())
 		{
@@ -130,7 +124,6 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 			{
 				if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
 				else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
-				state.resetOracle();
 			}
 		}
 	}
@@ -161,15 +154,13 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 		for (DEPNode node : tree)
 		{
 			String simplifiedForm = node.getSimplifiedWordForm();
-			String ambiguityClass = m_ambiguityClasses.get(simplifiedForm);
+			String ambiguityClass = m_ambiguity_classes.get(simplifiedForm);
 			String pos = node.getPOSTag();
 			
 			if (ambiguityClass == null)
-				m_ambiguityClasses.put(simplifiedForm, pos);
+				m_ambiguity_classes.put(simplifiedForm, pos);
 			else if (!ambiguityClass.startsWith(StringConst.UNDERSCORE+pos) && !ambiguityClass.startsWith(pos+StringConst.UNDERSCORE) && !ambiguityClass.startsWith(StringConst.UNDERSCORE+pos+StringConst.UNDERSCORE))
-				m_ambiguityClasses.put(simplifiedForm, pos+StringConst.UNDERSCORE+ambiguityClass);
-			
-			s_lowerSimplifiedWordForms.add(StringUtils.toLowerCase(simplifiedForm));
+				m_ambiguity_classes.put(simplifiedForm, pos+StringConst.UNDERSCORE+ambiguityClass);
 		}		
 	}
 }

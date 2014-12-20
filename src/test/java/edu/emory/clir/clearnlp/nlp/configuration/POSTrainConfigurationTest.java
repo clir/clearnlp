@@ -16,6 +16,7 @@
 package edu.emory.clir.clearnlp.nlp.configuration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 
 import org.junit.Test;
@@ -36,8 +37,8 @@ public class POSTrainConfigurationTest
 		POSTrainConfiguration config = new POSTrainConfiguration(IOUtils.createFileInputStream(filename));
 		
 		assertEquals(TLanguage.ENGLISH, config.getLanguage());
-		assertEquals(0.5, config.getAmbiguityClassThreshold(), 1e-15);
-		assertEquals(1  , config.getDocumentFrequencyCutoff());
-		assertEquals(1  , config.getDocumentBoundaryCutoff());
+		assertEquals(0.4, config.getAmbiguityClassThreshold(), 1e-15);
+		assertTrue(config.getProperNounTagset().contains("NNP"));
+		assertTrue(config.getProperNounTagset().contains("NNPS"));
 	}
 }

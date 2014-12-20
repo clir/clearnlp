@@ -86,6 +86,11 @@ public class XmlUtils
 		return (element != null) ? element.getTextContent().trim() : null;
 	}
 	
+	static public double getDoubleTextContent(Element element)
+	{
+		return Double.parseDouble(getTrimmedTextContent(element));
+	}
+	
 	static public String getTrimmedAttribute(Element element, String name)
 	{
 		return element.getAttribute(name).trim();

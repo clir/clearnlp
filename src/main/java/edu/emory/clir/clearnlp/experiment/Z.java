@@ -17,12 +17,15 @@ package edu.emory.clir.clearnlp.experiment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.magicwerk.brownies.collections.primitive.IntGapList;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
+import edu.emory.clir.clearnlp.util.constant.CharConst;
 
 
 /**
@@ -33,41 +36,35 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		int i, j, size = 1000000, len = 100;
+		System.out.println(CharConst.EMPTY);
+		
+		int i, size = 1000000;
 		long st, et;
-		String s;
-		
-		List<String> list  = new ArrayList<>(len);
-		String[] array = new String[len];
-		
-		for (i=0; i<len; i++)
-		{
-			s = Integer.toString(i);
-			array[i] = s;
-			list.add(s);
-		}
+		String s = null;
+		Set<String> set = Sets.newHashSet("NNP","NNPS");
+		boolean b = false;
 		
 		st = System.currentTimeMillis();
 		
 		for (i=0; i<size; i++)
 		{
-			for (j=0; j<len; j++)
-				s = array[j];
+			b = set.contains(null);
 		}
 		
 		et = System.currentTimeMillis();
 		System.out.println(et-st);
-
+		
 		st = System.currentTimeMillis();
 		
 		for (i=0; i<size; i++)
 		{
-			for (j=0; j<len; j++)
-				s = list.get(j);
+			b = s == null;
 		}
 		
 		et = System.currentTimeMillis();
 		System.out.println(et-st);
+		
+		System.out.println(b);
 	}
 	
 	void compareAddAll()

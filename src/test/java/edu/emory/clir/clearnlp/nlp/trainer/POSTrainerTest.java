@@ -53,8 +53,7 @@ public class POSTrainerTest
 		AbstractNLPTrainer trainer = new POSTrainer(configuration, features);
 		AbstractStatisticalComponent<?,?,?,?> component;
 		
-		component = trainer.collect(trainFiles);
-		component = trainer.train(trainFiles, developFiles, component.getLexicons());
+		component = trainer.train(trainFiles, developFiles);
 		
 		byte[] model = component.toByteArray();
 		ObjectInputStream in = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new ByteArrayInputStream(model))));

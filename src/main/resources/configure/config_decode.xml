@@ -1,6 +1,6 @@
 <configuration>
-    <model>general-en</model>
-    <language>en</language>
+    <model>edu/emory/clir/clearnlp/model/english/general</model>
+    <language>english</language>
 
     <reader type="raw">
     </reader>

@@ -29,21 +29,21 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  */
 public class POSState extends AbstractLRState
 {
-	private Set<String> s_lowerSimplifiedWordForms;
-	private Map<String,String> m_ambiguityClasses;
+	private Map<String,String> m_ambiguity_classes;
+	private Set<String>        s_proper_noun_tags;
 	
 //	====================================== INITIALIZATION ======================================
 	
-	public POSState(DEPTree tree, CFlag flag, Set<String> lowerSimplifiedWordForms, Map<String,String> ambiguityClasses)
+	public POSState(DEPTree tree, CFlag flag, Map<String,String> ambiguityClasses, Set<String> properNounTags)
 	{
 		super(tree, flag);
-		init(lowerSimplifiedWordForms, ambiguityClasses);
+		init(ambiguityClasses, properNounTags);
 	}
 	
-	private void init(Set<String> lowerSimplifiedWordForms, Map<String,String> ambiguityClasses)
+	private void init(Map<String,String> ambiguityClasses, Set<String> properNounTags)
 	{
-		s_lowerSimplifiedWordForms = lowerSimplifiedWordForms;
-		m_ambiguityClasses = ambiguityClasses;
+		m_ambiguity_classes = ambiguityClasses;
+		s_proper_noun_tags  = properNounTags;
 	}
 	
 //	====================================== ORACLE/LABEL ======================================
@@ -65,11 +65,11 @@ public class POSState extends AbstractLRState
 	
 	public String getAmbiguityClass(DEPNode node)
 	{
-		return m_ambiguityClasses.get(node.getSimplifiedWordForm());
+		return m_ambiguity_classes.get(node.getSimplifiedWordForm());
 	}
 	
 	public boolean extractWordFormFeature(DEPNode node)
 	{
-		return s_lowerSimplifiedWordForms.contains(node.getLowerSimplifiedWordForm());
+		return g_oracle == null || !s_proper_noun_tags.contains(g_oracle[node.getID()]);
 	}
 }

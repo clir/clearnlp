@@ -47,18 +47,11 @@ public abstract class AbstractNLPTrainer
 		t_configuration = createConfiguration(configuration);
 	}
 	
-	public AbstractStatisticalComponent<?,?,?,?> collect(List<String> trainFiles)
+	public AbstractStatisticalComponent<?,?,?,?> train(List<String> trainFiles, List<String> developFiles)
 	{
-		AbstractStatisticalComponent<?,?,?,?> component = createComponentForCollect();
-		BinUtils.LOG.info("Collecting lexicons:\n");
-		process(component, trainFiles, true);
-		return component;
-	}
-	
-	public AbstractStatisticalComponent<?,?,?,?> train(List<String> trainFiles, List<String> developFiles, Object[] lexicons)
-	{
+		Object[] lexicons = getLexicons(trainFiles);
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> prev = train(trainFiles, developFiles, lexicons, null, 0);
-		if (t_configuration.getNumberOfBootstraps() <= 0) return prev.o;
+		if (!t_configuration.isBootstrap()) return prev.o;
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> curr;
 		byte[] backup;
 		int boot = 1;
@@ -82,6 +75,21 @@ public abstract class AbstractNLPTrainer
 		}
 		catch (Exception e) {e.printStackTrace();}
 		throw new IllegalStateException();
+	}
+	
+	private Object[] getLexicons(List<String> trainFiles)
+	{
+		AbstractStatisticalComponent<?,?,?,?> component = createComponentForCollect();
+		Object[] lexicons = null;
+		
+		if (component != null)
+		{
+			BinUtils.LOG.info("Collecting lexicons:\n");
+			process(component, trainFiles, true);
+			lexicons = component.getLexicons();
+		}
+		
+		return lexicons;
 	}
 	
 	private ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> train(List<String> trainFiles, List<String> developFiles, Object[] lexicons, StringModel[] models, int boot)

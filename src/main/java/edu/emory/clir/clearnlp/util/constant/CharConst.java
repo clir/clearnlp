@@ -43,6 +43,7 @@ public interface CharConst
 	char AT				= '@';
 	char TILDA			= '~';
 	char PRIME			= '`';
+	char EMPTY			= 0;
 	
 	char LRB			= '(';
 	char RRB			= ')';

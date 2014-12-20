@@ -25,6 +25,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -42,6 +43,7 @@ import edu.emory.clir.clearnlp.classification.vector.BinaryWeightVector;
 import edu.emory.clir.clearnlp.classification.vector.MultiWeightVector;
 import edu.emory.clir.clearnlp.collection.pair.DoubleIntPair;
 import edu.emory.clir.clearnlp.collection.pair.Pair;
+import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
@@ -147,17 +149,20 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	
 	abstract public IntInstance toIntInstance(I instance);
 	
-	public List<IntInstance> toIntInstanceList(List<I> sInstances)
+	public List<IntInstance> toIntInstanceList(Deque<I> sInstances)
 	{
+		BinUtils.LOG.info("Vectorizing: "+sInstances.size()+"\n");
 		ArrayList<IntInstance> iInstances = Lists.newArrayList();
 		IntInstance iInstance;
 		
-		while (!sInstances.isEmpty())
+		for (int i=1; !sInstances.isEmpty(); i++)
 		{
-			iInstance = toIntInstance(sInstances.remove(0));
+			iInstance = toIntInstance(sInstances.poll());
 			if (iInstance != null) iInstances.add(iInstance);
+			if (i%100000 == 0) BinUtils.LOG.info(".");
 		}
 		
+		BinUtils.LOG.info("\n\n");
 		iInstances.trimToSize();
 		return iInstances;
 	}

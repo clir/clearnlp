@@ -266,4 +266,24 @@ public class TSVReader extends AbstractReader<DEPTree>
 		
 		return arcs;
 	}
+	
+	public boolean hasPOSTags()
+	{
+		return i_posTag >= 0;
+	}
+	
+	public boolean hasLemmas()
+	{
+		return i_lemma >= 0;
+	}
+	
+	public boolean hasDependencyHeads()
+	{
+		return i_headID >= 0;
+	}
+	
+	public boolean hasSemanticHeads()
+	{
+		return i_sheads >= 0;
+	}
 }

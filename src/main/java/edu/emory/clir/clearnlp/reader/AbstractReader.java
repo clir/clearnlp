@@ -72,6 +72,11 @@ abstract public class AbstractReader<T>
 	{
 		r_type = type;
 	}
+
+	public boolean isReaderType(TReader type)
+	{
+		return r_type == type;
+	}
 	
 	/** @return the next item if exists; otherwise, {@code null}. */
 	abstract public T next();

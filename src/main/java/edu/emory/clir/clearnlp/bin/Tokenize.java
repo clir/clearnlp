@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.kohsuke.args4j.Option;
 
-import edu.emory.clir.clearnlp.nlp.NLPGetter;
+import edu.emory.clir.clearnlp.nlp.NLPUtils;
 import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
@@ -54,7 +54,7 @@ public class Tokenize
 		
 		try
 		{
-			AbstractTokenizer tokenizer = NLPGetter.getTokenizer(TLanguage.getType(s_language));
+			AbstractTokenizer tokenizer = NLPUtils.getTokenizer(TLanguage.getType(s_language));
 			
 			for (String inputFile : FileUtils.getFileList(s_inputPath, s_inputExt, false))
 			{
