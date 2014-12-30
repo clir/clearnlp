@@ -18,7 +18,6 @@ package edu.emory.clir.clearnlp.component.mode.pos;
 import java.io.ObjectInputStream;
 
 import edu.emory.clir.clearnlp.classification.model.StringModel;
-import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
 
 /**
  * @since 3.0.0

@@ -1,4 +1,6 @@
 <configuration>
+    <language>english</language>
+
     <reader type="tsv">
         <column index="2" field="form"/>
         <column index="4" field="pos"/>

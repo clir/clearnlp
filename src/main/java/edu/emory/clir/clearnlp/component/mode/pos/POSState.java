@@ -30,20 +30,20 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
 public class POSState extends AbstractLRState
 {
 	private Map<String,String> m_ambiguity_classes;
-	private Set<String>        s_proper_noun_tags;
+	private Set<String>        s_proper_nouns;
 	
 //	====================================== INITIALIZATION ======================================
 	
-	public POSState(DEPTree tree, CFlag flag, Map<String,String> ambiguityClasses, Set<String> properNounTags)
+	public POSState(DEPTree tree, CFlag flag, Map<String,String> ambiguityClasses, Set<String> properNouns)
 	{
 		super(tree, flag);
-		init(ambiguityClasses, properNounTags);
+		init(ambiguityClasses, properNouns);
 	}
 	
-	private void init(Map<String,String> ambiguityClasses, Set<String> properNounTags)
+	private void init(Map<String,String> ambiguityClasses, Set<String> properNouns)
 	{
 		m_ambiguity_classes = ambiguityClasses;
-		s_proper_noun_tags  = properNounTags;
+		s_proper_nouns      = properNouns;
 	}
 	
 //	====================================== ORACLE/LABEL ======================================
@@ -70,6 +70,6 @@ public class POSState extends AbstractLRState
 	
 	public boolean extractWordFormFeature(DEPNode node)
 	{
-		return g_oracle == null || !s_proper_noun_tags.contains(g_oracle[node.getID()]);
+		return c_flag == CFlag.DECODE || c_flag == CFlag.EVALUATE || !s_proper_nouns.contains(node.getSimplifiedWordForm());
 	}
 }

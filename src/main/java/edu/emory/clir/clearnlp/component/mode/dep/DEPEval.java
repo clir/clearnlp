@@ -18,6 +18,7 @@ package edu.emory.clir.clearnlp.component.mode.dep;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.arc.DEPArc;
 
 /**
@@ -26,13 +27,15 @@ import edu.emory.clir.clearnlp.util.arc.DEPArc;
  */
 public class DEPEval extends AbstractEval<DEPArc>
 {
+	private boolean b_includePunct;
 	private int n_total;
 	private int n_las;
 	private int n_uas;
 	private int n_ls;
 	
-	public DEPEval()
+	public DEPEval(boolean includePunct)
 	{
+		b_includePunct = includePunct;
 		clear();
 	}
 	
@@ -52,12 +55,15 @@ public class DEPEval extends AbstractEval<DEPArc>
 		DEPNode node;
 		DEPArc g;
 		
-		n_total += size - 1;
-		
 		for (i=1; i<size; i++)
 		{
 			node = sTree.get(i);
+			
+			if (!b_includePunct && StringUtils.containsPunctuationOnly(node.getSimplifiedWordForm()))
+				continue;
+			
 			g = gHeads[i];
+			n_total++;
 			
 			if (node.isDependentOf(sTree.get(g.getNode().getID())))
 			{

@@ -47,6 +47,11 @@ public class Splitter implements PatternConst
 		return T_SPACE.tokenize(s);
 	}
 	
+	static public List<String> splitTabsToList(String s)
+	{
+		return T_TAB.tokenizeToList(s);
+	}
+	
 	static public String[] splitTabs(String s)
 	{
 		return T_TAB.tokenize(s);

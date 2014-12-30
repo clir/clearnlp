@@ -1,0 +1,124 @@
+<!--Feature template for dependency parsing in English -->
+<feature_template>
+    <!-- 1-gram features -->
+    <feature f0="i:f2" visible="false"/>
+    <feature f0="j:f2" visible="false"/>
+
+	<feature f0="i:m"/>
+    <feature f0="j:m"/>
+	<feature f0="k:m"/>
+
+    <feature f0="i+1:m"/>
+    <feature f0="j-1:m"/>
+    <feature f0="j-2:m"/>
+    <feature f0="j+1:m"/>
+    <feature f0="j+2:m"/>
+
+    <feature f0="i:p"/>
+    <feature f0="j:p"/>
+    <feature f0="k:p"/>
+
+    <feature f0="i+1:p"/>
+    <feature f0="i+2:p"/>
+    <feature f0="k+1:p"/>
+    <feature f0="j-1:p"/>
+    <feature f0="j+1:p"/>
+
+    <!-- 2-gram features -->
+    <feature f0="i:p" f1="i:m"/>
+    <feature f0="j:p" f1="j:m"/>
+
+    <feature f0="i:p" f1="j:p"/>
+    <feature f0="i:p" f1="j:m"/>
+    <feature f0="i:m" f1="j:p"/>
+    <feature f0="i:m" f1="j:m"/>
+
+    <feature f0="j+1:p" f1="i:p"/>
+    <feature f0="i+1:p" f1="i:p"/>
+    <feature f0="i+1:p" f1="j:p"/>
+
+    <feature f0="j-1:p" f1="i:m"/>
+    <feature f0="j+1:p" f1="i:m"/>
+    <feature f0="j+1:p" f1="j:m"/>
+
+    <feature f0="j+1:m" f1="i:p"/>
+    <feature f0="j+1:m" f1="j:p"/>
+
+    <feature f0="k:m" f1="i:m"/>
+    <feature f0="k:m" f1="j:m"/>
+
+    <!-- 3-gram features -->
+    <feature f0="i+2:p" f1="i+1:p" f2="i:p"/>
+    <feature f0="i+1:p" f1="i:p"   f2="k:p"/>
+    <feature f0="i:p"   f1="k:p"   f2="k+1:p"/>
+    <feature f0="j-1:p" f1="j:p"   f2="j+1:p"/>
+    <feature f0="j:p"   f1="j+1:p" f2="j+2:p"/>
+
+    <feature f0="i+2:p" f1="i:p" f2="j:p"/>
+    <feature f0="i+1:p" f1="i:p" f2="j:p"/>
+    <feature f0="k:p"   f1="i:p" f2="j:p"/>
+    <feature f0="j-2:p" f1="i:p" f2="j:p"/>
+    <feature f0="j-1:p" f1="i:p" f2="j:p"/>
+    <feature f0="j+1:p" f1="i:p" f2="j:p"/>
+    <feature f0="j+2:p" f1="i:p" f2="j:p"/>
+    <feature f0="j+3:p" f1="i:p" f2="j:p"/>
+
+    <!-- 2nd-order features -->
+    <feature f0="i:lv" f1="i:p"/>
+    <feature f0="i:rv" f1="i:p"/>
+    <feature f0="j:lv" f1="j:p"/>
+    <feature f0="i:lv" f1="i:m" visible="false"/>
+    <feature f0="i:rv" f1="i:m" visible="false"/>
+    <feature f0="j:lv" f1="j:m" visible="false"/>
+    
+    <feature f0="l_h:m"/>
+    <feature f0="l_lmd:m"/>
+    <feature f0="l_rmd:m"/>
+    <feature f0="j_lmd:m"/>
+
+    <feature f0="l_h:p"/>
+    <feature f0="l_lmd:p"/>
+    <feature f0="l_rmd:p"/>
+    <feature f0="j_lmd:p"/>
+
+    <feature f0="i:d"/>
+    <feature f0="l_lmd:d"/>
+    <feature f0="l_rmd:d"/>
+    <feature f0="j_lmd:d" visible="false"/>
+
+    <feature f0="i:d" f1="j:m" visible="false"/>
+    <feature f0="l_lmd:p" f1="i:p" f2="j:p" visible="false"/>
+    <feature f0="j_lmd:p" f1="i:p" f2="j:p" visible="false"/>
+    <feature f0="l_lmd:d" f1="i:p" f2="j:p" visible="false"/>
+    <feature f0="l_lns:d" f1="i:p" f2="j:p" visible="false"/>
+    <feature f0="l_h:p"   f1="i:p" f2="j:p" visible="false"/>
+
+    <!-- 3rd-order features -->
+    <feature f0="l_h2:m"   visible="false"/>
+    <feature f0="l_lmd2:m" visible="false"/>
+    <feature f0="l_rmd2:m" visible="false"/>
+    <feature f0="j_lmd2:m" visible="false"/>
+
+    <feature f0="l_h2:p"   visible="false"/>
+    <feature f0="l_lmd2:p" visible="false"/>
+    <feature f0="j_lmd2:p" visible="false"/>
+    <feature f0="l_rmd2:p" visible="false"/>
+
+    <feature f0="l_h:d"    visible="false"/>
+    <feature f0="l_lmd2:d" visible="false"/>
+    <feature f0="l_rmd2:d" visible="false"/>
+    <feature f0="j_lmd2:d" visible="false"/>
+
+    <feature f0="l_lmd2:p" f1="l_lmd:p" f2="i:p" visible="false"/>
+    <feature f0="l_rmd2:p" f1="l_rmd:p" f2="i:p" visible="false"/>
+    <feature f0="j_lmd2:p" f1="j_lmd:p" f2="j:p" visible="false"/>
+    <feature f0="l_h2:p"   f1="l_h:p"   f2="i:p" visible="false"/>
+
+    <feature f0="l_lmd2:p" f1="i:p" f2="j:p" visible="false"/>
+    <feature f0="j_lmd2:p" f1="i:p" f2="j:p" visible="false"/>
+    <feature f0="l_lmd2:d" f1="i:p" f2="j:p" visible="false"/>
+
+    <!-- binary features -->
+    <feature f0="i:b0" note="stack is the left-most   token"/>
+    <feature f0="j:b1" note="input is the right-tmost token"/>
+</feature_template>

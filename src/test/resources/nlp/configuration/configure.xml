@@ -17,15 +17,12 @@
         <trainer algorithm="adagrad" type="svm" labelCutoff="0" featureCutoff="0" alpha="0.01" rho="0.1" average="true"/>
         <ambiguity_class_threshold>0.4</ambiguity_class_threshold>
         <proper_noun_tagset>NNP,NNPS</proper_noun_tagset>
-        <bootstraps>1</bootstraps>
+        <bootstraps>true</bootstraps>
     </pos>
 
     <dep>
-        <algorithm name="adagrad" type="lr" alpha="0.1" rho="0.1" eps="0.1"/>
-        <bootstraps>1</bootstraps>
-        <beams>64</beams>
-        <margin>0.85</margin>
-        <threads>2</threads>
+        <trainer algorithm="adagrad" type="svm" labelCutoff="0" featureCutoff="0" alpha="0.01" rho="0.1" average="true"/>
+        <bootstraps>true</bootstraps>
     </dep>
 
 </configuration>

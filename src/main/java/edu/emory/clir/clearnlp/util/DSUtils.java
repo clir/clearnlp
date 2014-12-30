@@ -287,10 +287,29 @@ public class DSUtils
 	static public int maxIndex(double[] array)
 	{
 		int i, size = array.length, maxIndex = 0;
-		double maxValue = array[0];
+		double maxValue = array[maxIndex];
 		
 		for (i=1; i<size; i++)
 		{
+			if (maxValue < array[i])
+			{
+				maxIndex = i;
+				maxValue = array[maxIndex];
+			}
+		}
+		
+		return maxIndex;
+	}
+	
+	static public int maxIndex(double[] array, int[] indices)
+	{
+		int i, j, size = indices.length, maxIndex = indices[0];
+		double maxValue = array[maxIndex];
+		
+		for (j=1; j<size; j++)
+		{
+			i = indices[j];
+			
 			if (maxValue < array[i])
 			{
 				maxIndex = i;
@@ -319,6 +338,38 @@ public class DSUtils
 		
 		for (i=2; i<size; i++)
 		{
+			if (fst.d < array[i])
+			{
+				snd.set(fst.d, fst.i);
+				fst.set(array[i], i);
+			}
+			else if (snd.d < array[i])
+				snd.set(array[i], i);
+		}
+		
+		return new Pair<DoubleIntPair,DoubleIntPair>(fst, snd);
+	}
+	
+	static public Pair<DoubleIntPair,DoubleIntPair> top2(double[] array, int[] include)
+	{
+		int i, j, size = include.length;
+		DoubleIntPair fst, snd;
+		
+		if (array[include[0]] < array[include[1]])
+		{
+			fst = toDoubleIntPair(array, include[1]);
+			snd = toDoubleIntPair(array, include[0]);
+		}
+		else
+		{
+			fst = toDoubleIntPair(array, include[0]);
+			snd = toDoubleIntPair(array, include[1]);
+		}
+		
+		for (j=2; j<size; j++)
+		{
+			i = include[j];
+			
 			if (fst.d < array[i])
 			{
 				snd.set(fst.d, fst.i);

@@ -193,14 +193,14 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	{
 		double[] scores = getScores(x);
 		int i, size = scores.length, maxIndex = 0;
-		double maxValue = scores[0];
+		double maxValue = scores[maxIndex];
 		
 		for (i=1; i<size; i++)
 		{
 			if (maxValue < scores[i])
 			{
 				maxIndex = i;
-				maxValue = scores[i];
+				maxValue = scores[maxIndex];
 			}
 		}
 		
@@ -249,29 +249,23 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 		return array;
 	}
 	
-	public StringPrediction predictBest(F x, int[] include)
+	public StringPrediction predictBest(F x, int[] indices)
 	{
-		return isBinaryLabel() ? predictBestBinary(x, include) : predictBestMulti(x, include);
+		return isBinaryLabel() ? predictBestBinary(x) : predictBestMulti(x, indices);
 	}
 	
-	private StringPrediction predictBestBinary(F x, int[] include)
+	private StringPrediction predictBestMulti(F x, int[] indices)
 	{
-		double[] scores = getScores(x, include);
-		return (scores[0] > 0) ? getPrediction(0, scores[0]) : getPrediction(1, scores[1]);
-	}
-	
-	private StringPrediction predictBestMulti(F x, int[] include)
-	{
-		double[] scores = getScores(x, include);
-		int i, size = scores.length, maxIndex = 0;
-		double maxValue = scores[0];
+		double[] scores = getScores(x, indices);
+		int i, size = indices.length, maxIndex = indices[0];
+		double maxValue = scores[maxIndex];
 		
 		for (i=1; i<size; i++)
 		{
-			if (maxValue < scores[i])
+			if (maxValue < scores[indices[i]])
 			{
-				maxIndex = i;
-				maxValue = scores[i];
+				maxIndex = indices[i];
+				maxValue = scores[maxIndex];
 			}
 		}
 		
@@ -279,42 +273,37 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	}
 	
 	/** @return the top 2 predictions given the specific feature vector. */
-	public StringPrediction[] predictTop2(F x, int[] include)
+	public StringPrediction[] predictTop2(F x, int[] indices)
 	{
-		return isBinaryLabel() ? predictTop2Binary(x, include) : predictTop2Multi(x, include);
+		return isBinaryLabel() ? predictTop2Binary(x) : predictTop2Multi(x, indices);
 	}
 	
-	private StringPrediction[] predictTop2Binary(F x, int[] include)
+	private StringPrediction[] predictTop2Multi(F x, int[] indices)
 	{
-		double[] scores = getScores(x, include);
-		StringPrediction fst = getPrediction(0, scores[0]);
-		StringPrediction snd = getPrediction(1, scores[1]);
-		return (scores[0] > 0) ? new StringPrediction[]{fst,snd} : new StringPrediction[]{snd,fst};
-	}
-	
-	private StringPrediction[] predictTop2Multi(F x, int[] include)
-	{
-		double[] scores = getScores(x, include);
-		Pair<DoubleIntPair,DoubleIntPair> top2 = DSUtils.top2(scores);
+		double[] scores = getScores(x, indices);
+		Pair<DoubleIntPair,DoubleIntPair> top2 = DSUtils.top2(scores, indices);
 		DoubleIntPair p1 = top2.o1;
 		DoubleIntPair p2 = top2.o2;
 		return new StringPrediction[]{getPrediction(p1.i,p1.d), getPrediction(p2.i,p2.d)};
 	}
 	
 	/** @return the list of predictions given the specific feature vector sorted in descending order. */
-	public StringPrediction[] predictAll(F x, int[] include)
+	public StringPrediction[] predictAll(F x, int[] indices)
 	{
-		return isBinaryLabel() ? predictTop2Binary(x, include) : predictAllMulti(x, include);
+		return isBinaryLabel() ? predictTop2Binary(x) : predictAllMulti(x, indices);
 	}
 
-	private StringPrediction[] predictAllMulti(F x, int[] include)
+	private StringPrediction[] predictAllMulti(F x, int[] indices)
 	{
-		double[] scores = getScores(x, include);
-		int i, lsize = getLabelSize();
+		double[] scores = getScores(x, indices);
+		int i, j, lsize = indices.length;
 		StringPrediction[] array = new StringPrediction[lsize];
 		
-		for (i=0; i<lsize; i++)
-			array[i] = getPrediction(i, scores[i]);
+		for (j=0; j<lsize; j++)
+		{
+			i = indices[j];
+			array[j] = getPrediction(i, scores[i]);
+		}
 		
 		DSUtils.sortReverseOrder(array);
 		return array;

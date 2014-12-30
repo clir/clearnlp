@@ -288,4 +288,15 @@ public class CharUtils
 		
 		return true;
 	}
+	
+	public static boolean containsPunctuationOnly(char[] cs)
+	{
+		for (char c : cs)
+		{
+			if (!isPunctuation(c))
+				return false;
+		}
+		
+		return true;
+	}
 }

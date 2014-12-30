@@ -83,4 +83,11 @@ public class DoubleArrayList extends com.carrotsearch.hppc.DoubleArrayList imple
 		for (i=0; i<size; i++) list.add(get(i));
 		return list;
 	}
+	
+	public void swap(int i, int j)
+	{
+		double t = get(i);
+		set(i, get(j));
+		set(j, t);
+	}
 }

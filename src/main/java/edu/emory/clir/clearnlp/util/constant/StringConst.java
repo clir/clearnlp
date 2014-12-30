@@ -42,6 +42,8 @@ public interface StringConst
 	String AMPERSAND	= Character.toString(CharConst.AMPERSAND);
 	String AT			= Character.toString(CharConst.AT);
 	String TILDA		= Character.toString(CharConst.TILDA);
+	String LESS_THAN	= Character.toString(CharConst.LESS_THAN);
+	String GREATER_THAN	= Character.toString(CharConst.GREATER_THAN);
 	
 	String LRB			= Character.toString(CharConst.LRB);
 	String RRB			= Character.toString(CharConst.RRB);

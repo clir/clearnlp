@@ -15,7 +15,6 @@
  */
 package edu.emory.clir.clearnlp.bin;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +26,7 @@ import edu.emory.clir.clearnlp.component.AbstractComponent;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.nlp.NLPMode;
 import edu.emory.clir.clearnlp.nlp.NLPUtils;
+import edu.emory.clir.clearnlp.nlp.configuration.DecodeConfiguration;
 import edu.emory.clir.clearnlp.reader.AbstractReader;
 import edu.emory.clir.clearnlp.reader.LineReader;
 import edu.emory.clir.clearnlp.reader.RawReader;
@@ -34,6 +34,8 @@ import edu.emory.clir.clearnlp.reader.TReader;
 import edu.emory.clir.clearnlp.reader.TSVReader;
 import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
 import edu.emory.clir.clearnlp.util.BinUtils;
+import edu.emory.clir.clearnlp.util.FileUtils;
+import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
@@ -44,25 +46,62 @@ import edu.emory.clir.clearnlp.util.lang.TLanguage;
 public class NLPDecode
 {
 	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<string>")
-	private String s_configurationFile;
+	protected String s_configurationFile;
 	@Option(name="-i", usage="input path (required)", required=true, metaVar="<filepath>")
-	private String s_inputPath;
-	@Option(name="-ie", usage="input file extension (default: *)", required=false, metaVar="<regex>")
-	private String s_inputExt = "*";
-	@Option(name="-oe", usage="output file extension (default: *)", required=false, metaVar="<regex>")
-	private String s_outputExt = "*";
-	@Option(name="-m", usage="model file (optional)", required=false, metaVar="<filename>")
-	private String s_modelFile = null;
-	@Option(name="-mode", usage="pos|dep|srl", required=true, metaVar="<string>")
-	private String s_mode = ".*";
+	protected String s_inputPath;
+	@Option(name="-ie", usage="input file extension (default: *)", required=false, metaVar="<string>")
+	protected String s_inputExt = "*";
+	@Option(name="-oe", usage="output file extension (default: cnlp)", required=false, metaVar="<string>")
+	protected String s_outputExt = "cnlp";
+	@Option(name="-mode", usage="pos|morph|dep|srl", required=true, metaVar="<string>")
+	protected String s_mode;
 	
 	public NLPDecode() {}
 	
 	public NLPDecode(String[] args)
 	{
 		BinUtils.initArgs(args, this);
-//		NLPMode mode = NLPMode.valueOf(s_mode);
-//		List<String> inputFiles = FileUtils.getFileList(s_inputPath, s_inputExt, false);
+		NLPMode mode = NLPMode.valueOf(s_mode);
+		List<String> inputFiles = FileUtils.getFileList(s_inputPath, s_inputExt, false);
+		DecodeConfiguration config = new DecodeConfiguration(IOUtils.createFileInputStream(s_configurationFile));
+		decode(inputFiles, s_outputExt, config, mode);
+	}
+	
+	public void decode(List<String> inputFiles, String ouputExt, DecodeConfiguration config, NLPMode mode)
+	{
+		AbstractReader<?> reader = config.getReader();
+		AbstractTokenizer tokenizer = null;
+		AbstractComponent[] components;
+		PrintStream fout;
+		
+		if (reader.isReaderType(TReader.TSV))
+		{
+			components = getComponents((TSVReader)reader, config.getLanguage(), mode, config);
+		}
+		else
+		{
+			tokenizer  = NLPUtils.getTokenizer(config.getLanguage());
+			components = getComponents(config.getLanguage(), mode, config);
+		}
+		
+		BinUtils.LOG.info("Decoding:\n");
+		
+		for (String inputFile : inputFiles)
+		{
+			BinUtils.LOG.info(inputFile+"\n");
+			reader.open(IOUtils.createFileInputStream(inputFile));
+			fout =  IOUtils.createBufferedPrintStream(inputFile + StringConst.PERIOD + ouputExt);
+			
+			switch (reader.getReaderType())
+			{
+			case TSV : process((TSVReader) reader, fout, mode, components);				break;
+			case RAW : process((RawReader) reader, fout, mode, components, tokenizer);	break;
+			case LINE: process((LineReader)reader, fout, mode, components, tokenizer);	break;
+			}
+			
+			reader.close();
+			fout.close();
+		}
 	}
 	
 	public void process(RawReader reader, PrintStream fout, NLPMode mode, AbstractComponent[] components, AbstractTokenizer tokenizer)
@@ -73,20 +112,20 @@ public class NLPDecode
 		
 		for (i=0; i<size; i++)
 		{
-			tree = new DEPTree(tokens.get(i), true);
-			process(fout, mode, components, tree);
+			tree = new DEPTree(tokens.get(i), 0);
+			process(tree, fout, mode, components);
 		}
 	}
 	
 	public void process(LineReader reader, PrintStream fout, NLPMode mode, AbstractComponent[] components, AbstractTokenizer tokenizer)
 	{
 		DEPTree tree;
-		String line;
+		String  line;
 		
 		while ((line = reader.next()) != null)
 		{
-			tree = new DEPTree(tokenizer.tokenize(line), true);
-			process(fout, mode, components, tree);
+			tree = new DEPTree(tokenizer.tokenize(line), 0);
+			process(tree, fout, mode, components);
 		}
 	}
 	
@@ -95,79 +134,71 @@ public class NLPDecode
 		DEPTree tree;
 		
 		while ((tree = reader.next()) != null)
-			process(fout, mode, components, tree);
+			process(tree, fout, mode, components);
 	}
 	
-	public void process(PrintStream fout, NLPMode mode, AbstractComponent[] components, DEPTree tree)
+	public void process(DEPTree tree, PrintStream fout, NLPMode mode, AbstractComponent[] components)
 	{
 		for (AbstractComponent component : components)
 			component.process(tree);
-		
+
 		fout.println(toString(tree, mode)+StringConst.NEW_LINE);
 	}
 	
-	public AbstractComponent[] getComponents(AbstractReader<?> reader, TLanguage language, NLPMode mode, String modelPath) throws IOException
-	{
-		List<AbstractComponent> list;
-		
-		if (reader.isReaderType(TReader.TSV))
-			list = getComponents((TSVReader)reader, language, mode, modelPath);
-		else
-			list = getComponents(language, mode, modelPath);
-
-		AbstractComponent[] array = new AbstractComponent[list.size()];
-		list.toArray(array);
-		return array;
-	}
-	
-	@SuppressWarnings("incomplete-switch")
-	public List<AbstractComponent> getComponents(TLanguage language, NLPMode mode, String modelPath)
+	private AbstractComponent[] getComponents(TLanguage language, NLPMode mode, DecodeConfiguration config)
 	{
 		List<AbstractComponent> list = new ArrayList<>();
 		
 		switch (mode)
 		{
-		case dep: list.add(NLPUtils.getDEPParser(language, modelPath));
-		case pos: list.add(NLPUtils.getMPAnalyzer(language));
-		          list.add(NLPUtils.getPOSTagger(language, modelPath));
+		case srl  :
+		case dep  : list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep)));
+		case morph: list.add(NLPUtils.getMPAnalyzer(language));
+		case pos  : list.add(NLPUtils.getPOSTagger(language, config.getModelPath(NLPMode.pos)));
 		}
 
-		Collections.reverse(list);
-		return list;
+		return toReverseArray(list);
 	}
 	
-	public List<AbstractComponent> getComponents(TSVReader reader, TLanguage language, NLPMode mode, String modelPath) throws IOException
+	private AbstractComponent[] getComponents(TSVReader reader, TLanguage language, NLPMode mode, DecodeConfiguration config)
 	{
 		List<AbstractComponent> list = new ArrayList<>();
 		
-		if (mode == NLPMode.pos)
+		switch (mode)
 		{
-			list.add(NLPUtils.getPOSTagger(language, modelPath));
-			list.add(NLPUtils.getMPAnalyzer(language));
-		}
-		else if (mode == NLPMode.dep)
-		{
-			if (!reader.hasPOSTags())
-				list.add(NLPUtils.getPOSTagger(language, modelPath));
-			
+		case srl:
+		case dep:
+			if (!reader.hasDependencyHeads())
+				list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep)));
+		case morph:
 			if (!reader.hasLemmas())
 				list.add(NLPUtils.getMPAnalyzer(language));
-			
-			list.add(NLPUtils.getDEPParser(language, modelPath));
+		case pos:
+			if (!reader.hasPOSTags())
+				list.add(NLPUtils.getPOSTagger(language, config.getModelPath(NLPMode.pos)));
 		}
 		
-		return list;
+		return toReverseArray(list);
+	}
+	
+	private AbstractComponent[] toReverseArray(List<AbstractComponent> list)
+	{
+		AbstractComponent[] array = new AbstractComponent[list.size()];
+		Collections.reverse(list);
+		return list.toArray(array);
 	}
 	
 	private String toString(DEPTree tree, NLPMode mode)
 	{
 		switch (mode)
 		{
-		case pos: return tree.toStringMorph();
-		case dep: return tree.toStringDEP();
-		case srl: return tree.toStringSRL();
-		default : throw new IllegalArgumentException("Invalid mode: "+mode.toString());
+		case srl  : return tree.toStringSRL();
+		case dep  : return tree.toStringDEP();
+		case morph: return tree.toStringMorph();
+		case pos  : return tree.toStringPOS();
 		}
+
+		throw new IllegalArgumentException("Invalid mode: "+mode.toString());
 	}
 		
 	static public void main(String[] args)

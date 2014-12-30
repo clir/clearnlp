@@ -52,8 +52,9 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	protected CFlag         c_flag;
 	
 	/** Constructs a statistical component for collect. */
-	public AbstractStatisticalComponent()
+	public AbstractStatisticalComponent(ICollector<StateType> collector)
 	{
+		l_collector = collector;
 		setFlag(CFlag.COLLECT);
 	}
 	
@@ -277,8 +278,13 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	abstract protected void initEval();
 
 //	====================================== FLAG ======================================
-
-	protected void setFlag(CFlag flag)
+	
+	public CFlag getFlag()
+	{
+		return c_flag;
+	}
+	
+	public void setFlag(CFlag flag)
 	{
 		c_flag = flag;
 	}

@@ -1,0 +1,17 @@
+<!--Feature template for dependency parsing in English -->
+<feature_template>
+    <!-- 1-gram features -->
+    <feature f0="i:f"/>1
+    <feature f0="j:f"/>2
+    <feature f0="k:f"/>3
+    
+    <feature f0="i+1:f"/>4
+    <feature f0="k+1:f"/>5
+    <feature f0="j-1:f"/>6
+    <feature f0="j+1:f"/>7
+    
+    <feature f0="i:s2i"/>8
+    
+    <feature f0="i:v"/>9
+    <feature f0="j:v"/>10
+</feature_template>

@@ -44,6 +44,8 @@ public interface CharConst
 	char TILDA			= '~';
 	char PRIME			= '`';
 	char EMPTY			= 0;
+	char LESS_THAN		= '<';
+	char GREATER_THAN	= '>';
 	
 	char LRB			= '(';
 	char RRB			= ')';

@@ -19,6 +19,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -71,6 +72,17 @@ public class IOUtils
 	static public BufferedReader createBufferedReader(InputStream in)
 	{
 		return new BufferedReader(new InputStreamReader(in));
+	}
+	
+	static public BufferedReader createBufferedReader(File file)
+	{
+		try
+		{
+			return new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+		}
+		catch (FileNotFoundException e) {e.printStackTrace();}
+		
+		return null;
 	}
 	
 	static public BufferedReader createBufferedReader(String filename)

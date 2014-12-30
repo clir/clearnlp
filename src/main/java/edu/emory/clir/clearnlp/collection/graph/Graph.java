@@ -13,32 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp.configuration;
+package edu.emory.clir.clearnlp.collection.graph;
 
-import java.io.InputStream;
+import java.util.List;
 
-import org.w3c.dom.Element;
-
-import edu.emory.clir.clearnlp.nlp.NLPMode;
-import edu.emory.clir.clearnlp.util.XmlUtils;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
- * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DecodeConfiguration extends AbstractConfiguration
+public class Graph
 {
-	private final Element e_model;
+	private List<Edge>[] l_outgoingEdges;
 	
-	public DecodeConfiguration(InputStream in)
+	@SuppressWarnings("unchecked")
+	public Graph(int size)
 	{
-		super(in);
-		e_model = getFirstElement(E_MODEL);
+		l_outgoingEdges = (List<Edge>[])DSUtils.createEmptyListArray(size);
+	}
+
+	public void setEdge(int source, int target, double weight)
+	{
+		l_outgoingEdges[source].add(new Edge(source, target, weight));
 	}
 	
-	public String getModelPath(NLPMode mode)
+	public List<Edge> getOutgoingEdges(int source)
 	{
-		Element eMode = XmlUtils.getFirstElementByTagName(e_model, mode.toString());
-		return (eMode != null) ? XmlUtils.getTrimmedTextContent(eMode) : null;
+		return l_outgoingEdges[source];
+	}
+	
+	public int size()
+	{
+		return l_outgoingEdges.length;
 	}
 }

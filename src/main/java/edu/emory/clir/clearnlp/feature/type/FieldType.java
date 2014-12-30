@@ -31,8 +31,7 @@ public enum FieldType
 	p,		// pos tag
 	n,		// named entity tag
 	d,		// dependency label to its head
-	lv,		// left valency
-	rv,		// right valency
+	v,		// valency
 	ft,		// feats
 	a,		// ambiguity class (part-of-speech tagging)
 	s2i,	// distance between stack to input (dependency parsing)

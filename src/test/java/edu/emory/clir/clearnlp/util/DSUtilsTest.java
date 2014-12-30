@@ -31,7 +31,6 @@ import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.collection.pair.DoubleIntPair;
 import edu.emory.clir.clearnlp.collection.pair.Pair;
-import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.0
@@ -101,5 +100,15 @@ public class DSUtilsTest
 		p = ps.o2;
 		assertEquals(p.i, 0);
 		assertEquals(p.d, 3, 0);
+		
+		ps = DSUtils.top2(array, new int[]{1,2,4});
+		
+		p = ps.o1;
+		assertEquals(p.i, 4);
+		assertEquals(p.d, 4, 0);
+		
+		p = ps.o2;
+		assertEquals(p.i, 2);
+		assertEquals(p.d, 2, 0);
 	}
 }

@@ -21,6 +21,7 @@ import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.collection.stack.Stack;
 import edu.emory.clir.clearnlp.component.CFlag;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
+import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
@@ -34,12 +35,11 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  */
 public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTransition
 {
+	private List<DEPArc>[] d_2ndHeads;
 	private Stack<DEPNode> d_stack;
 	private Stack<DEPNode> d_inter;
 	private int i_input;
-
-	private List<DEPArc>[] d_2ndHeads;
-	private StringBuilder s_states;
+//	private StringBuilder s_states;
 	
 //	====================================== Initialization ======================================
 	
@@ -52,13 +52,12 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	@SuppressWarnings("unchecked")
 	private void init()
 	{
+		d_2ndHeads = (List<DEPArc>[])DSUtils.createEmptyListArray(t_size);
 		d_stack = new Stack<>(t_size);
 		d_inter = new Stack<>();
 		i_input = 0;
 		shift();
-		
-		d_2ndHeads = (List<DEPArc>[])DSUtils.createEmptyListArray(t_size);
-		s_states = new StringBuilder();
+//		s_states = new StringBuilder();
 	}
 
 //	====================================== LABEL ======================================
@@ -157,9 +156,20 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		
 		switch (token.getSource())
 		{
-		case i: node = d_stack.peek(token.getOffset());		break;
-		case j: node = getNode(i_input+token.getOffset());	break;
-		case k: node = d_inter.peek(token.getOffset());		break;
+		case i: node = d_stack.peek(token.getOffset());	break;
+		case k: node = d_inter.peek(token.getOffset());	break;
+		case j: node = getNode(i_input+token.getOffset());
+			if (node != null && token.getOffset() < 0)
+			{
+				if (!d_inter.isEmpty())
+				{
+					if (d_inter.get(0) == node)
+						return null;
+				}
+				else if (d_stack.peek() == node)
+					return null;
+			} break;
+		default: throw new IllegalArgumentException("Invalid token: "+token.getSource());
 		}
 		
 		return getNodeRelation(token, node);
@@ -185,9 +195,9 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	@Override
 	public void next(DEPLabel label)
 	{
+//		saveState(label);
 		DEPNode stack = getStack();
 		DEPNode input = getInput();
-		saveState(label);
 		
 		if (label.isArc(T_LEFT))
 		{
@@ -204,30 +214,45 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		else
 		{
 			if (label.isList(T_SHIFT)) shift();
-			else if (label.isList(T_REDUCE)	&& stack.hasHead()) reduce();
+			else if (label.isList(T_REDUCE)) reduce();
 			else pass();
 		}
-		
-		if (d_stack.isEmpty())
-			shift();
 	}
 	
-	private void saveState(DEPLabel label)
-	{
-		s_states.append(label.toString());
-		s_states.append(StringConst.TAB);
-		s_states.append(d_stack.toString());
-		s_states.append(StringConst.TAB);
-		s_states.append(d_inter.toString());
-		s_states.append(StringConst.TAB);
-		s_states.append(i_input);
-		s_states.append(StringConst.NEW_LINE);
-	}
-	
-	public String getStateHistory()
-	{
-		return s_states.toString();
-	}
+//	private void saveState(DEPLabel label)
+//	{
+//		s_states.append(label.toString());
+//		s_states.append(StringConst.TAB);
+//		s_states.append(getState(d_stack));
+//		s_states.append(StringConst.TAB);
+//		s_states.append(getState(d_inter));
+//		s_states.append(StringConst.TAB);
+//		s_states.append(i_input);
+//		s_states.append(StringConst.NEW_LINE);
+//	}
+//	
+//	private String getState(List<DEPNode> nodes)
+//	{
+//		StringBuilder build = new StringBuilder();
+//		build.append("[");
+//		
+//		if (nodes.size() > 0)
+//			build.append(nodes.get(0).getID());
+//		
+//		if (nodes.size() > 1)
+//		{
+//			build.append(",");
+//			build.append(nodes.get(nodes.size()-1).getID());
+//		}
+//		
+//		build.append("]");
+//		return build.toString();
+//	}
+//	
+//	public String stateHistory()
+//	{
+//		return s_states.toString();
+//	}
 	
 	@Override
 	public boolean isTerminate()
@@ -237,7 +262,7 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	
 	private void shift()
 	{
-		if (d_inter.isEmpty())
+		if (!d_inter.isEmpty())
 		{
 			for (int i=d_inter.size()-1; i>=0; i--)
 				d_stack.push(d_inter.get(i));
@@ -268,31 +293,37 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	
 	public int distanceBetweenStackAndInput()
 	{
-		int d = i_input - getStack().getID(); 
+		int sID = getStack().getID();
+		if (sID == DEPLib.ROOT_ID) return -1;
+		
+		int d = i_input - sID; 
 		return (d > 6) ? 6 : d;
 	}
 	
-	public void addSecondHead(StringPrediction[] ps)
+	public void addSecondHead(StringPrediction[] ps, DEPLabel l1)
 	{
-		double d0 = ps[0].getScore();
-		DEPNode stack = getStack();
-		DEPNode input = getInput();
-		int i, size = ps.length;
-		StringPrediction p;
-		DEPLabel label;
+		StringPrediction fst = ps[0];
+		StringPrediction snd = ps[1];
 		
-		for (i=1; i<size; i++)
+		if (fst.getScore() - snd.getScore() < 1)
 		{
-			p = ps[i];
-			if (d0 - p.getScore() >= 1) break;
-			label = new DEPLabel(p.getLabel());
-			
-			if (!stack.hasHead() && label.isArc(T_LEFT))
-				d_2ndHeads[stack.getID()].add(new DEPArc(input, label.getDeprel()));
-			
-			if (!input.hasHead() && label.isArc(T_RIGHT))
-				d_2ndHeads[input.getID()].add(new DEPArc(stack, label.getDeprel()));
+			if (l1.isArc(T_NO))
+			{
+				DEPLabel l2 = new DEPLabel(snd.getLabel());
+				DEPNode stack = getStack();
+				DEPNode input = getInput();
+				
+				if (l2.isArc(T_LEFT))
+				{
+					if (!stack.hasHead())
+						d_2ndHeads[stack.getID()].add(new DEPArc(input, l2.getDeprel()));
+				}
+				else if (l2.isArc(T_RIGHT))
+				{
+					if (!input.hasHead())
+						d_2ndHeads[input.getID()].add(new DEPArc(stack, l2.getDeprel()));
+				}
+			}	
 		}
-		
 	}
 }

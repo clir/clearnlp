@@ -272,6 +272,11 @@ public class StringUtils
 		return false;
 	}
 	
+	public static boolean containsDigitOnly(String s)
+	{
+		return CharUtils.containsDigitOnly(s.toCharArray());
+	}
+	
 	static public boolean containsPunctuation(String s)
 	{
 		char[] cs= s.toCharArray();
@@ -286,9 +291,9 @@ public class StringUtils
 		return false;
 	}
 	
-	public static boolean containsDigitOnly(String s)
+	public static boolean containsPunctuationOnly(String s)
 	{
-		return CharUtils.containsDigitOnly(s.toCharArray());
+		return CharUtils.containsPunctuationOnly(s.toCharArray());
 	}
 	
 //	====================================== Getters ======================================

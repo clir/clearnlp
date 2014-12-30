@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp.configuration;
+package edu.emory.clir.clearnlp.component.mode.pos;
 
 import java.io.InputStream;
 import java.util.Set;
@@ -22,8 +22,8 @@ import org.w3c.dom.Element;
 
 import com.google.common.collect.Sets;
 
-import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.nlp.NLPMode;
+import edu.emory.clir.clearnlp.nlp.configuration.AbstractTrainConfiguration;
 import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 
@@ -86,8 +86,8 @@ public class POSTrainConfiguration extends AbstractTrainConfiguration
 	
 //	============================== Booleans ==============================
 	
-	public boolean isProperNoun(DEPNode node)
+	public boolean isProperNoun(String posTag)
 	{
-		return proper_noun_tagset.contains(node.getPOSTag());
+		return proper_noun_tagset.contains(posTag);
 	}
 }

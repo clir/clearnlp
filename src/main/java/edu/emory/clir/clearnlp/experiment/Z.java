@@ -17,15 +17,18 @@ package edu.emory.clir.clearnlp.experiment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.magicwerk.brownies.collections.primitive.IntGapList;
 
+import com.carrotsearch.hppc.IntStack;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
-import edu.emory.clir.clearnlp.util.constant.CharConst;
+import edu.emory.clir.clearnlp.component.mode.dep.DEPFeatureExtractor;
+import edu.emory.clir.clearnlp.component.mode.dep.DefaultDEPParser;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.util.IOUtils;
 
 
 /**
@@ -36,35 +39,67 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		System.out.println(CharConst.EMPTY);
-		
-		int i, size = 1000000;
+		IntStack stack = new IntStack();
+		int i, len = 7, size = 1000000;
 		long st, et;
 		String s = null;
-		Set<String> set = Sets.newHashSet("NNP","NNPS");
-		boolean b = false;
+		System.out.println(s);
+		
+		for (i=0; i<len; i++)
+			stack.push(i);
 		
 		st = System.currentTimeMillis();
-		
 		for (i=0; i<size; i++)
 		{
-			b = set.contains(null);
+			StringBuilder build = new StringBuilder();
+			int j, l = stack.size();
+			
+			build.append(stack.get(0));
+			
+			for (j=1; j<l; j++)
+			{
+				build.append(",");
+				build.append(stack.get(j));
+			}
+			build.append("|");
+			s = build.toString();
 		}
 		
 		et = System.currentTimeMillis();
 		System.out.println(et-st);
 		
 		st = System.currentTimeMillis();
-		
 		for (i=0; i<size; i++)
-		{
-			b = s == null;
-		}
-		
+			s = stack.toString();
 		et = System.currentTimeMillis();
 		System.out.println(et-st);
+	}
+	
+	public void readDEP(String[] args) throws Exception
+	{
+		String featureFile = args[0];
+		String inputFile   = args[1];
+//		String outputFile  = args[2];
 		
-		System.out.println(b);
+		DEPFeatureExtractor df = new DEPFeatureExtractor(IOUtils.createFileInputStream(featureFile));
+		DefaultDEPParser parser = new DefaultDEPParser(new DEPFeatureExtractor[]{df}, null);
+//		PrintStream fout   = IOUtils.createBufferedPrintStream(outputFile);
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
+		reader.open(IOUtils.createFileInputStream(inputFile));
+//		DEPState state;
+		DEPTree tree;
+		int i;
+		
+		for (i=0; (tree = reader.next()) != null; i++)
+		{
+			parser.process(tree);
+//			fout.println(tree.toStringDEP()+"\n");
+			if ((i+1)%10000 == 0) System.out.print(".");
+		}
+		
+		reader.close();
+//		fout.close();
+		System.out.println();
 	}
 	
 	void compareAddAll()

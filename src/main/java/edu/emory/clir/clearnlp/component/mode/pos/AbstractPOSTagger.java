@@ -26,7 +26,6 @@ import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
@@ -36,18 +35,15 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
 public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSEval, POSFeatureExtractor>
 {
 	static public final int LEXICON_AMBIGUITY_CLASS = 0;
-	static public final int LEXICON_PROPER_NOUN_TAG = 1;
+	static public final int LEXICON_PROPER_NOUNS    = 1;
 	
 	private Map<String,String> m_ambiguity_classes;
-	private Set<String> s_proper_noun_tags;
-	private POSCollector p_collector;
+	private Set<String> s_proper_nouns;
 
 	/** Creates a pos tagger for collect. */
 	public AbstractPOSTagger(POSTrainConfiguration configuration)
 	{
-		super();
-		p_collector = new POSCollector(configuration);
-		s_proper_noun_tags = configuration.getProperNounTagset();
+		super(new POSCollector(configuration));
 	}
 	
 	/** Creates a pos tagger for train. */
@@ -66,6 +62,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	public AbstractPOSTagger(ObjectInputStream in)
 	{
 		super(in);
+		s_proper_nouns = null;
 	}
 	
 	/** Creates a pos tagger for decode. */
@@ -80,12 +77,15 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	public Object[] getLexicons()
 	{
 		if (m_ambiguity_classes == null)
-			m_ambiguity_classes = p_collector.finalizeAmbiguityClasses();
+			m_ambiguity_classes = ((POSCollector)l_collector).finalizeAmbiguityClasses();
+		
+		if (s_proper_nouns == null)
+			s_proper_nouns = ((POSCollector)l_collector).finalizeProperNouns();
 		
 		Object[] lexicons = new Object[2];
 		
 		lexicons[LEXICON_AMBIGUITY_CLASS] = m_ambiguity_classes;
-		lexicons[LEXICON_PROPER_NOUN_TAG] = s_proper_noun_tags;
+		lexicons[LEXICON_PROPER_NOUNS]    = s_proper_nouns;
 		
 		return lexicons;
 	}
@@ -95,7 +95,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	public void setLexicons(Object[] lexicons)
 	{
 		m_ambiguity_classes = (Map<String,String>)lexicons[LEXICON_AMBIGUITY_CLASS];
-		s_proper_noun_tags  = (Set<String>)lexicons[LEXICON_PROPER_NOUN_TAG];
+		s_proper_nouns      = (Set<String>)lexicons[LEXICON_PROPER_NOUNS];
 	}
 	
 //	====================================== EVAL ======================================
@@ -104,17 +104,17 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	{
 		c_eval = new POSEval();
 	}
-
+	
 //	====================================== PROCESS ======================================
 	
 	@Override
-	public void process(DEPTree tree)
+	public POSState process(DEPTree tree)
 	{
-		POSState state = new POSState(tree, c_flag, m_ambiguity_classes, s_proper_noun_tags);
+		POSState state = new POSState(tree, c_flag, m_ambiguity_classes, s_proper_nouns);
 		
 		if (isCollect())
 		{
-			p_collector.collect(state);
+			l_collector.collect(state);
 		}
 		else
 		{
@@ -126,6 +126,8 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 				else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
 			}
 		}
+		
+		return state;
 	}
 
 	@Override

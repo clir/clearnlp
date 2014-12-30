@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.pos;
+package edu.emory.clir.clearnlp.component.mode.dep;
 
 import java.io.ObjectInputStream;
 
@@ -23,34 +23,28 @@ import edu.emory.clir.clearnlp.classification.model.StringModel;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class EnglishPOSTagger extends AbstractPOSTagger
+public class EnglishDEPParser extends AbstractDEPParser
 {
-	/** Creates a pos tagger for collect. */
-	public EnglishPOSTagger(POSTrainConfiguration configuration)
-	{
-		super(configuration);
-	}
-	
-	/** Creates a pos tagger for train. */
-	public EnglishPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons)
+	/** Creates a dependency parser for train. */
+	public EnglishDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons)
 	{
 		super(extractors, lexicons);
 	}
 	
-	/** Creates a pos tagger for bootstrap or evaluate. */
-	public EnglishPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	/** Creates a dependency parser for bootstrap or evaluate. */
+	public EnglishDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
 	{
 		super(extractors, lexicons, models, bootstrap);
 	}
-	
+
 	/** Creates a pos tagger for decode. */
-	public EnglishPOSTagger(ObjectInputStream in)
+	public EnglishDEPParser(ObjectInputStream in)
 	{
 		super(in);
 	}
 	
 	/** Creates a pos tagger for decode. */
-	public EnglishPOSTagger(byte[] models)
+	public EnglishDEPParser(byte[] models)
 	{
 		super(models);
 	}

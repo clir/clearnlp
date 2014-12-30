@@ -13,32 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp.configuration;
+package edu.emory.clir.clearnlp.component.mode.dep;
 
 import java.io.InputStream;
 
-import org.w3c.dom.Element;
-
 import edu.emory.clir.clearnlp.nlp.NLPMode;
-import edu.emory.clir.clearnlp.util.XmlUtils;
+import edu.emory.clir.clearnlp.nlp.configuration.AbstractTrainConfiguration;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DecodeConfiguration extends AbstractConfiguration
+public class DEPTrainConfiguration extends AbstractTrainConfiguration
 {
-	private final Element e_model;
+//	============================== Initialization ==============================
 	
-	public DecodeConfiguration(InputStream in)
+	public DEPTrainConfiguration()
 	{
-		super(in);
-		e_model = getFirstElement(E_MODEL);
+		super(NLPMode.dep);
 	}
 	
-	public String getModelPath(NLPMode mode)
+	public DEPTrainConfiguration(InputStream in)
 	{
-		Element eMode = XmlUtils.getFirstElementByTagName(e_model, mode.toString());
-		return (eMode != null) ? XmlUtils.getTrimmedTextContent(eMode) : null;
+		super(in, NLPMode.dep);
+		init();
 	}
+	
+	private void init()
+	{
+		
+	}
+	
+//	============================== Getters ==============================
+	
+	
+//	============================== Setters ==============================
+	
+	
+//	============================== Booleans ==============================
 }

@@ -22,21 +22,24 @@ import java.io.ObjectInputStream;
 import java.util.zip.GZIPInputStream;
 
 import edu.emory.clir.clearnlp.component.mode.dep.AbstractDEPParser;
+import edu.emory.clir.clearnlp.component.mode.dep.DEPTrainer;
+import edu.emory.clir.clearnlp.component.mode.dep.DefaultDEPParser;
+import edu.emory.clir.clearnlp.component.mode.dep.EnglishDEPParser;
 import edu.emory.clir.clearnlp.component.mode.morph.AbstractMPAnalyzer;
 import edu.emory.clir.clearnlp.component.mode.morph.DefaultMPAnalyzer;
 import edu.emory.clir.clearnlp.component.mode.morph.EnglishMPAnalyzer;
 import edu.emory.clir.clearnlp.component.mode.pos.AbstractPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.EnglishPOSTagger;
+import edu.emory.clir.clearnlp.component.mode.pos.POSTrainer;
 import edu.emory.clir.clearnlp.conversion.AbstractC2DConverter;
 import edu.emory.clir.clearnlp.conversion.EnglishC2DConverter;
 import edu.emory.clir.clearnlp.conversion.headrule.HeadRuleMap;
 import edu.emory.clir.clearnlp.nlp.trainer.AbstractNLPTrainer;
-import edu.emory.clir.clearnlp.nlp.trainer.POSTrainer;
 import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
 import edu.emory.clir.clearnlp.tokenization.EnglishTokenizer;
+import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
-import edu.emory.clir.clearnlp.util.constant.StringConst;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
 /**
@@ -45,8 +48,6 @@ import edu.emory.clir.clearnlp.util.lang.TLanguage;
  */
 public class NLPUtils
 {
-	static public String MODEL_ROOT = "edu/emory/clir/clearnlp/model";
-	
 	private NLPUtils() {}
 	
 	/** @param in the inputstream for a headrule file. */
@@ -72,6 +73,8 @@ public class NLPUtils
 	
 	static public AbstractPOSTagger getPOSTagger(TLanguage language, ObjectInputStream in)
 	{
+		BinUtils.LOG.info("Loading part-of-speech tagging models.\n");
+		
 		switch (language)
 		{
 		case ENGLISH: return new EnglishPOSTagger(in);
@@ -81,25 +84,30 @@ public class NLPUtils
 	
 	static public AbstractDEPParser getDEPParser(TLanguage language, ObjectInputStream in)
 	{
-		return null;
+		BinUtils.LOG.info("Loading dependency parsing models.\n");
+		
+		switch (language)
+		{
+		case ENGLISH: return new EnglishDEPParser(in);
+		default     : return new DefaultDEPParser(in);
+		}
 	}
 	
 	static public AbstractPOSTagger getPOSTagger(TLanguage language, String modelPath)
 	{
-		return getPOSTagger(language, getObjectInputStream(modelPath, NLPMode.pos));
+		return getPOSTagger(language, getObjectInputStream(modelPath));
 	}
 	
 	static public AbstractDEPParser getDEPParser(TLanguage language, String modelPath)
 	{
-		return getDEPParser(language, getObjectInputStream(modelPath, NLPMode.dep));
+		return getDEPParser(language, getObjectInputStream(modelPath));
 	}
 	
-	static private ObjectInputStream getObjectInputStream(String modelPath, NLPMode mode)
+	static private ObjectInputStream getObjectInputStream(String modelPath)
 	{
 		try
 		{
-			String path = MODEL_ROOT + StringConst.FW_SLASH + modelPath + StringConst.FW_SLASH + mode;
-			return new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(IOUtils.getInputStreamsFromClasspath(path))));
+			return new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(IOUtils.getInputStreamsFromClasspath(modelPath))));
 		}
 		catch (IOException e) {e.printStackTrace();}
 
@@ -111,7 +119,7 @@ public class NLPUtils
 		switch (mode)
 		{
 		case pos: return new POSTrainer(configuration, features);
-		case dep: return null;
+		case dep: return new DEPTrainer(configuration, features);
 		case srl: return null;
 		default : throw new IllegalArgumentException("Invalid mode: "+mode.toString()); 
 		}

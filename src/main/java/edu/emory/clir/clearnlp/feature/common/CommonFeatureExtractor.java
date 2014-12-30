@@ -61,8 +61,7 @@ public class CommonFeatureExtractor<StateType extends AbstractState<?,?>> extend
 		case p : return node.getPOSTag();
 		case n : return node.getNamedEntityTag();
 		case d : return node.getLabel();
-		case lv: return Integer.toString(node.getLeftValency());
-		case rv: return Integer.toString(node.getRightValency());
+		case v : return node.getValency();
 		case b : return getBooleanFeatureValue(token, state, node);
 		case ft: return node.getFeat((String)token.getValue());
 		default: return null;

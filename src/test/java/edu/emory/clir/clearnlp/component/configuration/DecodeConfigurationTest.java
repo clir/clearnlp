@@ -40,7 +40,6 @@ public class DecodeConfigurationTest
 		DecodeConfiguration config = new DecodeConfiguration(IOUtils.createFileInputStream(filename));
 		
 		assertEquals(TLanguage.ENGLISH, config.getLanguage());
-		assertEquals("com/clearnlp/model/english/general", config.getModelPath().toString());
 		
 		filename = "src/test/resources/dependency/dependency.cnlp";
 		TSVReader reader = (TSVReader)config.getReader();

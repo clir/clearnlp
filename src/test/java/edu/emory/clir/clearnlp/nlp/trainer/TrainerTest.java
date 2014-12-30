@@ -22,13 +22,13 @@ import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
+import edu.emory.clir.clearnlp.component.mode.dep.DEPTrainer;
+import edu.emory.clir.clearnlp.component.mode.dep.DefaultDEPParser;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.reader.TSVReader;
 import edu.emory.clir.clearnlp.util.IOUtils;
@@ -36,28 +36,28 @@ import edu.emory.clir.clearnlp.util.IOUtils;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTrainerTest
+public class TrainerTest
 {
 	@Test
-	@Ignore
+//	@Ignore
 	public void test() throws Exception
 	{
 		String configurationFile = "src/test/resources/nlp/configuration/configure.xml";
-		String featureFile = "src/test/resources/nlp/trainer/feature_pos.xml";
+		String featureFile = "src/test/resources/nlp/trainer/feature_dep.xml";
 		String trainFile = "src/test/resources/nlp/trainer/pos.cnlp";
 		List<String> trainFiles   = Lists.newArrayList(trainFile);
 		List<String> developFiles = Lists.newArrayList(trainFile);
 		
 		InputStream configuration = IOUtils.createFileInputStream(configurationFile);
 		InputStream[] features = {IOUtils.createFileInputStream(featureFile)};
-		AbstractNLPTrainer trainer = new POSTrainer(configuration, features);
+		AbstractNLPTrainer trainer = new DEPTrainer(configuration, features);
 		AbstractStatisticalComponent<?,?,?,?> component;
 		
 		component = trainer.train(trainFiles, developFiles);
 		
 		byte[] model = component.toByteArray();
 		ObjectInputStream in = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new ByteArrayInputStream(model))));
-		component = new DefaultPOSTagger(in);
+		component = new DefaultDEPParser(in);
 		in.close();
 		
 		TSVReader reader = new TSVReader(1);

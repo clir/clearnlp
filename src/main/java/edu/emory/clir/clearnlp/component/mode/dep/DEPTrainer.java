@@ -13,69 +13,67 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp.trainer;
+package edu.emory.clir.clearnlp.component.mode.dep;
 
 import java.io.InputStream;
 
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
-import edu.emory.clir.clearnlp.component.mode.pos.POSFeatureExtractor;
 import edu.emory.clir.clearnlp.nlp.configuration.AbstractTrainConfiguration;
-import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
+import edu.emory.clir.clearnlp.nlp.trainer.AbstractNLPTrainer;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTrainer extends AbstractNLPTrainer
+public class DEPTrainer extends AbstractNLPTrainer
 {
-	protected POSFeatureExtractor[] f_extractors;
+	protected DEPFeatureExtractor[] f_extractors;
 	
-	public POSTrainer(InputStream configuration)
+	public DEPTrainer(InputStream configuration)
 	{
 		super(configuration);
 	}
 	
-	public POSTrainer(InputStream configuration, InputStream[] features)
+	public DEPTrainer(InputStream configuration, InputStream[] features)
 	{
 		super(configuration);
-		f_extractors = new POSFeatureExtractor[]{new POSFeatureExtractor(features[0])};
+		f_extractors = new DEPFeatureExtractor[]{new DEPFeatureExtractor(features[0])};
 	}
 	
 	@Override
 	protected AbstractTrainConfiguration createConfiguration(InputStream configuration)
 	{
-		return new POSTrainConfiguration(configuration);
+		return new DEPTrainConfiguration(configuration);
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForCollect()
 	{
-		return new DefaultPOSTagger((POSTrainConfiguration)t_configuration);
+		return null;
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object[] lexicons)
 	{
-		return new DefaultPOSTagger(f_extractors, lexicons);
+		return new DefaultDEPParser(f_extractors, lexicons);
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object[] lexicons, StringModel[] models)
 	{
-		return new DefaultPOSTagger(f_extractors, lexicons, models, true);
+		return new DefaultDEPParser(f_extractors, lexicons, models, true);
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object[] lexicons, StringModel[] models)
 	{
-		return new DefaultPOSTagger(f_extractors, lexicons, models, false);
+		return new DefaultDEPParser(f_extractors, lexicons, models, false);
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models)
 	{
-		return new DefaultPOSTagger(models);
+		return new DefaultDEPParser(models);
 	}
 }

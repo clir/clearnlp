@@ -16,15 +16,17 @@
 package edu.emory.clir.clearnlp.component.mode.pos;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.emory.clir.clearnlp.collection.map.IncMap2;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.component.ICollector;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
-import edu.emory.clir.clearnlp.nlp.configuration.POSTrainConfiguration;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -73,6 +75,22 @@ public class POSCollector implements ICollector<POSState>, Serializable
 		}
 		
 		return map;
+	}
+	
+	public Set<String> finalizeProperNouns()
+	{
+		Set<String> set = new HashSet<>();
+		List<ObjectDoublePair<String>> ps;
+		
+		for (String key : m_ambiguity_classes.getKeySet1())
+		{
+			ps = m_ambiguity_classes.toList(key, 0.9);
+			
+			if (!ps.isEmpty() && p_config.isProperNoun(Collections.max(ps).o))
+				set.add(key);
+		}
+		
+		return set;
 	}
 	
 	private String join(List<ObjectDoublePair<String>> ps, String delim)

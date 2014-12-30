@@ -39,7 +39,12 @@ public class CharTokenizer
 		c_delim = delim;
 	}
 	
-	public String[] tokenize(String s, boolean includeEmpty)
+	public List<String> tokenizeToList(String s)
+	{
+		return tokenizeToList(s, false);
+	}
+	
+	public List<String> tokenizeToList(String s, boolean includeEmpty)
 	{
 		List<String> list = Lists.newArrayList();
 		int i, bIndex = 0, len = s.length();
@@ -56,11 +61,20 @@ public class CharTokenizer
 		}
 		
 		if (list.isEmpty())
-			return new String[]{s};
+		{
+			list.add(s);
+			return list;
+		}
 		
 		if (bIndex < len)
 			list.add(s.substring(bIndex));
 		
+		return list;
+	}
+	
+	public String[] tokenize(String s, boolean includeEmpty)
+	{
+		List<String> list = tokenizeToList(s, includeEmpty);
 		return list.toArray(new String[list.size()]);
 	}
 	

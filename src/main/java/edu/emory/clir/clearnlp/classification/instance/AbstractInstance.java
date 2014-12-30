@@ -57,7 +57,7 @@ abstract public class AbstractInstance<F extends AbstractFeatureVector>
 	{
 		f_vector = vector;
 	}
-	
+
 	public boolean isLabel(String label)
 	{
 		return s_label.equals(label);

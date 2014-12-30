@@ -25,6 +25,7 @@ import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
+import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 
@@ -34,13 +35,15 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  */
 public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DEPState, DEPEval, DEPFeatureExtractor> implements DEPTransition
 {
-	private int[] not_leftArc;
-	private int[] not_rightArc;
+	protected int[] is_desc;
+	protected int[] is_root;
+	protected int[] no_head;
 	
 	/** Creates a dependency parser for train. */
 	public AbstractDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons)
 	{
 		super(extractors, lexicons, false, 1);
+		init();
 	}
 	
 	/** Creates a dependency parser for bootstrap or evaluate. */
@@ -68,23 +71,29 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	{
 		String[] labels = s_models[0].getLabels();
 		int i, size = labels.length;
-		String label;
+		DEPLabel label;
 		
-		IntArrayList nl = new IntArrayList();
-		IntArrayList nr = new IntArrayList();
+		IntArrayList isDesc = new IntArrayList();
+		IntArrayList isRoot = new IntArrayList();
+		IntArrayList noHead = new IntArrayList();
 		
 		for (i=0; i<size; i++)
 		{
-			label = labels[i];
+			label = new DEPLabel(labels[i]);
 			
-			if (!label.startsWith(T_LEFT))
-				nl.add(i);
-			if (!label.startsWith(T_RIGHT))
-				nr.add(i);
+			if (label.isArc(T_NO))
+				isDesc.add(i);
+			
+			if (label.isList(T_SHIFT))
+				isRoot.add(i);
+			
+			if (!(label.isArc(T_NO) && label.isList(T_REDUCE)))
+				noHead.add(i);
 		}
 		
-		not_leftArc  = nl.toArray(); Arrays.sort(not_leftArc);
-		not_rightArc = nr.toArray(); Arrays.sort(not_rightArc);
+		is_desc = isDesc.toArray(); Arrays.sort(is_desc);
+		is_root = isRoot.toArray(); Arrays.sort(is_root);
+		no_head = noHead.toArray(); Arrays.sort(no_head);
 	}
 	
 //	====================================== LEXICONS ======================================
@@ -99,13 +108,13 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 
 	protected void initEval()
 	{
-		c_eval = new DEPEval();
+		c_eval = new DEPEval(false);
 	}
 
 //	====================================== PROCESS ======================================
 	
 	@Override
-	public void process(DEPTree tree)
+	public DEPState process(DEPTree tree)
 	{
 		DEPState state = new DEPState(tree, c_flag);
 		List<StringInstance> instances = process(state);
@@ -114,8 +123,9 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 		{
 			if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
 			else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
-			state.resetOracle();
 		}
+		
+		return state;
 	}
 
 	@Override
@@ -127,28 +137,31 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	@Override
 	protected DEPLabel getAutoLabel(DEPState state, StringFeatureVector vector)
 	{
-		StringPrediction[] p = getPredictions(state, vector);
-		DEPLabel label = new DEPLabel(p[0].getLabel());
-		
-		if (label.isArc(T_NO))
-		{
-		
-		}
-		
+		StringPrediction[] ps = getPredictions(state, vector);
+		DEPLabel label = new DEPLabel(ps[0].getLabel());
+		state.addSecondHead(ps, label);
 		return label;
 	}
 	
 	protected StringPrediction[] getPredictions(DEPState state, StringFeatureVector vector)
 	{
+		int[] indices = getLabelIndices(state);		
+		return (indices != null) ? s_models[0].predictTop2(vector, indices) : s_models[0].predictTop2(vector);
+	}
+	
+	protected int[] getLabelIndices(DEPState state)
+	{
 		DEPNode stack = state.getStack();
 		DEPNode input = state.getInput();
 		
-		if (stack.getID() == 0 || input.isDescendantOf(stack))
-			return s_models[0].predictAll(vector, not_leftArc);
-		else if (stack.isDescendantOf(input))
-			return s_models[0].predictAll(vector, not_rightArc);
+		if (stack.getID() == DEPLib.ROOT_ID)
+			return is_root;
+		else if (stack.isDependentOf(input) || input.isDependentOf(stack))
+			return is_desc;
+		else if (!stack.hasHead())
+			return no_head;
 		else
-			return s_models[0].predictAll(vector);
+			return null;
 	}
 	
 //	====================================== ONLINE TRAIN ======================================

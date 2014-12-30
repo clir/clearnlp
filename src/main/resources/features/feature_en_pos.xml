@@ -19,7 +19,7 @@
 
 	<feature f0="i:f4"/>
 	<feature f0="i-1:f4"/>
-	<feature f0="i+1:f4" visible="false"/>
+	<feature f0="i+1:f4"/>
 
 	<!-- 2-gram features -->
 	<feature f0="i-2:f3" f1="i-1:f3"/>

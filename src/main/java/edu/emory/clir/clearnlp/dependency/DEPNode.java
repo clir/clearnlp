@@ -34,6 +34,7 @@ import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.arc.AbstractArc;
 import edu.emory.clir.clearnlp.util.arc.DEPArc;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
+import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 
 /**
@@ -70,6 +71,8 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	private List<DEPArc> x_heads;
 	/** The list of semantic heads of this node (default: empty). */
 	private List<SRLArc> s_heads;
+	
+//	private boolean b_punctuation;
 	
 //	====================================== Constructors ======================================
 	
@@ -198,6 +201,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	{
 		s_wordForm = form;
 		s_simplifiedWordForm = StringUtils.toSimplifiedForm(form);
+//		b_punctuation = StringUtils.containsPunctuationOnly(s_simplifiedWordForm);
 	}
 	
 	public void setLemma(String lemma)
@@ -620,6 +624,30 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	public int getDependentSize()
 	{
 		return l_dependents.size();
+	}
+	
+	/** @return "0" - no dependents, "<" - left dependents, ">" - right dependents, "<>" - left and right dependents. */
+	public String getValency()
+	{
+		StringBuilder build = new StringBuilder();
+		
+		if (getLeftMostDependent() != null)
+		{
+			build.append(StringConst.LESS_THAN);
+			
+			if (getLeftMostDependent(1) != null)
+				build.append(StringConst.LESS_THAN);
+		}
+		
+		if (getRightMostDependent() != null)
+		{
+			build.append(StringConst.GREATER_THAN);
+			
+			if (getRightMostDependent(1) != null)
+				build.append(StringConst.GREATER_THAN);
+		}
+		
+		return build.toString();
 	}
 	
 	public int getLeftValency()

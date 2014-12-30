@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp.configuration;
+package edu.emory.clir.clearnlp.collection.triple;
 
-import java.io.InputStream;
-
-import org.w3c.dom.Element;
-
-import edu.emory.clir.clearnlp.nlp.NLPMode;
-import edu.emory.clir.clearnlp.util.XmlUtils;
+import java.io.Serializable;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DecodeConfiguration extends AbstractConfiguration
+public class DoubleIntIntTriple implements Serializable
 {
-	private final Element e_model;
+	private static final long serialVersionUID = -5353827334306132865L;
 	
-	public DecodeConfiguration(InputStream in)
+	public double d;
+	public int i1;
+	public int i2;
+	
+	public DoubleIntIntTriple(double d, int i1, int i2)
 	{
-		super(in);
-		e_model = getFirstElement(E_MODEL);
+		set(d, i1, i2);
 	}
 	
-	public String getModelPath(NLPMode mode)
+	public void set(double d, int i1, int i2)
 	{
-		Element eMode = XmlUtils.getFirstElementByTagName(e_model, mode.toString());
-		return (eMode != null) ? XmlUtils.getTrimmedTextContent(eMode) : null;
+		this.d  = d;
+		this.i1 = i1;
+		this.i2 = i2;
 	}
 }

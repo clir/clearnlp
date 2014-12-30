@@ -35,8 +35,8 @@ import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
 import edu.emory.clir.clearnlp.dependency.DEPFeat;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.nlp.NLPUtils;
 import edu.emory.clir.clearnlp.nlp.NLPMode;
+import edu.emory.clir.clearnlp.nlp.NLPUtils;
 import edu.emory.clir.clearnlp.nlp.trainer.AbstractNLPTrainer;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
@@ -61,25 +61,29 @@ public class NLPTrain
 	private String s_developPath;
 	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<regex>")
 	private String s_developExt = "*";
-	@Option(name="-m", usage="model file (optional)", required=false, metaVar="<filename>")
-	private String s_modelFile = null;
+	@Option(name="-m", usage="model path (optional)", required=false, metaVar="<filename>")
+	private String s_modelPath = null;
 	@Option(name="-mode", usage="pos|dep|srl", required=true, metaVar="<string>")
 	private String s_mode = ".*";
+	@Option(name="-stop", usage="stopping criteria (optional; development only)", required=false, metaVar="<double>")
+	static public double d_stop = 0;
 	
 	public NLPTrain() {}
 	
 	public NLPTrain(String[] args)
 	{
 		BinUtils.initArgs(args, this);
-		NLPMode mode = NLPMode.valueOf(s_mode);
+		
 		List<String> trainFiles   = FileUtils.getFileList(s_trainPath  , s_trainExt  , false);
 		List<String> developFiles = FileUtils.getFileList(s_developPath, s_developExt, false);
+		String[]     featureFiles = Splitter.splitColons(s_featureTemplateFile);
+		NLPMode      mode         = NLPMode.valueOf(s_mode);
 	
-		AbstractStatisticalComponent<?,?,?,?> component = train(mode, s_configurationFile, Splitter.splitColons(s_featureTemplateFile), trainFiles, developFiles);
-		if (s_modelFile != null) saveModel(component, s_modelFile);
+		AbstractStatisticalComponent<?,?,?,?> component = train(trainFiles, developFiles, featureFiles, s_configurationFile, mode);
+		if (s_modelPath != null) saveModel(component, s_modelPath);
 	}
 	
-	public AbstractStatisticalComponent<?,?,?,?> train(NLPMode mode, String configurationFile, String[] featureFiles, List<String> trainFiles, List<String> developFiles)
+	public AbstractStatisticalComponent<?,?,?,?> train(List<String> trainFiles, List<String> developFiles, String[] featureFiles, String configurationFile, NLPMode mode)
 	{
 		InputStream configuration  = IOUtils.createFileInputStream(configurationFile);
 		InputStream[] features     = IOUtils.createFileInputStreams(featureFiles);
@@ -87,13 +91,13 @@ public class NLPTrain
 		return trainer.train(trainFiles, developFiles);
 	}
 	
-	public void saveModel(AbstractStatisticalComponent<?,?,?,?> component, String modelFile)
+	public void saveModel(AbstractStatisticalComponent<?,?,?,?> component, String modelPath)
 	{
 		ObjectOutputStream out;
 		
 		try
 		{
-			out = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(s_modelFile))));
+			out = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(modelPath))));
 			component.save(out);
 			out.close();
 		}
@@ -109,7 +113,7 @@ public class NLPTrain
 	{
 		try
 		{
-			DefaultPOSTagger tagger = new DefaultPOSTagger(new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new FileInputStream(s_modelFile)))));
+			DefaultPOSTagger tagger = new DefaultPOSTagger(new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new FileInputStream(s_modelPath)))));
 			for (DEPTree tree : getTrees())
 			{
 				tagger.process(tree);

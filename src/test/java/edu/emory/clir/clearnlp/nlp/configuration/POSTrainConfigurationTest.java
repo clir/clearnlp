@@ -21,6 +21,7 @@ import jdk.nashorn.internal.ir.annotations.Ignore;
 
 import org.junit.Test;
 
+import edu.emory.clir.clearnlp.component.mode.pos.POSTrainConfiguration;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 

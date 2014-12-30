@@ -55,7 +55,7 @@ public class DEPTree implements Iterable<DEPNode>
 	}
 	
 	/** @param string dummy parameter. */
-	public DEPTree(List<String> tokens, boolean string)
+	public DEPTree(List<String> tokens, int flag)
 	{
 		int i, size = tokens.size();
 		init(size);
