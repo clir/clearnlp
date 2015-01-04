@@ -16,11 +16,12 @@
 package edu.emory.clir.clearnlp.experiment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.magicwerk.brownies.collections.primitive.IntGapList;
 
-import com.carrotsearch.hppc.IntStack;
 import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
@@ -39,38 +40,39 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		IntStack stack = new IntStack();
-		int i, len = 7, size = 1000000;
+		test();
+	}
+	
+	public void test()
+	{
+		Map<Integer,Double> map;
+		
+		int i, j, len = 100, size = 1000000;
 		long st, et;
-		String s = null;
-		System.out.println(s);
 		
-		for (i=0; i<len; i++)
-			stack.push(i);
-		
+		map = new HashMap<>();
+		for (j=0; j<len; j++) map.put(j, (double)j);
 		st = System.currentTimeMillis();
+
 		for (i=0; i<size; i++)
 		{
-			StringBuilder build = new StringBuilder();
-			int j, l = stack.size();
-			
-			build.append(stack.get(0));
-			
-			for (j=1; j<l; j++)
-			{
-				build.append(",");
-				build.append(stack.get(j));
-			}
-			build.append("|");
-			s = build.toString();
+			for (j=0; j<len; j++)
+				map.compute(j, (k, v) -> v /len);
 		}
 		
 		et = System.currentTimeMillis();
 		System.out.println(et-st);
 		
+		map = new HashMap<>();
+		for (j=0; j<len; j++) map.put(j, (double)j);
 		st = System.currentTimeMillis();
+
 		for (i=0; i<size; i++)
-			s = stack.toString();
+		{
+			for (j=0; j<len; j++)
+				map.computeIfPresent(j, (k, v) -> v /len);
+		}
+		
 		et = System.currentTimeMillis();
 		System.out.println(et-st);
 	}

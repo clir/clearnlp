@@ -18,8 +18,10 @@ package edu.emory.clir.clearnlp.component.mode.pos;
 import java.util.Map;
 import java.util.Set;
 
+import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.component.CFlag;
 import edu.emory.clir.clearnlp.component.state.AbstractLRState;
+import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 
@@ -61,7 +63,16 @@ public class POSState extends AbstractLRState
 		node.setPOSTag(label);
 	}
 	
-//	====================================== HELPER ======================================
+	public void save2ndLabel(StringPrediction[] ps)
+	{
+		StringPrediction fst = ps[0];
+		StringPrediction snd = ps[1];
+		
+		if (fst.getScore() - snd.getScore() < 1)
+			getInput().putFeat(DEPLib.FEAT_POS2, snd.getLabel());
+	}
+	
+//	====================================== FEATURES ======================================
 	
 	public String getAmbiguityClass(DEPNode node)
 	{

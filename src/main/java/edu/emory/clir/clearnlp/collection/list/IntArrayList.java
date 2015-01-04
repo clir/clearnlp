@@ -20,6 +20,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import com.carrotsearch.hppc.IntCollection;
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -36,6 +38,11 @@ public class IntArrayList extends com.carrotsearch.hppc.IntArrayList implements 
 	public IntArrayList(int initialCapacity)
 	{
 		super(initialCapacity);
+	}
+	
+	public IntArrayList(IntCollection col)
+	{
+		super(col);
 	}
 	
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException

@@ -16,12 +16,14 @@
 package edu.emory.clir.clearnlp.component.mode.pos;
 
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
+import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
@@ -108,7 +110,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 //	====================================== PROCESS ======================================
 	
 	@Override
-	public POSState process(DEPTree tree)
+	public void process(DEPTree tree)
 	{
 		POSState state = new POSState(tree, c_flag, m_ambiguity_classes, s_proper_nouns);
 		
@@ -118,7 +120,8 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 		}
 		else
 		{
-			List<StringInstance> instances = process(state);
+			List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<>() : null;
+			process(state, instances);
 			
 			if (!isDecode())
 			{
@@ -126,8 +129,6 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 				else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
 			}
 		}
-		
-		return state;
 	}
 
 	@Override
@@ -139,7 +140,10 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	@Override
 	protected String getAutoLabel(POSState state, StringFeatureVector vector)
 	{
-		return s_models[0].predictBest(vector).getLabel();
+		StringPrediction[] ps = s_models[0].predictTop2(vector);
+		String label = ps[0].getLabel();
+		state.save2ndLabel(ps);
+		return label;
 	}
 	
 //	====================================== ONLINE TRAIN ======================================

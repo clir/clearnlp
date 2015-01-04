@@ -15,14 +15,8 @@
  */
 package edu.emory.clir.clearnlp.dependency;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.reader.TSVReader;
 
@@ -31,7 +25,7 @@ import edu.emory.clir.clearnlp.reader.TSVReader;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPFeat implements Serializable
+public class DEPFeat extends HashMap<String,String>
 {
 	private static final long serialVersionUID = 4093725541292286982L;
 	/** The delimiter between feature values ({@code ","}). */
@@ -40,19 +34,18 @@ public class DEPFeat implements Serializable
 	static public final String DELIM_FEATS     = "|";
 	/** The delimiter between keys and values ({@code "="}). */
 	static public final String DELIM_KEY_VALUE = "=";
-	
+
 	static private final Pattern P_FEATS = Pattern.compile("\\"+DELIM_FEATS);
-	private Map<String,String> m_feats;
 
 	/** Constructs an empty feature map. */
 	public DEPFeat()
 	{
-		m_feats = Maps.newHashMap();
+		super();
 	}
 	
 	public DEPFeat(DEPFeat feats)
 	{
-		m_feats = Maps.newHashMap(feats.m_feats);
+		super(feats);
 	}
 	
 	/**
@@ -62,30 +55,10 @@ public class DEPFeat implements Serializable
 	 */
 	public DEPFeat(String feats)
 	{
-		m_feats = Maps.newHashMap();
+		super();
 		add(feats);
 	}
 	
-	public String get(String key)
-	{
-		return m_feats.get(key);
-	}
-	
-	public String put(String key, String value)
-	{
-		return m_feats.put(key, value);
-	}
-	
-	public String remove(String key)
-	{
-		return m_feats.remove(key);
-	}
-	
-	public boolean contains(String key)
-	{
-		return m_feats.containsKey(key);
-	}
-		
 	/**
 	 * Adds the specific features to this map.
 	 * @param feats {@code "_"} or {@code feat(|feat)*}.<br>
@@ -108,7 +81,7 @@ public class DEPFeat implements Serializable
 			{
 				key   = feat.substring(0, idx);
 				value = feat.substring(idx+1);
-				m_feats.put(key, value);				
+				put(key, value);				
 			}
 		}
 	}
@@ -116,18 +89,16 @@ public class DEPFeat implements Serializable
 	@Override
 	public String toString()
 	{
-		if (m_feats.isEmpty())	return TSVReader.BLANK;
+		if (isEmpty())	return TSVReader.BLANK;
 		
 		StringBuilder build = new StringBuilder();
-		List<String>  keys  = new ArrayList<String>(m_feats.keySet());
 		
-		Collections.sort(keys);
-		for (String key : keys)
+		for (Entry<String, String> entry : entrySet())
 		{
 			build.append(DELIM_FEATS);
-			build.append(key);
+			build.append(entry.getKey());
 			build.append(DELIM_KEY_VALUE);
-			build.append(m_feats.get(key));
+			build.append(entry.getValue());
 		}
 		
 		return build.toString().substring(DELIM_FEATS.length());

@@ -17,53 +17,55 @@ package edu.emory.clir.clearnlp.collection.stack;
 
 import java.io.Serializable;
 
+import com.carrotsearch.hppc.IntCollection;
+
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class IntStack extends IntArrayList implements Serializable
+public class IntPStack extends IntArrayList implements Serializable
 {
 	private static final long serialVersionUID = -8603527717926741739L;
-	private int i_lastIndex;
 	
-	public IntStack()
+	public IntPStack()
 	{
-		i_lastIndex = -1;
+		super();
 	}
 	
-	public IntStack(int initialCapacity)
+	public IntPStack(int initialCapacity)
 	{
 		super(initialCapacity);
-		i_lastIndex = -1;
 	}
 	
-	public IntStack(IntStack stack)
+	public IntPStack(IntCollection stack)
 	{
-		super(stack.size());
-		addAll(stack);
-		i_lastIndex = stack.i_lastIndex;
+		super(stack);
 	}
 	
 	public void push(int element)
 	{
 		add(element);
-		i_lastIndex++;
 	}
 	
+	/** @return -1 if the stack is empty. */
 	public int pop()
 	{
-		return remove(i_lastIndex--);
+		int n = size() - 1;
+		return (n < 0) ? -1 : remove(n);
 	}
 	
+	/** @return -1 if the stack is empty. */
 	public int peek()
 	{
-		return get(i_lastIndex);
+		return peek(0);
 	}
 	
+	/** @return -1 if the index is out of range. */
 	public int peek(int n)
 	{
-		return get(i_lastIndex - n);
+		n = size() - 1 - n;
+		return (n < 0) ? -1 : get(n);
 	}
 }

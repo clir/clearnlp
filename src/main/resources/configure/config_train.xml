@@ -2,6 +2,16 @@
     <language>english</language>
 
     <reader type="tsv">
+        <column index="1" field="id"/>
+        <column index="2" field="form"/>
+        <column index="4" field="lemma"/>
+        <column index="6" field="pos"/>
+        <column index="7" field="feats"/>
+        <column index="8" field="headId"/>
+        <column index="9" field="deprel"/>
+    </reader>
+
+    <reader type="tsv">
         <column index="2" field="form"/>
         <column index="4" field="pos"/>
     </reader>
@@ -25,11 +35,8 @@
     </pos>
 
     <dep>
-        <algorithm name="adagrad" type="lr" alpha="0.1" rho="0.1" eps="0.1"/>
-        <bootstraps>1</bootstraps>
-        <beams>64</beams>
-        <margin>0.85</margin>
-        <threads>2</threads>
+        <trainer algorithm="adagrad" type="svm" labelCutoff="2" featureCutoff="3" alpha="0.02" rho="0.1" average="false"/>
+        <bootstraps>true</bootstraps>
     </dep>
-
 </configuration>
+

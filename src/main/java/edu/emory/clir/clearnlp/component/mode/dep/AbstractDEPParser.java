@@ -16,6 +16,7 @@
 package edu.emory.clir.clearnlp.component.mode.dep;
 
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -114,18 +115,38 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 //	====================================== PROCESS ======================================
 	
 	@Override
-	public DEPState process(DEPTree tree)
+	public void process(DEPTree tree)
 	{
+		List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<>() : null;
 		DEPState state = new DEPState(tree, c_flag);
-		List<StringInstance> instances = process(state);
+		process(state, instances);
+		
+		if (state.startBranching())
+		{
+			while (state.nextBranch()) process(state, instances);
+			state.mergeBranches();	
+		}
 		
 		if (!isDecode())
 		{
 			if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
 			else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
 		}
-		
-		return state;
+
+//		if (isTrainOrBootstrap())
+//		{
+//			s_models[0].addInstances(instances);
+//		}
+//		else
+//		{
+//			if (state.startBranching())
+//			{
+//				while (state.nextBranch()) process(state, instances);
+//				state.mergeBranches();	
+//			}
+//			
+//			if (isEvaluate()) c_eval.countCorrect(tree, state.getOracle());
+//		}
 	}
 
 	@Override
@@ -138,8 +159,8 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	protected DEPLabel getAutoLabel(DEPState state, StringFeatureVector vector)
 	{
 		StringPrediction[] ps = getPredictions(state, vector);
-		DEPLabel label = new DEPLabel(ps[0].getLabel());
-		state.addSecondHead(ps, label);
+		DEPLabel label = new DEPLabel(ps[0]);
+		state.saveBranch(ps, label);
 		return label;
 	}
 	

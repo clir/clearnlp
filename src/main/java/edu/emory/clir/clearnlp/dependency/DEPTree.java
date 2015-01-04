@@ -158,7 +158,7 @@ public class DEPTree implements Iterable<DEPNode>
 		
 		try
 		{
-			d_tree[id].clearHead();
+			d_tree[id].setHead(null, null);
 			n_size--;
 			
 			for (int i=id; i<n_size; i++)
@@ -473,14 +473,6 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).setPOSTag(tags[i]);
 	}
 	
-	public void clearPOSTags()
-	{
-		int i, size = size();
-		
-		for (i=1; i<size; i++)
-			get(i).setPOSTag(null);
-	}
-	
 	public String[] getNamedEntityTags()
 	{
 		int i, size = size();
@@ -498,14 +490,6 @@ public class DEPTree implements Iterable<DEPNode>
 		
 		for (i=1; i<size; i++)
 			get(i).setNamedEntityTag(tags[i]);
-	}
-	
-	public void clearNamedEntityTags()
-	{
-		int i, size = size();
-		
-		for (i=1; i<size; i++)
-			get(i).setNamedEntityTag(null);
 	}
 	
 	public DEPArc[] getHeads()
@@ -534,31 +518,28 @@ public class DEPTree implements Iterable<DEPNode>
 	
 	public void setHeads(DEPArc[] arcs)
 	{
-		int i, size = size(), len = arcs.length;
+		int i, len = arcs.length;
 		DEPNode node;
 		DEPArc  arc;
 		
-		for (i=1; i<len && i<size; i++)
+		clearDependencies();
+		
+		for (i=1; i<len; i++)
 		{
 			node = get(i);
 			arc  = arcs[i];
 			
-			if (arc.getNode() == null)
-				node.clearHead();
-			else
+			if (arc.getNode() != null)
 				node.setHead(arc.getNode(), arc.getLabel());
 		}
-		
-		for (i=len; i<size; i++)
-			get(i).clearHead();
 	}
 	
-	public void clearHeads()
+	public void clearDependencies()
 	{
 		int i, size = size();
 		
-		for (i=1; i<size; i++)
-			get(i).clearHead();
+		for (i=0; i<size; i++)
+			get(i).clearDependencies();
 	}
 	
 	public String[] getFeatureTags(String key)

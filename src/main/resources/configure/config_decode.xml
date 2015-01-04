@@ -1,7 +1,33 @@
 <configuration>
-    <model>edu/emory/clir/clearnlp/model/english/general</model>
     <language>english</language>
 
-    <reader type="raw">
+    <model>
+        <pos>edu/emory/clir/clearnlp/model/english/general/pos.gz</pos>
+        <dep>model/dep.0</dep>
+    </model>
+
+    <reader type="tsv">
+        <column index="1" field="id"/>
+        <column index="2" field="form"/>
+        <column index="4" field="lemma"/>
+        <column index="6" field="pos"/>
+        <column index="7" field="feats"/>
+    </reader>
+
+    <reader type="tsv">
+        <column index="2" field="form"/>
+        <column index="4" field="pos"/>
+    </reader>
+
+    <reader type="tsv">
+        <column index="1" field="id"/>
+        <column index="2" field="form"/>
+        <column index="3" field="lemma"/>
+        <column index="4" field="pos"/>
+        <column index="5" field="feats"/>
+        <column index="6" field="headId"/>
+        <column index="7" field="deprel"/>
+        <column index="8" field="sheads"/>
     </reader>
 </configuration>
+

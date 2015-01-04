@@ -25,7 +25,7 @@ import java.util.Set;
 
 import edu.emory.clir.clearnlp.collection.map.IncMap2;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
-import edu.emory.clir.clearnlp.component.ICollector;
+import edu.emory.clir.clearnlp.component.collector.ICollector;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;

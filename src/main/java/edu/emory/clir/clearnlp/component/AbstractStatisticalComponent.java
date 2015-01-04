@@ -22,7 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -32,6 +31,7 @@ import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AdaGradSVM;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
+import edu.emory.clir.clearnlp.component.collector.ICollector;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
@@ -218,44 +218,37 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	}
 	
 //	====================================== PROCESS ======================================
-	
+
 	protected void process(StateType state, List<StringInstance> instances)
 	{
 		LabelType label;
 		
-		switch (c_flag)
-		{
-		case TRAIN    : label = train(state, instances); break;
-		case BOOTSTRAP: label = bootstrap(state, instances); break;
-		default       : label = decode(state); break;
-		}
-		
-		state.next(label);
-	}
-	
-	protected List<StringInstance> process(StateType state)
-	{
-		List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<StringInstance>() : null;
-		
 		while (!state.isTerminate())
-			process(state, instances);
-		
-		return instances;
+		{
+			switch (c_flag)
+			{
+			case TRAIN    : label = train(state, instances); break;
+			case BOOTSTRAP: label = bootstrap(state, instances); break;
+			default       : label = decode(state); break;
+			}
+			
+			state.next(label);
+		}
 	}
 	
 	protected LabelType train(StateType state, List<StringInstance> instances)
 	{
 		StringFeatureVector vector = createStringFeatureVector(state);
-		LabelType label = state.getGoldLabel();
-		if (!vector.isEmpty()) instances.add(new StringInstance(label.toString(), vector));
-		return label;
+		LabelType goldLabel = state.getGoldLabel();
+		if (!vector.isEmpty()) instances.add(new StringInstance(goldLabel.toString(), vector));
+		return goldLabel;
 	}
 	
 	protected LabelType bootstrap(StateType state, List<StringInstance> instances)
 	{
 		StringFeatureVector vector = createStringFeatureVector(state);
-		LabelType label = state.getGoldLabel();
-		if (!vector.isEmpty()) instances.add(new StringInstance(label.toString(), vector));
+		LabelType goldLabel = state.getGoldLabel();
+		if (!vector.isEmpty()) instances.add(new StringInstance(goldLabel.toString(), vector));
 		return getAutoLabel(state, vector);
 	}
 	
@@ -317,6 +310,11 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	public boolean isTrainOrBootstrap()
 	{
 		return isTrain() || isBootstrap();
+	}
+	
+	public boolean isDecodeOrEvaluate()
+	{
+		return isDecode() || isEvaluate();
 	}
 	
 //	====================================== ONLINE TRAIN ======================================

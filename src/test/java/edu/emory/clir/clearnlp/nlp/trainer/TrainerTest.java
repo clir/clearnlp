@@ -22,6 +22,7 @@ import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -39,7 +40,7 @@ import edu.emory.clir.clearnlp.util.IOUtils;
 public class TrainerTest
 {
 	@Test
-//	@Ignore
+	@Ignore
 	public void test() throws Exception
 	{
 		String configurationFile = "src/test/resources/nlp/configuration/configure.xml";

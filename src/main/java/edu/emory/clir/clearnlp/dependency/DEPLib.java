@@ -36,10 +36,12 @@ public class DEPLib
 	static public final String FEAT_SYN	= "syn";
 	/** The feat-key of sentence types. */
 	static public final String FEAT_SNT	= "snt";
-	/** The feat-key of PrpBank rolesets. */
+	/** The feat-key of PropBank rolesets. */
 	static public final String FEAT_PB	= "pb";
 	/** The feat-key of VerbNet classes. */
 	static public final String FEAT_VN	= "vn";
 	/** The feat-key of word senses. */
-	static public final String FEAT_WS	= "ws";	
+	static public final String FEAT_WS	= "ws";
+	/** The feat-key of word senses. */
+	static public final String FEAT_POS2 = "p2";
 }

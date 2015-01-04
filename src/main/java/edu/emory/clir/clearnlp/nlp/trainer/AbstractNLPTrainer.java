@@ -15,24 +15,14 @@
  */
 package edu.emory.clir.clearnlp.nlp.trainer;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import edu.emory.clir.clearnlp.bin.NLPTrain;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOneVsAllTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractTrainer;
-import edu.emory.clir.clearnlp.classification.vector.AbstractWeightVector;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
@@ -162,13 +152,13 @@ public abstract class AbstractNLPTrainer
 	
 	private double trainOnline(AbstractStatisticalComponent<?,?,?,?> component, AbstractOnlineTrainer trainer, List<String> developFiles, int modelID) throws Exception
 	{
-		final File TMP_FILE = new File("TZ"+System.currentTimeMillis());
+//		final File TMP_FILE = new File("TZ"+System.currentTimeMillis());
 		StringModel model = component.getModel(modelID);
 		AbstractEval<?> eval = component.getEval();
 		double currScore, prevScore = 0;
-		ObjectOutputStream oos;
-		ObjectInputStream ois;
-//		byte[] prevWeights = null;
+		byte[] prevWeights = null;
+//		ObjectOutputStream oos;
+//		ObjectInputStream ois;
 		
 		for (int iter=1; ; iter++)
 		{
@@ -183,22 +173,22 @@ public abstract class AbstractNLPTrainer
 			else if (prevScore < currScore)
 			{
 				prevScore = currScore;
-				oos = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(TMP_FILE))));
-				oos.writeObject(model.getWeightVector());
-				oos.close();
-//				prevWeights = model.saveWeightVectorToByteArray();
+				prevWeights = model.saveWeightVectorToByteArray();
+//				oos = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(TMP_FILE))));
+//				oos.writeObject(model.getWeightVector());
+//				oos.close();
 			}
 			else
 			{
-				ois = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new FileInputStream(TMP_FILE))));
-				model.setWeightVector((AbstractWeightVector)ois.readObject());
-				ois.close();
-//				model.loadWeightVectorFromByteArray(prevWeights);
+//				ois = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new FileInputStream(TMP_FILE))));
+//				model.setWeightVector((AbstractWeightVector)ois.readObject());
+//				ois.close();
+				model.loadWeightVectorFromByteArray(prevWeights);
 				break;
 			}			
 		}
 		
-		TMP_FILE.delete();
+//		TMP_FILE.delete();
 		return prevScore;
 	}
 	

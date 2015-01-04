@@ -1,30 +1,11 @@
 <!--Feature template for dependency parsing in English -->
 <feature_template>
-    <!-- 1-gram features -->
-    <feature f0="i:f2" visible="false"/>
-    <feature f0="j:f2" visible="false"/>
-
-	<feature f0="i:m"/>
+    <!-- basic features -->
+    <feature f0="i:m"/>
     <feature f0="j:m"/>
-	<feature f0="k:m"/>
-
-    <feature f0="i+1:m"/>
-    <feature f0="j-1:m"/>
-    <feature f0="j-2:m"/>
-    <feature f0="j+1:m"/>
-    <feature f0="j+2:m"/>
-
     <feature f0="i:p"/>
     <feature f0="j:p"/>
-    <feature f0="k:p"/>
 
-    <feature f0="i+1:p"/>
-    <feature f0="i+2:p"/>
-    <feature f0="k+1:p"/>
-    <feature f0="j-1:p"/>
-    <feature f0="j+1:p"/>
-
-    <!-- 2-gram features -->
     <feature f0="i:p" f1="i:m"/>
     <feature f0="j:p" f1="j:m"/>
 
@@ -33,92 +14,122 @@
     <feature f0="i:m" f1="j:p"/>
     <feature f0="i:m" f1="j:m"/>
 
+    <!-- 1-gram features -->
+    <feature f0="k-1:m"/>
+    <feature f0="i-1:m"/>
+    <feature f0="i+1:m"/>
+    <feature f0="j-2:m"/>
+    <feature f0="j-1:m"/>
+    <feature f0="j+1:m"/>
+    <feature f0="j+2:m"/>
+
+    <feature f0="i-2:p"/>
+    <feature f0="i-1:p"/>
+    <feature f0="i+1:p"/>
+    <feature f0="i+2:p"/>
+    <feature f0="j-1:p"/>
+    <feature f0="j+1:p"/>
+
+    <!-- 2-gram features -->
     <feature f0="j+1:p" f1="i:p"/>
-    <feature f0="i+1:p" f1="i:p"/>
-    <feature f0="i+1:p" f1="j:p"/>
+    <feature f0="k-1:p" f1="i:p"/>
+    <feature f0="k-1:p" f1="j:p"/>
 
     <feature f0="j-1:p" f1="i:m"/>
     <feature f0="j+1:p" f1="i:m"/>
     <feature f0="j+1:p" f1="j:m"/>
-
     <feature f0="j+1:m" f1="i:p"/>
     <feature f0="j+1:m" f1="j:p"/>
 
-    <feature f0="k:m" f1="i:m"/>
-    <feature f0="k:m" f1="j:m"/>
+    <feature f0="i+1:m" f1="i:m"/>
+    <feature f0="i+1:m" f1="j:m"/>
 
     <!-- 3-gram features -->
-    <feature f0="i+2:p" f1="i+1:p" f2="i:p"/>
-    <feature f0="i+1:p" f1="i:p"   f2="k:p"/>
-    <feature f0="i:p"   f1="k:p"   f2="k+1:p"/>
+    <feature f0="i-2:p" f1="i-1:p" f2="i:p"/>
+    <feature f0="i-1:p" f1="i:p"   f2="i+1:p"/>
+    <feature f0="i:p"   f1="i+1:p" f2="i+2:p" visible="true"/>
     <feature f0="j-1:p" f1="j:p"   f2="j+1:p"/>
     <feature f0="j:p"   f1="j+1:p" f2="j+2:p"/>
 
-    <feature f0="i+2:p" f1="i:p" f2="j:p"/>
+    <feature f0="k-2:p" f1="i:p" f2="j:p"/>
+    <feature f0="i-1:p" f1="i:p" f2="j:p"/>
     <feature f0="i+1:p" f1="i:p" f2="j:p"/>
-    <feature f0="k:p"   f1="i:p" f2="j:p"/>
     <feature f0="j-2:p" f1="i:p" f2="j:p"/>
     <feature f0="j-1:p" f1="i:p" f2="j:p"/>
     <feature f0="j+1:p" f1="i:p" f2="j:p"/>
     <feature f0="j+2:p" f1="i:p" f2="j:p"/>
     <feature f0="j+3:p" f1="i:p" f2="j:p"/>
 
+    <!-- valency features -->
+    <feature f0="i:v" f1="i:m"/>
+    <feature f0="j:v" f1="j:m"/>
+
     <!-- 2nd-order features -->
-    <feature f0="i:lv" f1="i:p"/>
-    <feature f0="i:rv" f1="i:p"/>
-    <feature f0="j:lv" f1="j:p"/>
-    <feature f0="i:lv" f1="i:m" visible="false"/>
-    <feature f0="i:rv" f1="i:m" visible="false"/>
-    <feature f0="j:lv" f1="j:m" visible="false"/>
-    
-    <feature f0="l_h:m"/>
-    <feature f0="l_lmd:m"/>
-    <feature f0="l_rmd:m"/>
-    <feature f0="j_lmd:m"/>
-
-    <feature f0="l_h:p"/>
-    <feature f0="l_lmd:p"/>
-    <feature f0="l_rmd:p"/>
-    <feature f0="j_lmd:p"/>
-
     <feature f0="i:d"/>
-    <feature f0="l_lmd:d"/>
-    <feature f0="l_rmd:d"/>
+    <feature f0="j:d"/>
+    <feature f0="i_lmd:d"/>
+    <feature f0="i_rmd:d" visible="false"/>
     <feature f0="j_lmd:d" visible="false"/>
 
-    <feature f0="i:d" f1="j:m" visible="false"/>
-    <feature f0="l_lmd:p" f1="i:p" f2="j:p" visible="false"/>
-    <feature f0="j_lmd:p" f1="i:p" f2="j:p" visible="false"/>
-    <feature f0="l_lmd:d" f1="i:p" f2="j:p" visible="false"/>
-    <feature f0="l_lns:d" f1="i:p" f2="j:p" visible="false"/>
-    <feature f0="l_h:p"   f1="i:p" f2="j:p" visible="false"/>
+    <feature f0="i_h:m"/>
+    <feature f0="i_rmd:m"/>
+    <feature f0="j_lmd:m"/>
+    <feature f0="i_lmd:m" visible="false"/>
+
+    <feature f0="i_h:p"/>
+    <feature f0="i_rmd:p"/>
+    <feature f0="j_lmd:p"/>
+    <feature f0="i_lmd:p" visible="false"/>
+
+    <feature f0="i:d" f1="i:p"/>
+    <feature f0="i:d" f1="j:p"/>
+    <feature f0="i:d" f1="j:m"/>
+    <feature f0="i:d" f1="i:m" visible="false"/>
+
+    <feature f0="i:d"     f1="i:p" f2="j:p"/>
+    <feature f0="i_lmd:d" f1="i:p" f2="j:p"/>
+    <feature f0="j_lmd:d" f1="i:p" f2="j:p"/>
+    <feature f0="i_lns:d" f1="i:p" f2="j:p"/>
+    <feature f0="i_rmd:d" f1="i:p" f2="j:p" visible="false"/>
+
+    <feature f0="i_lmd:p" f1="i:p" f2="j:p"/>
+    <feature f0="i_rmd:p" f1="i:p" f2="j:p"/>
+    <feature f0="j_lmd:p" f1="i:p" f2="j:p"/>
 
     <!-- 3rd-order features -->
-    <feature f0="l_h2:m"   visible="false"/>
-    <feature f0="l_lmd2:m" visible="false"/>
-    <feature f0="l_rmd2:m" visible="false"/>
-    <feature f0="j_lmd2:m" visible="false"/>
-
-    <feature f0="l_h2:p"   visible="false"/>
-    <feature f0="l_lmd2:p" visible="false"/>
-    <feature f0="j_lmd2:p" visible="false"/>
-    <feature f0="l_rmd2:p" visible="false"/>
-
-    <feature f0="l_h:d"    visible="false"/>
-    <feature f0="l_lmd2:d" visible="false"/>
-    <feature f0="l_rmd2:d" visible="false"/>
+    <feature f0="i_h:d"/>
+    <feature f0="j_h:d"/>
+    <feature f0="i_lmd2:d"/>
+    <feature f0="i_rmd2:d" visible="false"/>
     <feature f0="j_lmd2:d" visible="false"/>
 
-    <feature f0="l_lmd2:p" f1="l_lmd:p" f2="i:p" visible="false"/>
-    <feature f0="l_rmd2:p" f1="l_rmd:p" f2="i:p" visible="false"/>
-    <feature f0="j_lmd2:p" f1="j_lmd:p" f2="j:p" visible="false"/>
-    <feature f0="l_h2:p"   f1="l_h:p"   f2="i:p" visible="false"/>
+    <feature f0="i_h2:m"/>
+    <feature f0="i_rmd2:m"/>
+    <feature f0="j_lmd2:m"/>
+    <feature f0="i_lmd2:m" visible="false"/>
 
-    <feature f0="l_lmd2:p" f1="i:p" f2="j:p" visible="false"/>
-    <feature f0="j_lmd2:p" f1="i:p" f2="j:p" visible="false"/>
-    <feature f0="l_lmd2:d" f1="i:p" f2="j:p" visible="false"/>
+    <feature f0="i_h2:p"/>
+    <feature f0="i_rmd2:p"/>
+    <feature f0="j_lmd2:p"/>
+    <feature f0="i_lmd2:p" visible="false"/>
+
+    <feature f0="i_h:d" f1="i:p"/>
+    <feature f0="i_h:d" f1="j:p"/>
+    <feature f0="i_h:d" f1="j:m"/>
+    <feature f0="i_h:d" f1="i:m" visible="false"/>
+
+    <feature f0="i_h:d"    f1="i:p" f2="j:p"/>
+    <feature f0="i_lmd2:d" f1="i:p" f2="j:p"/>
+    <feature f0="j_lmd2:d" f1="i:p" f2="j:p"/>
+    <feature f0="i_lns2:d" f1="i:p" f2="j:p"/>
+    <feature f0="i_rmd2:d" f1="i:p" f2="j:p" visible="false"/>
+
+    <feature f0="i_lmd2:p" f1="i:p" f2="j:p"/>
+    <feature f0="i_rmd2:p" f1="i:p" f2="j:p"/>
+    <feature f0="j_lmd2:p" f1="i:p" f2="j:p"/>
 
     <!-- binary features -->
-    <feature f0="i:b0" note="stack is the left-most   token"/>
-    <feature f0="j:b1" note="input is the right-tmost token"/>
+    <feature f0="i:b0" note="stack is the first token"/>
+    <feature f0="j:b1" note="input is the last  token"/>
 </feature_template>
+

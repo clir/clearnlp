@@ -42,6 +42,8 @@ package edu.emory.clir.clearnlp.component.mode.dep;
 
 import java.io.Serializable;
 
+import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
+import edu.emory.clir.clearnlp.util.MathUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 
@@ -49,7 +51,7 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPLabel implements Serializable
+public class DEPLabel implements Serializable, Comparable<DEPLabel>
 {
 	private static final long serialVersionUID = -7214636048814903365L;
 	private static final String DELIM = StringConst.UNDERSCORE;
@@ -57,7 +59,8 @@ public class DEPLabel implements Serializable
 	private String s_arc;
 	private String s_list;
 	private String s_deprel;
-
+	private double d_score;
+	
 	public DEPLabel() {}
 	
 	public DEPLabel(String arc, String list, String deprel)
@@ -69,16 +72,22 @@ public class DEPLabel implements Serializable
 	
 	public DEPLabel(String label)
 	{
-		set(label);
+		set(label, 0);
 	}
 	
-	public void set(String label)
+	public DEPLabel(StringPrediction p)
+	{
+		set(p.getLabel(), p.getScore());
+	}
+	
+	public void set(String label, double score)
 	{
 		int idx = label.indexOf(DELIM);
 		
 		setArc   (label.substring(0, idx));
 		setList  (label.substring(idx+1, idx = label.lastIndexOf(DELIM)));
 		setDeprel(label.substring(idx+1));
+		setScore (score);
 	}
 	
 	public String getArc()
@@ -96,6 +105,11 @@ public class DEPLabel implements Serializable
 		return s_deprel;
 	}
 	
+	public double getScore()
+	{
+		return d_score;
+	}
+	
 	public void setArc(String arc)
 	{
 		s_arc = arc;
@@ -111,14 +125,30 @@ public class DEPLabel implements Serializable
 		s_deprel = deprel;
 	}
 	
+	public void setScore(double score)
+	{
+		d_score = score;
+	}
+	
 	public boolean isArc(String label)
 	{
 		return s_arc.equals(label);
 	}
 	
+	public boolean isArc(DEPLabel label)
+	{
+		return isArc(label.getArc());
+	}
+
+	
 	public boolean isList(String label)
 	{
 		return s_list.equals(label);
+	}
+	
+	public boolean isList(DEPLabel label)
+	{
+		return isList(label.getList());
 	}
 	
 	public boolean isDeprel(String label)
@@ -131,6 +161,7 @@ public class DEPLabel implements Serializable
 		return isArc(label.s_arc) && isList(label.s_list) && isDeprel(label.s_deprel);
 	}
 	
+	@Override
 	public String toString()
 	{
 		StringBuilder build = new StringBuilder();
@@ -140,5 +171,11 @@ public class DEPLabel implements Serializable
 		build.append(s_deprel);
 		
 		return build.toString();
+	}
+
+	@Override
+	public int compareTo(DEPLabel o)
+	{
+		return MathUtils.signum(d_score - o.d_score);
 	}
 }

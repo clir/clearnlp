@@ -15,17 +15,22 @@
  */
 package edu.emory.clir.clearnlp.component.mode.dep;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
-import edu.emory.clir.clearnlp.collection.stack.Stack;
+import edu.emory.clir.clearnlp.collection.stack.IntPStack;
 import edu.emory.clir.clearnlp.component.CFlag;
+import edu.emory.clir.clearnlp.component.mode.dep.merge.DEPMerge;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
 import edu.emory.clir.clearnlp.util.DSUtils;
+import edu.emory.clir.clearnlp.util.MathUtils;
 import edu.emory.clir.clearnlp.util.arc.DEPArc;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -35,11 +40,17 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  */
 public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTransition
 {
-	private List<DEPArc>[] d_2ndHeads;
-	private Stack<DEPNode> d_stack;
-	private Stack<DEPNode> d_inter;
+	private final int BEAM_SIZE = 16;
+	
+	private IntPStack i_stack;
+	private IntPStack i_inter;
 	private int i_input;
-//	private StringBuilder s_states;
+	
+	private List<DEPBranch> l_branches;
+	private Set<String> s_snapshots;
+	private boolean save_branch;
+	private DEPMerge d_merge;
+	private int beam_index;
 	
 //	====================================== Initialization ======================================
 	
@@ -49,15 +60,17 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		init();
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void init()
 	{
-		d_2ndHeads = (List<DEPArc>[])DSUtils.createEmptyListArray(t_size);
-		d_stack = new Stack<>(t_size);
-		d_inter = new Stack<>();
+		i_stack = new IntPStack(t_size);
+		i_inter = new IntPStack();
 		i_input = 0;
 		shift();
-//		s_states = new StringBuilder();
+		
+		l_branches  = new ArrayList<>(BEAM_SIZE);
+		s_snapshots = new HashSet<>();
+		save_branch = true;
+		d_merge     = new DEPMerge(d_tree);
 	}
 
 //	====================================== LABEL ======================================
@@ -66,7 +79,7 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	protected void initOracle()
 	{
 		g_oracle = d_tree.getHeads();
- 		d_tree.clearHeads();
+ 		d_tree.clearDependencies();
 	}
 	
 	@Override
@@ -78,12 +91,12 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	@Override
 	public DEPLabel getGoldLabel()
 	{
-		DEPNode stack = getStack();
+		int     stack = getStackID();
 		DEPNode input = getInput();
 		DEPArc  oracle;
 		String  list;
 		
-		oracle = getOracle(stack.getID());
+		oracle = getOracle(stack);
 		
 		if (oracle.getNode() == input)
 		{
@@ -93,7 +106,7 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 					
 		oracle = getOracle(i_input);
 		
-		if (oracle.getNode() == stack)
+		if (oracle.getNode() == getNode(stack))
 		{
 			list = isGoldShift() ? T_SHIFT : T_PASS;
 			return new DEPLabel(T_RIGHT, list, oracle.getLabel());
@@ -110,18 +123,18 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	private boolean isGoldShift()
 	{
 		// if head(input) < stack
-		DEPNode stack = getStack();
+		int stack = getStackID();
 		
-		if (getOracle(i_input).getNode().getID() < stack.getID())
+		if (getOracle(i_input).getNode().getID() < stack)
 			return false;
 		
 		// if child(input) < stack
 		DEPNode input = getInput();
 		int i = 1;
 
-		while ((stack = d_stack.peek(i++)) != null)
+		while ((stack = i_stack.peek(i++)) >= 0)
 		{
-			if (getOracle(stack.getID()).getNode() == input)
+			if (getOracle(stack).getNode() == input)
 				return false;
 		}
 		
@@ -153,41 +166,42 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	public DEPNode getNode(AbstractFeatureToken token)
 	{
 		DEPNode node = null;
+		int index;
 		
 		switch (token.getSource())
 		{
-		case i: node = d_stack.peek(token.getOffset());	break;
-		case k: node = d_inter.peek(token.getOffset());	break;
-		case j: node = getNode(i_input+token.getOffset());
-			if (node != null && token.getOffset() < 0)
-			{
-				if (!d_inter.isEmpty())
-				{
-					if (d_inter.get(0) == node)
-						return null;
-				}
-				else if (d_stack.peek() == node)
-					return null;
-			} break;
-		default: throw new IllegalArgumentException("Invalid token: "+token.getSource());
+		case i:
+			index = getStackID() + token.getOffset();
+			if (index < i_input) node = getNode(index); break;
+		case j:
+			index = i_input + token.getOffset();
+			if (index > getStackID()) node = getNode(index); break;
+		case k:
+			index = (token.getOffset() <= 0) ? i_stack.peek(-token.getOffset()) : i_inter.peek(token.getOffset()-1);
+			node = getNode(index); break;
 		}
 		
 		return getNodeRelation(token, node);
 	}
 	
-	public DEPNode getStack()
+	public int getStackID()
 	{
-		return d_stack.peek();
-	}
-	
-	public DEPNode getInput()
-	{
-		return getNode(i_input);
+		return i_stack.peek();
 	}
 	
 	public int getInputID()
 	{
 		return i_input;
+	}
+	
+	public DEPNode getStack()
+	{
+		return getNode(getStackID());
+	}
+	
+	public DEPNode getInput()
+	{
+		return getNode(i_input);
 	}
 	
 //	====================================== TRANSITION ======================================
@@ -201,12 +215,14 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		
 		if (label.isArc(T_LEFT))
 		{
+			addEdge(stack, input, label);
 			stack.setHead(input, label.getDeprel());
 			if (label.isList(T_REDUCE)) reduce();
 			else pass();
 		}
 		else if (label.isArc(T_RIGHT))
 		{
+			addEdge(input, stack, label);
 			input.setHead(stack, label.getDeprel());
 			if (label.isList(T_SHIFT)) shift();
 			else pass();
@@ -219,6 +235,178 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		}
 	}
 	
+	private void addEdge(DEPNode node, DEPNode head, DEPLabel label)
+	{
+		if (BEAM_SIZE > 1)
+		{
+			double d = label.getScore();
+			if (save_branch) d += 1;
+			d_merge.addEdge(node, head, label.getDeprel(), d);	
+		}
+	}
+	
+	@Override
+	public boolean isTerminate()
+	{
+		if (BEAM_SIZE > 1)
+		{
+			String snapshot = getSnapshot();
+			if (!save_branch && s_snapshots.contains(snapshot)) return true;
+			s_snapshots.add(snapshot);
+		}
+		
+		return i_input >= t_size;
+	}
+	
+	private void shift()
+	{
+		if (!i_inter.isEmpty())
+		{
+			for (int i=i_inter.size()-1; i>=0; i--)
+				i_stack.push(i_inter.get(i));
+			
+			i_inter.clear();
+		}
+		
+		i_stack.push(i_input++);
+	}
+	
+	private void reduce()
+	{
+		i_stack.pop();
+	}
+	
+	private void pass()
+	{
+		i_inter.push(i_stack.pop());
+	}
+	
+	private String getSnapshot()
+	{
+		StringBuilder build = new StringBuilder();
+		int i;
+		
+		for (i=i_stack.size()-1; i>0; i--)
+		{
+			build.append(i_stack.get(i));
+			build.append(StringConst.COMMA);
+		}	build.append(StringConst.PIPE);
+		
+		for (i=i_inter.size()-1; i>=0; i--)
+		{
+			build.append(i_inter.get(i));
+			build.append(StringConst.COMMA);
+		}	build.append(StringConst.PIPE);
+		
+		build.append(i_input);
+		return build.toString();
+	}
+	
+//	====================================== FEATURES ======================================
+
+	@Override
+	public boolean extractWordFormFeature(DEPNode node)
+	{
+		return true;
+	}
+	
+	public int distanceBetweenStackAndInput()
+	{
+		int sID = getStackID();
+		if (sID == DEPLib.ROOT_ID) return -1;
+		
+		int d = i_input - sID; 
+		return (d > 6) ? 6 : d;
+	}
+	
+//	====================================== HELPER ======================================
+
+	public boolean startBranching()
+	{
+		if (l_branches.isEmpty()) return false;
+		DSUtils.sortReverseOrder(l_branches);
+		
+		if (l_branches.size() > BEAM_SIZE-1)
+			l_branches = l_branches.subList(0, BEAM_SIZE-1);
+		
+		beam_index  = 0;
+		save_branch = false;
+		return true;
+	}
+	
+	public boolean nextBranch()
+	{
+		if (beam_index < l_branches.size())
+		{
+			l_branches.get(beam_index++).reset();
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public void saveBranch(StringPrediction[] ps, DEPLabel autoLabel)
+	{
+		if (save_branch)
+		{
+			StringPrediction fst = ps[0];
+			StringPrediction snd = ps[1];
+			
+			if (fst.getScore() - snd.getScore() < 1)
+				addBranch(autoLabel, new DEPLabel(snd));
+		}
+	}
+
+	private void addBranch(DEPLabel fstLabel, DEPLabel sndLabel)
+	{
+		if (!fstLabel.isArc(sndLabel) || !fstLabel.isList(sndLabel))
+			l_branches.add(new DEPBranch(sndLabel));
+	}
+	
+	public void mergeBranches()
+	{
+		d_merge.merge();
+	}
+	
+	private class DEPBranch implements Comparable<DEPBranch>
+	{
+		private DEPArc[]  heads;
+		private IntPStack stack;
+		private IntPStack inter;
+		private int       input;
+		private DEPLabel  label;
+		private double    score;
+		
+		public DEPBranch(DEPLabel nextLabel)
+		{
+			heads = d_tree.getHeads(i_input+1);
+			stack = new IntPStack(i_stack);
+			inter = new IntPStack(i_inter);
+			input = i_input;
+			label = nextLabel;
+			score = nextLabel.getScore();
+		}
+		
+		public void reset()
+		{
+			d_tree.setHeads(heads);
+			i_stack = stack;
+			i_inter = inter;
+			i_input = input;
+			next(label);
+		}
+
+		@Override
+		public int compareTo(DEPBranch o)
+		{
+			return MathUtils.signum(score - o.score);
+		}
+	}
+	
+//	====================================== STATE HISTORY ======================================
+	
+//	private StringBuilder s_states = new StringBuilder();
+//	
 //	private void saveState(DEPLabel label)
 //	{
 //		s_states.append(label.toString());
@@ -253,77 +441,4 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 //	{
 //		return s_states.toString();
 //	}
-	
-	@Override
-	public boolean isTerminate()
-	{
-		return i_input >= t_size;
-	}
-	
-	private void shift()
-	{
-		if (!d_inter.isEmpty())
-		{
-			for (int i=d_inter.size()-1; i>=0; i--)
-				d_stack.push(d_inter.get(i));
-			
-			d_inter.clear();
-		}
-		
-		d_stack.push(getNode(i_input++));
-	}
-	
-	private void reduce()
-	{
-		d_stack.pop();
-	}
-	
-	private void pass()
-	{
-		d_inter.push(d_stack.pop());
-	}
-	
-//	====================================== HELPER ======================================
-
-	@Override
-	public boolean extractWordFormFeature(DEPNode node)
-	{
-		return true;
-	}
-	
-	public int distanceBetweenStackAndInput()
-	{
-		int sID = getStack().getID();
-		if (sID == DEPLib.ROOT_ID) return -1;
-		
-		int d = i_input - sID; 
-		return (d > 6) ? 6 : d;
-	}
-	
-	public void addSecondHead(StringPrediction[] ps, DEPLabel l1)
-	{
-		StringPrediction fst = ps[0];
-		StringPrediction snd = ps[1];
-		
-		if (fst.getScore() - snd.getScore() < 1)
-		{
-			if (l1.isArc(T_NO))
-			{
-				DEPLabel l2 = new DEPLabel(snd.getLabel());
-				DEPNode stack = getStack();
-				DEPNode input = getInput();
-				
-				if (l2.isArc(T_LEFT))
-				{
-					if (!stack.hasHead())
-						d_2ndHeads[stack.getID()].add(new DEPArc(input, l2.getDeprel()));
-				}
-				else if (l2.isArc(T_RIGHT))
-				{
-					if (!input.hasHead())
-						d_2ndHeads[input.getID()].add(new DEPArc(stack, l2.getDeprel()));
-				}
-			}	
-		}
-	}
 }

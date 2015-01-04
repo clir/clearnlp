@@ -72,8 +72,6 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	/** The list of semantic heads of this node (default: empty). */
 	private List<SRLArc> s_heads;
 	
-//	private boolean b_punctuation;
-	
 //	====================================== Constructors ======================================
 	
 	public DEPNode() {}
@@ -137,6 +135,14 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	public void initSemanticHeads()
 	{
 		s_heads = Lists.newArrayList();
+	}
+	
+	void clearDependencies()
+	{
+		d_head  = null;
+		s_label = null;
+		n_siblingID = 0;
+		l_dependents.clear();
 	}
 	
 //	====================================== Basic fields ======================================
@@ -707,11 +713,6 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		setLabel(label);
 	}
 	
-	public void clearHead()
-	{
-		setHead(null, null);
-	}
-	
 	public void addDependent(DEPNode node)
 	{
 		node.setHead(this);
@@ -886,7 +887,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public boolean isSemanticHead()
 	{
-		return d_feats.contains(DEPLib.FEAT_PB);
+		return d_feats.containsKey(DEPLib.FEAT_PB);
 	}
 	
 	public Set<DEPNode> getSemanticHeadSet(String label)

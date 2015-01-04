@@ -15,7 +15,6 @@
  */
 package edu.emory.clir.clearnlp.component;
 
-import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 
 /**
@@ -24,5 +23,5 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  */
 abstract public class AbstractComponent
 {
-	abstract public AbstractState<?,?> process(DEPTree tree);
+	abstract public void process(DEPTree tree);
 }

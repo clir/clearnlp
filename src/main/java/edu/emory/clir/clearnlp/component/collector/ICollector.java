@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component;
+package edu.emory.clir.clearnlp.component.collector;
 
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 

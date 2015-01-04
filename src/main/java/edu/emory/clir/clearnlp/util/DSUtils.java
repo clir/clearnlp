@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Set;
 
@@ -395,5 +396,15 @@ public class DSUtils
 			array[i] = new ArrayList<T>();
 		
 		return array;
+	}
+	
+	static public <T>PriorityQueue<?>[] createEmptyPriorityQueueArray(int size, boolean ascending)
+	{
+		PriorityQueue<?>[] queue = new PriorityQueue<?>[size];
+		
+		for (int i=0; i<size; i++)
+			queue[i] = ascending ? new PriorityQueue<>() : new PriorityQueue<>(Collections.reverseOrder());
+		
+		return queue;
 	}
 }
