@@ -56,6 +56,9 @@ public class NLPDecode
 	@Option(name="-mode", usage="pos|morph|dep|srl", required=true, metaVar="<string>")
 	protected String s_mode;
 	
+	@Option(name="-depBeamSize", usage="beam size for dependency parsing (default: 16)", required=false, metaVar="<integer>")
+	protected int dep_beam_size = 16;
+	
 	public NLPDecode() {}
 	
 	public NLPDecode(String[] args)
@@ -152,7 +155,7 @@ public class NLPDecode
 		switch (mode)
 		{
 		case srl  :
-		case dep  : list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep)));
+		case dep  : list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), config.getDecodeBeamSize(mode)));
 		case morph: list.add(NLPUtils.getMPAnalyzer(language));
 		case pos  : list.add(NLPUtils.getPOSTagger(language, config.getModelPath(NLPMode.pos)));
 		}
@@ -169,7 +172,7 @@ public class NLPDecode
 		case srl:
 		case dep:
 			if (!reader.hasDependencyHeads())
-				list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep)));
+				list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), config.getDecodeBeamSize(mode)));
 		case morph:
 			if (!reader.hasLemmas())
 				list.add(NLPUtils.getMPAnalyzer(language));

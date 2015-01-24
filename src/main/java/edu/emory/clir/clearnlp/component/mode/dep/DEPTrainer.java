@@ -19,6 +19,7 @@ import java.io.InputStream;
 
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
+import edu.emory.clir.clearnlp.nlp.NLPMode;
 import edu.emory.clir.clearnlp.nlp.configuration.AbstractTrainConfiguration;
 import edu.emory.clir.clearnlp.nlp.trainer.AbstractNLPTrainer;
 
@@ -62,18 +63,18 @@ public class DEPTrainer extends AbstractNLPTrainer
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object[] lexicons, StringModel[] models)
 	{
-		return new DefaultDEPParser(f_extractors, lexicons, models, true);
+		return new DefaultDEPParser(f_extractors, lexicons, models, true, t_configuration.getTrainBeamSize(NLPMode.dep));
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object[] lexicons, StringModel[] models)
 	{
-		return new DefaultDEPParser(f_extractors, lexicons, models, false);
+		return new DefaultDEPParser(f_extractors, lexicons, models, false, t_configuration.getDecodeBeamSize(NLPMode.dep));
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models)
 	{
-		return new DefaultDEPParser(models);
+		return new DefaultDEPParser(models, t_configuration.getDecodeBeamSize(NLPMode.dep));
 	}
 }

@@ -37,6 +37,7 @@
     <dep>
         <trainer algorithm="adagrad" type="svm" labelCutoff="2" featureCutoff="3" alpha="0.02" rho="0.1" average="false"/>
         <bootstraps>true</bootstraps>
+        <beam_size>16</beam_size>
     </dep>
 </configuration>
 

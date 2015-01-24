@@ -32,20 +32,20 @@ public class EnglishDEPParser extends AbstractDEPParser
 	}
 	
 	/** Creates a dependency parser for bootstrap or evaluate. */
-	public EnglishDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	public EnglishDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap, int beamSize)
 	{
-		super(extractors, lexicons, models, bootstrap);
+		super(extractors, lexicons, models, bootstrap, beamSize);
 	}
 
 	/** Creates a pos tagger for decode. */
-	public EnglishDEPParser(ObjectInputStream in)
+	public EnglishDEPParser(ObjectInputStream in, int beamSize)
 	{
-		super(in);
+		super(in, beamSize);
 	}
 	
 	/** Creates a pos tagger for decode. */
-	public EnglishDEPParser(byte[] models)
+	public EnglishDEPParser(byte[] models, int beamSize)
 	{
-		super(models);
+		super(models, beamSize);
 	}
 }

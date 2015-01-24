@@ -29,5 +29,9 @@
         <column index="7" field="deprel"/>
         <column index="8" field="sheads"/>
     </reader>
+    
+    <dep>
+        <beam_size>16</beam_size>
+    </dep>
 </configuration>
 

@@ -50,21 +50,21 @@ import edu.emory.clir.clearnlp.util.Splitter;
 public class NLPTrain
 {
 	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<string>")
-	private String s_configurationFile;
+	protected String s_configurationFile;
 	@Option(name="-f", usage="feature template files (required, delimited by "+"\":\""+")", required=true, metaVar="<string>")
-	private String s_featureTemplateFile;
+	protected String s_featureTemplateFile;
 	@Option(name="-t", usage="path to training files (required)", required=true, metaVar="<filepath>")
-	private String s_trainPath;
+	protected String s_trainPath;
 	@Option(name="-te", usage="training file extension (default: *)", required=false, metaVar="<regex>")
-	private String s_trainExt = "*";
-	@Option(name="-d", usage="path to development files (optional)", required=true, metaVar="<filepath>")
-	private String s_developPath;
+	protected String s_trainExt = "*";
+	@Option(name="-d", usage="path to development files (required)", required=true, metaVar="<filepath>")
+	protected String s_developPath;
 	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<regex>")
-	private String s_developExt = "*";
+	protected String s_developExt = "*";
 	@Option(name="-m", usage="model path (optional)", required=false, metaVar="<filename>")
-	private String s_modelPath = null;
+	protected String s_modelPath = null;
 	@Option(name="-mode", usage="pos|dep|srl", required=true, metaVar="<string>")
-	private String s_mode = ".*";
+	protected String s_mode = ".*";
 	@Option(name="-stop", usage="stopping criteria (optional; development only)", required=false, metaVar="<double>")
 	static public double d_stop = 0;
 	

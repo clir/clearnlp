@@ -18,9 +18,11 @@ package edu.emory.clir.clearnlp.nlp.configuration;
 import java.io.InputStream;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
+import edu.emory.clir.clearnlp.nlp.NLPMode;
 import edu.emory.clir.clearnlp.reader.AbstractReader;
 import edu.emory.clir.clearnlp.reader.LineReader;
 import edu.emory.clir.clearnlp.reader.RawReader;
@@ -36,7 +38,6 @@ import edu.emory.clir.clearnlp.util.lang.TLanguage;
 public class AbstractConfiguration implements ConfigurationXML
 {
 	private Element           x_top;
-	private TLanguage         t_language;
 	private AbstractReader<?> d_reader;
 	
 //	=================================== CONSTRUCTORS ===================================
@@ -45,15 +46,8 @@ public class AbstractConfiguration implements ConfigurationXML
 	
 	public AbstractConfiguration(InputStream in)
 	{
-		x_top      = XmlUtils.getDocumentElement(in);
-		t_language = initLanguage();
-		d_reader   = initReader();
-	}
-	
-	private TLanguage initLanguage()
-	{
-		String language = XmlUtils.getTrimmedTextContent(getFirstElement(E_LANGUAGE));
-		return TLanguage.getType(language);
+		x_top    = XmlUtils.getDocumentElement(in);
+		d_reader = initReader();
 	}
 	
 	private AbstractReader<?> initReader()
@@ -107,15 +101,33 @@ public class AbstractConfiguration implements ConfigurationXML
 	}
 	
 //	=================================== GETTERS ===================================  
-	
-	public TLanguage getLanguage()
-	{
-		return t_language;
-	}
-	
+
 	public AbstractReader<?> getReader()
 	{
 		return d_reader;
+	}
+	
+	public TLanguage getLanguage()
+	{
+		String language = XmlUtils.getTrimmedTextContent(getFirstElement(E_LANGUAGE));
+		return TLanguage.getType(language);
+	}
+	
+	public int getTrainBeamSize(NLPMode mode)
+	{
+		Element eMode = getModeElement(mode);
+		return XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, E_TRAIN_BEAM_SIZE));
+	}
+	
+	public int getDecodeBeamSize(NLPMode mode)
+	{
+		Element eMode = getModeElement(mode);
+		return XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, E_DECODE_BEAM_SIZE));
+	}
+	
+	public int getThreadSize()
+	{
+		return XmlUtils.getIntegerTextContent(getFirstElement(E_THREAD_SIZE));
 	}
 	
 //	=================================== ELEMENT ===================================  
@@ -123,5 +135,21 @@ public class AbstractConfiguration implements ConfigurationXML
 	protected Element getFirstElement(String tag)
 	{
 		return XmlUtils.getFirstElementByTagName(x_top, tag);
+	}
+	
+	protected Element getModeElement(NLPMode mode)
+	{
+		NodeList list = x_top.getChildNodes();
+		int i, len = list.getLength();
+		Node node;
+		
+		for (i=0; i<len; i++)
+		{
+			node = list.item(i);
+			if (node.getNodeName().equals(mode.toString()))
+				return (Element)node;
+		}
+		
+		return null;//getFirstElement(mode.toString());
 	}
 }

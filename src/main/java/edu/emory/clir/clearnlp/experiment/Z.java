@@ -15,16 +15,22 @@
  */
 package edu.emory.clir.clearnlp.experiment;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 import org.magicwerk.brownies.collections.primitive.IntGapList;
 
 import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
+import edu.emory.clir.clearnlp.component.mode.dep.AbstractDEPParser;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPFeatureExtractor;
 import edu.emory.clir.clearnlp.component.mode.dep.DefaultDEPParser;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
@@ -40,7 +46,65 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		test();
+		DEPFeatureExtractor ftr = new DEPFeatureExtractor(IOUtils.createFileInputStream("src/main/resources/features/feature_en_dep.xml"));
+		AbstractDEPParser parser = new DefaultDEPParser(new DEPFeatureExtractor[]{ftr}, null);
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
+		String prev, curr;
+		int count = 0;
+		DEPTree tree;
+		
+		reader.open(IOUtils.createFileInputStream("/Users/jdchoi/Documents/Data/ontonotes/data/english/onto.srl"));
+		
+		while ((tree = reader.next()) != null)
+		{
+			prev = tree.toStringDEP();
+			parser.process(tree);
+			curr = tree.toStringDEP();
+			
+			if (!prev.equals(curr))
+			{
+				System.out.println(prev+"\n\n"+curr);
+				break;
+			}
+			
+			if (++count%10000 == 0) System.out.print(".");
+		}	System.out.println();
+	}
+	
+	class Tmp
+	{
+		long i;
+		
+		public void add(int j)
+		{
+			i += j;
+		}
+	}
+	
+	public void amazon(String[] args) throws Exception
+	{
+		BufferedReader reader = IOUtils.createBufferedReader(new GZIPInputStream(new FileInputStream("/Users/jdchoi/Downloads/Movies_&_TV.txt.gz")));
+		Pattern p = Pattern.compile(" ");
+		String[] t;
+		String line;
+		long l, max = -1, min = Long.MAX_VALUE;
+		
+		for (long e=1; (line = reader.readLine()) != null; e++)
+		{
+			line = line.trim();
+			if (line.startsWith("review/time:"))
+			{
+				t = p.split(line);
+				l = Long.parseLong(t[1]);
+				max = Math.max(l, max);
+				min = Math.min(l, min);
+			}
+			
+			if (e%10000000 == 0) System.out.print(".");
+		}	System.out.println();
+		
+		System.out.println(new Date(max).toString());
+		System.out.println(new Date(min).toString());
 	}
 	
 	public void test()

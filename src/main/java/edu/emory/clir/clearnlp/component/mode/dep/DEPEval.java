@@ -33,6 +33,12 @@ public class DEPEval extends AbstractEval<DEPArc>
 	private int n_uas;
 	private int n_ls;
 	
+	public DEPEval()
+	{
+		b_includePunct = true;
+		clear();
+	}
+	
 	public DEPEval(boolean includePunct)
 	{
 		b_includePunct = includePunct;

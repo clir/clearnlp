@@ -56,4 +56,8 @@ public interface ConfigurationXML
 	String A_NUMBER_OF_THREADS	= "threads";
 	String ALG_ADAGRAD			= "adagrad";
 	String ALG_LIBLINEAR		= "liblinear";
+
+	String E_THREAD_SIZE  		= "thread_size";
+	String E_TRAIN_BEAM_SIZE	= "train_beam_size";
+	String E_DECODE_BEAM_SIZE	= "decode_beam_size";
 }

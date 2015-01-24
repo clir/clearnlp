@@ -23,7 +23,7 @@ public interface POSTag
 {
 	/** The part-of-speech tag for emoticons. */
 	String POS_EMOTICON = "EMO";
-	/** The part-of-speech tag for emoticons. */
+	/** The part-of-speech tag for final tags. */
 	String POS_FINAL = POSTagEn.POS_PERIOD;
 	/** The part-of-speech tag for hyperlinks (e.g., URLs, emails). */
 	String POS_HYPERLINK = POSTagEn.POS_ADD;

@@ -33,6 +33,8 @@ abstract public class AbstractState<OracleType,LabelType>
 
 //	====================================== INITIALIZATION ======================================
 	
+	public AbstractState() {}
+	
 	public AbstractState(DEPTree tree, CFlag flag)
 	{
 		d_tree = tree;

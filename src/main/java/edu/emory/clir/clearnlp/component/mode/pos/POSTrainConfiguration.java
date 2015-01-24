@@ -51,7 +51,7 @@ public class POSTrainConfiguration extends AbstractTrainConfiguration
 	
 	private void init()
 	{
-		Element eMode = getFirstElement(n_mode.toString());
+		Element eMode = getModeElement();
 		
 		double ac = XmlUtils.getDoubleTextContent(XmlUtils.getFirstElementByTagName(eMode, "ambiguity_class_threshold"));
 		String[] nnp = Splitter.splitCommas(XmlUtils.getTrimmedTextContent(XmlUtils.getFirstElementByTagName(eMode, "proper_noun_tagset")));

@@ -62,9 +62,9 @@ public abstract class AbstractTrainConfiguration extends AbstractConfiguration
 		n_mode = mode;
 	}
 	
-	private Element getModeElement()
+	protected Element getModeElement()
 	{
-		return getFirstElement(n_mode.toString());
+		return getModeElement(n_mode);
 	}
 
 //	=================================== TRAINER ===================================

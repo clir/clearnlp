@@ -17,6 +17,7 @@ package edu.emory.clir.clearnlp.component.mode.dep;
 
 import java.io.InputStream;
 
+import edu.emory.clir.clearnlp.component.mode.dep.state.DEPState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.feature.common.CommonFeatureExtractor;
 import edu.emory.clir.clearnlp.feature.common.CommonFeatureToken;

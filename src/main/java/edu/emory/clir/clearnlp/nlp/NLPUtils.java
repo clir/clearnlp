@@ -82,14 +82,14 @@ public class NLPUtils
 		}
 	}
 	
-	static public AbstractDEPParser getDEPParser(TLanguage language, ObjectInputStream in)
+	static public AbstractDEPParser getDEPParser(TLanguage language, ObjectInputStream in, int beamSize)
 	{
 		BinUtils.LOG.info("Loading dependency parsing models.\n");
 		
 		switch (language)
 		{
-		case ENGLISH: return new EnglishDEPParser(in);
-		default     : return new DefaultDEPParser(in);
+		case ENGLISH: return new EnglishDEPParser(in, beamSize);
+		default     : return new DefaultDEPParser(in, beamSize);
 		}
 	}
 	
@@ -98,9 +98,9 @@ public class NLPUtils
 		return getPOSTagger(language, getObjectInputStream(modelPath));
 	}
 	
-	static public AbstractDEPParser getDEPParser(TLanguage language, String modelPath)
+	static public AbstractDEPParser getDEPParser(TLanguage language, String modelPath, int beamSize)
 	{
-		return getDEPParser(language, getObjectInputStream(modelPath));
+		return getDEPParser(language, getObjectInputStream(modelPath), beamSize);
 	}
 	
 	static private ObjectInputStream getObjectInputStream(String modelPath)

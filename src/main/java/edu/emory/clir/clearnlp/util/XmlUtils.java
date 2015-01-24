@@ -86,6 +86,11 @@ public class XmlUtils
 		return (element != null) ? element.getTextContent().trim() : null;
 	}
 	
+	static public int getIntegerTextContent(Element element)
+	{
+		return Integer.parseInt(getTrimmedTextContent(element));
+	}
+	
 	static public double getDoubleTextContent(Element element)
 	{
 		return Double.parseDouble(getTrimmedTextContent(element));

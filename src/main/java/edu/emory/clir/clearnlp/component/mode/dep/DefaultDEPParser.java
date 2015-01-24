@@ -32,20 +32,20 @@ public class DefaultDEPParser extends AbstractDEPParser
 	}
 	
 	/** Creates a dependency parser for bootstrap or evaluate. */
-	public DefaultDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	public DefaultDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap, int beamSize)
 	{
-		super(extractors, lexicons, models, bootstrap);
+		super(extractors, lexicons, models, bootstrap, beamSize);
 	}
 
 	/** Creates a pos tagger for decode. */
-	public DefaultDEPParser(ObjectInputStream in)
+	public DefaultDEPParser(ObjectInputStream in, int beamSize)
 	{
-		super(in);
+		super(in, beamSize);
 	}
 	
-	/** Creates a pos tagger for decode. */
-	public DefaultDEPParser(byte[] models)
+	/** Creates a dependency parsing for decode. */
+	public DefaultDEPParser(byte[] models, int beamSize)
 	{
-		super(models);
+		super(models, beamSize);
 	}
 }

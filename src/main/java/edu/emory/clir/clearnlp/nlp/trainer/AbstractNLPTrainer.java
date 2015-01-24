@@ -140,9 +140,9 @@ public abstract class AbstractNLPTrainer
 				switch (trainer.getTrainerType())
 				{
 				case ONLINE    : score = trainOnline  (component, (AbstractOnlineTrainer)  trainer, developFiles, i); break;
-				case ONE_VS_ALL: score = trainOneVsAll(component, (AbstractOneVsAllTrainer)trainer, developFiles, i); break;
+				case ONE_VS_ALL: score = trainOneVsAll(component, (AbstractOneVsAllTrainer)trainer, developFiles);    break;
 				}
-			}			
+			}
 		}
 		catch (Exception e) {e.printStackTrace();}
 		
@@ -152,13 +152,10 @@ public abstract class AbstractNLPTrainer
 	
 	private double trainOnline(AbstractStatisticalComponent<?,?,?,?> component, AbstractOnlineTrainer trainer, List<String> developFiles, int modelID) throws Exception
 	{
-//		final File TMP_FILE = new File("TZ"+System.currentTimeMillis());
 		StringModel model = component.getModel(modelID);
 		AbstractEval<?> eval = component.getEval();
 		double currScore, prevScore = 0;
 		byte[] prevWeights = null;
-//		ObjectOutputStream oos;
-//		ObjectInputStream ois;
 		
 		for (int iter=1; ; iter++)
 		{
@@ -174,34 +171,26 @@ public abstract class AbstractNLPTrainer
 			{
 				prevScore = currScore;
 				prevWeights = model.saveWeightVectorToByteArray();
-//				oos = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(TMP_FILE))));
-//				oos.writeObject(model.getWeightVector());
-//				oos.close();
 			}
 			else
 			{
-//				ois = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new FileInputStream(TMP_FILE))));
-//				model.setWeightVector((AbstractWeightVector)ois.readObject());
-//				ois.close();
 				model.loadWeightVectorFromByteArray(prevWeights);
 				break;
 			}			
 		}
 		
-//		TMP_FILE.delete();
 		return prevScore;
 	}
 	
-	private double trainOneVsAll(AbstractStatisticalComponent<?,?,?,?> component, AbstractOneVsAllTrainer trainer, List<String> developFiles, int modelID)
+	private double trainOneVsAll(AbstractStatisticalComponent<?,?,?,?> component, AbstractOneVsAllTrainer trainer, List<String> developFiles)
 	{
-		return 0;
+		AbstractEval<?> eval = component.getEval();
+		trainer.train();
+		process(component, developFiles, false);
+		double currScore = eval.getScore();
+		BinUtils.LOG.info(String.format("%4.2f\n", currScore));
+		return currScore;
 	}
-	
-//	private double evaluate(AbstractStatisticalComponent<?,?,?,?> component, List<String> developFiles, int modelID)
-//	
-//	{
-//		
-//	}
 	
 //	private double trainOnline(AbstractStatisticalComponent<?,?,?,?> component, AbstractOnlineTrainer[] trainers, List<String> developFiles)
 //	{

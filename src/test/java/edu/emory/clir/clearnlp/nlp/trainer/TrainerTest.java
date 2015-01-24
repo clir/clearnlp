@@ -58,7 +58,7 @@ public class TrainerTest
 		
 		byte[] model = component.toByteArray();
 		ObjectInputStream in = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new ByteArrayInputStream(model))));
-		component = new DefaultDEPParser(in);
+		component = new DefaultDEPParser(in, 16);
 		in.close();
 		
 		TSVReader reader = new TSVReader(1);

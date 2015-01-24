@@ -36,19 +36,5 @@ public class DEPTrainConfiguration extends AbstractTrainConfiguration
 	public DEPTrainConfiguration(InputStream in)
 	{
 		super(in, NLPMode.dep);
-		init();
 	}
-	
-	private void init()
-	{
-		
-	}
-	
-//	============================== Getters ==============================
-	
-	
-//	============================== Setters ==============================
-	
-	
-//	============================== Booleans ==============================
 }

@@ -17,17 +17,14 @@ package edu.emory.clir.clearnlp.component.mode.dep;
 
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
-import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.dependency.DEPLib;
-import edu.emory.clir.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.component.mode.dep.state.DEPState;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 
 /**
@@ -36,65 +33,55 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  */
 public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DEPState, DEPEval, DEPFeatureExtractor> implements DEPTransition
 {
-	protected int[] is_desc;
-	protected int[] is_root;
-	protected int[] no_head;
+	private int[][] label_indices;
+	private int beam_size;
+	
+//	protected int[] is_desc;
+//	protected int[] is_root;
+//	protected int[] no_head;
 	
 	/** Creates a dependency parser for train. */
 	public AbstractDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons)
 	{
 		super(extractors, lexicons, false, 1);
-		init();
+		init(1);
 	}
 	
 	/** Creates a dependency parser for bootstrap or evaluate. */
-	public AbstractDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	public AbstractDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap, int beamSize)
 	{
 		super(extractors, lexicons, models, bootstrap);
-		init();
+		init(beamSize);
 	}
 	
 	/** Creates a dependency parser for decode. */
-	public AbstractDEPParser(ObjectInputStream in)
+	public AbstractDEPParser(ObjectInputStream in, int beamSize)
 	{
 		super(in);
-		init();
+		init(beamSize);
 	}
 	
 	/** Creates a dependency parser for decode. */
-	public AbstractDEPParser(byte[] models)
+	public AbstractDEPParser(byte[] models, int beamSize)
 	{
 		super(models);
-		init();
+		init(beamSize);
 	}
 	
-	private void init()
+	private void init(int beamSize)
 	{
-		String[] labels = s_models[0].getLabels();
-		int i, size = labels.length;
-		DEPLabel label;
-		
-		IntArrayList isDesc = new IntArrayList();
-		IntArrayList isRoot = new IntArrayList();
-		IntArrayList noHead = new IntArrayList();
-		
-		for (i=0; i<size; i++)
-		{
-			label = new DEPLabel(labels[i]);
-			
-			if (label.isArc(T_NO))
-				isDesc.add(i);
-			
-			if (label.isList(T_SHIFT))
-				isRoot.add(i);
-			
-			if (!(label.isArc(T_NO) && label.isList(T_REDUCE)))
-				noHead.add(i);
-		}
-		
-		is_desc = isDesc.toArray(); Arrays.sort(is_desc);
-		is_root = isRoot.toArray(); Arrays.sort(is_root);
-		no_head = noHead.toArray(); Arrays.sort(no_head);
+		label_indices = new DEPState().initLabelIndices(s_models[0].getLabels());
+		setBeamSize(beamSize);
+	}
+	
+	public int getBeamSize()
+	{
+		return beam_size;
+	}
+	
+	public void setBeamSize(int size)
+	{
+		beam_size = size;
 	}
 	
 //	====================================== LEXICONS ======================================
@@ -109,7 +96,7 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 
 	protected void initEval()
 	{
-		c_eval = new DEPEval(false);
+		c_eval = new DEPEval();
 	}
 
 //	====================================== PROCESS ======================================
@@ -118,7 +105,7 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	public void process(DEPTree tree)
 	{
 		List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<>() : null;
-		DEPState state = new DEPState(tree, c_flag);
+		DEPState state = new DEPState(tree, c_flag, beam_size);
 		process(state, instances);
 		
 		if (state.startBranching())
@@ -127,26 +114,8 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 			state.mergeBranches();	
 		}
 		
-		if (!isDecode())
-		{
-			if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
-			else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
-		}
-
-//		if (isTrainOrBootstrap())
-//		{
-//			s_models[0].addInstances(instances);
-//		}
-//		else
-//		{
-//			if (state.startBranching())
-//			{
-//				while (state.nextBranch()) process(state, instances);
-//				state.mergeBranches();	
-//			}
-//			
-//			if (isEvaluate()) c_eval.countCorrect(tree, state.getOracle());
-//		}
+		if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
+		else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
 	}
 
 	@Override
@@ -159,30 +128,15 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	protected DEPLabel getAutoLabel(DEPState state, StringFeatureVector vector)
 	{
 		StringPrediction[] ps = getPredictions(state, vector);
-		DEPLabel label = new DEPLabel(ps[0]);
-		state.saveBranch(ps, label);
-		return label;
+		DEPLabel autoLabel = new DEPLabel(ps[0]);
+		state.saveBranch(ps, autoLabel);
+		return autoLabel;
 	}
 	
 	protected StringPrediction[] getPredictions(DEPState state, StringFeatureVector vector)
 	{
-		int[] indices = getLabelIndices(state);		
+		int[] indices = state.getLabelIndices(label_indices);		
 		return (indices != null) ? s_models[0].predictTop2(vector, indices) : s_models[0].predictTop2(vector);
-	}
-	
-	protected int[] getLabelIndices(DEPState state)
-	{
-		DEPNode stack = state.getStack();
-		DEPNode input = state.getInput();
-		
-		if (stack.getID() == DEPLib.ROOT_ID)
-			return is_root;
-		else if (stack.isDependentOf(input) || input.isDependentOf(stack))
-			return is_desc;
-		else if (!stack.hasHead())
-			return no_head;
-		else
-			return null;
 	}
 	
 //	====================================== ONLINE TRAIN ======================================

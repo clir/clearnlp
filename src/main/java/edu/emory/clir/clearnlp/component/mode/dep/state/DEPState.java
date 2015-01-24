@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.dep;
+package edu.emory.clir.clearnlp.component.mode.dep.state;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
+import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 import edu.emory.clir.clearnlp.collection.stack.IntPStack;
 import edu.emory.clir.clearnlp.component.CFlag;
+import edu.emory.clir.clearnlp.component.mode.dep.DEPLabel;
+import edu.emory.clir.clearnlp.component.mode.dep.DEPTransition;
 import edu.emory.clir.clearnlp.component.mode.dep.merge.DEPMerge;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
@@ -40,37 +44,46 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  */
 public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTransition
 {
-	private final int BEAM_SIZE = 16;
+	static public final int IS_ROOT = 0;
+	static public final int IS_DESC = 1;
+	static public final int NO_HEAD = 2;
 	
 	private IntPStack i_stack;
 	private IntPStack i_inter;
-	private int i_input;
+	private int       i_input;
 	
 	private List<DEPBranch> l_branches;
-	private Set<String> s_snapshots;
-	private boolean save_branch;
-	private DEPMerge d_merge;
-	private int beam_index;
+	private Set<String>     s_snapshots;
+	private DEPMerge        d_merge;
+	private boolean         save_branch;
+	private int             beam_index;
+	private int             beam_size;
 	
 //	====================================== Initialization ======================================
 	
-	public DEPState(DEPTree tree, CFlag flag)
+	public DEPState()
 	{
-		super(tree, flag);
-		init();
+		super();
 	}
 	
-	private void init()
+	public DEPState(DEPTree tree, CFlag flag, int beamSize)
+	{
+		super(tree, flag);
+		init(beamSize);
+	}
+	
+	private void init(int beamSize)
 	{
 		i_stack = new IntPStack(t_size);
 		i_inter = new IntPStack();
 		i_input = 0;
 		shift();
 		
-		l_branches  = new ArrayList<>(BEAM_SIZE);
+		l_branches  = new ArrayList<>();
 		s_snapshots = new HashSet<>();
-		save_branch = true;
 		d_merge     = new DEPMerge(d_tree);
+		beam_size   = beamSize;
+		save_branch = true;
 	}
 
 //	====================================== LABEL ======================================
@@ -160,6 +173,53 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		return true;
 	}
 	
+	public int[][] initLabelIndices(String[] labels)
+	{
+		int i, size = labels.length;
+		DEPLabel label;
+		
+		IntArrayList isRoot = new IntArrayList();
+		IntArrayList isDesc = new IntArrayList();
+		IntArrayList noHead = new IntArrayList();
+		
+		for (i=0; i<size; i++)
+		{
+			label = new DEPLabel(labels[i]);
+			
+			if (label.isList(T_SHIFT))
+				isRoot.add(i);
+			
+			if (label.isArc(T_NO))
+				isDesc.add(i);
+			
+			if (!(label.isArc(T_NO) && label.isList(T_REDUCE)))
+				noHead.add(i);
+		}
+		
+		int[][] indices = new int[3][];
+		
+		indices[IS_ROOT] = isRoot.toArray(); Arrays.sort(indices[IS_ROOT]);
+		indices[IS_DESC] = isDesc.toArray(); Arrays.sort(indices[IS_DESC]);
+		indices[NO_HEAD] = noHead.toArray(); Arrays.sort(indices[NO_HEAD]);
+		
+		return indices;
+	}
+	
+	public int[] getLabelIndices(int[][] indices)
+	{
+		DEPNode stack = getStack();
+		DEPNode input = getInput();
+		
+		if (stack.getID() == DEPLib.ROOT_ID)
+			return indices[IS_ROOT];
+		else if (stack.isDependentOf(input) || input.isDependentOf(stack))
+			return indices[IS_DESC];
+		else if (!stack.hasHead())
+			return indices[NO_HEAD];
+		else
+			return null;
+	}
+	
 //	====================================== NODE ======================================
 	
 	@Override
@@ -207,6 +267,19 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 //	====================================== TRANSITION ======================================
 	
 	@Override
+	public boolean isTerminate()
+	{
+		if (beam_size > 1)
+		{
+			String snapshot = getSnapshot();
+			if (!save_branch && s_snapshots.contains(snapshot)) return true;
+			s_snapshots.add(snapshot);
+		}
+		
+		return i_input >= t_size;
+	}
+	
+	@Override
 	public void next(DEPLabel label)
 	{
 //		saveState(label);
@@ -215,14 +288,14 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		
 		if (label.isArc(T_LEFT))
 		{
-			addEdge(stack, input, label);
+			if (beam_size > 1) addEdge(stack, input, label);
 			stack.setHead(input, label.getDeprel());
 			if (label.isList(T_REDUCE)) reduce();
 			else pass();
 		}
 		else if (label.isArc(T_RIGHT))
 		{
-			addEdge(input, stack, label);
+			if (beam_size > 1) addEdge(input, stack, label);
 			input.setHead(stack, label.getDeprel());
 			if (label.isList(T_SHIFT)) shift();
 			else pass();
@@ -230,32 +303,16 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		else
 		{
 			if (label.isList(T_SHIFT)) shift();
-			else if (label.isList(T_REDUCE)) reduce();
+			else if (label.isList(T_REDUCE) && stack.hasHead()) reduce();
 			else pass();
 		}
 	}
 	
 	private void addEdge(DEPNode node, DEPNode head, DEPLabel label)
 	{
-		if (BEAM_SIZE > 1)
-		{
-			double d = label.getScore();
-			if (save_branch) d += 1;
-			d_merge.addEdge(node, head, label.getDeprel(), d);	
-		}
-	}
-	
-	@Override
-	public boolean isTerminate()
-	{
-		if (BEAM_SIZE > 1)
-		{
-			String snapshot = getSnapshot();
-			if (!save_branch && s_snapshots.contains(snapshot)) return true;
-			s_snapshots.add(snapshot);
-		}
-		
-		return i_input >= t_size;
+		double d = label.getScore();
+		if (save_branch) d += 1;
+		d_merge.addEdge(node, head, label.getDeprel(), d);
 	}
 	
 	private void shift()
@@ -323,11 +380,11 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 
 	public boolean startBranching()
 	{
-		if (l_branches.isEmpty()) return false;
+		if (beam_size <= 1 || l_branches.isEmpty()) return false;
 		DSUtils.sortReverseOrder(l_branches);
 		
-		if (l_branches.size() > BEAM_SIZE-1)
-			l_branches = l_branches.subList(0, BEAM_SIZE-1);
+		if (l_branches.size() > beam_size-1)
+			l_branches = l_branches.subList(0, beam_size-1);
 		
 		beam_index  = 0;
 		save_branch = false;

@@ -38,7 +38,7 @@ import edu.emory.clir.clearnlp.util.lang.ENUtils;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class CTLibEn implements CTTagEn, POSTagEn
+public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 {
 	static final public Pattern P_PASSIVE_NULL = PatternUtils.createClosedORPattern("\\*","\\*-\\d+");
 	
