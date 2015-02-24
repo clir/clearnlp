@@ -23,8 +23,11 @@ import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
+import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.mode.dep.state.DEPState;
+import edu.emory.clir.clearnlp.dependency.DEPLibEn;
+import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 
 /**
@@ -114,6 +117,8 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 			state.mergeBranches();	
 		}
 		
+		processHeadless(state);
+		
 		if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
 		else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
 	}
@@ -137,6 +142,54 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	{
 		int[] indices = state.getLabelIndices(label_indices);		
 		return (indices != null) ? s_models[0].predictTop2(vector, indices) : s_models[0].predictTop2(vector);
+	}
+	
+//	====================================== POST-PROCESS ======================================
+	
+	private void processHeadless(DEPState state)
+	{
+		ObjectIntPair<StringPrediction> max;
+		int i, size = state.getTreeSize();
+		DEPNode node;
+		
+		for (i=1; i<size; i++)
+		{
+			node = state.getNode(i);
+			
+			if (!node.hasHead())
+			{
+				max = new ObjectIntPair<StringPrediction>(null, -1000);
+				processHeadless(state, node, max, label_indices[DEPState.RIGHT_ARC], -1);
+				processHeadless(state, node, max, label_indices[DEPState.LEFT_ARC] ,  1);
+				
+				if (max.o == null)
+					node.setHead(state.getNode(0), DEPLibEn.DEP_ROOT);
+				else
+					node.setHead(state.getNode(max.i), new DEPLabel(max.o).getDeprel());
+			}
+		}
+	}
+	
+	private void processHeadless(DEPState state, DEPNode node, ObjectIntPair<StringPrediction> max, int[] indices, int dir)
+	{
+		int i, currID = node.getID(), size = state.getTreeSize();
+		StringFeatureVector vector;
+		StringPrediction p;
+		DEPNode head;
+		
+		for (i=currID+dir; 0 <= i&&i < size; i+=dir)
+		{
+			head = state.getNode(i);
+
+			if (!head.isDescendantOf(node))
+			{
+				if (dir < 0)	state.reset(i, currID);
+				else			state.reset(currID, i);
+				vector = createStringFeatureVector(state);
+				p = s_models[0].predictBest(vector, indices);
+				if (max.o == null || max.o.compareTo(p) < 0) max.set(p, i);	
+			}
+		}
 	}
 	
 //	====================================== ONLINE TRAIN ======================================

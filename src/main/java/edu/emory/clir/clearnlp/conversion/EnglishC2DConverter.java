@@ -736,7 +736,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		
 		if (P.isConstituentTagAny(S_NFMOD))
 		{
-			if (isNfmod(C))	return isInfMod(C) ? DEPLibEn.DEP_INFMOD : DEPLibEn.DEP_PARTMOD;
+			if (isNfmod(C))	return DEPLibEn.DEP_NFMOD; // isInfMod(C) ? DEPLibEn.DEP_INFMOD : DEPLibEn.DEP_PARTMOD;
 			if (isRcmod(C))	return DEPLibEn.DEP_RCMOD;
 			if (isCcomp(C))	return DEPLibEn.DEP_CCOMP;
 		}
@@ -1055,7 +1055,8 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 			{
 				if (isComplm(comp))
 				{
-					comp.getC2DInfo().setLabel(DEPLibEn.DEP_COMPLM);
+//					comp.getC2DInfo().setLabel(DEPLibEn.DEP_COMPLM);
+					comp.getC2DInfo().setLabel(DEPLibEn.DEP_MARK);
 					return true;
 				}
 			}
@@ -1072,7 +1073,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		return isXcomp(curr) || curr.isConstituentTag(CTTagEn.C_VP);
 	}
 	
-	private boolean isInfMod(CTNode curr)
+	protected boolean isInfMod(CTNode curr)
 	{
 		CTNode vp = curr.isConstituentTag(CTTagEn.C_VP) ? curr : curr.getFirstDescendant(CTLibEn.M_VP);
 		
@@ -1149,7 +1150,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 			{
 				label = cNode.getC2DInfo().getLabel();
 				
-				if (cNode.isConstituentTagAny(S_MARK) && cNode.getParent().isConstituentTag(CTTagEn.C_SBAR) && !label.equals(DEPLibEn.DEP_COMPLM))
+				if (cNode.isConstituentTagAny(S_MARK) && cNode.getParent().isConstituentTag(CTTagEn.C_SBAR))// && !label.equals(DEPLibEn.DEP_COMPLM))
 					label = DEPLibEn.DEP_MARK;
 				
 				dNode.setHead(dTree.get(headId), label);

@@ -17,6 +17,7 @@ package edu.emory.clir.clearnlp.experiment;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,12 +26,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import org.magicwerk.brownies.collections.primitive.IntGapList;
-
 import com.google.common.collect.Lists;
 
-import edu.emory.clir.clearnlp.collection.list.IntArrayList;
-import edu.emory.clir.clearnlp.component.mode.dep.AbstractDEPParser;
+import edu.emory.clir.clearnlp.collection.set.DisjointSet;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPFeatureExtractor;
 import edu.emory.clir.clearnlp.component.mode.dep.DefaultDEPParser;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
@@ -46,29 +44,14 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		DEPFeatureExtractor ftr = new DEPFeatureExtractor(IOUtils.createFileInputStream("src/main/resources/features/feature_en_dep.xml"));
-		AbstractDEPParser parser = new DefaultDEPParser(new DEPFeatureExtractor[]{ftr}, null);
-		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
-		String prev, curr;
-		int count = 0;
-		DEPTree tree;
+		DisjointSet set = new DisjointSet(4);
 		
-		reader.open(IOUtils.createFileInputStream("/Users/jdchoi/Documents/Data/ontonotes/data/english/onto.srl"));
-		
-		while ((tree = reader.next()) != null)
-		{
-			prev = tree.toStringDEP();
-			parser.process(tree);
-			curr = tree.toStringDEP();
-			
-			if (!prev.equals(curr))
-			{
-				System.out.println(prev+"\n\n"+curr);
-				break;
-			}
-			
-			if (++count%10000 == 0) System.out.print(".");
-		}	System.out.println();
+		set.union(0, 1);
+		System.out.println(set.find(0)+" "+set.find(1)+" "+set.find(2)+" "+set.find(3));
+		set.union(2, 3);
+		System.out.println(set.find(0)+" "+set.find(1)+" "+set.find(2)+" "+set.find(3));
+		set.union(1, 3);
+		System.out.println(set.find(0)+" "+set.find(1)+" "+set.find(2)+" "+set.find(3));
 	}
 	
 	class Tmp
@@ -81,9 +64,10 @@ public class Z
 		}
 	}
 	
+	@SuppressWarnings("resource")
 	public void amazon(String[] args) throws Exception
 	{
-		BufferedReader reader = IOUtils.createBufferedReader(new GZIPInputStream(new FileInputStream("/Users/jdchoi/Downloads/Movies_&_TV.txt.gz")));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream("/Users/jdchoi/Downloads/Books.txt.gz"))));
 		Pattern p = Pattern.compile(" ");
 		String[] t;
 		String line;
@@ -103,8 +87,8 @@ public class Z
 			if (e%10000000 == 0) System.out.print(".");
 		}	System.out.println();
 		
-		System.out.println(new Date(max).toString());
-		System.out.println(new Date(min).toString());
+		System.out.println(new Date(max*1000).toString());
+		System.out.println(new Date(min*1000).toString());
 	}
 	
 	public void test()
@@ -197,40 +181,6 @@ public class Z
 		
 		et = System.currentTimeMillis();
 		System.out.println(et-st);
-	}
-	
-	void compare(String[] args)
-	{
-		int i, j, size = 1000000;
-		IntGapList glist;
-		IntArrayList alist;
-		long st, et;
-		
-		st = System.currentTimeMillis();
-		
-		for (i=0; i<size; i++)
-		{
-			alist = new IntArrayList();
-			for (j=0; j<20; j++) alist.add(0, j);
-//			while (!alist.isEmpty()) alist.remove(0);
-		}
-		
-		et = System.currentTimeMillis();
-		System.out.println(et-st);
-		
-		st = System.currentTimeMillis();
-		
-		for (i=0; i<size; i++)
-		{
-			glist = new IntGapList();
-			for (j=0; j<20; j++) glist.add(0, j);
-//			while (!glist.isEmpty()) glist.remove(0);
-		}
-		
-		et = System.currentTimeMillis();
-		System.out.println(et-st);
-		
-		
 	}
 	
 	static public void main(String[] args)

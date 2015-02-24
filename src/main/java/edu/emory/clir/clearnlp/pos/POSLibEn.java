@@ -37,6 +37,11 @@ public class POSLibEn implements POSTagEn
 		return posTag.startsWith(POS_NN) || posTag.equals(CTLibEn.POS_PRP) || posTag.equals(CTLibEn.POS_WP);
 	}
 	
+	static public boolean isPronoun(String posTag)
+	{
+		return posTag.equals(CTLibEn.POS_PRP) || posTag.equals(CTLibEn.POS_PRPS);
+	}
+	
 	static public boolean isVerb(String posTag)
 	{
 		return posTag.startsWith(POS_VB);

@@ -46,10 +46,10 @@ package edu.emory.clir.clearnlp.component.mode.dep;
  */
 public interface DEPTransition
 {
-	String T_LEFT   = "L";
-	String T_RIGHT  = "R";
-	String T_NO     = "N";
-	String T_SHIFT  = "S";
-	String T_REDUCE = "R";
-	String T_PASS   = "P";
+	String ARC_LEFT    = "L";
+	String ARC_RIGHT   = "R";
+	String ARC_NO      = "N";
+	String LIST_SHIFT  = "S";
+	String LIST_REDUCE = "R";
+	String LIST_PASS   = "P";
 }

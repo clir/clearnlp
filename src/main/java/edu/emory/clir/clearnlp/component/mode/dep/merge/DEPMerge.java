@@ -20,14 +20,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Set;
 
-import edu.emory.clir.clearnlp.collection.set.IntHashSet;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 
@@ -36,38 +33,26 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  */
 public class DEPMerge
 {
-	private Map<DEPNode,Set<MergeArc>> m_heads;
-	private IntHashSet s_heads;
+	private Map<DEPNode,Map<DEPNode,MergeArc>> m_heads;
 	private DEPTree d_tree;
-	
 
 	public DEPMerge(DEPTree tree)
 	{
-		m_heads = initHeadMap(tree);
-		s_heads = new IntHashSet();
+		m_heads = new HashMap<>(tree.size()-1);
 		d_tree  = tree;
-	}
-	
-	private Map<DEPNode,Set<MergeArc>> initHeadMap(DEPTree tree)
-	{
-		int i, size = tree.size();
-		Map<DEPNode,Set<MergeArc>> map = new HashMap<>(size-1);
-		
-		for (i=1; i<size; i++)
-			map.put(tree.get(i), new HashSet<>());
-		
-		return map;
 	}
 	
 	public void addEdge(DEPNode node, DEPNode head, String label, double score)
 	{
-		int key = node.getID() * d_tree.size() + head.getID();
+//		int key = node.getID() * d_tree.size() + head.getID();
 		
-		if (!s_heads.contains(key))
-		{
-			m_heads.get(node).add(new MergeArc(node, head, label, score));
-			s_heads.add(key);
-		}
+		Map<DEPNode,MergeArc> map = m_heads.computeIfAbsent(node, k-> new HashMap<>());
+		MergeArc arc = map.get(head);
+		
+		if (arc == null)
+			map.put(head, new MergeArc(node, head, label, score));
+		else
+			arc.addLabel(label, score);
 	}
 	
 	public void merge()
@@ -91,8 +76,8 @@ public class DEPMerge
 	{
 		List<MergeArc> list = new ArrayList<>();
 		
-		for (Set<MergeArc> heads : m_heads.values())
-			list.addAll(heads);
+		for (Map<DEPNode,MergeArc> heads : m_heads.values())
+			list.addAll(heads.values());
 		
 		Collections.sort(list, Collections.reverseOrder());
 		return list;
@@ -161,14 +146,14 @@ public class DEPMerge
 	private PriorityQueue<MergeArc> getHeadless()
 	{
 		PriorityQueue<MergeArc> q = new PriorityQueue<>(Collections.reverseOrder());
-		Set<MergeArc> heads;
+		Map<DEPNode,MergeArc> heads;
 		
 		for (DEPNode node : d_tree)
 		{
 			if (!node.hasHead())
 			{
 				heads = m_heads.get(node);
-				if (heads != null) q.addAll(heads);
+				if (heads != null) q.addAll(heads.values());
 			}
 		}
 
@@ -178,7 +163,6 @@ public class DEPMerge
 	private void configureArcs(List<MergeArc> allArcs, Deque<MergeArc> priorArcs, MergeArc priorArc)
 	{
 		Iterator<MergeArc> iterator = allArcs.iterator();
-		Set<MergeArc> set;
 		MergeArc arc;
 		
 		priorArcs.addLast(priorArc);
@@ -191,14 +175,19 @@ public class DEPMerge
 			if (arc.getNode() == priorArc.getNode() || arc.containsCycle())
 			{
 				iterator.remove();
-				set = m_heads.get(arc.getNode());
-				
-				if (set != null)
-				{
-					set.remove(arc);
-					if (set.isEmpty()) m_heads.remove(arc.getNode());
-				}
+				remove(arc);
 			}
+		}
+	}
+	
+	private void remove(MergeArc arc)
+	{
+		Map<DEPNode,MergeArc> map = m_heads.get(arc.getNode());
+		
+		if (map != null)
+		{
+			map.remove(arc.getHead());
+			if (map.isEmpty()) m_heads.remove(arc.getNode());
 		}
 	}
 }

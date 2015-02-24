@@ -48,8 +48,10 @@ public interface DEPTagEn
 	String DEP_CC			= "cc";
 	/** The dependency label for clausal complements. */
 	String DEP_CCOMP		= "ccomp";
-	/** The dependency label for complementizers. */
-	String DEP_COMPLM		= "complm";
+//	/** The dependency label for complementizers. */
+//	String DEP_COMPLM		= "complm";
+//	/** The dependency label for compound nouns/numbers. */
+//	String DEP_COMPOUND		= "compound";
 	/** The dependency label for conjuncts. */
 	String DEP_CONJ			= "conj";
 	/** The dependency label for clausal subjects. */
@@ -80,8 +82,8 @@ public interface DEPTagEn
 	String DEP_NEG			= "neg";
 	/** The dependency label for non-finite modifiers. */
 	String DEP_NFMOD		= "nfmod";
-	/** The dependency label for infinitival modifiers. */
-	String DEP_INFMOD		= "infmod";
+//	/** The dependency label for infinitival modifiers. */
+//	String DEP_INFMOD		= "infmod";
 	/** The dependency label for noun phrase modifiers. */
 	String DEP_NMOD 		= "nmod";
 	/** The dependency label for noun compound modifiers. */
@@ -100,8 +102,8 @@ public interface DEPTagEn
 	String DEP_OPRD			= "oprd";
 	/** The dependency label for parataxis. */
 	String DEP_PARATAXIS 	= "parataxis";
-	/** The dependency label for participial modifiers. */
-	String DEP_PARTMOD		= "partmod";
+//	/** The dependency label for participial modifiers. */
+//	String DEP_PARTMOD		= "partmod";
 	/** The dependency label for modifiers of prepositions. */
 	String DEP_PMOD 		= "pmod";
 	/** The dependency label for prepositional complements. */

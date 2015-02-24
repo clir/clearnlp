@@ -15,6 +15,8 @@
  */
 package edu.emory.clir.clearnlp.component.mode.dep.merge;
 
+import edu.emory.clir.clearnlp.collection.map.ObjectDoubleHashMap;
+import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.util.MathUtils;
 
@@ -23,17 +25,27 @@ import edu.emory.clir.clearnlp.util.MathUtils;
  */
 public class MergeArc implements Comparable<MergeArc>
 {
+	private ObjectDoubleHashMap<String> m_labels;
+	private ObjectDoublePair<String> best_label;
 	private DEPNode d_node;
 	private DEPNode d_head;
-	private String  s_label;
 	private double  d_score;
 	
 	public MergeArc(DEPNode node, DEPNode head, String label, double score)
 	{
 		d_node  = node;
 		d_head  = head;
-		s_label = label;
 		d_score = score;
+		
+		best_label = new ObjectDoublePair<String>(label, score);
+		m_labels = new ObjectDoubleHashMap<>();
+		m_labels.put(label, score);
+	}
+	
+	public void addLabel(String label, double score)
+	{
+		double d = m_labels.add(label, score);
+		if (d > best_label.d || best_label.o == null) best_label.set(label, d);
 	}
 	
 	public DEPNode getNode()
@@ -46,9 +58,9 @@ public class MergeArc implements Comparable<MergeArc>
 		return d_head;
 	}
 	
-	public String getLabel()
+	public String getBestLabel()
 	{
-		return s_label;
+		return best_label.o;
 	}
 
 	public double getScore()
@@ -60,7 +72,7 @@ public class MergeArc implements Comparable<MergeArc>
 	{
 		if (!d_node.hasHead() && !containsCycle())
 		{
-			d_node.setHead(d_head, s_label);
+			d_node.setHead(d_head, getBestLabel());
 			return true;
 		}
 		

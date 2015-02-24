@@ -44,9 +44,11 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  */
 public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTransition
 {
-	static public final int IS_ROOT = 0;
-	static public final int IS_DESC = 1;
-	static public final int NO_HEAD = 2;
+	static public final int IS_ROOT   = 0;
+	static public final int IS_DESC   = 1;
+	static public final int NO_HEAD   = 2;
+	static public final int LEFT_ARC  = 3;
+	static public final int RIGHT_ARC = 4;
 	
 	private IntPStack i_stack;
 	private IntPStack i_inter;
@@ -58,7 +60,7 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	private boolean         save_branch;
 	private int             beam_index;
 	private int             beam_size;
-	
+	static public int n_trans1 = 0, n_trans2 = 0;
 //	====================================== Initialization ======================================
 	
 	public DEPState()
@@ -113,23 +115,23 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		
 		if (oracle.getNode() == input)
 		{
-			list = isGoldReduce(true) ? T_REDUCE : T_PASS;
-			return new DEPLabel(T_LEFT, list, oracle.getLabel());
+			list = isGoldReduce(true) ? LIST_REDUCE : LIST_PASS;
+			return new DEPLabel(ARC_LEFT, list, oracle.getLabel());
 		}
 					
 		oracle = getOracle(i_input);
 		
 		if (oracle.getNode() == getNode(stack))
 		{
-			list = isGoldShift() ? T_SHIFT : T_PASS;
-			return new DEPLabel(T_RIGHT, list, oracle.getLabel());
+			list = isGoldShift() ? LIST_SHIFT : LIST_PASS;
+			return new DEPLabel(ARC_RIGHT, list, oracle.getLabel());
 		}
 		
-		if      (isGoldShift())			list = T_SHIFT;
-		else if (isGoldReduce(false))	list = T_REDUCE;
-		else							list = T_PASS;
+		if      (isGoldShift())			list = LIST_SHIFT;
+		else if (isGoldReduce(false))	list = LIST_REDUCE;
+		else							list = LIST_PASS;
 		
-		return new DEPLabel(T_NO, list, StringConst.EMPTY);
+		return new DEPLabel(ARC_NO, list, StringConst.EMPTY);
 	}
 	
 	/** Called by {@link #getGoldLabel()}. */
@@ -178,31 +180,45 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		int i, size = labels.length;
 		DEPLabel label;
 		
-		IntArrayList isRoot = new IntArrayList();
-		IntArrayList isDesc = new IntArrayList();
-		IntArrayList noHead = new IntArrayList();
+		IntArrayList isRoot   = new IntArrayList();
+		IntArrayList isDesc   = new IntArrayList();
+		IntArrayList noHead   = new IntArrayList();
+		IntArrayList leftArc  = new IntArrayList();
+		IntArrayList rightArc = new IntArrayList();
 		
 		for (i=0; i<size; i++)
 		{
 			label = new DEPLabel(labels[i]);
 			
-			if (label.isList(T_SHIFT))
+			if (label.isList(LIST_SHIFT))
 				isRoot.add(i);
 			
-			if (label.isArc(T_NO))
+			if (label.isArc(ARC_NO))
 				isDesc.add(i);
+			else if (label.isArc(ARC_LEFT))
+				leftArc.add(i);
+			else if (label.isArc(ARC_RIGHT))
+				rightArc.add(i);
 			
-			if (!(label.isArc(T_NO) && label.isList(T_REDUCE)))
+			if (!(label.isArc(ARC_NO) && label.isList(LIST_REDUCE)))
 				noHead.add(i);
 		}
 		
-		int[][] indices = new int[3][];
+		int[][] indices = new int[5][];
 		
-		indices[IS_ROOT] = isRoot.toArray(); Arrays.sort(indices[IS_ROOT]);
-		indices[IS_DESC] = isDesc.toArray(); Arrays.sort(indices[IS_DESC]);
-		indices[NO_HEAD] = noHead.toArray(); Arrays.sort(indices[NO_HEAD]);
+		initLabelIndices(indices, isRoot  , IS_ROOT);
+		initLabelIndices(indices, isDesc  , IS_DESC);
+		initLabelIndices(indices, noHead  , NO_HEAD);
+		initLabelIndices(indices, leftArc , LEFT_ARC);
+		initLabelIndices(indices, rightArc, RIGHT_ARC);
 		
 		return indices;
+	}
+	
+	private void initLabelIndices(int[][] indices, IntArrayList list, int index)
+	{
+		indices[index] = list.toArray();
+		Arrays.sort(indices[index]);
 	}
 	
 	public int[] getLabelIndices(int[][] indices)
@@ -264,6 +280,14 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		return getNode(i_input);
 	}
 	
+	public void reset(int stackID, int inputID)
+	{
+		i_stack.clear();
+		i_inter.clear();
+		i_stack.push(stackID);
+		i_input = inputID;
+	}
+	
 //	====================================== TRANSITION ======================================
 	
 	@Override
@@ -286,26 +310,29 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		DEPNode stack = getStack();
 		DEPNode input = getInput();
 		
-		if (label.isArc(T_LEFT))
+		if (label.isArc(ARC_LEFT))
 		{
 			if (beam_size > 1) addEdge(stack, input, label);
 			stack.setHead(input, label.getDeprel());
-			if (label.isList(T_REDUCE)) reduce();
+			if (label.isList(LIST_REDUCE)) reduce();
 			else pass();
 		}
-		else if (label.isArc(T_RIGHT))
+		else if (label.isArc(ARC_RIGHT))
 		{
 			if (beam_size > 1) addEdge(input, stack, label);
 			input.setHead(stack, label.getDeprel());
-			if (label.isList(T_SHIFT)) shift();
+			if (label.isList(LIST_SHIFT)) shift();
 			else pass();
 		}
 		else
 		{
-			if (label.isList(T_SHIFT)) shift();
-			else if (label.isList(T_REDUCE) && stack.hasHead()) reduce();
+			if (label.isList(LIST_SHIFT)) shift();
+			else if (label.isList(LIST_REDUCE) && stack.hasHead()) reduce();
 			else pass();
 		}
+		
+		if (save_branch)	n_trans1++;
+		else				n_trans2++;
 	}
 	
 	private void addEdge(DEPNode node, DEPNode head, DEPLabel label)
@@ -376,7 +403,7 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		return (d > 6) ? 6 : d;
 	}
 	
-//	====================================== HELPER ======================================
+//	====================================== BRANCH ======================================
 
 	public boolean startBranching()
 	{

@@ -54,6 +54,11 @@ public class IncMap1<T> implements Serializable
 		return g_map.get(key);
 	}
 	
+	public boolean contains(T key)
+	{
+		return g_map.containsKey(key);
+	}
+	
 	public double getProbability(T key)
 	{
 		return MathUtils.divide(get(key), i_total);

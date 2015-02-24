@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.collection.stack;
+package edu.emory.clir.clearnlp.collection.set;
 
 import java.util.Arrays;
 
@@ -53,6 +53,11 @@ public class DisjointSet
 	public int find(int id)
 	{
 		return (s_root[id] < 0) ? id : (s_root[id] = find(s_root[id]));
+	}
+	
+	public boolean inSameSet(int id1, int id2)
+	{
+		return find(id1) == find(id2);
 	}
 	
 	public String toString()
