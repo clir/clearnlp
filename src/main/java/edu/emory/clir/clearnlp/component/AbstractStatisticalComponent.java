@@ -33,7 +33,8 @@ import edu.emory.clir.clearnlp.classification.trainer.AdaGradSVM;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.collector.ICollector;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
-import edu.emory.clir.clearnlp.component.state.AbstractState;
+import edu.emory.clir.clearnlp.component.utils.AbstractState;
+import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
 

@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -31,6 +32,7 @@ import edu.emory.clir.clearnlp.reader.TSVReader;
 import edu.emory.clir.clearnlp.srl.SRLTree;
 import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
+import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 
 /**
@@ -78,6 +80,13 @@ public class DEPTreeTest
 		String str = tree.toStringSRL();
 		DEPNode pred = tree.get(0);
 		SRLTree sTree;
+		
+		
+		
+		System.out.println(tree.toStringDEP()+"\n");
+		System.out.println(tree.getDepthFirstNodeList().stream().map(DEPNode::getWordForm).collect(Collectors.joining(StringConst.SPACE)));
+		
+		
 		
 		// srl-tree
 		String[] arr = {"buy.01 1:A0 2:AM-TMP 5:A1 6:AM-TMP","be.01 5:A1 7:R-A1 9:A2"};

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.sense;
+package edu.emory.clir.clearnlp.component.mode.sentiment;
 
-import java.util.Map;
+import java.util.List;
 
 import edu.emory.clir.clearnlp.component.utils.AbstractState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
+import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
@@ -27,25 +28,19 @@ import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SenseState extends AbstractState<String,String>
+public class SAState extends AbstractState<String,String>
 {
-	Map<String,String> mononymous_senses;
-	private String feat_key;
-	private int i_input;
+	protected List<DEPNode> d_nodes;
+	protected int i_input;
 	
 //	====================================== INITIALIZATION ======================================
 	
-	public SenseState(DEPTree tree, CFlag flag, Map<String,String> mononymousSenses, String featKey)
+	public SAState(DEPTree tree, CFlag flag)
 	{
 		super(tree, flag);
-		init(mononymousSenses, featKey);
-	}
-	
-	private void init(Map<String,String> monoSenses, String featKey)
-	{
-		mononymous_senses = monoSenses;
-		feat_key = featKey;
-		setInput(0);
+
+		d_nodes = tree.getDepthFirstNodeList();
+		i_input = 0;
 	}
 	
 //	====================================== ORACLE/LABEL ======================================
@@ -53,39 +48,42 @@ public class SenseState extends AbstractState<String,String>
 	@Override
 	protected void initOracle()
 	{
-		g_oracle = d_tree.getFeatureTags(feat_key);
-		d_tree.clearFeatureTags(feat_key);
+		g_oracle = new String[t_size];
+		
+		for (int i=0; i<t_size; i++)
+			g_oracle[i] = clearOracle(getNode(i));
 	}
-
+	
 	@Override
 	public void resetOracle()
 	{
-		d_tree.setFeatureTags(feat_key, g_oracle);
+		for (int i=0; i<t_size; i++)
+			setLabel(getNode(i), g_oracle[i]);
 	}
-
+	
 	@Override
 	public String getGoldLabel()
 	{
 		return g_oracle[i_input];
 	}
 	
-//	====================================== NODE ======================================
+	protected String clearOracle(DEPNode node)
+	{
+		return node.removeFeat(DEPLib.FEAT_SA);
+	}
 
+//	====================================== NODE ======================================
+	
 	@Override
 	public DEPNode getNode(AbstractFeatureToken token)
 	{
-		int id = i_input + token.getOffset();
+		int id = getInput().getID() + token.getOffset();
 		return (0 < id) ? getNodeRelation(token, getNode(id)) : null;
 	}
 	
 	public DEPNode getInput()
 	{
-		return getNode(i_input);
-	}
-	
-	public void setInput(int id)
-	{
-		i_input = id;
+		return d_nodes.get(i_input);
 	}
 	
 //	====================================== TRANSITION ======================================
@@ -93,40 +91,25 @@ public class SenseState extends AbstractState<String,String>
 	@Override
 	public void next(String label)
 	{
-		getInput().putFeat(feat_key, label);
+		setLabel(getInput(), label);
+		i_input++;
 	}
 	
-	public void shift()
-	{
-		String sense;
-		
-		for (++i_input; i_input<t_size; i_input++)
-		{
-			sense = getSense(getInput());
-			if (sense != null) break;
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.state.AbstractState#isTerminate()
-	 */
 	@Override
 	public boolean isTerminate()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return i_input >= t_size;
+	}
+	
+	protected void setLabel(DEPNode node, String label)
+	{
+		node.putFeat(DEPLib.FEAT_SA, label);
 	}
 	
 //	====================================== FEATURES ======================================
-
-	@Override
+	
 	public boolean extractWordFormFeature(DEPNode node)
 	{
 		return true;
 	}
-
-	public String getSense(DEPNode node)
-	{
-		return node.getFeat(feat_key);
-	}	
 }

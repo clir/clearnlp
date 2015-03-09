@@ -28,7 +28,6 @@ import java.util.zip.GZIPInputStream;
 
 import com.google.common.collect.Lists;
 
-import edu.emory.clir.clearnlp.collection.set.DisjointSet;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPFeatureExtractor;
 import edu.emory.clir.clearnlp.component.mode.dep.DefaultDEPParser;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
@@ -44,14 +43,19 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		DisjointSet set = new DisjointSet(4);
+		TSVReader reader = new TSVReader(0, 1, 2, 4, 5, 6, 7);
+		DEPTree tree;
 		
-		set.union(0, 1);
-		System.out.println(set.find(0)+" "+set.find(1)+" "+set.find(2)+" "+set.find(3));
-		set.union(2, 3);
-		System.out.println(set.find(0)+" "+set.find(1)+" "+set.find(2)+" "+set.find(3));
-		set.union(1, 3);
-		System.out.println(set.find(0)+" "+set.find(1)+" "+set.find(2)+" "+set.find(3));
+		reader.open(new FileInputStream(args[0]));
+		
+		while ((tree = reader.next()) != null)
+		{
+			if (tree.isNonProjective())
+			{
+				System.out.println("YES");
+				break;
+			}
+		}
 	}
 	
 	class Tmp
@@ -134,7 +138,7 @@ public class Z
 		DEPFeatureExtractor df = new DEPFeatureExtractor(IOUtils.createFileInputStream(featureFile));
 		DefaultDEPParser parser = new DefaultDEPParser(new DEPFeatureExtractor[]{df}, null);
 //		PrintStream fout   = IOUtils.createBufferedPrintStream(outputFile);
-		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
+		TSVReader reader = new TSVReader(0, 1, 2, 4, 5, 6, 7);
 		reader.open(IOUtils.createFileInputStream(inputFile));
 //		DEPState state;
 		DEPTree tree;

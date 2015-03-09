@@ -15,9 +15,15 @@
  */
 package edu.emory.clir.clearnlp.util;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.List;
 
 import edu.emory.clir.clearnlp.collection.map.IncMap1;
+import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
+import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
+import edu.emory.clir.clearnlp.util.constant.PatternConst;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -33,9 +39,29 @@ public class TFIDF
 		document_frequencies = new IncMap1<>();
 	}
 	
-	public void addDocument(List<String> document)
+	static public ObjectIntHashMap<String> getDocumentFrequencyCounts(List<String> filenames) throws FileNotFoundException
 	{
-		for (String token : document)
-			term_frequencies.add(token);
+		ObjectIntHashMap<String> map = new ObjectIntHashMap<>();
+		
+		for (String filename : filenames)
+			for (String s : DSUtils.getBagOfWords(new FileInputStream(filename), PatternConst.WHITESPACES))
+				map.add(s);
+		
+		return map;
+	}
+	
+	static public void main(String[] args) throws FileNotFoundException
+	{
+		List<String> filenames = FileUtils.getFileList(args[0], ".txt", false);
+		ObjectIntHashMap<String> map = getDocumentFrequencyCounts(filenames);
+		List<ObjectIntPair<String>> list = map.toList();
+		DSUtils.sortReverseOrder(list);
+		
+		PrintStream fout = IOUtils.createBufferedPrintStream(args[1]);
+		int size = filenames.size();
+		System.out.println(size);
+		
+		for (ObjectIntPair<String> p : list)
+			fout.printf("%s\t%d\t%6.4f\n", p.o, p.i, MathUtils.divide(p.i,size));
 	}
 }

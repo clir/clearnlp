@@ -620,6 +620,21 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).clearSemanticHeads();
 	}
 	
+	public List<DEPNode> getDepthFirstNodeList()
+	{
+		List<DEPNode> list = new ArrayList<>(size());
+		traverseDepthFirst(list, get(DEPLib.ROOT_ID));
+		return list;
+	}
+	
+	private void traverseDepthFirst(List<DEPNode> list, DEPNode node)
+	{
+		for (DEPNode child : node.getDependentList())
+			traverseDepthFirst(list, child);
+		
+		list.add(node);
+	}
+	
 //	====================================== String ======================================
 	
 	public String toStringPOS()

@@ -120,12 +120,12 @@ public class StringFeatureVector extends AbstractFeatureVector
 		{
 			build.append(DELIM_FEATURE);
 			build.append(getType(i));
-			build.append(DELIM_WEIGHT);
+			build.append(StringConst.COLON);
 			build.append(getValue(i));
 			
 			if (hasWeight())
 			{
-				build.append(DELIM_WEIGHT);
+				build.append(StringConst.COLON);
 				build.append(getWeight(i));
 			}
 		}

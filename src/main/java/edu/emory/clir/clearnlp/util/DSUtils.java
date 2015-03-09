@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -44,6 +46,35 @@ import edu.emory.clir.clearnlp.collection.pair.Pair;
 public class DSUtils
 {
 	private DSUtils() {}
+	
+	static public Set<String> getBagOfWords(String s, Pattern splitter)
+	{
+		Set<String> set = new HashSet<>();
+		
+		for (String t : splitter.split(s))
+		{
+			t = t.trim();
+			if (!t.isEmpty()) set.add(t);
+		}
+		
+		return set;
+	}
+	
+	static public Set<String> getBagOfWords(InputStream in, Pattern splitter)
+	{
+		BufferedReader reader = IOUtils.createBufferedReader(in);
+		Set<String> set = new HashSet<>();
+		String line;
+		
+		try
+		{
+			while ((line = reader.readLine()) != null) 
+				set.addAll(getBagOfWords(line, splitter));
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return set;
+	}
 	
 	static public Set<String> createStringHashSet(InputStream in)
 	{

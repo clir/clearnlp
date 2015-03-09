@@ -15,6 +15,7 @@
  */
 package edu.emory.clir.clearnlp.dependency;
 
+
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -44,4 +45,8 @@ public class DEPLib
 	static public final String FEAT_WS	= "ws";
 	/** The feat-key of word senses. */
 	static public final String FEAT_POS2 = "p2";
+	/** The feat-key of sentiments. */
+	static public final String FEAT_SA  = "sa";
+	/** The feat-key of sentiments (for root). */
+	static public final String FEAT_SAR = "sar";
 }

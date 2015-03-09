@@ -1,0 +1,65 @@
+<!--Feature template for POS tagging in English -->
+<feature_template>
+	<!-- 1-gram features -->
+	<feature f0="i:f"/>
+	<feature f0="i+1:f"/>
+	<feature f0="i-2:f" visible="false"/>
+	<feature f0="i-1:f" visible="false"/>
+	<feature f0="i+2:f" visible="false"/>
+	<feature f0="i-3:f" visible="false"/>
+	<feature f0="i+3:f" visible="false"/>
+
+	<feature f0="i:a"/>
+	<feature f0="i+3:a"/>
+	<feature f0="i-3:p" visible="false"/>
+	<feature f0="i-2:p" visible="false"/>
+	<feature f0="i-1:p" visible="false"/>
+	<feature f0="i+1:a" visible="false"/>
+	<feature f0="i+2:a" visible="false"/>
+
+	<!-- 2-gram features -->
+	<feature f0="i-2:f" f1="i-1:f"/>
+	<feature f0="i-1:f" f1="i:f"/>
+	<feature f0="i:f"   f1="i+1:f"/>
+	<feature f0="i-1:f" f1="i+1:f"/>
+	<feature f0="i+1:f" f1="i+2:f"/>
+
+	<feature f0="i-2:p" f1="i-1:p"/>
+	<feature f0="i-1:p" f1="i+1:a"/>
+	<feature f0="i+1:a" f1="i+2:a" visible="false"/>
+
+	<!-- 3-gram features -->
+	<feature f0="i-2:p" f1="i-1:p" f2="i:a"/>
+	<feature f0="i-1:p" f1="i:a"   f2="i+1:a"/>
+	<feature f0="i-2:p" f1="i-1:p" f2="i+1:a"/>
+	<feature f0="i-1:p" f1="i+1:a" f2="i+2:a"/>
+
+	<feature f0="i-2:f" f1="i-1:f" f2="i:f"/>
+	<feature f0="i:f"   f1="i+1:f" f2="i+2:f"/>
+	<feature f0="i-1:f" f1="i:f"   f2="i+1:f"/>
+	<feature f0="i-2:f" f1="i-1:f" f2="i+1:f"/>
+	<feature f0="i-1:f" f1="i+1:f" f2="i+2:f" visible="false"/>
+	
+	<!-- feat features -->
+	<feature f0="i:ft=f0"/>
+	<feature f0="i:ft=f1"/>
+	<feature f0="i:ft=f2"/>
+	<feature f0="i:ft=f3"/>
+	<feature f0="i:ft=f4"/>
+	<feature f0="i:ft=f5"/>
+	<feature f0="i:ft=f6"/>
+	<feature f0="i:ft=f7" visible="false" note="A2[0]A0[1]"/>
+	<feature f0="i:ft=f8" visible="false" note="A2[0]A0[q]"/>
+	<feature f0="i:ft=f9"/>
+	<feature f0="i:ft=f10"/>
+	<feature f0="i:ft=f11"/>
+	<feature f0="i:ft=f12"/>
+	<feature f0="i:ft=f13"/>
+	<feature f0="i:ft=f14"/>
+	<feature f0="i:ft=f15"/>
+	<feature f0="i:ft=f16"/>
+
+	<!-- binary features -->
+	<feature f0="i:b0" note="input is the first token" visible="true"/>
+	<feature f0="i:b1" note="input is the last  token" visible="false"/>
+</feature_template>

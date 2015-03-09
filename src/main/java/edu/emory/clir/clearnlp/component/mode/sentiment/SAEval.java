@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.pos;
+package edu.emory.clir.clearnlp.component.mode.sentiment;
 
 import edu.emory.clir.clearnlp.component.evaluation.AbstractAccuracyEval;
+import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 
@@ -23,39 +24,16 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSEval extends AbstractAccuracyEval<String>
+public class SAEval extends AbstractAccuracyEval<String>
 {
 	@Override
 	public void countCorrect(DEPTree sTree, String[] gTags)
 	{
-		int i, size = sTree.size();
-		DEPNode node;
+		DEPNode root = sTree.get(DEPLib.ROOT_ID);
 		
-		n_total += size - 1;
+		if (gTags[0].equals(root.getFeat(DEPLib.FEAT_SA)))
+			n_correct++;
 		
-		for (i=1; i<size; i++)
-		{
-			node = sTree.get(i);
-			
-			if (node.isPOSTag(gTags[i]))
-				n_correct++;
-		}
+		n_total++;
 	}
-	
-//	public void countCorrect(DEPTree sTree, String[] gTags)
-//	{
-//		int i, correct = 0, size = sTree.size();
-//		DEPNode node;
-//		
-//		for (i=1; i<size; i++)
-//		{
-//			node = sTree.get(i);
-//			
-//			if (node.isPOSTag(gTags[i]))
-//				correct++;
-//		}
-//		
-//		if (correct == size - 1) n_correct++;
-//		n_total++;
-//	}
 }

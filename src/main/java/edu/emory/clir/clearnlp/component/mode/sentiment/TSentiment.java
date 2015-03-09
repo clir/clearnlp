@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component;
+package edu.emory.clir.clearnlp.component.mode.sentiment;
 
 /**
- * @see <a href="https://github.com/clir/clearnlp/wiki/Component-Flags">Component-Flags</a>
- * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public enum CFlag
+public enum TSentiment
 {
-	COLLECT,
-	TRAIN,
-	BOOTSTRAP,
-	EVALUATE,
-	DECODE;
+	STRONG_POSITIVE("++"),
+	STRONG_NEGATIVE("--"),
+	WEAK_POSITIVE("+"),
+	WEAK_NEGATIVE("-"),
+	NEUTRAL("0");
+	
+	private final String sentiment;
+	
+	TSentiment(String sentiment)
+	{
+		this.sentiment = sentiment;
+	}
+	
+	public String toValue()
+	{
+		return sentiment;
+	}
 }

@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.collector;
-
-import edu.emory.clir.clearnlp.component.utils.AbstractState;
-
+package edu.emory.clir.clearnlp.component.utils;
 
 /**
+ * @see <a href="https://github.com/clir/clearnlp/wiki/Component-Flags">Component-Flags</a>
+ * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public interface ICollector<StateType extends AbstractState<?, ?>>
+public enum CFlag
 {
-	void collect(StateType state);
+	COLLECT,
+	TRAIN,
+	BOOTSTRAP,
+	EVALUATE,
+	DECODE;
 }

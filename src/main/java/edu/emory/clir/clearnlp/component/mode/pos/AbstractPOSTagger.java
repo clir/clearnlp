@@ -36,8 +36,8 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  */
 public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSEval, POSFeatureExtractor>
 {
-	static public final int LEXICON_AMBIGUITY_CLASS = 0;
-	static public final int LEXICON_PROPER_NOUNS    = 1;
+	static public final int INDEX_AMBIGUITY_CLASS = 0;
+	static public final int INDEX_PROPER_NOUNS    = 1;
 	
 	private Map<String,String> m_ambiguity_classes;
 	private Set<String> s_proper_nouns;
@@ -86,8 +86,8 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 		
 		Object[] lexicons = new Object[2];
 		
-		lexicons[LEXICON_AMBIGUITY_CLASS] = m_ambiguity_classes;
-		lexicons[LEXICON_PROPER_NOUNS]    = s_proper_nouns;
+		lexicons[INDEX_AMBIGUITY_CLASS] = m_ambiguity_classes;
+		lexicons[INDEX_PROPER_NOUNS]    = s_proper_nouns;
 		
 		return lexicons;
 	}
@@ -96,8 +96,8 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	@SuppressWarnings("unchecked")
 	public void setLexicons(Object[] lexicons)
 	{
-		m_ambiguity_classes = (Map<String,String>)lexicons[LEXICON_AMBIGUITY_CLASS];
-		s_proper_nouns      = (Set<String>)lexicons[LEXICON_PROPER_NOUNS];
+		m_ambiguity_classes = (Map<String,String>)lexicons[INDEX_AMBIGUITY_CLASS];
+		s_proper_nouns      = (Set<String>)lexicons[INDEX_PROPER_NOUNS];
 	}
 	
 //	====================================== EVAL ======================================

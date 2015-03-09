@@ -17,6 +17,7 @@ package edu.emory.clir.clearnlp.classification.vector;
 
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 import edu.emory.clir.clearnlp.util.MathUtils;
+import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
  * @since 3.0.0
@@ -120,7 +121,7 @@ public class SparseFeatureVector extends AbstractFeatureVector
 			
 			if (hasWeight())
 			{
-				build.append(DELIM_WEIGHT);
+				build.append(StringConst.COLON);
 				build.append(getWeight(i));
 			}
 		}

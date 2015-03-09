@@ -1,0 +1,17 @@
+<configuration>
+    <language>english</language>
+
+    <reader type="tsv">
+        <column index="1" field="pos"/>
+        <column index="2" field="form"/>
+        <column index="3" field="feats"/>
+    </reader>
+
+    <pos>
+        <trainer algorithm="adagrad" type="svm" labelCutoff="0" featureCutoff="0" alpha="0.01" rho="0.1" average="false"/>
+        <ambiguity_class_threshold>0.4</ambiguity_class_threshold>
+        <proper_noun_tagset></proper_noun_tagset>
+        <bootstraps>true</bootstraps>
+    </pos>
+</configuration>
+

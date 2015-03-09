@@ -27,7 +27,7 @@ import org.w3c.dom.NodeList;
 import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
-import edu.emory.clir.clearnlp.component.state.AbstractState;
+import edu.emory.clir.clearnlp.component.utils.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.common.OrthographicType;

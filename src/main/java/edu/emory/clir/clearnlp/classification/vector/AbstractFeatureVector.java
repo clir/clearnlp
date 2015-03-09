@@ -27,9 +27,7 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  */
 abstract public class AbstractFeatureVector
 {
-	static public final String  DELIM_WEIGHT  = StringConst.COLON;
 	static public final String  DELIM_FEATURE = StringConst.SPACE;
-	static public final Pattern SPLIT_WEIGHT  = PatternConst.COLON;
 	static public final Pattern SPLIT_FEATURE = PatternConst.SPACE;
 	
 	protected DoubleArrayList d_weights = null;

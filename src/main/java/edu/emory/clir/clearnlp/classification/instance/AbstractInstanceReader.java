@@ -20,7 +20,9 @@ import java.io.InputStream;
 
 import edu.emory.clir.clearnlp.classification.vector.AbstractFeatureVector;
 import edu.emory.clir.clearnlp.reader.AbstractReader;
+import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.adapter.Adapter1;
+import edu.emory.clir.clearnlp.util.constant.CharConst;
 
 /**
  * @since 3.0.0
@@ -44,16 +46,43 @@ abstract public class AbstractInstanceReader<I extends AbstractInstance<F>, F ex
 		if (line == null) return null;
 		
 		String[] cols = AbstractFeatureVector.SPLIT_FEATURE.split(line);
-		String[] col  = AbstractFeatureVector.SPLIT_WEIGHT .split(cols[1]);
+		String[] col  = splitFeature(cols[1]);
 		int i, size = cols.length;
 		
 		F vector = createFeatureVector(col);
 		addFeature(vector, col);
 				
 		for (i=2; i<size; i++)
-			addFeature(vector, AbstractFeatureVector.SPLIT_WEIGHT.split(cols[i]));
+			addFeature(vector, splitFeature(cols[i]));
 		
 		return getInstance(cols[0], vector);
+	}
+	
+	private String[] splitFeature(String s)
+	{
+		String type, value = null, weight = null;
+		int idx, lidx;
+		
+		idx = s.indexOf(CharConst.COLON);
+		type = s.substring(0, idx);
+		
+		lidx = s.lastIndexOf(CharConst.COLON);
+		
+		if (idx+1 < lidx)
+		{
+			String t = s.substring(lidx+1);
+			
+			if (StringUtils.isDouble(t))
+			{
+				value  = s.substring(idx+1, lidx);
+				weight = t;
+			}
+		}
+		
+		if (value == null)
+			value = s.substring(idx+1);
+		
+		return (weight != null) ? new String[]{type,value,weight} : new String[]{type,value};
 	}
 	
 	private String readLine()

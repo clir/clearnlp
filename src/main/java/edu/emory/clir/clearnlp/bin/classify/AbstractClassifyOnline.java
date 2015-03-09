@@ -61,6 +61,7 @@ abstract public class AbstractClassifyOnline extends AbstractClassify
 		AbstractTrainer trainer = getTrainer(trainConfiguration, model);
 		double prevScore, currScore = 0;
 		FloatArrayList weights = null;
+		System.out.println(trainer.trainerInfoFull());
 		
 		while (true)
 		{

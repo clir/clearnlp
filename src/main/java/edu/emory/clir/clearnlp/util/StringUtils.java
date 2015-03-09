@@ -27,6 +27,21 @@ public class StringUtils
 {
 	private StringUtils() {}
 	
+	static public int getLCSLength(String[] x, String[] y)
+	{
+		final int M = x.length;
+		final int N = y.length;
+		
+		int[][] counts = new int[M+1][N+1];
+		int i, j;
+		
+		for (i=1; i<=M; i++)
+			for (j=1; j<=N; j++)
+				counts[i][j] = (x[i-1].equals(y[j-1])) ? counts[i-1][j-1] + 1 : Math.max(counts[i][j-1], counts[i-1][j]);
+
+		return counts[M][N];
+	}
+	
 	/** @return the specific number of spaces. */
 	static public String spaces(int length)
 	{
@@ -294,6 +309,17 @@ public class StringUtils
 	public static boolean containsPunctuationOnly(String s)
 	{
 		return CharUtils.containsPunctuationOnly(s.toCharArray());
+	}
+	
+	public static boolean isDouble(String s)
+	{
+		for (char c : s.toCharArray())
+		{
+			if (!Character.isDigit(c) && c != '.' && c != '-' && c != '+')
+				return false;
+		}
+		
+		return true;
 	}
 	
 //	====================================== Getters ======================================
