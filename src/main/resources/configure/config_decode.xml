@@ -4,6 +4,7 @@
     <model>
         <pos>edu/emory/clir/clearnlp/model/english/general/pos.gz</pos>
         <dep>model/dep.0</dep>
+        <seq>modle/seq.gz</seq>
     </model>
 
     <reader type="tsv">

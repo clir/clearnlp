@@ -26,6 +26,5 @@ abstract public class AbstractEval<LabelType>
 	abstract public void countCorrect(DEPTree sTree, LabelType[] gLabels);
 	abstract public double[] getScores();
 	abstract public double getScore();
-	abstract public String toString();
 	abstract public void clear();
 }

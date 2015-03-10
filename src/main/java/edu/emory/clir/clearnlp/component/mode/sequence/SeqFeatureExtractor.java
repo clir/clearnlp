@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp;
+package edu.emory.clir.clearnlp.component.mode.sequence;
+
+import java.io.InputStream;
+
+import edu.emory.clir.clearnlp.feature.common.CommonFeatureExtractor;
 
 /**
- * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public enum NLPMode
+public class SeqFeatureExtractor extends CommonFeatureExtractor<SeqState>
 {
-	pos,
-	morph,
-	dep,
-	srl,
-	seq;
+	private static final long serialVersionUID = -4420624051991711740L;
+
+	public SeqFeatureExtractor(InputStream in)
+	{
+		super(in);
+	}
 }

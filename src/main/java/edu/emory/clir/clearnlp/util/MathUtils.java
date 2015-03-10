@@ -127,6 +127,11 @@ public class MathUtils
 		return (precision + recall == 0) ? 0 : 2 * (precision * recall) / (precision + recall);
 	}
 	
+	static public double getAccuracy(int correct, int total)
+	{
+		return 100d * correct / total;
+	}
+	
 	static public double sumOfSquares(double[] vector)
 	{
 		double sum = 0;

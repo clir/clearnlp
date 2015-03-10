@@ -102,6 +102,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	
 //	====================================== EVAL ======================================
 
+	@Override
 	protected void initEval()
 	{
 		c_eval = new POSEval();

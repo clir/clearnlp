@@ -32,6 +32,9 @@ import edu.emory.clir.clearnlp.component.mode.pos.AbstractPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.EnglishPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.POSTrainer;
+import edu.emory.clir.clearnlp.component.mode.sequence.AbstractSequenceClassifier;
+import edu.emory.clir.clearnlp.component.mode.sequence.DefaultSequenceClassifier;
+import edu.emory.clir.clearnlp.component.mode.sequence.SeqTrainer;
 import edu.emory.clir.clearnlp.conversion.AbstractC2DConverter;
 import edu.emory.clir.clearnlp.conversion.EnglishC2DConverter;
 import edu.emory.clir.clearnlp.conversion.headrule.HeadRuleMap;
@@ -82,6 +85,12 @@ public class NLPUtils
 		}
 	}
 	
+	static public AbstractSequenceClassifier getSequenceClassifier(TLanguage language, ObjectInputStream in)
+	{
+		BinUtils.LOG.info("Loading sequence classification models.\n");
+		return new DefaultSequenceClassifier(in);
+	}
+	
 	static public AbstractDEPParser getDEPParser(TLanguage language, ObjectInputStream in, int beamSize)
 	{
 		BinUtils.LOG.info("Loading dependency parsing models.\n");
@@ -103,6 +112,11 @@ public class NLPUtils
 		return getDEPParser(language, getObjectInputStream(modelPath), beamSize);
 	}
 	
+	static public AbstractSequenceClassifier getSequenceClassifier(TLanguage language, String modelPath)
+	{
+		return getSequenceClassifier(language, getObjectInputStream(modelPath));
+	}
+	
 	static private ObjectInputStream getObjectInputStream(String modelPath)
 	{
 		try
@@ -121,6 +135,7 @@ public class NLPUtils
 		case pos: return new POSTrainer(configuration, features);
 		case dep: return new DEPTrainer(configuration, features);
 		case srl: return null;
+		case seq: return new SeqTrainer(configuration, features);
 		default : throw new IllegalArgumentException("Invalid mode: "+mode.toString()); 
 		}
 	}

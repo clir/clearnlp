@@ -43,6 +43,7 @@ public interface ConfigurationXML
 	String FIELD_XHEADS	= "xheads";
 	String FIELD_NAMENT	= "nament";
 	String FIELD_COREF	= "coref";
+	String FIELD_SEQTAG	= "seqtag";
 	
 	String V_SUPPORT_VECTOR_MACHINE	= "svm";
 	String V_LOGISTIC_REGRESSION	= "lr";

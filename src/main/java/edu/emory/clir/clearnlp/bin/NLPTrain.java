@@ -63,7 +63,7 @@ public class NLPTrain
 	protected String s_developExt = "*";
 	@Option(name="-m", usage="model path (optional)", required=false, metaVar="<filename>")
 	protected String s_modelPath = null;
-	@Option(name="-mode", usage="pos|dep|srl", required=true, metaVar="<string>")
+	@Option(name="-mode", usage="pos|dep|srl|seq", required=true, metaVar="<string>")
 	protected String s_mode = ".*";
 	@Option(name="-stop", usage="stopping criteria (optional; development only)", required=false, metaVar="<double>")
 	static public double d_stop = 0;

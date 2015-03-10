@@ -158,6 +158,7 @@ public class NLPDecode
 		case dep  : list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), config.getDecodeBeamSize(mode)));
 		case morph: list.add(NLPUtils.getMPAnalyzer(language));
 		case pos  : list.add(NLPUtils.getPOSTagger(language, config.getModelPath(NLPMode.pos)));
+		case seq  : list.add(NLPUtils.getSequenceClassifier(language, config.getModelPath(NLPMode.seq)));
 		}
 
 		return toReverseArray(list);
@@ -169,6 +170,7 @@ public class NLPDecode
 		
 		switch (mode)
 		{
+		case seq: break; // TO DO::::::::::
 		case srl:
 		case dep:
 			if (!reader.hasDependencyHeads())
@@ -195,6 +197,7 @@ public class NLPDecode
 	{
 		switch (mode)
 		{
+		case seq  : return tree.toStringSRL();
 		case srl  : return tree.toStringSRL();
 		case dep  : return tree.toStringDEP();
 		case morph: return tree.toStringMorph();

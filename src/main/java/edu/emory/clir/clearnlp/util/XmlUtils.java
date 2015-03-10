@@ -96,6 +96,11 @@ public class XmlUtils
 		return Double.parseDouble(getTrimmedTextContent(element));
 	}
 	
+	static public boolean getBooleanTextContent(Element element)
+	{
+		return Boolean.parseBoolean(getTrimmedTextContent(element));
+	}
+	
 	static public String getTrimmedAttribute(Element element, String name)
 	{
 		return element.getAttribute(name).trim();

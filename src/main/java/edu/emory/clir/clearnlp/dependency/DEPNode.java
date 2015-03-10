@@ -66,6 +66,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	private SortedArrayList<DEPNode> l_dependents;
 	/** The ID of this node among its sibling (starting with 0). */
 	private int n_siblingID;
+	private String s_sequenceLabel = null;
 	
 	/** The list of secondary heads of this node (default: empty). */
 	private List<DEPArc> x_heads;
@@ -143,6 +144,28 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		s_label = null;
 		n_siblingID = 0;
 		l_dependents.clear();
+	}
+	
+	public String getSequenceLabel()
+	{
+		return s_sequenceLabel;
+	}
+	
+	public void setSequenceLabel(String label)
+	{
+		s_sequenceLabel = label;
+	}
+	
+	public String clearSequenceLabel()
+	{
+		String t = s_sequenceLabel;
+		setSequenceLabel(null);
+		return t;
+	}
+	
+	public boolean isSequenceLabel(String label)
+	{
+		return label.equals(s_sequenceLabel);
 	}
 	
 //	====================================== Basic fields ======================================
