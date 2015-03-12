@@ -16,9 +16,8 @@
 package edu.emory.clir.clearnlp.component.mode.dep;
 
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
-import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.util.StringUtils;
+import edu.emory.clir.clearnlp.util.MathUtils;
 import edu.emory.clir.clearnlp.util.arc.DEPArc;
 
 /**
@@ -27,21 +26,20 @@ import edu.emory.clir.clearnlp.util.arc.DEPArc;
  */
 public class DEPEval extends AbstractEval<DEPArc>
 {
-	private boolean b_includePunct;
+	private boolean eval_punct;
 	private int n_total;
 	private int n_las;
 	private int n_uas;
-	private int n_ls;
 	
 	public DEPEval()
 	{
-		b_includePunct = true;
+		eval_punct = true;
 		clear();
 	}
 	
 	public DEPEval(boolean includePunct)
 	{
-		b_includePunct = includePunct;
+		eval_punct = includePunct;
 		clear();
 	}
 	
@@ -51,56 +49,26 @@ public class DEPEval extends AbstractEval<DEPArc>
 		n_total = 0;
 		n_las   = 0;
 		n_uas   = 0;
-		n_ls    = 0;
 	}
 	
 	@Override
 	public void countCorrect(DEPTree sTree, DEPArc[] gHeads)
 	{
-		int i, size = sTree.size();
-		DEPNode node;
-		DEPArc g;
+		int[] counts = sTree.getScoreCounts(gHeads, eval_punct);
 		
-		for (i=1; i<size; i++)
-		{
-			node = sTree.get(i);
-			
-			if (!b_includePunct && StringUtils.containsPunctuationOnly(node.getSimplifiedWordForm()))
-				continue;
-			
-			g = gHeads[i];
-			n_total++;
-			
-			if (node.isDependentOf(sTree.get(g.getNode().getID())))
-			{
-				n_uas++;
-				if (node.isLabel(g.getLabel())) n_las++;
-			}
-			
-			if (node.isLabel(g.getLabel())) n_ls++;
-		}
+		n_total += sTree.size() - 1;
+		n_las   += counts[0];
+		n_uas   += counts[1];
 	}
 	
 	public double getScore()
 	{
-		return 100d * n_las / n_total;
+		return MathUtils.getAccuracy(n_las, n_total);
 	}
 	
 	@Override
 	public String toString()
 	{
-		double[] d = getScores();
-		return String.format("LAS: %5.2f (%d), UAS: %5.2f (%d), LS: %5.2f (%d), TOTAL: %d", d[0], n_las, d[1], n_uas, d[2], n_ls, n_total);
-	}
-	
-	private double[] getScores()
-	{
-		double[] acc = new double[3];
-		
-		acc[0] = 100d * n_las / n_total;
-		acc[1] = 100d * n_uas / n_total;
-		acc[2] = 100d * n_ls  / n_total;
-		
-		return acc;
+		return String.format("LAS: %5.2f (%d), UAS: %5.2f (%d), TOTAL: %d", MathUtils.getAccuracy(n_las, n_total), n_las, MathUtils.getAccuracy(n_uas, n_total), n_uas, n_total);
 	}
 }

@@ -23,10 +23,11 @@ import java.util.List;
 import org.kohsuke.args4j.Option;
 
 import edu.emory.clir.clearnlp.component.AbstractComponent;
+import edu.emory.clir.clearnlp.component.configuration.DecodeConfiguration;
+import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
+import edu.emory.clir.clearnlp.component.utils.NLPMode;
+import edu.emory.clir.clearnlp.component.utils.NLPUtils;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.nlp.NLPMode;
-import edu.emory.clir.clearnlp.nlp.NLPUtils;
-import edu.emory.clir.clearnlp.nlp.configuration.DecodeConfiguration;
 import edu.emory.clir.clearnlp.reader.AbstractReader;
 import edu.emory.clir.clearnlp.reader.LineReader;
 import edu.emory.clir.clearnlp.reader.RawReader;
@@ -169,10 +170,9 @@ public class NLPDecode
 		switch (mode)
 		{
 		case srl  :
-		case dep  : list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), config.getDecodeBeamSize(mode)));
+		case dep  : list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), new DEPConfiguration(IOUtils.createFileInputStream(s_configurationFile))));
 		case morph: list.add(NLPUtils.getMPAnalyzer(language));
 		case pos  : list.add(NLPUtils.getPOSTagger(language, config.getModelPath(NLPMode.pos)));
-		case seq  : list.add(NLPUtils.getSequenceClassifier(language, config.getModelPath(NLPMode.seq)));
 		}
 
 		return toReverseArray(list);
@@ -184,11 +184,10 @@ public class NLPDecode
 		
 		switch (mode)
 		{
-		case seq: break; // TO DO::::::::::
 		case srl:
 		case dep:
 			if (!reader.hasDependencyHeads())
-				list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), config.getDecodeBeamSize(mode)));
+				list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), new DEPConfiguration(IOUtils.createFileInputStream(s_configurationFile))));
 		case morph:
 			if (!reader.hasLemmas())
 				list.add(NLPUtils.getMPAnalyzer(language));
@@ -211,7 +210,6 @@ public class NLPDecode
 	{
 		switch (mode)
 		{
-		case seq  : return tree.toStringSRL();
 		case srl  : return tree.toStringSRL();
 		case dep  : return tree.toStringDEP();
 		case morph: return tree.toStringMorph();

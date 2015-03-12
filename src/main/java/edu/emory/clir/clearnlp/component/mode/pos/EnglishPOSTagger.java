@@ -26,7 +26,7 @@ import edu.emory.clir.clearnlp.classification.model.StringModel;
 public class EnglishPOSTagger extends AbstractPOSTagger
 {
 	/** Creates a pos tagger for collect. */
-	public EnglishPOSTagger(POSTrainConfiguration configuration)
+	public EnglishPOSTagger(POSConfiguration configuration)
 	{
 		super(configuration);
 	}

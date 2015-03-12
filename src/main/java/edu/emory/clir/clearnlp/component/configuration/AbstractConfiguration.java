@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp.configuration;
+package edu.emory.clir.clearnlp.component.configuration;
 
 import java.io.InputStream;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractAdaGrad;
@@ -27,28 +29,151 @@ import edu.emory.clir.clearnlp.classification.trainer.AdaGradLR;
 import edu.emory.clir.clearnlp.classification.trainer.AdaGradSVM;
 import edu.emory.clir.clearnlp.classification.trainer.LiblinearL2LR;
 import edu.emory.clir.clearnlp.classification.trainer.LiblinearL2SVM;
-import edu.emory.clir.clearnlp.nlp.NLPMode;
+import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
+import edu.emory.clir.clearnlp.component.utils.NLPMode;
+import edu.emory.clir.clearnlp.reader.AbstractReader;
+import edu.emory.clir.clearnlp.reader.LineReader;
+import edu.emory.clir.clearnlp.reader.RawReader;
+import edu.emory.clir.clearnlp.reader.TReader;
+import edu.emory.clir.clearnlp.reader.TSVReader;
 import edu.emory.clir.clearnlp.util.XmlUtils;
+import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class AbstractTrainConfiguration extends AbstractConfiguration
+public class AbstractConfiguration implements ConfigurationXML
 {
+	private   Element           x_top;
+	private   AbstractReader<?> d_reader;
 	protected NLPMode n_mode;
 	
-	public AbstractTrainConfiguration(NLPMode mode)
+//	=================================== CONSTRUCTORS ===================================
+	
+	public AbstractConfiguration() {}
+	
+	public AbstractConfiguration(InputStream in)
 	{
-		super();
+		init(in);
+	}
+	
+	public AbstractConfiguration(InputStream in, NLPMode mode)
+	{
+		init(in);
 		setMode(mode);
 	}
 	
-	public AbstractTrainConfiguration(InputStream in, NLPMode mode)
+	private void init(InputStream in)
 	{
-		super(in);
-		setMode(mode);
+		x_top    = XmlUtils.getDocumentElement(in);
+		d_reader = initReader();
 	}
+	
+	private AbstractReader<?> initReader()
+	{
+		Element eReader = getFirstElement(E_READER);
+		TReader type = TReader.getType(XmlUtils.getTrimmedAttribute(eReader, A_TYPE));
+		
+		if (type == TReader.RAW)
+			return new RawReader();
+		else if (type == TReader.LINE)
+			return new LineReader();
+		else
+		{
+			ObjectIntHashMap<String> map = getFieldMap(eReader);
+			
+			int iID		= map.get(FIELD_ID)		- 1;
+			int iForm	= map.get(FIELD_FORM)	- 1;
+			int iLemma	= map.get(FIELD_LEMMA)	- 1;
+			int iPOSTag	= map.get(FIELD_POS)	- 1;
+			int iNament = map.get(FIELD_NAMENT)	- 1;
+			int iFeats	= map.get(FIELD_FEATS)	- 1;
+			int iHeadID	= map.get(FIELD_HEADID)	- 1;
+			int iDeprel	= map.get(FIELD_DEPREL)	- 1;
+			int iXHeads = map.get(FIELD_XHEADS)	- 1;
+			int iSHeads = map.get(FIELD_SHEADS)	- 1;
+			int iSeqtag = map.get(FIELD_SHEADS)	- 1;
+			
+			return new TSVReader(iID, iForm, iLemma, iPOSTag, iNament, iFeats, iHeadID, iDeprel, iXHeads, iSHeads, iSeqtag);	
+		}
+	}
+	
+	/** Called by {@link #initReader()}. */
+	private ObjectIntHashMap<String> getFieldMap(Element eReader)
+	{
+		NodeList list = eReader.getElementsByTagName(E_COLUMN);
+		int i, index, size = list.getLength();
+		Element element;
+		String field;
+		
+		ObjectIntHashMap<String> map = new ObjectIntHashMap<String>();
+		
+		for (i=0; i<size; i++)
+		{
+			element = (Element)list.item(i);
+			field   = XmlUtils.getTrimmedAttribute(element, A_FIELD);
+			index   = XmlUtils.getIntegerAttribute(element, A_INDEX);
+			
+			map.put(field, index);
+		}
+		
+		return map;
+	}
+	
+//	=================================== GETTERS ===================================  
+
+	public AbstractReader<?> getReader()
+	{
+		return d_reader;
+	}
+	
+	public TLanguage getLanguage()
+	{
+		String language = XmlUtils.getTrimmedTextContent(getFirstElement(E_LANGUAGE));
+		return TLanguage.getType(language);
+	}
+	
+	public int getTrainBeamSize(NLPMode mode)
+	{
+		Element eMode = getModeElement(mode);
+		return XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, E_TRAIN_BEAM_SIZE));
+	}
+	
+	public int getDecodeBeamSize(NLPMode mode)
+	{
+		Element eMode = getModeElement(mode);
+		return XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, E_DECODE_BEAM_SIZE));
+	}
+	
+	public int getThreadSize()
+	{
+		return XmlUtils.getIntegerTextContent(getFirstElement(E_THREAD_SIZE));
+	}
+	
+//	=================================== ELEMENT ===================================  
+
+	protected Element getFirstElement(String tag)
+	{
+		return XmlUtils.getFirstElementByTagName(x_top, tag);
+	}
+	
+	protected Element getModeElement(NLPMode mode)
+	{
+		NodeList list = x_top.getChildNodes();
+		int i, len = list.getLength();
+		Node node;
+		
+		for (i=0; i<len; i++)
+		{
+			node = list.item(i);
+			if (node.getNodeName().equals(mode.toString()))
+				return (Element)node;
+		}
+		
+		return null;//getFirstElement(mode.toString());
+	}
+	
 
 //	=================================== MODE ===================================
 	
@@ -66,7 +191,7 @@ public abstract class AbstractTrainConfiguration extends AbstractConfiguration
 	{
 		return getModeElement(n_mode);
 	}
-
+	
 //	=================================== TRAINER ===================================
 	
 	public boolean isBootstrap()
@@ -145,5 +270,19 @@ public abstract class AbstractTrainConfiguration extends AbstractConfiguration
 		}
 		
 		throw new IllegalArgumentException(type+" is not a valid algorithm type.");
+	}
+	
+//	=================================== BEAM ===================================
+	
+	public int getBeamSize(NLPMode mode)
+	{
+		Element eMode = getModeElement();
+		return XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, E_BEAM_SIZE));
+	}
+	
+	public double getMarginThreshold(NLPMode mode)
+	{
+		Element eMode = getModeElement();
+		return XmlUtils.getDoubleTextContent(XmlUtils.getFirstElementByTagName(eMode, E_MARGIN_THRESHOLD));
 	}
 }

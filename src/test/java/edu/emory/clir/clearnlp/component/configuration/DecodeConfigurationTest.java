@@ -23,7 +23,6 @@ import java.io.IOException;
 import org.junit.Test;
 
 import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.nlp.configuration.DecodeConfiguration;
 import edu.emory.clir.clearnlp.reader.TReader;
 import edu.emory.clir.clearnlp.reader.TSVReader;
 import edu.emory.clir.clearnlp.util.IOUtils;

@@ -19,9 +19,8 @@ import java.io.InputStream;
 
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.nlp.NLPMode;
-import edu.emory.clir.clearnlp.nlp.configuration.AbstractTrainConfiguration;
-import edu.emory.clir.clearnlp.nlp.trainer.AbstractNLPTrainer;
+import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
+import edu.emory.clir.clearnlp.component.trainer.AbstractNLPTrainer;
 
 /**
  * @since 3.0.0
@@ -43,9 +42,9 @@ public class DEPTrainer extends AbstractNLPTrainer
 	}
 	
 	@Override
-	protected AbstractTrainConfiguration createConfiguration(InputStream configuration)
+	protected AbstractConfiguration createConfiguration(InputStream configuration)
 	{
-		return new DEPTrainConfiguration(configuration);
+		return new DEPConfiguration(configuration);
 	}
 	
 	@Override
@@ -57,24 +56,24 @@ public class DEPTrainer extends AbstractNLPTrainer
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object lexicons)
 	{
-		return new DefaultDEPParser(f_extractors, lexicons);
+		return new DefaultDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons);
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
 	{
-		return new DefaultDEPParser(f_extractors, lexicons, models, true, t_configuration.getTrainBeamSize(NLPMode.dep));
+		return new DefaultDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons, models, true);
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
 	{
-		return new DefaultDEPParser(f_extractors, lexicons, models, false, t_configuration.getDecodeBeamSize(NLPMode.dep));
+		return new DefaultDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons, models, false);
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models)
 	{
-		return new DefaultDEPParser(models, t_configuration.getDecodeBeamSize(NLPMode.dep));
+		return new DefaultDEPParser((DEPConfiguration)t_configuration, models);
 	}
 }

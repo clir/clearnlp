@@ -22,8 +22,8 @@ import org.w3c.dom.Element;
 
 import com.google.common.collect.Sets;
 
-import edu.emory.clir.clearnlp.nlp.NLPMode;
-import edu.emory.clir.clearnlp.nlp.configuration.AbstractTrainConfiguration;
+import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
+import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 
@@ -31,19 +31,14 @@ import edu.emory.clir.clearnlp.util.XmlUtils;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTrainConfiguration extends AbstractTrainConfiguration
+public class POSConfiguration extends AbstractConfiguration
 {
 	private double threshold_ambiguityClass;
 	private Set<String> proper_noun_tagset;
 
 //	============================== Initialization ==============================
 	
-	public POSTrainConfiguration()
-	{
-		super(NLPMode.pos);
-	}
-	
-	public POSTrainConfiguration(InputStream in)
+	public POSConfiguration(InputStream in)
 	{
 		super(in, NLPMode.pos);
 		init();

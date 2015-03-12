@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.dep.state;
+package edu.emory.clir.clearnlp.component.mode.dep;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 import edu.emory.clir.clearnlp.collection.stack.IntPStack;
-import edu.emory.clir.clearnlp.component.mode.dep.DEPLabel;
-import edu.emory.clir.clearnlp.component.mode.dep.DEPTransition;
-import edu.emory.clir.clearnlp.component.mode.dep.merge.DEPMerge;
+import edu.emory.clir.clearnlp.collection.triple.ObjectObjectDoubleTriple;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
-import edu.emory.clir.clearnlp.util.DSUtils;
-import edu.emory.clir.clearnlp.util.MathUtils;
 import edu.emory.clir.clearnlp.util.arc.DEPArc;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -54,13 +49,15 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	private IntPStack i_inter;
 	private int       i_input;
 	
-	private List<DEPBranch> l_branches;
-	private Set<String>     s_snapshots;
-	private DEPMerge        d_merge;
-	private boolean         save_branch;
-	private int             beam_index;
-	private int             beam_size;
-	static public int n_trans1 = 0, n_trans2 = 0;
+	private DEPConfiguration t_configuration;
+	private int              num_transitions;
+	private double           total_score;
+	private List<DEPBranch>  l_branches;
+	private boolean          save_branch;
+	private int              beam_index;
+	
+	private ObjectObjectDoubleTriple<DEPArc[],List<StringInstance>> best_tree;
+	
 //	====================================== Initialization ======================================
 	
 	public DEPState()
@@ -68,24 +65,24 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		super();
 	}
 	
-	public DEPState(DEPTree tree, CFlag flag, int beamSize)
+	public DEPState(DEPTree tree, CFlag flag, DEPConfiguration configuration)
 	{
 		super(tree, flag);
-		init(beamSize);
+		init(configuration);
 	}
 	
-	private void init(int beamSize)
+	private void init(DEPConfiguration configuration)
 	{
 		i_stack = new IntPStack(t_size);
 		i_inter = new IntPStack();
 		i_input = 0;
 		shift();
 		
+		t_configuration = configuration;
+		num_transitions = 0;
+		total_score = 0;
 		l_branches  = new ArrayList<>();
-		s_snapshots = new HashSet<>();
-		d_merge     = new DEPMerge(d_tree);
-		beam_size   = beamSize;
-		save_branch = true;
+		save_branch = configuration.useBranching();
 	}
 
 //	====================================== LABEL ======================================
@@ -293,33 +290,26 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	@Override
 	public boolean isTerminate()
 	{
-		if (beam_size > 1)
-		{
-			String snapshot = getSnapshot();
-			if (!save_branch && s_snapshots.contains(snapshot)) return true;
-			s_snapshots.add(snapshot);
-		}
-		
 		return i_input >= t_size;
 	}
 	
 	@Override
 	public void next(DEPLabel label)
 	{
-//		saveState(label);
 		DEPNode stack = getStack();
 		DEPNode input = getInput();
 		
+		num_transitions++;
+		total_score += label.getScore();
+		
 		if (label.isArc(ARC_LEFT))
 		{
-			if (beam_size > 1) addEdge(stack, input, label);
 			stack.setHead(input, label.getDeprel());
 			if (label.isList(LIST_REDUCE)) reduce();
 			else pass();
 		}
 		else if (label.isArc(ARC_RIGHT))
 		{
-			if (beam_size > 1) addEdge(input, stack, label);
 			input.setHead(stack, label.getDeprel());
 			if (label.isList(LIST_SHIFT)) shift();
 			else pass();
@@ -327,19 +317,9 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		else
 		{
 			if (label.isList(LIST_SHIFT)) shift();
-			else if (label.isList(LIST_REDUCE) && stack.hasHead()) reduce();
+			else if (label.isList(LIST_REDUCE)) reduce();
 			else pass();
 		}
-		
-		if (save_branch)	n_trans1++;
-		else				n_trans2++;
-	}
-	
-	private void addEdge(DEPNode node, DEPNode head, DEPLabel label)
-	{
-		double d = label.getScore();
-		if (save_branch) d += 1;
-		d_merge.addEdge(node, head, label.getDeprel(), d);
 	}
 	
 	private void shift()
@@ -365,27 +345,6 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		i_inter.push(i_stack.pop());
 	}
 	
-	private String getSnapshot()
-	{
-		StringBuilder build = new StringBuilder();
-		int i;
-		
-		for (i=i_stack.size()-1; i>0; i--)
-		{
-			build.append(i_stack.get(i));
-			build.append(StringConst.COMMA);
-		}	build.append(StringConst.PIPE);
-		
-		for (i=i_inter.size()-1; i>=0; i--)
-		{
-			build.append(i_inter.get(i));
-			build.append(StringConst.COMMA);
-		}	build.append(StringConst.PIPE);
-		
-		build.append(i_input);
-		return build.toString();
-	}
-	
 //	====================================== FEATURES ======================================
 
 	@Override
@@ -407,14 +366,14 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 
 	public boolean startBranching()
 	{
-		if (beam_size <= 1 || l_branches.isEmpty()) return false;
-		DSUtils.sortReverseOrder(l_branches);
+		if (l_branches.isEmpty()) return false;
 		
-		if (l_branches.size() > beam_size-1)
-			l_branches = l_branches.subList(0, beam_size-1);
+		if (l_branches.size() > t_configuration.getBeamSize()-1)
+			l_branches = l_branches.subList(0, t_configuration.getBeamSize()-1);
 		
-		beam_index  = 0;
+		best_tree   = new ObjectObjectDoubleTriple<>(d_tree.getHeads(), null, getScore());
 		save_branch = false;
+		beam_index  = 0;
 		return true;
 	}
 	
@@ -436,30 +395,45 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 			StringPrediction fst = ps[0];
 			StringPrediction snd = ps[1];
 			
-			if (fst.getScore() - snd.getScore() < 1)
+			if (fst.getScore() - snd.getScore() < t_configuration.getMarginThreshold())
 				addBranch(autoLabel, new DEPLabel(snd));
 		}
 	}
-
+	
 	private void addBranch(DEPLabel fstLabel, DEPLabel sndLabel)
 	{
 		if (!fstLabel.isArc(sndLabel) || !fstLabel.isList(sndLabel))
 			l_branches.add(new DEPBranch(sndLabel));
 	}
 	
-	public void mergeBranches()
+	public void saveBest(List<StringInstance> instances)
 	{
-		d_merge.merge();
+		double score = getScore();
+		
+		if (score > best_tree.d)
+			best_tree.set(d_tree.getHeads(), instances, score);
 	}
 	
-	private class DEPBranch implements Comparable<DEPBranch>
+	public List<StringInstance> setBest()
+	{
+		d_tree.setHeads(best_tree.o1);
+		return best_tree.o2;
+	}
+	
+	private double getScore()
+	{
+		return (c_flag == CFlag.BOOTSTRAP) ? (double)d_tree.getScoreCounts(g_oracle, t_configuration.evaluatePunctuation())[0] : total_score / num_transitions;
+	}
+	
+	private class DEPBranch
 	{
 		private DEPArc[]  heads;
 		private IntPStack stack;
 		private IntPStack inter;
 		private int       input;
 		private DEPLabel  label;
-		private double    score;
+		private double    totalScore;
+		private int       numTransitions;
 		
 		public DEPBranch(DEPLabel nextLabel)
 		{
@@ -468,7 +442,8 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 			inter = new IntPStack(i_inter);
 			input = i_input;
 			label = nextLabel;
-			score = nextLabel.getScore();
+			totalScore = total_score;
+			numTransitions = num_transitions;
 		}
 		
 		public void reset()
@@ -477,13 +452,9 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 			i_stack = stack;
 			i_inter = inter;
 			i_input = input;
+			total_score = totalScore;
+			num_transitions = numTransitions;
 			next(label);
-		}
-
-		@Override
-		public int compareTo(DEPBranch o)
-		{
-			return MathUtils.signum(score - o.score);
 		}
 	}
 	
@@ -524,5 +495,26 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 //	public String stateHistory()
 //	{
 //		return s_states.toString();
+//	}
+//	
+//	private String getSnapshot()
+//	{
+//		StringBuilder build = new StringBuilder();
+//		int i;
+//		
+//		for (i=i_stack.size()-1; i>0; i--)
+//		{
+//			build.append(i_stack.get(i));
+//			build.append(StringConst.COMMA);
+//		}	build.append(StringConst.PIPE);
+//		
+//		for (i=i_inter.size()-1; i>=0; i--)
+//		{
+//			build.append(i_inter.get(i));
+//			build.append(StringConst.COMMA);
+//		}	build.append(StringConst.PIPE);
+//		
+//		build.append(i_input);
+//		return build.toString();
 //	}
 }

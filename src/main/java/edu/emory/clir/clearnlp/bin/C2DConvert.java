@@ -24,6 +24,7 @@ import org.kohsuke.args4j.Option;
 
 import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
 import edu.emory.clir.clearnlp.component.mode.morph.AbstractMPAnalyzer;
+import edu.emory.clir.clearnlp.component.utils.NLPUtils;
 import edu.emory.clir.clearnlp.constituent.CTReader;
 import edu.emory.clir.clearnlp.constituent.CTTree;
 import edu.emory.clir.clearnlp.conversion.AbstractC2DConverter;
@@ -32,7 +33,6 @@ import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBInstance;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBReader;
-import edu.emory.clir.clearnlp.nlp.NLPUtils;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;

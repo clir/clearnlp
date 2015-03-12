@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.nlp.NLPMode;
+import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.Splitter;
@@ -87,7 +87,7 @@ public class NLPJackknife extends NLPTrain
 		
 		public void run()
 		{
-			AbstractStatisticalComponent<?,?,?,?> component = train(train_files, Lists.newArrayList(develop_file), feature_files, s_configurationFile, nlp_mode);
+			AbstractStatisticalComponent<?,?,?,?> component = train(train_files, Lists.newArrayList(develop_file), feature_files, s_configurationFile, nlp_mode).o;
 			saveModel(component, s_modelPath+"."+dev_index);
 		}
     }

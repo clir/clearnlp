@@ -28,12 +28,6 @@ import java.util.zip.GZIPInputStream;
 
 import com.google.common.collect.Lists;
 
-import edu.emory.clir.clearnlp.component.mode.dep.DEPFeatureExtractor;
-import edu.emory.clir.clearnlp.component.mode.dep.DefaultDEPParser;
-import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.reader.TSVReader;
-import edu.emory.clir.clearnlp.util.IOUtils;
-
 
 /**
  * @since 3.0.0
@@ -115,33 +109,6 @@ public class Z
 		
 		et = System.currentTimeMillis();
 		System.out.println(et-st);
-	}
-	
-	public void readDEP(String[] args) throws Exception
-	{
-		String featureFile = args[0];
-		String inputFile   = args[1];
-//		String outputFile  = args[2];
-		
-		DEPFeatureExtractor df = new DEPFeatureExtractor(IOUtils.createFileInputStream(featureFile));
-		DefaultDEPParser parser = new DefaultDEPParser(new DEPFeatureExtractor[]{df}, null);
-//		PrintStream fout   = IOUtils.createBufferedPrintStream(outputFile);
-		TSVReader reader = new TSVReader(0, 1, 2, 4, 5, 6, 7);
-		reader.open(IOUtils.createFileInputStream(inputFile));
-//		DEPState state;
-		DEPTree tree;
-		int i;
-		
-		for (i=0; (tree = reader.next()) != null; i++)
-		{
-			parser.process(tree);
-//			fout.println(tree.toStringDEP()+"\n");
-			if ((i+1)%10000 == 0) System.out.print(".");
-		}
-		
-		reader.close();
-//		fout.close();
-		System.out.println();
 	}
 	
 	void compareAddAll()

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp;
+package edu.emory.clir.clearnlp.component.utils;
 
 /**
  * @since 3.0.0
@@ -24,6 +24,5 @@ public enum NLPMode
 	pos,
 	morph,
 	dep,
-	srl,
-	seq;
+	srl;
 }

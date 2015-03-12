@@ -16,7 +16,6 @@
 package edu.emory.clir.clearnlp.component.mode.pos;
 
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
@@ -31,13 +30,12 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  */
 public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSEval, POSFeatureExtractor>
 {
-	private POSTrainConfiguration t_configuration;
 	private POSLexicon pos_lexicon;
 	
 	/** Creates a pos tagger for collect. */
-	public AbstractPOSTagger(POSTrainConfiguration configuration)
+	public AbstractPOSTagger(POSConfiguration configuration)
 	{
-		super();
+		super(configuration);
 		t_configuration = configuration;
 		pos_lexicon = new POSLexicon(configuration.getProperNounTagset());
 	}
@@ -45,25 +43,25 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	/** Creates a pos tagger for train. */
 	public AbstractPOSTagger(POSFeatureExtractor[] extractors, Object lexicons)
 	{
-		super(extractors, lexicons, false, 1);
+		super(null, extractors, lexicons, false, 1);
 	}
 	
 	/** Creates a pos tagger for bootstrap or evaluate. */
 	public AbstractPOSTagger(POSFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
-		super(extractors, lexicons, models, bootstrap);
+		super(null, extractors, lexicons, models, bootstrap);
 	}
 	
 	/** Creates a pos tagger for decode. */
 	public AbstractPOSTagger(ObjectInputStream in)
 	{
-		super(in);
+		super(null, in);
 	}
 	
 	/** Creates a pos tagger for decode. */
 	public AbstractPOSTagger(byte[] models)
 	{
-		super(models);
+		super(null, models);
 	}
 	
 //	====================================== LEXICONS ======================================
@@ -72,7 +70,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	public Object getLexicons()
 	{
 		if (t_configuration != null)
-			pos_lexicon.finalizeAmbiguityClassFeatures(t_configuration.getAmbiguityClassThreshold());
+			pos_lexicon.finalizeAmbiguityClassFeatures(((POSConfiguration)t_configuration).getAmbiguityClassThreshold());
 		
 		return pos_lexicon;
 	}
@@ -104,8 +102,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 		}
 		else
 		{
-			List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<>() : null;
-			process(state, instances);
+			List<StringInstance> instances = process(state);
 			
 			if (!isDecode())
 			{

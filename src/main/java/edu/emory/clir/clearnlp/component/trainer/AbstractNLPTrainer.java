@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp.trainer;
+package edu.emory.clir.clearnlp.component.trainer;
 
 import java.io.InputStream;
 import java.util.List;
@@ -24,9 +24,9 @@ import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractTrainer;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
+import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.nlp.configuration.AbstractTrainConfiguration;
 import edu.emory.clir.clearnlp.reader.TSVReader;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
@@ -37,7 +37,7 @@ import edu.emory.clir.clearnlp.util.IOUtils;
  */
 public abstract class AbstractNLPTrainer
 {
-	protected AbstractTrainConfiguration t_configuration;
+	protected AbstractConfiguration t_configuration;
 	
 //	====================================== CONSTRUCTORS ======================================
 	
@@ -46,13 +46,12 @@ public abstract class AbstractNLPTrainer
 		t_configuration = createConfiguration(configuration);
 	}
 	
-	public AbstractStatisticalComponent<?,?,?,?> train(List<String> trainFiles, List<String> developFiles)
+	public ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> train(List<String> trainFiles, List<String> developFiles)
 	{
 		Object lexicons = getLexicons(trainFiles);
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> prev = train(trainFiles, developFiles, lexicons, null, 0);
-		if (!t_configuration.isBootstrap()) return prev.o;
+		if (!t_configuration.isBootstrap()) return prev;
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> curr;
-		byte[] backup;
 		int boot = 1;
 		
 		try
@@ -60,14 +59,10 @@ public abstract class AbstractNLPTrainer
 			while (true)
 			{
 				// save the previous model
-				backup = prev.o.toByteArray();
 				curr = train(trainFiles, developFiles, lexicons, prev.o.getModels(), boot++);
 				
 				if (prev.d >= curr.d)
-				{
-					BinUtils.LOG.info(String.format("Final score: %4.2f\n", prev.d));
-					return createComponentForDecode(backup);
-				}
+					return prev;
 				
 				prev = curr;
 			}
@@ -107,7 +102,7 @@ public abstract class AbstractNLPTrainer
 	}
 	
 	/** Initializes the training configuration. */
-	protected abstract AbstractTrainConfiguration createConfiguration(InputStream in);
+	protected abstract AbstractConfiguration createConfiguration(InputStream in);
 	
 	/** Creates an NLP component for collecting lexicons. */
 	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForCollect();

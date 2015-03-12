@@ -26,26 +26,26 @@ import edu.emory.clir.clearnlp.classification.model.StringModel;
 public class EnglishDEPParser extends AbstractDEPParser
 {
 	/** Creates a dependency parser for train. */
-	public EnglishDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons)
+	public EnglishDEPParser(DEPConfiguration configuration, DEPFeatureExtractor[] extractors, Object lexicons)
 	{
-		super(extractors, lexicons);
+		super(configuration, extractors, lexicons);
 	}
 	
 	/** Creates a dependency parser for bootstrap or evaluate. */
-	public EnglishDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap, int beamSize)
+	public EnglishDEPParser(DEPConfiguration configuration, DEPFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
-		super(extractors, lexicons, models, bootstrap, beamSize);
+		super(configuration, extractors, lexicons, models, bootstrap);
 	}
 
 	/** Creates a pos tagger for decode. */
-	public EnglishDEPParser(ObjectInputStream in, int beamSize)
+	public EnglishDEPParser(DEPConfiguration configuration, ObjectInputStream in)
 	{
-		super(in, beamSize);
+		super(configuration, in);
 	}
 	
-	/** Creates a pos tagger for decode. */
-	public EnglishDEPParser(byte[] models, int beamSize)
+	/** Creates a dependency parsing for decode. */
+	public EnglishDEPParser(DEPConfiguration configuration, byte[] models)
 	{
-		super(models, beamSize);
+		super(configuration, models);
 	}
 }

@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -31,6 +32,7 @@ import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AdaGradSVM;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
+import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
@@ -45,20 +47,23 @@ import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
  */
 abstract public class AbstractStatisticalComponent<LabelType, StateType extends AbstractState<?,LabelType>, EvalType extends AbstractEval<?>, FeatureType extends AbstractFeatureExtractor<?,?,?>> extends AbstractComponent
 {
+	protected AbstractConfiguration t_configuration;
 	protected FeatureType[] f_extractors;
 	protected StringModel[] s_models;
 	protected EvalType      c_eval;
 	protected CFlag         c_flag;
 	
 	/** Constructs a statistical component for collect. */
-	public AbstractStatisticalComponent()
+	public AbstractStatisticalComponent(AbstractConfiguration configuration)
 	{
+		setConfiguration(configuration);
 		setFlag(CFlag.COLLECT);
 	}
 	
 	/** Constructs a statistical component for train. */
-	public AbstractStatisticalComponent(FeatureType[] extractors, Object lexicons, boolean binary, int modelSize)
+	public AbstractStatisticalComponent(AbstractConfiguration configuration, FeatureType[] extractors, Object lexicons, boolean binary, int modelSize)
 	{
+		setConfiguration(configuration);
 		setFlag(CFlag.TRAIN);
 		setFeatureExtractors(extractors);
 		setLexicons(lexicons);
@@ -66,8 +71,10 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	}
 	
 	/** Constructs a statistical component for bootstrap or evaluate. */
-	public AbstractStatisticalComponent(FeatureType[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
+	public AbstractStatisticalComponent(AbstractConfiguration configuration, FeatureType[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
+		setConfiguration(configuration);
+		
 		if (bootstrap)
 			setFlag(CFlag.BOOTSTRAP);
 		else
@@ -82,14 +89,16 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	}
 	
 	/** Constructs a statistical component for decode. */
-	public AbstractStatisticalComponent(ObjectInputStream in)
+	public AbstractStatisticalComponent(AbstractConfiguration configuration, ObjectInputStream in)
 	{
+		setConfiguration(configuration);
 		initDecode(in);
 	}
 	
 	/** Constructs a statistical component for decode. */
-	public AbstractStatisticalComponent(byte[] models)
+	public AbstractStatisticalComponent(AbstractConfiguration configuration, byte[] models)
 	{
+		setConfiguration(configuration);
 		initDecode(models);
 	}
 	
@@ -123,6 +132,13 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 			initDecode(ois);
 		}
 		catch (IOException e) {e.printStackTrace();}
+	}
+	
+//	====================================== CONFIGURATION ======================================
+	
+	public void setConfiguration(AbstractConfiguration configuration)
+	{
+		t_configuration = configuration;
 	}
 	
 //	====================================== LOAD/SAVE ======================================
@@ -217,8 +233,9 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	
 //	====================================== PROCESS ======================================
 
-	protected void process(StateType state, List<StringInstance> instances)
+	protected List<StringInstance> process(StateType state)
 	{
+		List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<>() : null;
 		LabelType label;
 		
 		while (!state.isTerminate())
@@ -232,6 +249,8 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 			
 			state.next(label);
 		}
+		
+		return instances;
 	}
 	
 	protected LabelType train(StateType state, List<StringInstance> instances)

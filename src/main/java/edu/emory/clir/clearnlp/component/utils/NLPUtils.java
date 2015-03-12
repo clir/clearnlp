@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp;
+package edu.emory.clir.clearnlp.component.utils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -22,6 +22,7 @@ import java.io.ObjectInputStream;
 import java.util.zip.GZIPInputStream;
 
 import edu.emory.clir.clearnlp.component.mode.dep.AbstractDEPParser;
+import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPTrainer;
 import edu.emory.clir.clearnlp.component.mode.dep.DefaultDEPParser;
 import edu.emory.clir.clearnlp.component.mode.dep.EnglishDEPParser;
@@ -32,13 +33,10 @@ import edu.emory.clir.clearnlp.component.mode.pos.AbstractPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.EnglishPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.POSTrainer;
-import edu.emory.clir.clearnlp.component.mode.sequence.AbstractSequenceClassifier;
-import edu.emory.clir.clearnlp.component.mode.sequence.DefaultSequenceClassifier;
-import edu.emory.clir.clearnlp.component.mode.sequence.SeqTrainer;
+import edu.emory.clir.clearnlp.component.trainer.AbstractNLPTrainer;
 import edu.emory.clir.clearnlp.conversion.AbstractC2DConverter;
 import edu.emory.clir.clearnlp.conversion.EnglishC2DConverter;
 import edu.emory.clir.clearnlp.conversion.headrule.HeadRuleMap;
-import edu.emory.clir.clearnlp.nlp.trainer.AbstractNLPTrainer;
 import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
 import edu.emory.clir.clearnlp.tokenization.EnglishTokenizer;
 import edu.emory.clir.clearnlp.util.BinUtils;
@@ -85,20 +83,14 @@ public class NLPUtils
 		}
 	}
 	
-	static public AbstractSequenceClassifier getSequenceClassifier(TLanguage language, ObjectInputStream in)
-	{
-		BinUtils.LOG.info("Loading sequence classification models.\n");
-		return new DefaultSequenceClassifier(in);
-	}
-	
-	static public AbstractDEPParser getDEPParser(TLanguage language, ObjectInputStream in, int beamSize)
+	static public AbstractDEPParser getDEPParser(TLanguage language, ObjectInputStream in, DEPConfiguration configuration)
 	{
 		BinUtils.LOG.info("Loading dependency parsing models.\n");
 		
 		switch (language)
 		{
-		case ENGLISH: return new EnglishDEPParser(in, beamSize);
-		default     : return new DefaultDEPParser(in, beamSize);
+		case ENGLISH: return new EnglishDEPParser(configuration, in);
+		default     : return new DefaultDEPParser(configuration, in);
 		}
 	}
 	
@@ -107,14 +99,9 @@ public class NLPUtils
 		return getPOSTagger(language, getObjectInputStream(modelPath));
 	}
 	
-	static public AbstractDEPParser getDEPParser(TLanguage language, String modelPath, int beamSize)
+	static public AbstractDEPParser getDEPParser(TLanguage language, String modelPath, DEPConfiguration configuration)
 	{
-		return getDEPParser(language, getObjectInputStream(modelPath), beamSize);
-	}
-	
-	static public AbstractSequenceClassifier getSequenceClassifier(TLanguage language, String modelPath)
-	{
-		return getSequenceClassifier(language, getObjectInputStream(modelPath));
+		return getDEPParser(language, getObjectInputStream(modelPath), configuration);
 	}
 	
 	static private ObjectInputStream getObjectInputStream(String modelPath)
@@ -135,7 +122,6 @@ public class NLPUtils
 		case pos: return new POSTrainer(configuration, features);
 		case dep: return new DEPTrainer(configuration, features);
 		case srl: return null;
-		case seq: return new SeqTrainer(configuration, features);
 		default : throw new IllegalArgumentException("Invalid mode: "+mode.toString()); 
 		}
 	}

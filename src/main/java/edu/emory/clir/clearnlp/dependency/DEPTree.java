@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.set.IntHashSet;
 import edu.emory.clir.clearnlp.srl.SRLTree;
+import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.arc.DEPArc;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -249,6 +250,32 @@ public class DEPTree implements Iterable<DEPNode>
 		}
 		
 		return null;
+	}
+	
+	/** @return [LAS, UAS]. */
+	public int[] getScoreCounts(DEPArc[] goldHeads, boolean evalPunct)
+	{
+		int i, las = 0, uas = 0, size = size();
+		DEPNode node;
+		DEPArc g;
+		
+		for (i=1; i<size; i++)
+		{
+			node = get(i);
+			
+			if (!evalPunct && StringUtils.containsPunctuationOnly(node.getSimplifiedWordForm()))
+				continue;
+			
+			g = goldHeads[i];
+			
+			if (node.isDependentOf(get(g.getNode().getID())))
+			{
+				uas++;
+				if (node.isLabel(g.getLabel())) las++;
+			}
+		}
+		
+		return new int[]{las, uas};
 	}
 	
 	public void projectivize(String left, String right)

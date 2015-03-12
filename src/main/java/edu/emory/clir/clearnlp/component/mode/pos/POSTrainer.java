@@ -19,8 +19,8 @@ import java.io.InputStream;
 
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.nlp.configuration.AbstractTrainConfiguration;
-import edu.emory.clir.clearnlp.nlp.trainer.AbstractNLPTrainer;
+import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
+import edu.emory.clir.clearnlp.component.trainer.AbstractNLPTrainer;
 
 /**
  * @since 3.0.0
@@ -42,15 +42,15 @@ public class POSTrainer extends AbstractNLPTrainer
 	}
 	
 	@Override
-	protected AbstractTrainConfiguration createConfiguration(InputStream configuration)
+	protected AbstractConfiguration createConfiguration(InputStream configuration)
 	{
-		return new POSTrainConfiguration(configuration);
+		return new POSConfiguration(configuration);
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForCollect()
 	{
-		return new DefaultPOSTagger((POSTrainConfiguration)t_configuration);
+		return new DefaultPOSTagger((POSConfiguration)t_configuration);
 	}
 	
 	@Override

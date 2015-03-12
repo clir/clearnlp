@@ -21,8 +21,8 @@ import java.io.PrintStream;
 import java.util.List;
 
 import edu.emory.clir.clearnlp.bin.NLPDecode;
-import edu.emory.clir.clearnlp.nlp.NLPMode;
-import edu.emory.clir.clearnlp.nlp.configuration.DecodeConfiguration;
+import edu.emory.clir.clearnlp.component.configuration.DecodeConfiguration;
+import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;

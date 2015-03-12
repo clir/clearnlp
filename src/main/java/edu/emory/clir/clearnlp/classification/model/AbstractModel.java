@@ -167,7 +167,7 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 			if (i%100000 == 0) BinUtils.LOG.info(".");
 		}
 		
-		BinUtils.LOG.info("\n\n");
+		BinUtils.LOG.info("\n");
 		iInstances.trimToSize();
 		return iInstances;
 	}

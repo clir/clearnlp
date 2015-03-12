@@ -26,7 +26,7 @@ import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.mode.pos.POSEval;
 import edu.emory.clir.clearnlp.component.mode.pos.POSFeatureExtractor;
 import edu.emory.clir.clearnlp.component.mode.pos.POSState;
-import edu.emory.clir.clearnlp.component.mode.pos.POSTrainConfiguration;
+import edu.emory.clir.clearnlp.component.mode.pos.POSConfiguration;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -43,33 +43,33 @@ public class AbstractSenseDisambituator extends AbstractStatisticalComponent<Str
 	private Map<String,String> m_ambiguity_classes;
 
 	/** Creates a pos tagger for collect. */
-	public AbstractSenseDisambituator(POSTrainConfiguration configuration)
+	public AbstractSenseDisambituator(POSConfiguration configuration)
 	{
-		super();
+		super(configuration);
 	}
 	
 	/** Creates a pos tagger for train. */
 	public AbstractSenseDisambituator(POSFeatureExtractor[] extractors, Object lexicons)
 	{
-		super(extractors, lexicons, false, 1);
+		super(null, extractors, lexicons, false, 1);
 	}
 	
 	/** Creates a pos tagger for bootstrap or evaluate. */
 	public AbstractSenseDisambituator(POSFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
-		super(extractors, lexicons, models, bootstrap);
+		super(null, extractors, lexicons, models, bootstrap);
 	}
 	
 	/** Creates a pos tagger for decode. */
 	public AbstractSenseDisambituator(ObjectInputStream in)
 	{
-		super(in);
+		super(null, in);
 	}
 	
 	/** Creates a pos tagger for decode. */
 	public AbstractSenseDisambituator(byte[] models)
 	{
-		super(models);
+		super(null, models);
 	}
 	
 //	====================================== LEXICONS ======================================

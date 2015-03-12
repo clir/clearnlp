@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.nlp.configuration;
+package edu.emory.clir.clearnlp.component.configuration;
 
 /**
  * @since 3.0.0
@@ -26,6 +26,8 @@ public interface ConfigurationXML
 	String E_MODEL		= "model";
 	String E_COLUMN		= "column";
 	String E_BOOTSTRAPS	= "bootstraps";
+	String E_BEAM_SIZE	= "beam_size";
+	String E_MARGIN_THRESHOLD = "margin_threshold";
 	
 	String A_TYPE		= "type";
 	String A_FIELD		= "field";

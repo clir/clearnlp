@@ -16,7 +16,6 @@
 package edu.emory.clir.clearnlp.component.mode.sentiment;
 
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
@@ -35,25 +34,25 @@ public class AbstractSentimentAnalyzer extends AbstractStatisticalComponent<Stri
 	/** Creates a sentiment analyzer for train. */
 	public AbstractSentimentAnalyzer(SAFeatureExtractor[] extractors, Object lexicons)
 	{
-		super(extractors, lexicons, false, 1);
+		super(null, extractors, lexicons, false, 1);
 	}
 	
 	/** Creates a sentiment analyzer for bootstrap or evaluate. */
 	public AbstractSentimentAnalyzer(SAFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
-		super(extractors, lexicons, models, bootstrap);
+		super(null, extractors, lexicons, models, bootstrap);
 	}
 	
 	/** Creates a sentiment analyzer for decode. */
 	public AbstractSentimentAnalyzer(ObjectInputStream in)
 	{
-		super(in);
+		super(null, in);
 	}
 	
 	/** Creates a sentiment analyzer for decode. */
 	public AbstractSentimentAnalyzer(byte[] models)
 	{
-		super(models);
+		super(null, models);
 	}
 	
 //	====================================== LEXICONS ======================================
@@ -76,9 +75,8 @@ public class AbstractSentimentAnalyzer extends AbstractStatisticalComponent<Stri
 	@Override
 	public void process(DEPTree tree)
 	{
-		List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<>() : null;
 		SAState state = new SAState(tree, c_flag);
-		process(state, instances);
+		List<StringInstance> instances = process(state);
 		
 		if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
 		else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());

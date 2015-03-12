@@ -20,7 +20,7 @@
     </pos>
 
     <dep>
-        <trainer algorithm="adagrad" type="svm" labelCutoff="4" featureCutoff="3" alpha="0.02" rho="0.1" average="false"/>
+        <trainer algorithm="adagrad" type="lr" labelCutoff="4" featureCutoff="3" alpha="0.02" rho="0.1" average="false"/>
         <evaluate_punctuation>false</evaluate_punctuation>
         <root_label>root</root_label>
         <bootstraps>true</bootstraps>

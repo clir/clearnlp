@@ -16,7 +16,6 @@
 package edu.emory.clir.clearnlp.component.mode.dep;
 
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
@@ -25,8 +24,6 @@ import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.component.mode.dep.state.DEPState;
-import edu.emory.clir.clearnlp.dependency.DEPLibEn;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 
@@ -36,51 +33,41 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  */
 public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DEPState, DEPEval, DEPFeatureExtractor> implements DEPTransition
 {
+	private DEPConfiguration d_configuration;
 	private int[][] label_indices;
-	private int beam_size;
 	
 	/** Creates a dependency parser for train. */
-	public AbstractDEPParser(DEPFeatureExtractor[] extractors, Object lexicons)
+	public AbstractDEPParser(DEPConfiguration configuration, DEPFeatureExtractor[] extractors, Object lexicons)
 	{
-		super(extractors, lexicons, false, 1);
-		init(1);
+		super(configuration, extractors, lexicons, false, 1);
+		init(configuration);
 	}
 	
 	/** Creates a dependency parser for bootstrap or evaluate. */
-	public AbstractDEPParser(DEPFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap, int beamSize)
+	public AbstractDEPParser(DEPConfiguration configuration, DEPFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
-		super(extractors, lexicons, models, bootstrap);
-		init(beamSize);
+		super(configuration, extractors, lexicons, models, bootstrap);
+		init(configuration);
 	}
 	
 	/** Creates a dependency parser for decode. */
-	public AbstractDEPParser(ObjectInputStream in, int beamSize)
+	public AbstractDEPParser(DEPConfiguration configuration, ObjectInputStream in)
 	{
-		super(in);
-		init(beamSize);
+		super(configuration, in);
+		init(configuration);
 	}
 	
 	/** Creates a dependency parser for decode. */
-	public AbstractDEPParser(byte[] models, int beamSize)
+	public AbstractDEPParser(DEPConfiguration configuration, byte[] models)
 	{
-		super(models);
-		init(beamSize);
+		super(configuration, models);
+		init(configuration);
 	}
 	
-	private void init(int beamSize)
+	private void init(DEPConfiguration configuration)
 	{
 		label_indices = new DEPState().initLabelIndices(s_models[0].getLabels());
-		setBeamSize(beamSize);
-	}
-	
-	public int getBeamSize()
-	{
-		return beam_size;
-	}
-	
-	public void setBeamSize(int size)
-	{
-		beam_size = size;
+		d_configuration = configuration;
 	}
 	
 //	====================================== LEXICONS ======================================
@@ -95,7 +82,7 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 
 	protected void initEval()
 	{
-		c_eval = new DEPEval();
+		c_eval = new DEPEval(((DEPConfiguration)t_configuration).evaluatePunctuation());
 	}
 
 //	====================================== PROCESS ======================================
@@ -103,20 +90,23 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	@Override
 	public void process(DEPTree tree)
 	{
-		List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<>() : null;
-		DEPState state = new DEPState(tree, c_flag, beam_size);
-		process(state, instances);
+		DEPState state = new DEPState(tree, c_flag, d_configuration);
+		List<StringInstance> instances = process(state), tmp;
 		
 		if (state.startBranching())
 		{
-			while (state.nextBranch()) process(state, instances);
-			state.mergeBranches();	
+			while (state.nextBranch()) state.saveBest(process(state));
+			tmp = state.setBest();
+			if (tmp != null) instances.addAll(tmp);
 		}
 		
-		processHeadless(state);
-		
-		if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
-		else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
+		if (isTrainOrBootstrap())
+			s_models[0].addInstances(instances);
+		else
+		{
+			processHeadless(state);
+			if (isEvaluate()) c_eval.countCorrect(tree, state.getOracle());
+		}
 	}
 
 	@Override
@@ -159,7 +149,7 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 				processHeadless(state, node, max, label_indices[DEPState.LEFT_ARC] ,  1);
 				
 				if (max.o == null)
-					node.setHead(state.getNode(0), DEPLibEn.DEP_ROOT);
+					node.setHead(state.getNode(0), d_configuration.getRootLabel());
 				else
 					node.setHead(state.getNode(max.i), new DEPLabel(max.o).getDeprel());
 			}

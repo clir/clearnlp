@@ -22,7 +22,14 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -30,14 +37,16 @@ import org.kohsuke.args4j.Option;
 
 import com.google.common.collect.Lists;
 
+import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
+import edu.emory.clir.clearnlp.collection.triple.ObjectObjectDoubleTriple;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
+import edu.emory.clir.clearnlp.component.trainer.AbstractNLPTrainer;
+import edu.emory.clir.clearnlp.component.utils.NLPMode;
+import edu.emory.clir.clearnlp.component.utils.NLPUtils;
 import edu.emory.clir.clearnlp.dependency.DEPFeat;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.nlp.NLPMode;
-import edu.emory.clir.clearnlp.nlp.NLPUtils;
-import edu.emory.clir.clearnlp.nlp.trainer.AbstractNLPTrainer;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
@@ -65,25 +74,94 @@ public class NLPTrain
 	protected String s_modelPath = null;
 	@Option(name="-mode", usage="pos|dep|srl", required=true, metaVar="<string>")
 	protected String s_mode = ".*";
+	@Option(name="-threads", usage="number of threads (default: 1)", required=false, metaVar="<Integer>")
+	protected int n_threads = 1;
 	
 	public NLPTrain() {}
 	
-	public NLPTrain(String[] args)
+	public NLPTrain(String[] args) throws InterruptedException, ExecutionException
 	{
 		BinUtils.initArgs(args, this);
 		
-		List<String> trainFiles   = FileUtils.getFileList(s_trainPath  , s_trainExt  , false);
-		List<String> developFiles = FileUtils.getFileList(s_developPath, s_developExt, false);
-		String[]     featureFiles = Splitter.splitColons(s_featureTemplateFile);
-		NLPMode      mode         = NLPMode.valueOf(s_mode);
-	
-		AbstractStatisticalComponent<?,?,?,?> component = train(trainFiles, developFiles, featureFiles, s_configurationFile, mode);
-		if (s_modelPath != null) saveModel(component, s_modelPath);
-		BinUtils.LOG.info("Configuration: "+s_configurationFile+"\n");
-		BinUtils.LOG.info("Features: "+s_featureTemplateFile+"\n");
+		List<String> trainFiles     = FileUtils.getFileList(s_trainPath  , s_trainExt  , false);
+		List<String> developFiles   = FileUtils.getFileList(s_developPath, s_developExt, false);
+		String[]     configurations = Splitter.splitCommas(s_configurationFile);
+		String[]     features       = Splitter.splitCommas(s_featureTemplateFile);
+		NLPMode      mode           = NLPMode.valueOf(s_mode);
+
+		List<Future<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>>> futures = new ArrayList<>();
+		Future<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>> future, max;
+		Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>> c;
+		ExecutorService executor = Executors.newFixedThreadPool(n_threads);
+		
+		for (String configuration : configurations)
+		{
+			for (String feature : features)
+			{
+				c = new Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>>()
+				{
+					@Override
+					public ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String> call() throws Exception
+					{
+						final ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> p = train(trainFiles, developFiles, Splitter.splitColons(feature), configuration, mode);
+						return new ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>(p.o, configuration+"\n"+features, p.d);
+					}
+				};
+				
+				futures.add(executor.submit(c));
+			}
+		}
+		
+		executor.shutdown();
+		
+		try
+		{
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		}
+		catch (InterruptedException e) {e.printStackTrace();}
+		
+		max = futures.get(0);
+		
+		for (int i=1; i<futures.size(); i++)
+		{
+			future = futures.get(i);
+			
+			if (max.get().d < future.get().d)
+				max = future;
+		}
+		
+		BinUtils.LOG.info(String.format("Final score: %4.2f\n", max.get().d));
+		BinUtils.LOG.info(max.get().o2+"\n");
+		if (s_modelPath != null) saveModel(max.get().o1, s_modelPath);
 	}
 	
-	public AbstractStatisticalComponent<?,?,?,?> train(List<String> trainFiles, List<String> developFiles, String[] featureFiles, String configurationFile, NLPMode mode)
+	class TrainTask implements Callable<ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>>>
+	{
+		private List<String> train_files;
+		private String[] feature_files;
+		private String develop_file;
+		private NLPMode nlp_mode;
+		private int dev_index;
+		
+		/** @param currLabel the current label to train. */
+		public TrainTask(List<String> trainFiles, String[] featureFiles, NLPMode mode, int devIndex)
+		{
+			train_files  = trainFiles;
+			develop_file = trainFiles.remove(devIndex);
+			feature_files = featureFiles;
+			dev_index = devIndex;
+			nlp_mode = mode;
+		}
+		
+		public ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> call()
+		{
+			AbstractStatisticalComponent<?,?,?,?> component = train(train_files, Lists.newArrayList(develop_file), feature_files, s_configurationFile, nlp_mode).o;
+			saveModel(component, s_modelPath+"."+dev_index);
+			return null;
+		}
+    }
+	
+	public ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> train(List<String> trainFiles, List<String> developFiles, String[] featureFiles, String configurationFile, NLPMode mode)
 	{
 		InputStream configuration  = IOUtils.createFileInputStream(configurationFile);
 		InputStream[] features     = IOUtils.createFileInputStreams(featureFiles);
@@ -155,6 +233,10 @@ public class NLPTrain
 		
 	static public void main(String[] args)
 	{
-		new NLPTrain(args);
+		try 
+		{
+			new NLPTrain(args);
+		}
+		catch (InterruptedException | ExecutionException e) {e.printStackTrace();}
 	}
 }

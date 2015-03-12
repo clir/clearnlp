@@ -1,5 +1,5 @@
 /**
- * Copyright 2015, Emory University
+ * Copyright 2014, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.sequence;
+package edu.emory.clir.clearnlp.component.configuration;
 
 import java.io.InputStream;
 
-import edu.emory.clir.clearnlp.feature.common.CommonFeatureExtractor;
+import org.w3c.dom.Element;
+
+import edu.emory.clir.clearnlp.component.utils.NLPMode;
+import edu.emory.clir.clearnlp.util.XmlUtils;
 
 /**
+ * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SeqFeatureExtractor extends CommonFeatureExtractor<SeqState>
+public class DecodeConfiguration extends AbstractConfiguration
 {
-	private static final long serialVersionUID = -4420624051991711740L;
-
-	public SeqFeatureExtractor(InputStream in)
+	private final Element e_model;
+	
+	public DecodeConfiguration(InputStream in)
 	{
 		super(in);
+		e_model = getFirstElement(E_MODEL);
+	}
+	
+	public String getModelPath(NLPMode mode)
+	{
+		Element eMode = XmlUtils.getFirstElementByTagName(e_model, mode.toString());
+		return (eMode != null) ? XmlUtils.getTrimmedTextContent(eMode) : null;
 	}
 }
