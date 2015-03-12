@@ -15,10 +15,12 @@
  */
 package edu.emory.clir.clearnlp.bin;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.kohsuke.args4j.Option;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
 
@@ -33,11 +35,6 @@ import edu.emory.clir.clearnlp.util.Splitter;
  */
 public class NLPJackknife extends NLPTrain
 {
-	@Option(name="-bidx", usage="index of the first cv-set (inclusive)", required=true, metaVar="<integer>")
-	protected int i_beginIndex;
-	@Option(name="-eidx", usage="index of the last cv-set (exclusive)", required=true, metaVar="<integer>")
-	protected int i_endIndex;
-	
 	public NLPJackknife() {}
 	
 	public NLPJackknife(String[] args)
@@ -48,23 +45,52 @@ public class NLPJackknife extends NLPTrain
 		String[]     featureFiles = Splitter.splitColons(s_featureTemplateFile);
 		NLPMode      mode         = NLPMode.valueOf(s_mode);
 	
-		trainCV(trainFiles, featureFiles, s_configurationFile, mode, i_beginIndex, i_endIndex);
+		trainCV(trainFiles, featureFiles, s_configurationFile, mode);
 	}
 	
-	private void trainCV(List<String> trainFiles, String[] featureFiles, String configurationFile, NLPMode mode, int beginIndex, int endIndex)
+	private void trainCV(List<String> trainFiles, String[] featureFiles, String configurationFile, NLPMode mode)
 	{
-		AbstractStatisticalComponent<?,?,?,?> component;
-		String developFile;
+		int i, size = trainFiles.size();
+		Collections.sort(trainFiles);
 		
-		for (int i=beginIndex; i<endIndex; i++)
+		ExecutorService executor = Executors.newFixedThreadPool(size);
+		
+		for (i=0; i<size; i++)
+			executor.execute(new TrainTask(new ArrayList<>(trainFiles), featureFiles, mode, i));
+		
+		executor.shutdown();
+		
+		try
 		{
-			Collections.sort(trainFiles);
-			developFile = trainFiles.remove(i);
-			component = train(trainFiles, Lists.newArrayList(developFile), featureFiles, s_configurationFile, mode);
-			saveModel(component, s_modelPath+"/cv"+i+".tgz");
-			trainFiles.add(developFile);
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		}
+		catch (InterruptedException e) {e.printStackTrace();}
 	}
+	
+	class TrainTask implements Runnable
+	{
+		private List<String> train_files;
+		private String[] feature_files;
+		private String develop_file;
+		private NLPMode nlp_mode;
+		private int dev_index;
+		
+		/** @param currLabel the current label to train. */
+		public TrainTask(List<String> trainFiles, String[] featureFiles, NLPMode mode, int devIndex)
+		{
+			train_files  = trainFiles;
+			develop_file = trainFiles.remove(devIndex);
+			feature_files = featureFiles;
+			dev_index = devIndex;
+			nlp_mode = mode;
+		}
+		
+		public void run()
+		{
+			AbstractStatisticalComponent<?,?,?,?> component = train(train_files, Lists.newArrayList(develop_file), feature_files, s_configurationFile, nlp_mode);
+			saveModel(component, s_modelPath+"."+dev_index);
+		}
+    }
 	
 	static public void main(String[] args)
 	{

@@ -17,7 +17,7 @@ package edu.emory.clir.clearnlp.component.mode.sense;
 
 import java.util.Map;
 
-import edu.emory.clir.clearnlp.component.utils.AbstractState;
+import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;

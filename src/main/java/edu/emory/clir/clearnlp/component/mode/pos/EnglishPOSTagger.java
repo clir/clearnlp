@@ -32,13 +32,13 @@ public class EnglishPOSTagger extends AbstractPOSTagger
 	}
 	
 	/** Creates a pos tagger for train. */
-	public EnglishPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons)
+	public EnglishPOSTagger(POSFeatureExtractor[] extractors, Object lexicons)
 	{
 		super(extractors, lexicons);
 	}
 	
 	/** Creates a pos tagger for bootstrap or evaluate. */
-	public EnglishPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	public EnglishPOSTagger(POSFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
 		super(extractors, lexicons, models, bootstrap);
 	}

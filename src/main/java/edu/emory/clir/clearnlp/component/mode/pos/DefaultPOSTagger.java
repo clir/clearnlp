@@ -32,13 +32,13 @@ public class DefaultPOSTagger extends AbstractPOSTagger
 	}
 	
 	/** Creates a pos tagger for train. */
-	public DefaultPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons)
+	public DefaultPOSTagger(POSFeatureExtractor[] extractors, Object lexicons)
 	{
 		super(extractors, lexicons);
 	}
 	
 	/** Creates a pos tagger for bootstrap or evaluate. */
-	public DefaultPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	public DefaultPOSTagger(POSFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
 		super(extractors, lexicons, models, bootstrap);
 	}

@@ -81,18 +81,6 @@ public class DEPEval extends AbstractEval<DEPArc>
 		}
 	}
 	
-	@Override
-	public double[] getScores()
-	{
-		double[] acc = new double[3];
-		
-		acc[0] = 100d * n_las / n_total;
-		acc[1] = 100d * n_uas / n_total;
-		acc[2] = 100d * n_ls  / n_total;
-		
-		return acc;
-	}
-	
 	public double getScore()
 	{
 		return 100d * n_las / n_total;
@@ -103,5 +91,16 @@ public class DEPEval extends AbstractEval<DEPArc>
 	{
 		double[] d = getScores();
 		return String.format("LAS: %5.2f (%d), UAS: %5.2f (%d), LS: %5.2f (%d), TOTAL: %d", d[0], n_las, d[1], n_uas, d[2], n_ls, n_total);
+	}
+	
+	private double[] getScores()
+	{
+		double[] acc = new double[3];
+		
+		acc[0] = 100d * n_las / n_total;
+		acc[1] = 100d * n_uas / n_total;
+		acc[2] = 100d * n_ls  / n_total;
+		
+		return acc;
 	}
 }

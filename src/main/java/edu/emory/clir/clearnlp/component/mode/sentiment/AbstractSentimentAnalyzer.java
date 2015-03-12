@@ -33,13 +33,13 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
 public class AbstractSentimentAnalyzer extends AbstractStatisticalComponent<String, SAState, SAEval, SAFeatureExtractor> implements DEPTransition
 {
 	/** Creates a sentiment analyzer for train. */
-	public AbstractSentimentAnalyzer(SAFeatureExtractor[] extractors, Object[] lexicons)
+	public AbstractSentimentAnalyzer(SAFeatureExtractor[] extractors, Object lexicons)
 	{
 		super(extractors, lexicons, false, 1);
 	}
 	
 	/** Creates a sentiment analyzer for bootstrap or evaluate. */
-	public AbstractSentimentAnalyzer(SAFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	public AbstractSentimentAnalyzer(SAFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
 		super(extractors, lexicons, models, bootstrap);
 	}
@@ -59,10 +59,10 @@ public class AbstractSentimentAnalyzer extends AbstractStatisticalComponent<Stri
 //	====================================== LEXICONS ======================================
 	
 	@Override
-	public Object[] getLexicons() {return null;}
+	public Object getLexicons() {return null;}
 	
 	@Override
-	public void setLexicons(Object[] lexicons) {}
+	public void setLexicons(Object lexicons) {}
 	
 //	====================================== EVAL ======================================
 

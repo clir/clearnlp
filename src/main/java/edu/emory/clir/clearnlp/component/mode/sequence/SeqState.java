@@ -15,7 +15,7 @@
  */
 package edu.emory.clir.clearnlp.component.mode.sequence;
 
-import edu.emory.clir.clearnlp.component.utils.AbstractLRState;
+import edu.emory.clir.clearnlp.component.state.AbstractLRState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;

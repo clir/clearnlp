@@ -18,7 +18,6 @@ package edu.emory.clir.clearnlp.nlp.trainer;
 import java.io.InputStream;
 import java.util.List;
 
-import edu.emory.clir.clearnlp.bin.NLPTrain;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOneVsAllTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
@@ -49,9 +48,9 @@ public abstract class AbstractNLPTrainer
 	
 	public AbstractStatisticalComponent<?,?,?,?> train(List<String> trainFiles, List<String> developFiles)
 	{
-		Object[] lexicons = getLexicons(trainFiles);
+		Object lexicons = getLexicons(trainFiles);
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> prev = train(trainFiles, developFiles, lexicons, null, 0);
-		if (!t_configuration.isBootstrap() || NLPTrain.d_stop > 0) return prev.o;
+		if (!t_configuration.isBootstrap()) return prev.o;
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> curr;
 		byte[] backup;
 		int boot = 1;
@@ -77,10 +76,10 @@ public abstract class AbstractNLPTrainer
 		throw new IllegalStateException();
 	}
 	
-	private Object[] getLexicons(List<String> trainFiles)
+	private Object getLexicons(List<String> trainFiles)
 	{
 		AbstractStatisticalComponent<?,?,?,?> component = createComponentForCollect();
-		Object[] lexicons = null;
+		Object lexicons = null;
 		
 		if (component != null)
 		{
@@ -92,7 +91,7 @@ public abstract class AbstractNLPTrainer
 		return lexicons;
 	}
 	
-	private ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> train(List<String> trainFiles, List<String> developFiles, Object[] lexicons, StringModel[] models, int boot)
+	private ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> train(List<String> trainFiles, List<String> developFiles, Object lexicons, StringModel[] models, int boot)
 	{
 		// train
 		AbstractStatisticalComponent<?,?,?,?> component = (models == null) ? createComponentForTrain(lexicons) : createComponentForBootstrap(lexicons, models);
@@ -114,13 +113,13 @@ public abstract class AbstractNLPTrainer
 	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForCollect();
 	
 	/** Creates an NLP component for training. */
-	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object[] lexicons);
+	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object lexicons);
 	
 	/** Creates an NLP component for bootstrap. */
-	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object[] lexicons, StringModel[] models);
+	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models);
 	
 	/** Creates an NLP component for evaluation. */
-	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object[] lexicons, StringModel[] models);
+	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models);
 	
 	/** Creates an NLP component for decode. */
 	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models);
@@ -165,9 +164,7 @@ public abstract class AbstractNLPTrainer
 			currScore = eval.getScore();
 			BinUtils.LOG.info(String.format("%3d: %4.2f\n", iter, currScore));
 			
-			if (0 < NLPTrain.d_stop && NLPTrain.d_stop < currScore)
-				break;
-			else if (prevScore < currScore)
+			if (prevScore < currScore)
 			{
 				prevScore = currScore;
 				prevWeights = model.saveWeightVectorToByteArray();

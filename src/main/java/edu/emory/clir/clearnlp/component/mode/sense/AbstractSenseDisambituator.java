@@ -16,17 +16,13 @@
 package edu.emory.clir.clearnlp.component.mode.sense;
 
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.component.mode.pos.POSCollector;
 import edu.emory.clir.clearnlp.component.mode.pos.POSEval;
 import edu.emory.clir.clearnlp.component.mode.pos.POSFeatureExtractor;
 import edu.emory.clir.clearnlp.component.mode.pos.POSState;
@@ -45,22 +41,21 @@ public class AbstractSenseDisambituator extends AbstractStatisticalComponent<Str
 	static public final int LEXICON_PROPER_NOUNS    = 1;
 	
 	private Map<String,String> m_ambiguity_classes;
-	private Set<String> s_proper_nouns;
 
 	/** Creates a pos tagger for collect. */
 	public AbstractSenseDisambituator(POSTrainConfiguration configuration)
 	{
-		super(new POSCollector(configuration));
+		super();
 	}
 	
 	/** Creates a pos tagger for train. */
-	public AbstractSenseDisambituator(POSFeatureExtractor[] extractors, Object[] lexicons)
+	public AbstractSenseDisambituator(POSFeatureExtractor[] extractors, Object lexicons)
 	{
 		super(extractors, lexicons, false, 1);
 	}
 	
 	/** Creates a pos tagger for bootstrap or evaluate. */
-	public AbstractSenseDisambituator(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	public AbstractSenseDisambituator(POSFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
 		super(extractors, lexicons, models, bootstrap);
 	}
@@ -69,7 +64,6 @@ public class AbstractSenseDisambituator extends AbstractStatisticalComponent<Str
 	public AbstractSenseDisambituator(ObjectInputStream in)
 	{
 		super(in);
-		s_proper_nouns = null;
 	}
 	
 	/** Creates a pos tagger for decode. */
@@ -83,26 +77,13 @@ public class AbstractSenseDisambituator extends AbstractStatisticalComponent<Str
 	@Override
 	public Object[] getLexicons()
 	{
-		if (m_ambiguity_classes == null)
-			m_ambiguity_classes = ((POSCollector)l_collector).finalizeAmbiguityClasses();
-		
-		if (s_proper_nouns == null)
-			s_proper_nouns = ((POSCollector)l_collector).finalizeProperNouns();
-		
-		Object[] lexicons = new Object[2];
-		
-		lexicons[LEXICON_AMBIGUITY_CLASS] = m_ambiguity_classes;
-		lexicons[LEXICON_PROPER_NOUNS]    = s_proper_nouns;
-		
-		return lexicons;
+		return null;
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public void setLexicons(Object[] lexicons)
+	public void setLexicons(Object lexicons)
 	{
-		m_ambiguity_classes = (Map<String,String>)lexicons[LEXICON_AMBIGUITY_CLASS];
-		s_proper_nouns      = (Set<String>)lexicons[LEXICON_PROPER_NOUNS];
+		
 	}
 	
 //	====================================== EVAL ======================================
@@ -117,23 +98,7 @@ public class AbstractSenseDisambituator extends AbstractStatisticalComponent<Str
 	@Override
 	public void process(DEPTree tree)
 	{
-		POSState state = new POSState(tree, c_flag, m_ambiguity_classes, s_proper_nouns);
 		
-		if (isCollect())
-		{
-			l_collector.collect(state);
-		}
-		else
-		{
-			List<StringInstance> instances = isTrainOrBootstrap() ? new ArrayList<>() : null;
-			process(state, instances);
-			
-			if (!isDecode())
-			{
-				if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
-				else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
-			}
-		}
 	}
 
 	@Override

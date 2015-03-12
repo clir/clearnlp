@@ -18,7 +18,6 @@ package edu.emory.clir.clearnlp.component.mode.sentiment;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractAccuracyEval;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
-import edu.emory.clir.clearnlp.dependency.DEPTree;
 
 /**
  * @since 3.0.0
@@ -27,13 +26,8 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
 public class SAEval extends AbstractAccuracyEval<String>
 {
 	@Override
-	public void countCorrect(DEPTree sTree, String[] gTags)
+	protected boolean isCorrect(DEPNode node, String label)
 	{
-		DEPNode root = sTree.get(DEPLib.ROOT_ID);
-		
-		if (gTags[0].equals(root.getFeat(DEPLib.FEAT_SA)))
-			n_correct++;
-		
-		n_total++;
+		return label.equals(node.getFeat(DEPLib.FEAT_SA));
 	}
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.collection.map;
+package edu.emory.clir.clearnlp.collection.ngram;
 
 import java.io.Serializable;
 import java.util.List;
@@ -22,19 +22,22 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.util.MathUtils;
 
-public class IncMap1<T> implements Serializable
+public class Unigram<T> implements Serializable
 {
 	private static final long serialVersionUID = 2431106431004828434L;
 	private ObjectIntHashMap<T> g_map;
 	private int i_total;
+	private T   t_best;
 
-	public IncMap1()
+	public Unigram()
 	{
-		g_map = new ObjectIntHashMap<>();
+		g_map   = new ObjectIntHashMap<>();
+		t_best  = null;
 		i_total = 0;
 	}
 	
@@ -45,13 +48,21 @@ public class IncMap1<T> implements Serializable
 	
 	public void add(T key, int inc)
 	{
-		g_map.add(key, inc);
+		int c = g_map.add(key, inc);
 		i_total += inc;
+		
+		if (t_best == null || get(t_best) < c)
+			t_best = key;
 	}
 	
 	public int get(T key)
 	{
 		return g_map.get(key);
+	}
+	
+	public ObjectDoublePair<T> getBest()
+	{
+		 return (t_best != null) ? new ObjectDoublePair<T>(t_best, MathUtils.divide(get(t_best), i_total)) : null;
 	}
 	
 	public boolean contains(T key)
@@ -89,6 +100,11 @@ public class IncMap1<T> implements Serializable
 		}
 		
 		return list;
+	}
+	
+	public Set<T> keySet()
+	{
+		return g_map.keySet(0);
 	}
 	
 	/** @return a set of keys whose values are greater than the specific cutoff. */

@@ -34,14 +34,14 @@ public class AbstractSequenceClassifier extends AbstractStatisticalComponent<Str
 	protected SeqTrainConfiguration t_configuration;
 	
 	/** Creates a sequence classifier for train. */
-	public AbstractSequenceClassifier(SeqFeatureExtractor[] extractors, Object[] lexicons, SeqTrainConfiguration configuration)
+	public AbstractSequenceClassifier(SeqFeatureExtractor[] extractors, Object lexicons, SeqTrainConfiguration configuration)
 	{
 		super(extractors, lexicons, false, 1);
 		init(configuration);
 	}
 	
 	/** Creates a sequence classifier for bootstrap or evaluate. */
-	public AbstractSequenceClassifier(SeqFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap, SeqTrainConfiguration configuration)
+	public AbstractSequenceClassifier(SeqFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap, SeqTrainConfiguration configuration)
 	{
 		super(extractors, lexicons, models, bootstrap);
 		init(configuration);
@@ -67,13 +67,13 @@ public class AbstractSequenceClassifier extends AbstractStatisticalComponent<Str
 //	====================================== LEXICONS ======================================
 	
 	@Override
-	public Object[] getLexicons()
+	public Object getLexicons()
 	{
 		return null;
 	}
 	
 	@Override
-	public void setLexicons(Object[] lexicons) {}
+	public void setLexicons(Object lexicons) {}
 	
 //	====================================== EVAL ======================================
 

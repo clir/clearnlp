@@ -47,12 +47,12 @@ public class C2DConvert
 	private String s_headruleFile;
 	@Option(name="-i", usage="input path (required)", required=true, metaVar="<filepath>")
 	private String s_inputPath;
-	@Option(name="-pe", usage="parse file extension (default: null)", required=false, metaVar="<regex>")
-	private String s_parseExt = null;
-	@Option(name="-re", usage="propbank file extension (default: null)", required=false, metaVar="<regex>")
-	private String s_propExt = null;
-	@Option(name="-oe", usage="output file extension (default: cnlp)", required=false, metaVar="<string>")
-	private String s_outputExt = "cnlp";
+	@Option(name="-pe", usage="parse file extension (default: parse)", required=false, metaVar="<regex>")
+	private String s_parseExt = "parse";
+	@Option(name="-re", usage="propbank file extension (default: prop)", required=false, metaVar="<regex>")
+	private String s_propExt = "prop";
+	@Option(name="-oe", usage="output file extension (default: dep)", required=false, metaVar="<string>")
+	private String s_outputExt = "dep";
 	@Option(name="-l", usage="language (default: en)", required=false, metaVar="<language>")
 	private String s_language = TLanguage.ENGLISH.toString();
 	@Option(name="-n", usage="if set, normalize empty category indices", required=false, metaVar="<boolean>")
@@ -105,10 +105,10 @@ public class C2DConvert
 				}
 				
 				analyzer.process(dTree);
-				fout.println(dTree.toString()+"\n");
+				fout.println(dTree.toStringSRL()+"\n");
 			}
 			else
-				System.err.println("No token in the tree "+(n+1));
+				System.err.println("No token in the tree "+(n+1)+"\n"+cTree.toStringLine()+"\n");
 		}
 		
 		reader.close();

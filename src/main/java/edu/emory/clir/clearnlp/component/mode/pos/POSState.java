@@ -15,11 +15,8 @@
  */
 package edu.emory.clir.clearnlp.component.mode.pos;
 
-import java.util.Map;
-import java.util.Set;
-
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
-import edu.emory.clir.clearnlp.component.utils.AbstractLRState;
+import edu.emory.clir.clearnlp.component.state.AbstractLRState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
@@ -31,21 +28,14 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  */
 public class POSState extends AbstractLRState
 {
-	private Map<String,String> m_ambiguity_classes;
-	private Set<String>        s_proper_nouns;
-	
+	private POSLexicon pos_lexicon;
+
 //	====================================== INITIALIZATION ======================================
 	
-	public POSState(DEPTree tree, CFlag flag, Map<String,String> ambiguityClasses, Set<String> properNouns)
+	public POSState(DEPTree tree, CFlag flag, POSLexicon lexicon)
 	{
 		super(tree, flag);
-		init(ambiguityClasses, properNouns);
-	}
-	
-	private void init(Map<String,String> ambiguityClasses, Set<String> properNouns)
-	{
-		m_ambiguity_classes = ambiguityClasses;
-		s_proper_nouns      = properNouns;
+		pos_lexicon = lexicon;
 	}
 	
 //	====================================== ORACLE/LABEL ======================================
@@ -76,11 +66,11 @@ public class POSState extends AbstractLRState
 	
 	public String getAmbiguityClass(DEPNode node)
 	{
-		return m_ambiguity_classes.get(node.getSimplifiedWordForm());
+		return pos_lexicon.getAmbiguityClassFeature(node.getSimplifiedWordForm());
 	}
 	
 	public boolean extractWordFormFeature(DEPNode node)
 	{
-		return c_flag == CFlag.DECODE || c_flag == CFlag.EVALUATE || !s_proper_nouns.contains(node.getSimplifiedWordForm());
+		return c_flag == CFlag.DECODE || c_flag == CFlag.EVALUATE || !pos_lexicon.isProperNoun(node.getSimplifiedWordForm());
 	}
 }

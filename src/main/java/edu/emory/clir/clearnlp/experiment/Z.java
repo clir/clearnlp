@@ -43,19 +43,7 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		TSVReader reader = new TSVReader(0, 1, 2, 4, 5, 6, 7);
-		DEPTree tree;
-		
-		reader.open(new FileInputStream(args[0]));
-		
-		while ((tree = reader.next()) != null)
-		{
-			if (tree.isNonProjective())
-			{
-				System.out.println("YES");
-				break;
-			}
-		}
+		Thread.sleep(Integer.parseInt(args[0]));
 	}
 	
 	class Tmp

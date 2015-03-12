@@ -22,14 +22,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import edu.emory.clir.clearnlp.component.collector.ICollector;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SenseCollector implements ICollector<SenseState>, Serializable
+public class SenseCollector implements Serializable
 {
 	private static final long serialVersionUID = -1309316221225281613L;
 	private Map<String,Set<String>> m_lemmas;

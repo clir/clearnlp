@@ -42,18 +42,17 @@ abstract public class AbstractF1Eval<LabelType> extends AbstractEval<LabelType>
 	}
 	
 	@Override
-	public double[] getScores()
+	public String toString()
+	{
+		double[] d = getScores();
+		return String.format("F1: %5.2f, P: %5.2f, R: %5.2f\n", d[0], d[1], d[2]);
+	}
+	
+	private double[] getScores()
 	{
 		double precision = 100d * n_correct / p_total;
 		double recall    = 100d * n_correct / r_total;
 		
 		return new double[]{MathUtils.getF1(precision, recall), precision, recall};
-	}
-	
-	@Override
-	public String toString()
-	{
-		double[] d = getScores();
-		return String.format("F1: %5.2f, P: %5.2f, R: %5.2f\n", d[0], d[1], d[2]);
 	}
 }

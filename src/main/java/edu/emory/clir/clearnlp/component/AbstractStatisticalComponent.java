@@ -31,9 +31,8 @@ import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AdaGradSVM;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
-import edu.emory.clir.clearnlp.component.collector.ICollector;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
-import edu.emory.clir.clearnlp.component.utils.AbstractState;
+import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
@@ -46,21 +45,19 @@ import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
  */
 abstract public class AbstractStatisticalComponent<LabelType, StateType extends AbstractState<?,LabelType>, EvalType extends AbstractEval<?>, FeatureType extends AbstractFeatureExtractor<?,?,?>> extends AbstractComponent
 {
-	protected ICollector<StateType> l_collector;
 	protected FeatureType[] f_extractors;
 	protected StringModel[] s_models;
 	protected EvalType      c_eval;
 	protected CFlag         c_flag;
 	
 	/** Constructs a statistical component for collect. */
-	public AbstractStatisticalComponent(ICollector<StateType> collector)
+	public AbstractStatisticalComponent()
 	{
-		l_collector = collector;
 		setFlag(CFlag.COLLECT);
 	}
 	
 	/** Constructs a statistical component for train. */
-	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, boolean binary, int modelSize)
+	public AbstractStatisticalComponent(FeatureType[] extractors, Object lexicons, boolean binary, int modelSize)
 	{
 		setFlag(CFlag.TRAIN);
 		setFeatureExtractors(extractors);
@@ -69,7 +66,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	}
 	
 	/** Constructs a statistical component for bootstrap or evaluate. */
-	public AbstractStatisticalComponent(FeatureType[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	public AbstractStatisticalComponent(FeatureType[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
 		if (bootstrap)
 			setFlag(CFlag.BOOTSTRAP);
@@ -138,7 +135,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	public void load(ObjectInputStream in) throws Exception
 	{
 		setFeatureExtractors((FeatureType[])in.readObject());
-		setLexicons((Object[])in.readObject());
+		setLexicons(in.readObject());
 		setModels(loadModels(in));
 	}
 	
@@ -184,10 +181,10 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 //	====================================== LEXICONS ======================================
 
 	/** @return all objects containing lexicons. */
-	abstract public Object[] getLexicons();
+	abstract public Object getLexicons();
 	
 	/** Sets lexicons used for this component. */
-	abstract public void setLexicons(Object[] lexicons);
+	abstract public void setLexicons(Object lexicons);
 	
 //	====================================== FEATURES ======================================
 	

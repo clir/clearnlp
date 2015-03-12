@@ -63,10 +63,8 @@ public class NLPTrain
 	protected String s_developExt = "*";
 	@Option(name="-m", usage="model path (optional)", required=false, metaVar="<filename>")
 	protected String s_modelPath = null;
-	@Option(name="-mode", usage="pos|dep|srl|seq", required=true, metaVar="<string>")
+	@Option(name="-mode", usage="pos|dep|srl", required=true, metaVar="<string>")
 	protected String s_mode = ".*";
-	@Option(name="-stop", usage="stopping criteria (optional; development only)", required=false, metaVar="<double>")
-	static public double d_stop = 0;
 	
 	public NLPTrain() {}
 	
@@ -81,6 +79,8 @@ public class NLPTrain
 	
 		AbstractStatisticalComponent<?,?,?,?> component = train(trainFiles, developFiles, featureFiles, s_configurationFile, mode);
 		if (s_modelPath != null) saveModel(component, s_modelPath);
+		BinUtils.LOG.info("Configuration: "+s_configurationFile+"\n");
+		BinUtils.LOG.info("Features: "+s_featureTemplateFile+"\n");
 	}
 	
 	public AbstractStatisticalComponent<?,?,?,?> train(List<String> trainFiles, List<String> developFiles, String[] featureFiles, String configurationFile, NLPMode mode)

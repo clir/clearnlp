@@ -15,6 +15,10 @@
  */
 package edu.emory.clir.clearnlp.component.evaluation;
 
+import edu.emory.clir.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.util.MathUtils;
+
 
 /**
  * @since 3.0.0
@@ -22,36 +26,53 @@ package edu.emory.clir.clearnlp.component.evaluation;
  */
 abstract public class AbstractAccuracyEval<LabelType> extends AbstractEval<LabelType>
 {
-	protected int n_total;
-	protected int n_correct;
+	protected int n_totalTokens;
+	protected int n_totalTrees;
+	protected int n_correctTokens;
+	protected int n_correctTrees;
 	
 	public AbstractAccuracyEval()
 	{
 		clear();
 	}
 	
+	public void countCorrect(DEPTree sTree, LabelType[] gLabels)
+	{
+		int i, total =  sTree.size() - 1, correct = 0;
+		
+		for (i=1; i<=total; i++)
+		{
+			if (isCorrect(sTree.get(i), gLabels[i]))
+				correct++;
+		}
+		
+		n_correctTokens += correct;
+		n_totalTokens += total;
+		
+		if (correct == total) n_correctTrees++;
+		n_totalTrees++;
+	}
+	
+	abstract protected boolean isCorrect(DEPNode node, LabelType label);
+	
 	@Override
 	public void clear()
 	{
-		n_total   = 0;
-		n_correct = 0; 
-	}
-	
-	@Override
-	public double[] getScores()
-	{
-		return new double[]{getScore()};
+		n_totalTokens   = 0;
+		n_totalTrees    = 0;
+		n_correctTokens = 0;
+		n_correctTrees  = 0;
 	}
 	
 	@Override
 	public double getScore()
 	{
-		return 100d * n_correct / n_total;
+		return 100d * n_correctTokens / n_totalTokens;
 	}
 	
 	@Override
 	public String toString()
 	{
-		return String.format("ACC: %5.2f (%d/%d)", getScore(), n_correct, n_total);
+		return String.format("Token: %5.2f (%d/%d), Tree: %5.2f (%d/%d)", MathUtils.getAccuracy(n_correctTokens, n_totalTokens), n_correctTokens, n_totalTokens, MathUtils.getAccuracy(n_correctTrees, n_totalTrees), n_correctTrees, n_totalTrees);
 	}
 }

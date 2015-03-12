@@ -26,13 +26,13 @@ import edu.emory.clir.clearnlp.classification.model.StringModel;
 public class DefaultDEPParser extends AbstractDEPParser
 {
 	/** Creates a dependency parser for train. */
-	public DefaultDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons)
+	public DefaultDEPParser(DEPFeatureExtractor[] extractors, Object lexicons)
 	{
 		super(extractors, lexicons);
 	}
 	
 	/** Creates a dependency parser for bootstrap or evaluate. */
-	public DefaultDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap, int beamSize)
+	public DefaultDEPParser(DEPFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap, int beamSize)
 	{
 		super(extractors, lexicons, models, bootstrap, beamSize);
 	}

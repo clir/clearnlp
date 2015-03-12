@@ -27,7 +27,7 @@ import edu.emory.clir.clearnlp.collection.stack.IntPStack;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPLabel;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPTransition;
 import edu.emory.clir.clearnlp.component.mode.dep.merge.DEPMerge;
-import edu.emory.clir.clearnlp.component.utils.AbstractState;
+import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;

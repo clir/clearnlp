@@ -100,6 +100,11 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	
 // =============================== Labels/Features/Weights ===============================
 	
+	public int getLabelIndex(String label)
+	{
+		return m_labels.getLabelIndex(label);
+	}
+	
 	public int getLabelSize()
 	{
 		return w_vector.getLabelSize();

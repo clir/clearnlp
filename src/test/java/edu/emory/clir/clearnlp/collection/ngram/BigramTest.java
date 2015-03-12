@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.collection.map;
+package edu.emory.clir.clearnlp.collection.ngram;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import edu.emory.clir.clearnlp.collection.map.IncMap2;
-
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class IncMap2Test
+public class BigramTest
 {
 	@Test
 	public void test()
 	{
-		IncMap2<String,String> map = new IncMap2<>();
+		Bigram<String,String> map = new Bigram<>();
 		
 		map.add("A", "a1");
 		map.add("A", "a2");
@@ -41,7 +39,7 @@ public class IncMap2Test
 		map.add("B", "b2", 2);
 		map.add("B", "b3");
 
-		assertEquals("[A, B]", map.getKeySet1().toString());
+		assertEquals("[A, B]", map.getBigramSet().toString());
 		
 		assertEquals("[(a3,1), (a1,2), (a2,1)]", map.toList("A", 0).toString());
 		assertEquals("[(b1,1), (b2,2), (b3,1)]", map.toList("B", 0).toString());

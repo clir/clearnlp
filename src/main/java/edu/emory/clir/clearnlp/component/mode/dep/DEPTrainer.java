@@ -55,19 +55,19 @@ public class DEPTrainer extends AbstractNLPTrainer
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object[] lexicons)
+	protected AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object lexicons)
 	{
 		return new DefaultDEPParser(f_extractors, lexicons);
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object[] lexicons, StringModel[] models)
+	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
 	{
 		return new DefaultDEPParser(f_extractors, lexicons, models, true, t_configuration.getTrainBeamSize(NLPMode.dep));
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object[] lexicons, StringModel[] models)
+	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
 	{
 		return new DefaultDEPParser(f_extractors, lexicons, models, false, t_configuration.getDecodeBeamSize(NLPMode.dep));
 	}

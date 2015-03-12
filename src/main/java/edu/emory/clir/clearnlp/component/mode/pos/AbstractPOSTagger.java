@@ -18,17 +18,12 @@ package edu.emory.clir.clearnlp.component.mode.pos;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
-import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
  * @since 3.0.0
@@ -36,26 +31,25 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  */
 public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSEval, POSFeatureExtractor>
 {
-	static public final int INDEX_AMBIGUITY_CLASS = 0;
-	static public final int INDEX_PROPER_NOUNS    = 1;
+	private POSTrainConfiguration t_configuration;
+	private POSLexicon pos_lexicon;
 	
-	private Map<String,String> m_ambiguity_classes;
-	private Set<String> s_proper_nouns;
-
 	/** Creates a pos tagger for collect. */
 	public AbstractPOSTagger(POSTrainConfiguration configuration)
 	{
-		super(new POSCollector(configuration));
+		super();
+		t_configuration = configuration;
+		pos_lexicon = new POSLexicon(configuration.getProperNounTagset());
 	}
 	
 	/** Creates a pos tagger for train. */
-	public AbstractPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons)
+	public AbstractPOSTagger(POSFeatureExtractor[] extractors, Object lexicons)
 	{
 		super(extractors, lexicons, false, 1);
 	}
 	
 	/** Creates a pos tagger for bootstrap or evaluate. */
-	public AbstractPOSTagger(POSFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap)
+	public AbstractPOSTagger(POSFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
 		super(extractors, lexicons, models, bootstrap);
 	}
@@ -64,7 +58,6 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	public AbstractPOSTagger(ObjectInputStream in)
 	{
 		super(in);
-		s_proper_nouns = null;
 	}
 	
 	/** Creates a pos tagger for decode. */
@@ -76,28 +69,18 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 //	====================================== LEXICONS ======================================
 	
 	@Override
-	public Object[] getLexicons()
+	public Object getLexicons()
 	{
-		if (m_ambiguity_classes == null)
-			m_ambiguity_classes = ((POSCollector)l_collector).finalizeAmbiguityClasses();
+		if (t_configuration != null)
+			pos_lexicon.finalizeAmbiguityClassFeatures(t_configuration.getAmbiguityClassThreshold());
 		
-		if (s_proper_nouns == null)
-			s_proper_nouns = ((POSCollector)l_collector).finalizeProperNouns();
-		
-		Object[] lexicons = new Object[2];
-		
-		lexicons[INDEX_AMBIGUITY_CLASS] = m_ambiguity_classes;
-		lexicons[INDEX_PROPER_NOUNS]    = s_proper_nouns;
-		
-		return lexicons;
+		return pos_lexicon;
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public void setLexicons(Object[] lexicons)
+	public void setLexicons(Object lexicons)
 	{
-		m_ambiguity_classes = (Map<String,String>)lexicons[INDEX_AMBIGUITY_CLASS];
-		s_proper_nouns      = (Set<String>)lexicons[INDEX_PROPER_NOUNS];
+		pos_lexicon = (POSLexicon)lexicons;
 	}
 	
 //	====================================== EVAL ======================================
@@ -113,11 +96,11 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	@Override
 	public void process(DEPTree tree)
 	{
-		POSState state = new POSState(tree, c_flag, m_ambiguity_classes, s_proper_nouns);
+		POSState state = new POSState(tree, c_flag, pos_lexicon);
 		
 		if (isCollect())
 		{
-			l_collector.collect(state);
+			pos_lexicon.collect(state);
 		}
 		else
 		{
@@ -141,10 +124,7 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	@Override
 	protected String getAutoLabel(POSState state, StringFeatureVector vector)
 	{
-		StringPrediction[] ps = s_models[0].predictTop2(vector);
-		String label = ps[0].getLabel();
-		state.save2ndLabel(ps);
-		return label;
+		return s_models[0].predictBest(vector).getLabel();
 	}
 	
 //	====================================== ONLINE TRAIN ======================================
@@ -158,16 +138,6 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	@Override
 	protected void onlineLexicons(DEPTree tree)
 	{
-		for (DEPNode node : tree)
-		{
-			String simplifiedForm = node.getSimplifiedWordForm();
-			String ambiguityClass = m_ambiguity_classes.get(simplifiedForm);
-			String pos = node.getPOSTag();
 			
-			if (ambiguityClass == null)
-				m_ambiguity_classes.put(simplifiedForm, pos);
-			else if (!ambiguityClass.startsWith(StringConst.UNDERSCORE+pos) && !ambiguityClass.startsWith(pos+StringConst.UNDERSCORE) && !ambiguityClass.startsWith(StringConst.UNDERSCORE+pos+StringConst.UNDERSCORE))
-				m_ambiguity_classes.put(simplifiedForm, pos+StringConst.UNDERSCORE+ambiguityClass);
-		}		
 	}
 }

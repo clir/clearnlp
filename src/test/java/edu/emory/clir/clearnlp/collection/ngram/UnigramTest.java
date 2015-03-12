@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.collection.map;
+package edu.emory.clir.clearnlp.collection.ngram;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import edu.emory.clir.clearnlp.collection.map.IncMap1;
-
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class IncMap1Test
+public class UnigramTest
 {
 	@Test
 	public void test()
 	{
-		IncMap1<String> map = new IncMap1<>();
+		Unigram<String> map = new Unigram<>();
 		
 		map.add("A");
 		map.add("B", 2);
@@ -50,5 +48,7 @@ public class IncMap1Test
 		
 		assertEquals("[A, B]", map.keySet(1).toString());
 		assertEquals("[A, B]", map.keySet(0.2).toString());
+		
+//		System.out.println(map.getBest());
 	}
 }

@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
@@ -56,6 +57,19 @@ public class Joiner
 		{
 			build.append(delim);
 			build.append(item.toString());
+		}
+		
+		return build.substring(delim.length());
+	}
+	
+	static public <T>String joinObject(List<ObjectDoublePair<T>> ps, String delim)
+	{
+		StringBuilder build = new StringBuilder();
+		
+		for (ObjectDoublePair<T> p : ps)
+		{
+			build.append(delim);
+			build.append(p.o);
 		}
 		
 		return build.substring(delim.length());

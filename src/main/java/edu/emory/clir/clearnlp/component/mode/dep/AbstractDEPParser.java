@@ -39,19 +39,15 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	private int[][] label_indices;
 	private int beam_size;
 	
-//	protected int[] is_desc;
-//	protected int[] is_root;
-//	protected int[] no_head;
-	
 	/** Creates a dependency parser for train. */
-	public AbstractDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons)
+	public AbstractDEPParser(DEPFeatureExtractor[] extractors, Object lexicons)
 	{
 		super(extractors, lexicons, false, 1);
 		init(1);
 	}
 	
 	/** Creates a dependency parser for bootstrap or evaluate. */
-	public AbstractDEPParser(DEPFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap, int beamSize)
+	public AbstractDEPParser(DEPFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap, int beamSize)
 	{
 		super(extractors, lexicons, models, bootstrap);
 		init(beamSize);
@@ -90,10 +86,10 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 //	====================================== LEXICONS ======================================
 	
 	@Override
-	public Object[] getLexicons() {return null;}
+	public Object getLexicons() {return null;}
 	
 	@Override
-	public void setLexicons(Object[] lexicons) {}
+	public void setLexicons(Object lexicons) {}
 	
 //	====================================== EVAL ======================================
 

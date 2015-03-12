@@ -48,17 +48,6 @@ public class SeqEval extends AbstractEval<String>
 	}
 	
 	@Override
-	public double[] getScores()
-	{
-		double[] scores = new double[2];
-		
-		scores[0] = MathUtils.getAccuracy(n_tokenCorrect, n_tokenTotal);
-		scores[1] = MathUtils.getAccuracy(n_treeCorrect, n_treeTotal);
-
-		return scores;
-	}
-	
-	@Override
 	public double getScore()
 	{
 		return token_based ? MathUtils.getAccuracy(n_tokenCorrect, n_tokenTotal) : MathUtils.getAccuracy(n_treeCorrect, n_treeTotal);

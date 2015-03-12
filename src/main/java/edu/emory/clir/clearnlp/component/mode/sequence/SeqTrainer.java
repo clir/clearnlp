@@ -54,19 +54,19 @@ public class SeqTrainer extends AbstractNLPTrainer
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object[] lexicons)
+	protected AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object lexicons)
 	{
 		return new DefaultSequenceClassifier(f_extractors, lexicons, (SeqTrainConfiguration)t_configuration);
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object[] lexicons, StringModel[] models)
+	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
 	{
 		return new DefaultSequenceClassifier(f_extractors, lexicons, models, true, (SeqTrainConfiguration)t_configuration);
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object[] lexicons, StringModel[] models)
+	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
 	{
 		return new DefaultSequenceClassifier(f_extractors, lexicons, models, false, (SeqTrainConfiguration)t_configuration);
 	}

@@ -25,13 +25,13 @@ import edu.emory.clir.clearnlp.classification.model.StringModel;
 public class DefaultSequenceClassifier extends AbstractSequenceClassifier
 {
 	/** Creates a pos tagger for train. */
-	public DefaultSequenceClassifier(SeqFeatureExtractor[] extractors, Object[] lexicons, SeqTrainConfiguration configuration)
+	public DefaultSequenceClassifier(SeqFeatureExtractor[] extractors, Object lexicons, SeqTrainConfiguration configuration)
 	{
 		super(extractors, lexicons, configuration);
 	}
 	
 	/** Creates a pos tagger for bootstrap or evaluate. */
-	public DefaultSequenceClassifier(SeqFeatureExtractor[] extractors, Object[] lexicons, StringModel[] models, boolean bootstrap, SeqTrainConfiguration configuration)
+	public DefaultSequenceClassifier(SeqFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap, SeqTrainConfiguration configuration)
 	{
 		super(extractors, lexicons, models, bootstrap, configuration);
 	}

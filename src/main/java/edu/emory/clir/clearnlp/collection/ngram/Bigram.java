@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.collection.map;
+package edu.emory.clir.clearnlp.collection.ngram;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,12 +25,12 @@ import com.google.common.collect.Maps;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 
-public class IncMap2<T1,T2> implements Serializable
+public class Bigram<T1,T2> implements Serializable
 {
 	private static final long serialVersionUID = 4856975632981517711L;
-	private Map<T1,IncMap1<T2>> g_map;
+	private Map<T1,Unigram<T2>> g_map;
 	
-	public IncMap2()
+	public Bigram()
 	{
 		g_map = Maps.newHashMap();
 	}
@@ -42,35 +42,35 @@ public class IncMap2<T1,T2> implements Serializable
 	
 	public void add(T1 key1, T2 key2, int inc)
 	{
-		IncMap1<T2> map;
-		
-		if (g_map.containsKey(key1))
-		{
-			map = g_map.get(key1);
-		}
-		else
-		{
-			map = new IncMap1<T2>();
-			g_map.put(key1, map);
-		}
-		
-		map.add(key2, inc);
+		g_map.computeIfAbsent(key1, k -> new Unigram<>()).add(key2, inc);
 	}
 	
-	public Set<T1> getKeySet1()
+	public ObjectDoublePair<T2> getBest(T1 key1)
+	{
+		Unigram<T2> map = g_map.get(key1);
+		return (map != null) ? map.getBest() : null;
+	}
+	
+	public Set<T1> getBigramSet()
 	{
 		return g_map.keySet();
 	}
 	
+	public Set<T2> getUnigramSet(T1 key1)
+	{
+		Unigram<T2> map = g_map.get(key1);
+		return (map != null) ? map.keySet() : null;
+	}
+	
 	public List<ObjectIntPair<T2>> toList(T1 key1, int cutoff)
 	{
-		IncMap1<T2> map = g_map.get(key1);
+		Unigram<T2> map = g_map.get(key1);
 		return (map != null) ? map.toList(cutoff) : null;
 	}
 	
 	public List<ObjectDoublePair<T2>> toList(T1 key1, double threshold)
 	{
-		IncMap1<T2> map = g_map.get(key1);
+		Unigram<T2> map = g_map.get(key1);
 		return (map != null) ? map.toList(threshold) : null;
 	}
 }

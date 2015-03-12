@@ -123,12 +123,19 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	@Override
 	public DEPTree toDEPTree(CTTree cTree)
 	{
-		CTLibEn.preprocess(cTree);
-		clearMaps();
-		if (!mapEmtpyCategories(cTree))	return null;
-		setHeads(cTree.getRoot());
+		DEPTree tree = null;
 		
-		return getDEPTree(cTree);
+		try
+		{
+			CTLibEn.preprocess(cTree);
+			clearMaps();
+			if (!mapEmtpyCategories(cTree))	return null;
+			setHeads(cTree.getRoot());
+			tree = getDEPTree(cTree);	
+		}
+		catch (Exception e) {e.printStackTrace();}
+		
+		return tree;
 	}
 	
 // ============================= Initialization ============================= 
@@ -1291,7 +1298,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 			}
 		}
 		
-		return (nodes.size() > 1) ? new DEPTree(nodes) : null;
+		return (nodes.size() > 0) ? new DEPTree(nodes) : null;
 	}
 		
 	/** Called by {@link #getDEPTreeWithoutEdited(CTTree, DEPTree)}. */

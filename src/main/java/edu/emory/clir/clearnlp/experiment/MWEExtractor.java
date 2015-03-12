@@ -18,7 +18,7 @@ package edu.emory.clir.clearnlp.experiment;
 import java.io.PrintStream;
 import java.util.List;
 
-import edu.emory.clir.clearnlp.collection.map.IncMap1;
+import edu.emory.clir.clearnlp.collection.ngram.Unigram;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.constituent.CTLib;
 import edu.emory.clir.clearnlp.constituent.CTLibEn;
@@ -39,8 +39,8 @@ public class MWEExtractor
 	public void extract(String filename)
 	{
 		CTReader reader = new CTReader(IOUtils.createFileInputStream(filename));
-		IncMap1<String> qpPre  = new IncMap1<>();
-		IncMap1<String> qpPost = new IncMap1<>();
+		Unigram<String> qpPre  = new Unigram<>();
+		Unigram<String> qpPost = new Unigram<>();
 		CTTree tree;
 		
 		while ((tree = reader.nextTree()) != null)
@@ -50,7 +50,7 @@ public class MWEExtractor
 		printMap(qpPost, filename+".qp_post");
 	}
 	
-	private void printMap(IncMap1<String> map, String outputFile)
+	private void printMap(Unigram<String> map, String outputFile)
 	{
 		PrintStream fout = IOUtils.createBufferedPrintStream(outputFile);
 		List<ObjectIntPair<String>> list = map.toList(0);
@@ -62,7 +62,7 @@ public class MWEExtractor
 		fout.close();
 	}
 	
-	public void extract(CTNode node, IncMap1<String> qpPre, IncMap1<String> qpPost)
+	public void extract(CTNode node, Unigram<String> qpPre, Unigram<String> qpPost)
 	{
 		if (node.isConstituentTag(CTLibEn.C_QP))
 			extractQP(node, qpPre, qpPost);
@@ -73,7 +73,7 @@ public class MWEExtractor
 		}
 	}
 	
-	private void extractQP(CTNode node, IncMap1<String> pre, IncMap1<String> post)
+	private void extractQP(CTNode node, Unigram<String> pre, Unigram<String> post)
 	{
 		List<CTNode> tokens = node.getTokenList();
 		int i, size = tokens.size();

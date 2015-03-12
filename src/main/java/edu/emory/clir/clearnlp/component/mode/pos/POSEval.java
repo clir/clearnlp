@@ -17,7 +17,6 @@ package edu.emory.clir.clearnlp.component.mode.pos;
 
 import edu.emory.clir.clearnlp.component.evaluation.AbstractAccuracyEval;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
-import edu.emory.clir.clearnlp.dependency.DEPTree;
 
 /**
  * @since 3.0.0
@@ -26,19 +25,8 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
 public class POSEval extends AbstractAccuracyEval<String>
 {
 	@Override
-	public void countCorrect(DEPTree sTree, String[] gTags)
+	protected boolean isCorrect(DEPNode node, String label)
 	{
-		int i, size = sTree.size();
-		DEPNode node;
-		
-		n_total += size - 1;
-		
-		for (i=1; i<size; i++)
-		{
-			node = sTree.get(i);
-			
-			if (node.isPOSTag(gTags[i]))
-				n_correct++;
-		}
+		return node.isPOSTag(label);
 	}
 }

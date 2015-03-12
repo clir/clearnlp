@@ -1,3 +1,3 @@
 #!/bin/bash
 jar cf clearnlp.jar edu
-rsync -avc clearnlp.jar choi@mithril.mathcs.emory.edu:/local/scratchir/choi/lib
+rsync -avc clearnlp.jar jdchoi@ainos.mathcs.emory.edu:/home/jdchoi/lib

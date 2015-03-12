@@ -20,8 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.List;
 
-import edu.emory.clir.clearnlp.collection.map.IncMap1;
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
+import edu.emory.clir.clearnlp.collection.ngram.Unigram;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.util.constant.PatternConst;
 
@@ -30,13 +30,13 @@ import edu.emory.clir.clearnlp.util.constant.PatternConst;
  */
 public class TFIDF
 {
-	IncMap1<String> term_frequencies;
-	IncMap1<String> document_frequencies;
+	Unigram<String> term_frequencies;
+	Unigram<String> document_frequencies;
 	
 	public TFIDF()
 	{
-		term_frequencies = new IncMap1<>();
-		document_frequencies = new IncMap1<>();
+		term_frequencies = new Unigram<>();
+		document_frequencies = new Unigram<>();
 	}
 	
 	static public ObjectIntHashMap<String> getDocumentFrequencyCounts(List<String> filenames) throws FileNotFoundException
