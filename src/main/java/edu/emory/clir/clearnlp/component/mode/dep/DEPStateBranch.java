@@ -15,20 +15,21 @@
  */
 package edu.emory.clir.clearnlp.component.mode.dep;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.PriorityQueue;
+import java.util.List;
 
+import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
-import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.collection.stack.IntPStack;
+import edu.emory.clir.clearnlp.collection.triple.ObjectObjectDoubleTriple;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
-import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.arc.DEPArc;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -36,38 +37,41 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTransition
+public class DEPStateBranch extends AbstractState<DEPArc,DEPLabel> implements DEPTransition
 {
-	static public final int IS_ROOT			= 0;
-	static public final int IS_DESC			= 1;
-	static public final int IS_DESC_NO_HEAD	= 2;
-	static public final int NO_HEAD			= 3;
-	static public final int LEFT_ARC		= 4;
-	static public final int RIGHT_ARC		= 5;
+	static public final int IS_ROOT   = 0;
+	static public final int IS_DESC   = 1;
+	static public final int IS_DESC_NO_HEAD = 2;
+	static public final int NO_HEAD   = 3;
+	static public final int LEFT_ARC  = 4;
+	static public final int RIGHT_ARC = 5;
 	
 	private IntPStack i_stack;
 	private IntPStack i_inter;
 	private int       i_input;
 	
-	private PriorityQueue<ObjectDoublePair<DEPArc>>[] snd_heads;
 	private DEPConfiguration t_configuration;
 	private int              num_transitions;
 	private double           total_score;
+	private boolean          save_branch;
+	private List<DEPBranch>  l_branches;
+	private int              beam_index;
+	
+	private ObjectObjectDoubleTriple<DEPArc[],List<StringInstance>> best_tree;
 	
 //	====================================== Initialization ======================================
 	
-	public DEPState()
+	public DEPStateBranch()
 	{
 		super();
 	}
 	
-	public DEPState(DEPTree tree, CFlag flag, DEPConfiguration configuration)
+	public DEPStateBranch(DEPTree tree, CFlag flag, DEPConfiguration configuration)
 	{
 		super(tree, flag);
 		init(configuration);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void init(DEPConfiguration configuration)
 	{
 		i_stack = new IntPStack(t_size);
@@ -75,10 +79,11 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		i_input = 0;
 		shift();
 		
-		snd_heads = (PriorityQueue<ObjectDoublePair<DEPArc>>[])DSUtils.createEmptyPriorityQueueArray(t_size, false);
 		t_configuration = configuration;
 		num_transitions = 0;
 		total_score = 0;
+		save_branch = configuration.useBranching();
+		l_branches  = new ArrayList<>();
 	}
 
 //	====================================== LABEL ======================================
@@ -348,34 +353,26 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		return i_input >= t_size;
 	}
 	
-//	====================================== SCORE ======================================
-
-	/** PRE: ps[0].isArc("NO"). */
-	public void save2ndHead(StringPrediction[] ps)
-	{
-		if (ps[0].getScore() - ps[1].getScore() < 1)
-		{
-			DEPNode  stack = getStack();
-			DEPNode  input = getInput();
-			DEPLabel label = new DEPLabel(ps[1].getLabel());
-			
-			if (label.isArc(ARC_LEFT)) 
-			{
+//	public void save2ndHead(StringPrediction[] ps)
+//	{
+//		StringPrediction fst = ps[0];
+//		StringPrediction snd = ps[1];
+//		
+//		if (fst.getScore() - snd.getScore() < 1 && fst.getLabel().startsWith(ARC_NO))
+//		{
+//			DEPNode  stack = getStack();
+//			DEPNode  input = getInput();
+//			DEPLabel label = new DEPLabel(snd.getLabel());
+//			
+//			if (label.isArc(ARC_LEFT)) 
+//			{
 //				snd_heads[stack.getID()].add(new ObjectDoublePair<DEPArc>(new DEPArc(input, label.getDeprel())));
-			}
-			else if (label.isArc(ARC_RIGHT))
-			{
-				
-			}
-			
-			
-		}
-	}
-	
-	public double getScore()
-	{
-		return (c_flag == CFlag.BOOTSTRAP) ? (double)d_tree.getScoreCounts(g_oracle, t_configuration.evaluatePunctuation())[1] : total_score / num_transitions;
-	}
+//			}
+//			else if (label.isArc(ARC_RIGHT))
+//			
+//			
+//		}
+//	}
 	
 //	====================================== FEATURES ======================================
 
@@ -393,4 +390,160 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		int d = i_input - sID; 
 		return (d > 6) ? 6 : d;
 	}
+	
+//	====================================== BRANCH ======================================
+
+	public boolean startBranching()
+	{
+		if (l_branches.isEmpty() || c_flag == CFlag.TRAIN) return false;
+		
+		if (l_branches.size() > t_configuration.getBeamSize()-1)
+			l_branches = l_branches.subList(0, t_configuration.getBeamSize()-1);
+		
+		best_tree   = new ObjectObjectDoubleTriple<>(d_tree.getHeads(), null, getScore());
+		save_branch = false;
+		beam_index  = 0;
+		return true;
+	}
+	
+	public boolean nextBranch()
+	{
+		if (beam_index < l_branches.size())
+		{
+			l_branches.get(beam_index++).reset();
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public void saveBranch(StringPrediction[] ps, DEPLabel autoLabel)
+	{
+		if (save_branch)
+		{
+			StringPrediction fst = ps[0];
+			StringPrediction snd = ps[1];
+			
+			if (fst.getScore() - snd.getScore() < t_configuration.getMarginThreshold())
+				addBranch(autoLabel, new DEPLabel(snd));
+		}
+	}
+	
+	private void addBranch(DEPLabel fstLabel, DEPLabel sndLabel)
+	{
+		if (!fstLabel.isArc(sndLabel) || !fstLabel.isList(sndLabel))
+			l_branches.add(new DEPBranch(sndLabel));
+	}
+	
+	public void saveBest(List<StringInstance> instances)
+	{
+		double score = getScore();
+		
+		if (score > best_tree.d)
+			best_tree.set(d_tree.getHeads(), instances, score);
+	}
+	
+	public List<StringInstance> setBest()
+	{
+		d_tree.setHeads(best_tree.o1);
+		return best_tree.o2;
+	}
+	
+	private double getScore()
+	{
+		return (c_flag == CFlag.BOOTSTRAP) ? (double)d_tree.getScoreCounts(g_oracle, t_configuration.evaluatePunctuation())[1] : total_score / num_transitions;
+	}
+	
+	private class DEPBranch
+	{
+		private DEPArc[]  heads;
+		private IntPStack stack;
+		private IntPStack inter;
+		private int       input;
+		private DEPLabel  label;
+		private double    totalScore;
+		private int       numTransitions;
+		
+		public DEPBranch(DEPLabel nextLabel)
+		{
+			heads = d_tree.getHeads(i_input+1);
+			stack = new IntPStack(i_stack);
+			inter = new IntPStack(i_inter);
+			input = i_input;
+			label = nextLabel;
+			totalScore = total_score;
+			numTransitions = num_transitions;
+		}
+		
+		public void reset()
+		{
+			d_tree.setHeads(heads);
+			i_stack = stack;
+			i_inter = inter;
+			i_input = input;
+			total_score = totalScore;
+			num_transitions = numTransitions;
+			next(label);
+		}
+	}
+	
+//	====================================== STATE HISTORY ======================================
+	
+//	private StringBuilder s_states = new StringBuilder();
+//	
+//	private void saveState(DEPLabel label)
+//	{
+//		s_states.append(label.toString());
+//		s_states.append(StringConst.TAB);
+//		s_states.append(getState(d_stack));
+//		s_states.append(StringConst.TAB);
+//		s_states.append(getState(d_inter));
+//		s_states.append(StringConst.TAB);
+//		s_states.append(i_input);
+//		s_states.append(StringConst.NEW_LINE);
+//	}
+//	
+//	private String getState(List<DEPNode> nodes)
+//	{
+//		StringBuilder build = new StringBuilder();
+//		build.append("[");
+//		
+//		if (nodes.size() > 0)
+//			build.append(nodes.get(0).getID());
+//		
+//		if (nodes.size() > 1)
+//		{
+//			build.append(",");
+//			build.append(nodes.get(nodes.size()-1).getID());
+//		}
+//		
+//		build.append("]");
+//		return build.toString();
+//	}
+//	
+//	public String stateHistory()
+//	{
+//		return s_states.toString();
+//	}
+//	
+//	private String getSnapshot()
+//	{
+//		StringBuilder build = new StringBuilder();
+//		int i;
+//		
+//		for (i=i_stack.size()-1; i>0; i--)
+//		{
+//			build.append(i_stack.get(i));
+//			build.append(StringConst.COMMA);
+//		}	build.append(StringConst.PIPE);
+//		
+//		for (i=i_inter.size()-1; i>=0; i--)
+//		{
+//			build.append(i_inter.get(i));
+//			build.append(StringConst.COMMA);
+//		}	build.append(StringConst.PIPE);
+//		
+//		build.append(i_input);
+//		return build.toString();
+//	}
 }

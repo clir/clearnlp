@@ -25,10 +25,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import org.kohsuke.args4j.Option;
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.XZInputStream;
+import org.tukaani.xz.XZOutputStream;
 
 import com.google.common.collect.Lists;
 
@@ -129,7 +130,7 @@ public class NLPTrain
 		
 		try
 		{
-			out = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(modelPath))));
+			out = new ObjectOutputStream(new XZOutputStream(new BufferedOutputStream(new FileOutputStream(modelPath)), new LZMA2Options()));
 			component.save(out);
 			out.close();
 		}
@@ -145,7 +146,7 @@ public class NLPTrain
 	{
 		try
 		{
-			DefaultPOSTagger tagger = new DefaultPOSTagger(new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new FileInputStream(s_modelPath)))));
+			DefaultPOSTagger tagger = new DefaultPOSTagger(new ObjectInputStream(new XZInputStream(new BufferedInputStream(new FileInputStream(s_modelPath)))));
 			for (DEPTree tree : getTrees())
 			{
 				tagger.process(tree);

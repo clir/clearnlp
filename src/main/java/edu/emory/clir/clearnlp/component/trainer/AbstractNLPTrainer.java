@@ -52,6 +52,7 @@ public abstract class AbstractNLPTrainer
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> prev = train(trainFiles, developFiles, lexicons, null, 0);
 		if (!t_configuration.isBootstrap()) return prev;
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> curr;
+		byte[] backup;
 		int boot = 1;
 		
 		try
@@ -59,10 +60,14 @@ public abstract class AbstractNLPTrainer
 			while (true)
 			{
 				// save the previous model
+				backup = prev.o.toByteArray();
 				curr = train(trainFiles, developFiles, lexicons, prev.o.getModels(), boot++);
 				
 				if (prev.d >= curr.d)
+				{
+					prev.o = createComponentForDecode(backup);
 					return prev;
+				}
 				
 				prev = curr;
 			}
@@ -231,22 +236,36 @@ public abstract class AbstractNLPTrainer
 	
 	public void process(AbstractStatisticalComponent<?,?,?,?> component, List<String> filelist, boolean log)
 	{
+		long[] counts = {0,0};
+		
 		for (String filename : filelist)
 		{
-			process(component, filename);
+			process(component, filename, counts);
 			if (log) BinUtils.LOG.info(".");
-		}	if (log) BinUtils.LOG.info("\n\n");
+		}
+		
+		if (log)	BinUtils.LOG.info("\n\n");
+		else		BinUtils.LOG.info(String.format("%d", (int)Math.round(1000d * counts[0] / counts[1])));
 	}
 	
-	public void process(AbstractStatisticalComponent<?,?,?,?> component, String filename)
+	public void process(AbstractStatisticalComponent<?,?,?,?> component, String filename, long[] counts)
 	{
 		TSVReader reader = (TSVReader)t_configuration.getReader();
 		reader.open(IOUtils.createFileInputStream(filename));
+		long st, et, tt = 0, wc = 0;
 		DEPTree tree;
 		
 		while ((tree = reader.next()) != null)
+		{
+			st = System.currentTimeMillis();
 			component.process(tree);
+			et = System.currentTimeMillis();
+			tt += et - st;
+			wc += tree.size() - 1;
+		}
 
 		reader.close();
+		counts[0] += wc;
+		counts[1] += tt;
 	}
 }

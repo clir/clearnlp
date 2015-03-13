@@ -19,7 +19,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.util.zip.GZIPInputStream;
+
+import org.tukaani.xz.XZInputStream;
 
 import edu.emory.clir.clearnlp.component.mode.dep.AbstractDEPParser;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
@@ -108,7 +109,7 @@ public class NLPUtils
 	{
 		try
 		{
-			return new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(IOUtils.getInputStreamsFromClasspath(modelPath))));
+			return new ObjectInputStream(new XZInputStream(new BufferedInputStream(IOUtils.getInputStreamsFromClasspath(modelPath))));
 		}
 		catch (IOException e) {e.printStackTrace();}
 

@@ -91,14 +91,14 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	public void process(DEPTree tree)
 	{
 		DEPState state = new DEPState(tree, c_flag, d_configuration);
-		List<StringInstance> instances = process(state), tmp;
+		List<StringInstance> instances = process(state);
 		
-		if (state.startBranching())
-		{
-			while (state.nextBranch()) state.saveBest(process(state));
-			tmp = state.setBest();
-			if (tmp != null) instances.addAll(tmp);
-		}
+//		if (state.startBranching())
+//		{
+//			while (state.nextBranch()) state.saveBest(process(state));
+//			List<StringInstance> tmp = state.setBest(); 
+//			if (tmp != null) instances.addAll(tmp);
+//		}
 		
 		if (isTrainOrBootstrap())
 			s_models[0].addInstances(instances);
@@ -120,7 +120,7 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	{
 		StringPrediction[] ps = getPredictions(state, vector);
 		DEPLabel autoLabel = new DEPLabel(ps[0]);
-		state.saveBranch(ps, autoLabel);
+		if (autoLabel.isArc(ARC_NO)) state.save2ndHead(ps);
 		return autoLabel;
 	}
 	

@@ -24,8 +24,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.XZInputStream;
+import org.tukaani.xz.XZOutputStream;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
@@ -128,7 +130,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	{
 		try
 		{
-			ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new ByteArrayInputStream(models))));
+			ObjectInputStream ois = new ObjectInputStream(new XZInputStream(new BufferedInputStream(new ByteArrayInputStream(models))));
 			initDecode(ois);
 		}
 		catch (IOException e) {e.printStackTrace();}
@@ -188,7 +190,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	public byte[] toByteArray() throws Exception
 	{
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(bos)));
+		ObjectOutputStream oos = new ObjectOutputStream(new XZOutputStream(new BufferedOutputStream(bos), new LZMA2Options()));
 		save(oos);
 		oos.close();
 		return bos.toByteArray();

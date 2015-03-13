@@ -20,6 +20,7 @@ import java.util.List;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
+import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
@@ -121,7 +122,9 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 	@Override
 	protected String getAutoLabel(POSState state, StringFeatureVector vector)
 	{
-		return s_models[0].predictBest(vector).getLabel();
+		StringPrediction[] ps = s_models[0].predictTop2(vector);
+		state.save2ndLabel(ps);
+		return ps[0].getLabel();
 	}
 	
 //	====================================== ONLINE TRAIN ======================================

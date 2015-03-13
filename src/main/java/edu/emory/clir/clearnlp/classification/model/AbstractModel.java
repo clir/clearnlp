@@ -27,8 +27,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.XZInputStream;
+import org.tukaani.xz.XZOutputStream;
 
 import com.google.common.collect.Lists;
 
@@ -137,14 +139,15 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	
 	public void loadWeightVectorFromByteArray(byte[] array) throws Exception
 	{
-		ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new BufferedInputStream(new ByteArrayInputStream(array))));
+		ObjectInputStream ois = new ObjectInputStream(new XZInputStream(new BufferedInputStream(new ByteArrayInputStream(array))));
 		setWeightVector((AbstractWeightVector)ois.readObject());
+		ois.close();
 	}
 	
 	public byte[] saveWeightVectorToByteArray() throws Exception
 	{
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new BufferedOutputStream(bos)));
+		ObjectOutputStream oos = new ObjectOutputStream(new XZOutputStream(new BufferedOutputStream(bos), new LZMA2Options()));
 		oos.writeObject(w_vector);
 		oos.close();
 		return bos.toByteArray();
@@ -158,16 +161,19 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	{
 		BinUtils.LOG.info("Vectorizing: "+sInstances.size()+"\n");
 		ArrayList<IntInstance> iInstances = Lists.newArrayList();
+		final int PRINT = 100000;
 		IntInstance iInstance;
 		
 		for (int i=1; !sInstances.isEmpty(); i++)
 		{
 			iInstance = toIntInstance(sInstances.poll());
 			if (iInstance != null) iInstances.add(iInstance);
-			if (i%100000 == 0) BinUtils.LOG.info(".");
+			if (i%PRINT == 0) BinUtils.LOG.info(".");
 		}
 		
-		BinUtils.LOG.info("\n");
+		if (iInstances.size() > PRINT)	BinUtils.LOG.info("\n\n");
+		else							BinUtils.LOG.info("\n");
+		
 		iInstances.trimToSize();
 		return iInstances;
 	}
