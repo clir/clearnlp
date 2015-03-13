@@ -56,9 +56,9 @@ public class DEPEval extends AbstractEval<DEPArc>
 	{
 		int[] counts = sTree.getScoreCounts(gHeads, eval_punct);
 		
-		n_total += sTree.size() - 1;
-		n_las   += counts[0];
-		n_uas   += counts[1];
+		n_total += counts[0];
+		n_las   += counts[1];
+		n_uas   += counts[2];
 	}
 	
 	public double getScore()

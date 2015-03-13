@@ -132,6 +132,11 @@ public class PBFMap implements Serializable
 		return null;
 	}
 	
+	public boolean hasFramset(String lemma)
+	{
+		return m_verbs.containsKey(lemma) || m_nouns.containsKey(lemma);
+	}
+	
 	public Map<String,PBFFrameset> getFramesetMap(PBFType type)
 	{
 		if (type == PBFType.VERB)	return m_verbs;

@@ -15,36 +15,37 @@
  */
 package edu.emory.clir.clearnlp.component.mode.sense;
 
-import java.util.Map;
-
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
+import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
+import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFMap;
 
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SenseState extends AbstractState<String,String>
+public class RoleState extends AbstractState<String,String>
 {
-	Map<String,String> mononymous_senses;
-	private String feat_key;
+	static public String DEFAULT_ROLE = "XX";
+	private RoleLexicon role_lexicon;
+	private PBFMap frame_map;
 	private int i_input;
 	
 //	====================================== INITIALIZATION ======================================
 	
-	public SenseState(DEPTree tree, CFlag flag, Map<String,String> mononymousSenses, String featKey)
+	public RoleState(DEPTree tree, CFlag flag, RoleLexicon lexicon, PBFMap frameMap)
 	{
 		super(tree, flag);
-		init(mononymousSenses, featKey);
+		init(lexicon, frameMap);
 	}
 	
-	private void init(Map<String,String> monoSenses, String featKey)
+	private void init(RoleLexicon lexicon, PBFMap frameMap)
 	{
-		mononymous_senses = monoSenses;
-		feat_key = featKey;
+		role_lexicon = lexicon;
+		frame_map = frameMap; 
 		setInput(0);
 	}
 	
@@ -53,14 +54,14 @@ public class SenseState extends AbstractState<String,String>
 	@Override
 	protected void initOracle()
 	{
-		g_oracle = d_tree.getFeatureTags(feat_key);
-		d_tree.clearFeatureTags(feat_key);
+		g_oracle = d_tree.getFeatureTags(DEPLib.FEAT_PB);
+		d_tree.clearFeatureTags(DEPLib.FEAT_PB);
 	}
 
 	@Override
 	public void resetOracle()
 	{
-		d_tree.setFeatureTags(feat_key, g_oracle);
+		d_tree.setFeatureTags(DEPLib.FEAT_PB, g_oracle);
 	}
 
 	@Override
@@ -93,28 +94,30 @@ public class SenseState extends AbstractState<String,String>
 	@Override
 	public void next(String label)
 	{
-		getInput().putFeat(feat_key, label);
+		getInput().putFeat(DEPLib.FEAT_PB, label);
+		shift();
 	}
 	
 	public void shift()
 	{
-		String sense;
+		DEPNode node;
 		
 		for (++i_input; i_input<t_size; i_input++)
 		{
-			sense = getSense(getInput());
-			if (sense != null) break;
+			node = getInput();
+			
+			if (frame_map.hasFramset(node.getLemma()))
+				break;
+			
+			if (role_lexicon.isVerbPredicate(node))
+				node.putFeat(DEPLib.FEAT_PB, node.getLemma()+"."+DEFAULT_ROLE);
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.state.AbstractState#isTerminate()
-	 */
 	@Override
 	public boolean isTerminate()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return i_input >= t_size;
 	}
 	
 //	====================================== FEATURES ======================================
@@ -124,9 +127,4 @@ public class SenseState extends AbstractState<String,String>
 	{
 		return true;
 	}
-
-	public String getSense(DEPNode node)
-	{
-		return node.getFeat(feat_key);
-	}	
 }

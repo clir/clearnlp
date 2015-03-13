@@ -28,17 +28,17 @@ import edu.emory.clir.clearnlp.dependency.DEPNode;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SenseCollector implements Serializable
+public class RoleLexicon implements Serializable
 {
 	private static final long serialVersionUID = -1309316221225281613L;
 	private Map<String,Set<String>> m_lemmas;
 	
-	public SenseCollector()
+	public RoleLexicon()
 	{	
 		m_lemmas = new HashMap<>();
 	}
 	
-	public void collect(SenseState state)
+	public void collect(RoleState state)
 	{
 		int i, size = state.getTreeSize();
 		Set<String> set;
@@ -47,7 +47,7 @@ public class SenseCollector implements Serializable
 		for (i=1; i<size; i++)
 		{
 			node = state.getNode(i);
-			m_lemmas.computeIfAbsent(node.getLemma(), k -> new HashSet<>()).add(state.getSense(node));
+//			m_lemmas.computeIfAbsent(node.getLemma(), k -> new HashSet<>()).add(state.getSense(node));
 			
 			
 			set = m_lemmas.get(node.getLemma());
@@ -58,7 +58,7 @@ public class SenseCollector implements Serializable
 				m_lemmas.put(node.getLemma(), set);
 			}
 			
-			set.add(state.getSense(node));
+//			set.add(state.getSense(node));
 		}
 	}
 	
@@ -73,6 +73,11 @@ public class SenseCollector implements Serializable
 		}
 		
 		return lemmas;
+	}
+	
+	public boolean isVerbPredicate(DEPNode node)
+	{
+		return true;
 	}
 }
 

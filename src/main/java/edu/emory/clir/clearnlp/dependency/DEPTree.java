@@ -255,7 +255,7 @@ public class DEPTree implements Iterable<DEPNode>
 	/** @return [LAS, UAS]. */
 	public int[] getScoreCounts(DEPArc[] goldHeads, boolean evalPunct)
 	{
-		int i, las = 0, uas = 0, size = size();
+		int i, las = 0, uas = 0, total = 0, size = size();
 		DEPNode node;
 		DEPArc g;
 		
@@ -267,6 +267,7 @@ public class DEPTree implements Iterable<DEPNode>
 				continue;
 			
 			g = goldHeads[i];
+			total++;
 			
 			if (node.isDependentOf(get(g.getNode().getID())))
 			{
@@ -275,7 +276,7 @@ public class DEPTree implements Iterable<DEPNode>
 			}
 		}
 		
-		return new int[]{las, uas};
+		return new int[]{total, las, uas};
 	}
 	
 	public void projectivize(String left, String right)

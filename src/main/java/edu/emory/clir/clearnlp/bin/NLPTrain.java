@@ -22,14 +22,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -38,7 +33,6 @@ import org.kohsuke.args4j.Option;
 import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
-import edu.emory.clir.clearnlp.collection.triple.ObjectObjectDoubleTriple;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
 import edu.emory.clir.clearnlp.component.trainer.AbstractNLPTrainer;
@@ -83,56 +77,16 @@ public class NLPTrain
 	{
 		BinUtils.initArgs(args, this);
 		
-		List<String> trainFiles     = FileUtils.getFileList(s_trainPath  , s_trainExt  , false);
-		List<String> developFiles   = FileUtils.getFileList(s_developPath, s_developExt, false);
-		String[]     configurations = Splitter.splitCommas(s_configurationFile);
-		String[]     features       = Splitter.splitCommas(s_featureTemplateFile);
-		NLPMode      mode           = NLPMode.valueOf(s_mode);
+		List<String> trainFiles   = FileUtils.getFileList(s_trainPath  , s_trainExt  , false);
+		List<String> developFiles = FileUtils.getFileList(s_developPath, s_developExt, false);
+		String[]     featureFiles = Splitter.splitColons(s_featureTemplateFile);
+		NLPMode      mode         = NLPMode.valueOf(s_mode);
 
-		List<Future<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>>> futures = new ArrayList<>();
-		Future<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>> future, max;
-		Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>> c;
-		ExecutorService executor = Executors.newFixedThreadPool(n_threads);
-		
-		for (String configuration : configurations)
-		{
-			for (String feature : features)
-			{
-				c = new Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>>()
-				{
-					@Override
-					public ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String> call() throws Exception
-					{
-						final ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> p = train(trainFiles, developFiles, Splitter.splitColons(feature), configuration, mode);
-						return new ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>(p.o, configuration+"\n"+features, p.d);
-					}
-				};
-				
-				futures.add(executor.submit(c));
-			}
-		}
-		
-		executor.shutdown();
-		
-		try
-		{
-			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-		}
-		catch (InterruptedException e) {e.printStackTrace();}
-		
-		max = futures.get(0);
-		
-		for (int i=1; i<futures.size(); i++)
-		{
-			future = futures.get(i);
-			
-			if (max.get().d < future.get().d)
-				max = future;
-		}
-		
-		BinUtils.LOG.info(String.format("Final score: %4.2f\n", max.get().d));
-		BinUtils.LOG.info(max.get().o2+"\n");
-		if (s_modelPath != null) saveModel(max.get().o1, s_modelPath);
+		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> p = train(trainFiles, developFiles, featureFiles, s_configurationFile, mode);
+		BinUtils.LOG.info(String.format("Final score: %4.2f\n", p.d));
+		BinUtils.LOG.info(s_configurationFile+"\n");
+		BinUtils.LOG.info(s_featureTemplateFile+"\n");
+		if (s_modelPath != null) saveModel(p.o, s_modelPath);
 	}
 	
 	class TrainTask implements Callable<ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>>>
@@ -230,6 +184,90 @@ public class NLPTrain
 		
 		return list;
 	}
+	
+//	================================= Multi-threaded Version =================================
+	
+//	public NLPTrain(String[] args) throws InterruptedException, ExecutionException
+//	{
+//		BinUtils.initArgs(args, this);
+//		
+//		List<String> trainFiles     = FileUtils.getFileList(s_trainPath  , s_trainExt  , false);
+//		List<String> developFiles   = FileUtils.getFileList(s_developPath, s_developExt, false);
+//		String[]     configurations = Splitter.splitCommas(s_configurationFile);
+//		String[]     features       = Splitter.splitCommas(s_featureTemplateFile);
+//		NLPMode      mode           = NLPMode.valueOf(s_mode);
+//
+//		List<Future<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>>> futures = new ArrayList<>();
+//		Future<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>> future, max;
+//		Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>> c;
+//		ExecutorService executor = Executors.newFixedThreadPool(n_threads);
+//		
+//		for (String configuration : configurations)
+//		{
+//			for (String feature : features)
+//			{
+//				c = new Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>>()
+//				{
+//					@Override
+//					public ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String> call() throws Exception
+//					{
+//						final ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> p = train(trainFiles, developFiles, Splitter.splitColons(feature), configuration, mode);
+//						return new ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>(p.o, configuration+"\n"+features, p.d);
+//					}
+//				};
+//				
+//				futures.add(executor.submit(c));
+//			}
+//		}
+//		
+//		executor.shutdown();
+//		
+//		try
+//		{
+//			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+//		}
+//		catch (InterruptedException e) {e.printStackTrace();}
+//		
+//		max = futures.get(0);
+//		
+//		for (int i=1; i<futures.size(); i++)
+//		{
+//			future = futures.get(i);
+//			
+//			if (max.get().d < future.get().d)
+//				max = future;
+//		}
+//		
+//		BinUtils.LOG.info(String.format("Final score: %4.2f\n", max.get().d));
+//		BinUtils.LOG.info(max.get().o2+"\n");
+//		if (s_modelPath != null) saveModel(max.get().o1, s_modelPath);
+//	}
+//	
+//	class TrainTask implements Callable<ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>>>
+//	{
+//		private List<String> train_files;
+//		private String[] feature_files;
+//		private String develop_file;
+//		private NLPMode nlp_mode;
+//		private int dev_index;
+//		
+//		/** @param currLabel the current label to train. */
+//		public TrainTask(List<String> trainFiles, String[] featureFiles, NLPMode mode, int devIndex)
+//		{
+//			train_files  = trainFiles;
+//			develop_file = trainFiles.remove(devIndex);
+//			feature_files = featureFiles;
+//			dev_index = devIndex;
+//			nlp_mode = mode;
+//		}
+//		
+//		public ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> call()
+//		{
+//			AbstractStatisticalComponent<?,?,?,?> component = train(train_files, Lists.newArrayList(develop_file), feature_files, s_configurationFile, nlp_mode).o;
+//			saveModel(component, s_modelPath+"."+dev_index);
+//			return null;
+//		}
+//    }
 		
 	static public void main(String[] args)
 	{
