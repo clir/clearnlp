@@ -1,6 +1,7 @@
 ## ClearNLP
 
 The ClearNLP project provides software and resources for natural language processing.  The project is currently developed by the [Center for Language and Information Research](http://nlp.mathcs.emory.edu) at [Emory University](http://emory.edu).  All the components are written in Java and released to [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cclearnlp).
+
 <img src="http://mathcs.emory.edu/~choi/img/clearnlp-logo.png" width="120" height="120" style="float:right;padding-top:5px;"/>
 
 * [Documentation](https://github.com/clir/clearnlp-guidelines).
