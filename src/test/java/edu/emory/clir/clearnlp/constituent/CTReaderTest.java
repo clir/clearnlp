@@ -17,14 +17,11 @@ package edu.emory.clir.clearnlp.constituent;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
-import edu.emory.clir.clearnlp.constituent.CTReader;
-import edu.emory.clir.clearnlp.constituent.CTTree;
 import edu.emory.clir.clearnlp.util.IOUtils;
 
 
@@ -42,7 +39,7 @@ public class CTReaderTest
 		CTTree   tree;
 		
 		StringBuilder build = new StringBuilder();
-		List<String>  trees = Lists.newArrayList();
+		List<String>  trees = new ArrayList<>();
 		String tmp;
 		
 		while ((tree = reader.nextTree()) != null)

@@ -15,15 +15,14 @@
  */
 package edu.emory.clir.clearnlp.constituent;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcher;
 import edu.emory.clir.clearnlp.conversion.C2DInfo;
@@ -72,7 +71,7 @@ public class CTNode implements Comparable<CTNode>
 	/** @param tags tags in the Penn Treebank format (e.g., "NP-SBJ-TMP-1=2"). */
 	public CTNode(String tags)
 	{
-		n_children = Lists.newArrayList();
+		n_children = new ArrayList<>();
 		setTags(tags);
 	}
 	
@@ -89,7 +88,7 @@ public class CTNode implements Comparable<CTNode>
 	public String getTags()
 	{
 		StringBuilder build = new StringBuilder();
-		List<String> fTags = Lists.newArrayList(s_functionTags);
+		List<String> fTags = new ArrayList<>(s_functionTags);
 		Collections.sort(fTags);
 		
 		build.append(s_constituentTag);
@@ -179,7 +178,7 @@ public class CTNode implements Comparable<CTNode>
 	
 	public List<CTNode> getChildrenList(CTNodeMatcher matcher)
 	{
-		List<CTNode> list = Lists.newArrayList();
+		List<CTNode> list = new ArrayList<>();
 		
 		for (CTNode child : n_children)
 		{
@@ -405,7 +404,7 @@ public class CTNode implements Comparable<CTNode>
 	/** @return a list of terminal nodes in the subtree of this node. */
 	public List<CTNode> getTerminalList()
 	{
-		List<CTNode> terminals = Lists.newArrayList();
+		List<CTNode> terminals = new ArrayList<>();
 		getTerminalListAux(terminals, this);
 		
 		return terminals;
@@ -434,7 +433,7 @@ public class CTNode implements Comparable<CTNode>
 	/** @return a list of terminal nodes in the subtree of this node, disregarding empty categories. */
 	public List<CTNode> getTokenList()
 	{
-		List<CTNode> tokens = Lists.newArrayList();
+		List<CTNode> tokens = new ArrayList<>();
 		getSubTokens(tokens, this);
 		
 		return tokens;
@@ -456,7 +455,7 @@ public class CTNode implements Comparable<CTNode>
 	
 	public List<CTNode> getEmptyCategoryListInSubtree(Pattern wordFormPattern)
 	{
-		List<CTNode> list = Lists.newArrayList();
+		List<CTNode> list = new ArrayList<>();
 		getEmptyCategoryListInSubtreeAux(list, this, wordFormPattern);
 		
 		return list;
@@ -487,7 +486,7 @@ public class CTNode implements Comparable<CTNode>
 	/** @param tags tags in the Penn Treebank format (e.g., "NP-SBJ-TMP-1=2"). */
 	public void setTags(String tags)
 	{
-		s_functionTags = Sets.newHashSet();
+		s_functionTags = new HashSet<>();
 		
 		if (tags.charAt(0) == '-')
 		{
@@ -894,7 +893,7 @@ public class CTNode implements Comparable<CTNode>
 	
 	public String toString(boolean includeLineNumbers, boolean includeAntecedentPointers, String delim)
 	{
-		List<String> lTree = Lists.newArrayList();
+		List<String> lTree = new ArrayList<>();
 		toStringAux(lTree, this, StringConst.EMPTY, includeAntecedentPointers, delim.equals(StringConst.SPACE));
 		
 		StringBuilder build = new StringBuilder();
@@ -971,7 +970,7 @@ public class CTNode implements Comparable<CTNode>
 	
 	public void initPropBank()
 	{
-		pb_heads = Lists.newArrayList();
+		pb_heads = new ArrayList<>();
 	}
 	
 	/** @return the graph structure for semantic role labeling if exists; otherwise, {@code null}. */

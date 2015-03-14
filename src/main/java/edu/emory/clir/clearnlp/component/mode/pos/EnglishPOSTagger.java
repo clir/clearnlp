@@ -54,4 +54,9 @@ public class EnglishPOSTagger extends AbstractPOSTagger
 	{
 		super(models);
 	}
+	
+	public void postProcess(POSState state)
+	{
+		
+	}
 }

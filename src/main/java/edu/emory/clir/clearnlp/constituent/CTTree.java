@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.carrotsearch.hppc.IntIntOpenHashMap;
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
@@ -60,8 +59,8 @@ public class CTTree
 	/** Called by {@link #CTTree(CTNode)}. */
 	private void initTerminals()
 	{
-		List<CTNode> terminals = Lists.newArrayList();
-		List<CTNode> tokens    = Lists.newArrayList();
+		List<CTNode> terminals = new ArrayList<>();
+		List<CTNode> tokens    = new ArrayList<>();
 
 		initTerminalsAux(n_root, terminals, tokens);
 		n_termainals = terminals;
@@ -112,7 +111,7 @@ public class CTTree
 						list = m_nulls.get(coIndex);
 					else
 					{
-						list = Lists.newArrayList();
+						list = new ArrayList<>();
 						m_nulls.put(coIndex, list);
 					}
 		
@@ -498,7 +497,7 @@ public class CTTree
 	
 	public List<CTNode> getPBHeadList()
 	{
-		List<CTNode> predicates = Lists.newArrayList();
+		List<CTNode> predicates = new ArrayList<>();
 		
 		for (CTNode node : n_tokens)
 		{

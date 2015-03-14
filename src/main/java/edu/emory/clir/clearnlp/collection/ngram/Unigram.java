@@ -16,11 +16,10 @@
 package edu.emory.clir.clearnlp.collection.ngram;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
@@ -77,7 +76,7 @@ public class Unigram<T> implements Serializable
 	
 	public List<ObjectIntPair<T>> toList(int cutoff)
 	{
-		List<ObjectIntPair<T>> list = Lists.newArrayList();
+		List<ObjectIntPair<T>> list = new ArrayList<>();
 		
 		for (ObjectIntPair<T> p : g_map)
 		{
@@ -90,7 +89,7 @@ public class Unigram<T> implements Serializable
 	
 	public List<ObjectDoublePair<T>> toList(double threshold)
 	{
-		List<ObjectDoublePair<T>> list = Lists.newArrayList();
+		List<ObjectDoublePair<T>> list = new ArrayList<>();
 		double d;
 		
 		for (ObjectIntPair<T> p : g_map)
@@ -115,7 +114,7 @@ public class Unigram<T> implements Serializable
 	
 	public Set<T> keySet(double threshold)
 	{
-		Set<T> set = Sets.newHashSet();
+		Set<T> set = new HashSet<>();
 		double d;
 		
 		for (ObjectIntPair<T> p : g_map)

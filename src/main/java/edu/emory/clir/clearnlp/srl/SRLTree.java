@@ -17,12 +17,10 @@ package edu.emory.clir.clearnlp.srl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.constituent.CTLibEn;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
@@ -62,7 +60,7 @@ public class SRLTree
 	
 	public Set<String> getBaseLabelSet()
 	{
-		Set<String> labels = Sets.newHashSet();
+		Set<String> labels = new HashSet<>();
 		
 		for (SRLArc arc : l_arguments)
 			labels.add(PBLib.getBaseLabel(arc.getLabel()));
@@ -88,7 +86,7 @@ public class SRLTree
 	
 	public List<SRLArc> getArgumentArcList(Pattern pattern)
 	{
-		List<SRLArc> args = Lists.newArrayList();
+		List<SRLArc> args = new ArrayList<>();
 		
 		for (SRLArc arc : l_arguments)
 		{
@@ -101,7 +99,7 @@ public class SRLTree
 	
 	public List<DEPNode> getArgumentNodeList(Pattern pattern)
 	{
-		List<DEPNode> args = Lists.newArrayList();
+		List<DEPNode> args = new ArrayList<>();
 		
 		for (SRLArc arc : l_arguments)
 		{

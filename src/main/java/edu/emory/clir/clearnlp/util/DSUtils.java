@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,6 @@ import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.collection.list.FloatArrayList;
 import edu.emory.clir.clearnlp.collection.pair.DoubleIntPair;
@@ -88,7 +86,7 @@ public class DSUtils
 	static public Set<String> createStringHashSet(InputStream in, boolean trim, boolean decap)
 	{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		Set<String> set = Sets.newHashSet();
+		Set<String> set = new HashSet<>();
 		String line;
 
 		try
@@ -124,7 +122,7 @@ public class DSUtils
 	static public Map<String,String> createStringHashMap(InputStream in, CharTokenizer tokenizer, boolean trim)
 	{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		Map<String,String> map = Maps.newHashMap();
+		Map<String,String> map = new HashMap<>();
 		String[] t;
 		String line;
 		
@@ -178,7 +176,7 @@ public class DSUtils
 	/** @return a set containing all field values of this class. */
 	static public Set<String> getFieldSet(Class<?> cs)
 	{
-		Set<String> set = Sets.newHashSet();
+		Set<String> set = new HashSet<>();
 		
 		try
 		{
@@ -437,5 +435,21 @@ public class DSUtils
 			queue[i] = ascending ? new PriorityQueue<>() : new PriorityQueue<>(Collections.reverseOrder());
 		
 		return queue;
+	}
+	
+	@SuppressWarnings("unchecked")
+	static public <T>List<T> toArrayList(T... items)
+	{
+		List<T> list = new ArrayList<>(items.length);
+		for (T item : items) list.add(item);
+		return list;
+	}
+	
+	@SuppressWarnings("unchecked")
+	static public <T>Set<T> toHashSet(T... items)
+	{
+		Set<T> set = new HashSet<>(items.length);
+		for (T item : items) set.add(item);
+		return set;
 	}
 }

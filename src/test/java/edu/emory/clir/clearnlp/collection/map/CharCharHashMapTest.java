@@ -27,10 +27,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
-import edu.emory.clir.clearnlp.collection.map.CharCharHashMap;
 import edu.emory.clir.clearnlp.collection.pair.CharCharPair;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.0
@@ -41,7 +39,7 @@ public class CharCharHashMapTest
 	@Test
 	public void test() throws Exception
 	{
-		List<CharCharPair> items = Lists.newArrayList(new CharCharPair('A','a'),new CharCharPair('B','b'),new CharCharPair('C','c'));
+		List<CharCharPair> items = DSUtils.toArrayList(new CharCharPair('A','a'),new CharCharPair('B','b'),new CharCharPair('C','c'));
 		CharCharHashMap map = new CharCharHashMap();
 		
 		for (CharCharPair item : items)

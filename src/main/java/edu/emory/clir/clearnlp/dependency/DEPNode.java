@@ -16,15 +16,14 @@
 package edu.emory.clir.clearnlp.dependency;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.collection.list.SortedArrayList;
 import edu.emory.clir.clearnlp.collection.set.IntHashSet;
@@ -129,13 +128,13 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public void initSecondaryHeads()
 	{
-		x_heads = Lists.newArrayList();
+		x_heads = new ArrayList<>();
 	}
 
 	/** Initializes semantic heads of this node. */
 	public void initSemanticHeads()
 	{
-		s_heads = Lists.newArrayList();
+		s_heads = new ArrayList<>();
 	}
 	
 	void clearDependencies()
@@ -437,7 +436,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public List<DEPNode> getDependentListByLabel(String label)
 	{
-		List<DEPNode> list = Lists.newArrayList();
+		List<DEPNode> list = new ArrayList<>();
 		
 		for (DEPNode node : l_dependents)
 		{
@@ -450,7 +449,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public List<DEPNode> getDependentListByLabel(Set<String> labels)
 	{
-		List<DEPNode> list = Lists.newArrayList();
+		List<DEPNode> list = new ArrayList<>();
 		
 		for (DEPNode node : l_dependents)
 		{
@@ -463,7 +462,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public List<DEPNode> getDependentListByLabel(Pattern pattern)
 	{
-		List<DEPNode> list = Lists.newArrayList();
+		List<DEPNode> list = new ArrayList<>();
 		
 		for (DEPNode node : l_dependents)
 		{
@@ -476,7 +475,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public List<DEPNode> getLeftDependentList()
 	{
-		List<DEPNode> list = Lists.newArrayList();
+		List<DEPNode> list = new ArrayList<>();
 		
 		for (DEPNode node : l_dependents)
 		{
@@ -489,7 +488,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public List<DEPNode> getLeftDependentListByLabel(Pattern pattern)
 	{
-		List<DEPNode> list = Lists.newArrayList();
+		List<DEPNode> list = new ArrayList<>();
 		
 		for (DEPNode node : l_dependents)
 		{
@@ -502,7 +501,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public List<DEPNode> getRightDependentList()
 	{
-		List<DEPNode> list = Lists.newArrayList();
+		List<DEPNode> list = new ArrayList<>();
 		
 		for (DEPNode node : l_dependents)
 		{
@@ -515,7 +514,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public List<DEPNode> getRightDependentListByLabel(Pattern pattern)
 	{
-		List<DEPNode> list = Lists.newArrayList();
+		List<DEPNode> list = new ArrayList<>();
 		
 		for (DEPNode node : l_dependents)
 		{
@@ -529,7 +528,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	/** @return an unsorted list of grand-dependants. */
 	public List<DEPNode> getGrandDependentList()
 	{
-		List<DEPNode> list = Lists.newArrayList();
+		List<DEPNode> list = new ArrayList<>();
 		
 		for (DEPNode node : l_dependents)
 			list.addAll(node.getDependentList());
@@ -545,7 +544,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	 */
 	public List<DEPNode> getDescendantList(int height)
 	{
-		List<DEPNode> list = Lists.newArrayList();
+		List<DEPNode> list = new ArrayList<>();
 	
 		if (height > 0)
 			getDescendantListAux(this, list, height-1);
@@ -585,7 +584,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	/** @return a sorted list of nodes in the subtree of this node (inclusive). */
 	public List<DEPNode> getSubNodeList()
 	{
-		List<DEPNode> list = Lists.newArrayList();
+		List<DEPNode> list = new ArrayList<>();
 		getSubNodeCollectionAux(list, this);
 		Collections.sort(list);
 		return list;
@@ -594,7 +593,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	/** @return a set of nodes in the subtree of this node (inclusive). */
 	public Set<DEPNode> getSubNodeSet()
 	{
-		Set<DEPNode> set = Sets.newHashSet();
+		Set<DEPNode> set = new HashSet<>();
 		getSubNodeCollectionAux(set, this);
 		return set;
 	}
@@ -874,7 +873,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public List<DEPArc> getSecondaryHeadArcList(String label)
 	{
-		List<DEPArc> list = Lists.newArrayList();
+		List<DEPArc> list = new ArrayList<>();
 		
 		for (DEPArc arc : x_heads)
 		{
@@ -915,7 +914,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public Set<DEPNode> getSemanticHeadSet(String label)
 	{
-		Set<DEPNode> set = Sets.newHashSet();
+		Set<DEPNode> set = new HashSet<>();
 		
 		for (SRLArc arc : s_heads)
 		{
@@ -928,7 +927,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public Set<DEPNode> getSemanticHeadSet(Pattern pattern)
 	{
-		Set<DEPNode> set = Sets.newHashSet();
+		Set<DEPNode> set = new HashSet<>();
 		
 		for (SRLArc arc : s_heads)
 		{
@@ -946,7 +945,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public List<SRLArc> getSemanticHeadArcList(String label)
 	{
-		List<SRLArc> list = Lists.newArrayList();
+		List<SRLArc> list = new ArrayList<>();
 		
 		for (SRLArc arc : s_heads)
 		{
@@ -1101,7 +1100,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public Set<DEPNode> getArgumentCandidateSet(int depth, boolean includeSelf)
 	{
-		Set<DEPNode> set = Sets.newHashSet(getDescendantList(depth));
+		Set<DEPNode> set = new HashSet<>(getDescendantList(depth));
 		DEPNode head = getHead();
 		
 		while (head != null)

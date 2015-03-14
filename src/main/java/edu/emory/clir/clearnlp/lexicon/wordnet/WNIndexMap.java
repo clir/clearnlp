@@ -18,9 +18,8 @@ package edu.emory.clir.clearnlp.lexicon.wordnet;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.util.IOUtils;
 
@@ -42,7 +41,7 @@ public class WNIndexMap
 		WNIndex index;
 		String line;
 		
-		m_index = Maps.newHashMap();
+		m_index = new HashMap<>();
 		
 		while ((line = reader.readLine()) != null)
 		{

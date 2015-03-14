@@ -17,9 +17,8 @@ package edu.emory.clir.clearnlp.tokenization;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.dictionary.english.DTAbbreviation;
 import edu.emory.clir.clearnlp.dictionary.english.DTHyphen;
@@ -90,7 +89,7 @@ public class EnglishTokenizer extends AbstractTokenizer
 	@Override
 	public List<List<String>> segmentize(InputStream in)
 	{
-		List<List<String>> sentences = Lists.newArrayList();
+		List<List<String>> sentences = new ArrayList<>();
 		int[] brackets = new int[R_BRACKETS.length];
 		List<String> tokens = tokenize(in);
 		int bIndex, i, size = tokens.size();

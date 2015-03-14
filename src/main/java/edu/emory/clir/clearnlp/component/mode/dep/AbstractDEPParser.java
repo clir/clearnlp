@@ -142,11 +142,11 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 		{
 			node = state.getNode(i);
 			
-			if (!node.hasHead())
+			if (!node.hasHead() && !state.find2ndHead(node))
 			{
 				max = new ObjectIntPair<StringPrediction>(null, -1000);
-				processHeadless(state, node, max, label_indices[DEPState.RIGHT_ARC], -1);
-				processHeadless(state, node, max, label_indices[DEPState.LEFT_ARC] ,  1);
+				processHeadlessAll(state, node, max, label_indices[DEPState.RIGHT_ARC], -1);
+				processHeadlessAll(state, node, max, label_indices[DEPState.LEFT_ARC] ,  1);
 				
 				if (max.o == null)
 					node.setHead(state.getNode(0), d_configuration.getRootLabel());
@@ -156,7 +156,7 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 		}
 	}
 	
-	private void processHeadless(DEPState state, DEPNode node, ObjectIntPair<StringPrediction> max, int[] indices, int dir)
+	private void processHeadlessAll(DEPState state, DEPNode node, ObjectIntPair<StringPrediction> max, int[] indices, int dir)
 	{
 		int i, currID = node.getID(), size = state.getTreeSize();
 		StringFeatureVector vector;

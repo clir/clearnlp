@@ -25,12 +25,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.classification.instance.IntInstance;
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
@@ -51,7 +50,7 @@ public class StringModelTest
 	public void testBinary() throws Exception
 	{
 		StringInstanceReader reader = new StringInstanceReader(IOUtils.createFileInputStream("src/test/resources/classification/model/binary-string.train"));
-		List<StringInstance> instances = Lists.newArrayList();
+		List<StringInstance> instances = new ArrayList<>();
 		StringInstance instance;
 		
 		while ((instance = reader.next()) != null)
@@ -170,7 +169,7 @@ public class StringModelTest
 	public void testMulti() throws Exception
 	{
 		StringInstanceReader reader = new StringInstanceReader(IOUtils.createFileInputStream("src/test/resources/classification/model/multi-string.train"));
-		List<StringInstance> instances = Lists.newArrayList();
+		List<StringInstance> instances = new ArrayList<>();
 		StringInstance instance;
 		
 		while ((instance = reader.next()) != null)

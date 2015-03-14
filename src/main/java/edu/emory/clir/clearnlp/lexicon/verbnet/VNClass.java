@@ -16,12 +16,11 @@
 package edu.emory.clir.clearnlp.lexicon.verbnet;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.util.XmlUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -73,7 +72,7 @@ public class VNClass implements Serializable
 		int i, size = list.getLength();
 		Element eFrame;
 		
-		l_frames = Lists.newArrayList();
+		l_frames = new ArrayList<>();
 		
 		for (i=0; i<size; i++)
 		{

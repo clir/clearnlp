@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.carrotsearch.hppc.cursors.IntCursor;
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.set.IntHashSet;
 import edu.emory.clir.clearnlp.srl.SRLTree;
@@ -227,7 +226,7 @@ public class DEPTree implements Iterable<DEPNode>
 	/** @return a list of root nodes in this tree. */
 	public List<DEPNode> getRoots()
 	{
-		List<DEPNode> roots = Lists.newArrayList();
+		List<DEPNode> roots = new ArrayList<>();
 		DEPNode root = get(DEPLib.ROOT_ID);
 		
 		for (DEPNode node : this)
@@ -433,7 +432,7 @@ public class DEPTree implements Iterable<DEPNode>
 	
 	public List<List<SRLArc>> getArgumentList()
 	{
-		List<List<SRLArc>> list = Lists.newArrayList();
+		List<List<SRLArc>> list = new ArrayList<>();
 		int i, size = size();
 		List<SRLArc> args;
 		

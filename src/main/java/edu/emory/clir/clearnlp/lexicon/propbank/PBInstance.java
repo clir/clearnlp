@@ -16,12 +16,11 @@
 package edu.emory.clir.clearnlp.lexicon.propbank;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.constituent.CTLibEn;
 import edu.emory.clir.clearnlp.constituent.CTTree;
@@ -54,7 +53,7 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 	
 	public PBInstance()
 	{
-		l_arguments = Lists.newArrayList();
+		l_arguments = new ArrayList<>();
 	}
 	
 	/** @param str {@code <treePath><treeId><predId><annotator><type><roleset><aspects>(<argument>)+}. */
@@ -73,7 +72,7 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 		s_rolesetID		= tmp[5];
 		s_aspects		= tmp[6];
 		
-		l_arguments = Lists.newArrayList();
+		l_arguments = new ArrayList<>();
 		int i, size = tmp.length;
 		
 		for (i=7; i<size; i++)
@@ -190,7 +189,7 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 	/** Removes all argument with the specific label. */
 	public void removeArguments(String label)
 	{
-		List<PBArgument> remove = Lists.newArrayList();
+		List<PBArgument> remove = new ArrayList<>();
 		
 		for (PBArgument arg : l_arguments)
 		{

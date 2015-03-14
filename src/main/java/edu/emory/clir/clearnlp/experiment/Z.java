@@ -15,28 +15,22 @@
  */
 package edu.emory.clir.clearnlp.experiment;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import org.tukaani.xz.LZMA2Options;
-import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
-import com.google.common.collect.Lists;
+import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFMap;
 
 
 /**
@@ -45,25 +39,12 @@ import com.google.common.collect.Lists;
  */
 public class Z
 {
-	@SuppressWarnings("unchecked")
 	public Z(String[] args) throws Exception
 	{
-		Map<String,String> map = new HashMap<>();
-		String filename = "tmp";
-		map.put("a", "A");
-		map.put("b", "B");
-		map.put("c", "C");
-		
-		ObjectOutputStream out = new ObjectOutputStream(new XZOutputStream(new BufferedOutputStream(new FileOutputStream(filename)), new LZMA2Options()));
+		PBFMap map = new PBFMap(args[0]);
+		ObjectOutputStream out = new ObjectOutputStream(new XZOutputStream(new BufferedOutputStream(new FileOutputStream("tmp.xz")), new LZMA2Options()));
 		out.writeObject(map);
 		out.close();
-		
-		ObjectInputStream in = new ObjectInputStream(new XZInputStream(new BufferedInputStream(new FileInputStream(filename))));
-		map = (HashMap<String,String>)in.readObject();
-		in.close();
-		
-		System.out.println(map.toString());
-		new File(filename);
 	}
 	
 	class Tmp
@@ -131,37 +112,6 @@ public class Z
 		{
 			for (j=0; j<len; j++)
 				map.computeIfPresent(j, (k, v) -> v /len);
-		}
-		
-		et = System.currentTimeMillis();
-		System.out.println(et-st);
-	}
-	
-	void compareAddAll()
-	{
-		List<Integer> tmp = Lists.newArrayList(0,1,2,3,4,5);
-		int i, j, size = 1000000;
-		List<Integer> list;
-		long st, et;
-		
-		st = System.currentTimeMillis();
-		
-		for (i=0; i<size; i++)
-		{
-			list = new ArrayList<>(tmp);
-			for (j=5; j>=0; j--)
-				list.remove(j);
-		}
-		
-		et = System.currentTimeMillis();
-		System.out.println(et-st);
-		
-		st = System.currentTimeMillis();
-		
-		for (i=0; i<size; i++)
-		{
-			list = new ArrayList<>(tmp);
-			list.clear();
 		}
 		
 		et = System.currentTimeMillis();

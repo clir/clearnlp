@@ -16,14 +16,14 @@
 package edu.emory.clir.clearnlp.lexicon.propbank.frameset;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.google.common.collect.Maps;
-
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNLib;
 import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -48,7 +48,7 @@ public class PBFRole implements Serializable, Comparable<PBFRole>
 	
 	private void init(Element eRole)
 	{
-		m_vnroles = Maps.newHashMap();
+		m_vnroles = new HashMap<>();
 		
 		setArgumentNumber(XmlUtils.getTrimmedAttribute(eRole, PBFXml.A_N));
 		setFunctionTag(XmlUtils.getTrimmedAttribute(eRole, PBFXml.A_F));
@@ -116,9 +116,9 @@ public class PBFRole implements Serializable, Comparable<PBFRole>
 	
 	public void putVNRole(String vncls, String vntheta)
 	{
-		m_vnroles.put(vncls, StringUtils.toLowerCase(vntheta));
+		if (vncls.length() > 1)
+			m_vnroles.put(VNLib.stripVerbNetClassName(vncls), StringUtils.toLowerCase(vntheta));
 	}
-	
 	
 	public boolean isArgumentNumber(String number)
 	{

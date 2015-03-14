@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,8 +30,6 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import org.w3c.dom.Element;
-
-import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dictionary.PathEnglishMPAnalyzer;
@@ -166,7 +165,7 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 	private Map<String,String> getAbbreviationMap(InputStream stream) throws IOException
 	{
 		BufferedReader fin = new BufferedReader(new InputStreamReader(stream));
-		Map<String,String> map = Maps.newHashMap();
+		Map<String,String> map = new HashMap<>();
 		String line, abbr, pos, key, base;
 		String[] tmp;
 		

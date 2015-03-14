@@ -18,10 +18,9 @@ package edu.emory.clir.clearnlp.lexicon.propbank;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
 import edu.emory.clir.clearnlp.constituent.CTReader;
@@ -87,7 +86,7 @@ public class PBReader
 				list = map.get(instance.getTreeID());
 			else
 			{
-				list = Lists.newArrayList();
+				list = new ArrayList<>();
 				map.put(instance.getTreeID(), list);
 			}
 			
@@ -100,7 +99,7 @@ public class PBReader
 	/** @return the sorted list of instances. */
 	public List<PBInstance> getSortedInstanceList()
 	{
-		List<PBInstance> list = Lists.newArrayList();
+		List<PBInstance> list = new ArrayList<>();
 		PBInstance instance;
 		
 		while ((instance = nextInstance()) != null)

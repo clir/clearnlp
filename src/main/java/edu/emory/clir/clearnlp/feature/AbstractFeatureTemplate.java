@@ -16,13 +16,12 @@
 package edu.emory.clir.clearnlp.feature;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.feature.type.FeatureType;
 import edu.emory.clir.clearnlp.feature.type.FeatureXml;
@@ -69,7 +68,7 @@ abstract public class AbstractFeatureTemplate<FeatureTokenType extends AbstractF
 	 */
 	private List<String> getFields(Element eFeature)
 	{
-		List<String> attributes = Lists.newArrayList();
+		List<String> attributes = new ArrayList<>();
 		NamedNodeMap nodes = eFeature.getAttributes();
 		int i, size = nodes.getLength();
 		Node node;

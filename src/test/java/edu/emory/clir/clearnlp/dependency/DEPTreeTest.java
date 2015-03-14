@@ -21,15 +21,12 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
-import edu.emory.clir.clearnlp.dependency.DEPFeat;
-import edu.emory.clir.clearnlp.dependency.DEPNode;
-import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.reader.TSVReader;
 import edu.emory.clir.clearnlp.srl.SRLTree;
+import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -44,7 +41,7 @@ public class DEPTreeTest
 	@Test
 	public void testTree() throws Exception
 	{
-		DEPTree tree = new DEPTree(Lists.newArrayList(new DEPNode(1, "A")));
+		DEPTree tree = new DEPTree(DSUtils.toArrayList(new DEPNode(1, "A")));
 		assertEquals(2, tree.size());
 		
 		tree.add(new DEPNode(2, "B"));
@@ -70,7 +67,8 @@ public class DEPTreeTest
 		assertEquals(4, tree.size());
 	}
 	
-//	@Test
+	@Test
+	@Ignore
 	public void test() throws Exception
 	{
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);

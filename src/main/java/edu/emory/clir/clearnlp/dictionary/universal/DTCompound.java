@@ -18,9 +18,8 @@ package edu.emory.clir.clearnlp.dictionary.universal;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.dictionary.AbstractDTTokenizer;
 import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
@@ -54,7 +53,7 @@ public class DTCompound extends AbstractDTTokenizer
 	public void init(InputStream in)
 	{
 		BufferedReader reader = IOUtils.createBufferedReader(in);
-		m_compound = Maps.newHashMap();
+		m_compound = new HashMap<>();
 		StringBuilder build;
 		String line, token;
 		String[] tokens;

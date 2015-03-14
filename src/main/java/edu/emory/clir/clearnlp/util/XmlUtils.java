@@ -17,6 +17,7 @@ package edu.emory.clir.clearnlp.util;
 
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -33,8 +34,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.google.common.collect.Lists;
 
 /**
  * @since 3.0.0
@@ -124,7 +123,7 @@ public class XmlUtils
 	static public List<Node> getAttributeNodeList(Element element, Pattern name)
 	{
 		NamedNodeMap nodes = element.getAttributes();
-		List<Node> attributes = Lists.newArrayList();
+		List<Node> attributes = new ArrayList<>();
 		int i, size = nodes.getLength();
 		Node node;
 		
@@ -157,7 +156,7 @@ public class XmlUtils
 	
 	static public List<Element> getChildElementList(Element root)
 	{
-		List<Element> list = Lists.newArrayList();
+		List<Element> list = new ArrayList<>();
 		NodeList nodes = root.getChildNodes();
 		int i, size = nodes.getLength();
 		Node node;

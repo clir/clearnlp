@@ -27,10 +27,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
-import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.0
@@ -42,7 +40,7 @@ public class IntObjectHashMapTest
 	@SuppressWarnings("unchecked")
 	public void test() throws Exception
 	{
-		List<ObjectIntPair<String>> items = Lists.newArrayList(new ObjectIntPair<String>("A",1),new ObjectIntPair<String>("B",2),new ObjectIntPair<String>("C",3));
+		List<ObjectIntPair<String>> items = DSUtils.toArrayList(new ObjectIntPair<String>("A",1),new ObjectIntPair<String>("B",2),new ObjectIntPair<String>("C",3));
 		IntObjectHashMap<String> map = new IntObjectHashMap<>();
 		
 		for (ObjectIntPair<String> item : items)

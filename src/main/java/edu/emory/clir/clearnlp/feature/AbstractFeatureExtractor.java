@@ -24,8 +24,6 @@ import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
@@ -63,7 +61,7 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType extends Abstr
 		FeatureTemplateType template;
 		Element eFeature;
 
-		f_templates = Lists.newArrayList();
+		f_templates = new ArrayList<>();
 		
 		for (i=0; i<size; i++)
 		{
@@ -222,7 +220,7 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType extends Abstr
 	
 	protected String[] getOrthographicFeatures(StateType state, DEPNode node)
 	{
-		List<String> list = Lists.newArrayList();
+		List<String> list = new ArrayList<>();
 		
 		if (node.isSimplifiedForm(MetaUtils.META_HYPERLINK))
 			list.add(OrthographicType.HYPERLINK);

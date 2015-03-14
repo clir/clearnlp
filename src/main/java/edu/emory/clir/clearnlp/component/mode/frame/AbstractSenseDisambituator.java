@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.sense;
+package edu.emory.clir.clearnlp.component.mode.frame;
 
 import java.io.ObjectInputStream;
 import java.util.List;

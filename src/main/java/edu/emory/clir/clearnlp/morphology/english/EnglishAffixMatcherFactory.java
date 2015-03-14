@@ -15,13 +15,12 @@
  */
 package edu.emory.clir.clearnlp.morphology.english;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.morphology.AbstractAffixMatcher;
 import edu.emory.clir.clearnlp.morphology.AbstractAffixReplacer;
@@ -49,7 +48,7 @@ public class EnglishAffixMatcherFactory
 	
 	public List<AbstractAffixMatcher> createAffixMatchers(Element eAffixes)
 	{
-		List<AbstractAffixMatcher> affixes = Lists.newArrayList();
+		List<AbstractAffixMatcher> affixes = new ArrayList<>();
 		NodeList list = eAffixes.getElementsByTagName(ELEM_AFFIX);
 		int i, size = list.getLength();
 		Element eAffix;

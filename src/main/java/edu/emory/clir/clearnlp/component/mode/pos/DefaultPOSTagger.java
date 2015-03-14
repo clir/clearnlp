@@ -54,4 +54,7 @@ public class DefaultPOSTagger extends AbstractPOSTagger
 	{
 		super(models);
 	}
+
+	@Override
+	void postProcess(POSState state) {}
 }

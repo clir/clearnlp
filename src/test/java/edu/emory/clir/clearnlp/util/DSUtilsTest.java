@@ -26,9 +26,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 import edu.emory.clir.clearnlp.collection.pair.DoubleIntPair;
 import edu.emory.clir.clearnlp.collection.pair.Pair;
 
@@ -39,9 +36,15 @@ import edu.emory.clir.clearnlp.collection.pair.Pair;
 public class DSUtilsTest
 {
 	@Test
+	public void testToCollection()
+	{
+		
+	}
+	
+	@Test
 	public void testListUtils()
 	{
-		List<String> list = Lists.newArrayList("B","A","E","C","D");
+		List<String> list = DSUtils.toArrayList("B","A","E","C","D");
 		
 		DSUtils.sortReverseOrder(list);
 		assertEquals("[E, D, C, B, A]", list.toString());
@@ -60,8 +63,8 @@ public class DSUtilsTest
 	@Test
 	public void testHasIntersection()
 	{
-		Set<String> s1 = Sets.newHashSet("A","B");
-		Set<String> s2 = Sets.newHashSet("C");
+		Set<String> s1 = DSUtils.toHashSet("A","B");
+		Set<String> s2 = DSUtils.toHashSet("C");
 		
 		assertFalse(DSUtils.hasIntersection(s1, s2));
 		

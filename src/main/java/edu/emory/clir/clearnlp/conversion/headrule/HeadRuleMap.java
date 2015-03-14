@@ -18,12 +18,11 @@ package edu.emory.clir.clearnlp.conversion.headrule;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.constant.PatternConst;
@@ -71,7 +70,7 @@ public class HeadRuleMap extends HashMap<String, HeadRule>
 	public String toString()
 	{
 		StringBuilder build = new StringBuilder();
-		List<String>   keys = Lists.newArrayList();
+		List<String>   keys = new ArrayList<>();
 		Collections.sort(keys);
 		HeadRule rule;
 		

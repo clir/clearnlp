@@ -348,33 +348,54 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 		return i_input >= t_size;
 	}
 	
-//	====================================== SCORE ======================================
+	public double getScore()
+	{
+		return (c_flag == CFlag.BOOTSTRAP) ? (double)d_tree.getScoreCounts(g_oracle, t_configuration.evaluatePunctuation())[1] : total_score / num_transitions;
+	}
+	
+//	====================================== 2nd Heads ======================================
 
 	/** PRE: ps[0].isArc("NO"). */
 	public void save2ndHead(StringPrediction[] ps)
 	{
 		if (ps[0].getScore() - ps[1].getScore() < 1)
 		{
-			DEPNode  stack = getStack();
-			DEPNode  input = getInput();
 			DEPLabel label = new DEPLabel(ps[1].getLabel());
+			if (label.isArc(ARC_NO)) return;
+			DEPNode curr, head;
 			
-			if (label.isArc(ARC_LEFT)) 
+			if (label.isArc(ARC_LEFT))
 			{
-//				snd_heads[stack.getID()].add(new ObjectDoublePair<DEPArc>(new DEPArc(input, label.getDeprel())));
+				curr = getStack();
+				head = getInput();
 			}
-			else if (label.isArc(ARC_RIGHT))
+			else
 			{
-				
+				head = getStack();
+				curr = getInput();
 			}
 			
-			
+			snd_heads[curr.getID()].add(new ObjectDoublePair<DEPArc>(new DEPArc(head, label.getDeprel()), ps[1].getScore()));
 		}
 	}
 	
-	public double getScore()
+	/** @param node has no head. */
+	public boolean find2ndHead(DEPNode node)
 	{
-		return (c_flag == CFlag.BOOTSTRAP) ? (double)d_tree.getScoreCounts(g_oracle, t_configuration.evaluatePunctuation())[1] : total_score / num_transitions;
+		DEPArc head;
+		
+		for (ObjectDoublePair<DEPArc> p : snd_heads[node.getID()])
+		{
+			head = p.o;
+			
+			if (!head.getNode().isDescendantOf(node))
+			{
+				node.setHead(head.getNode(), head.getLabel());
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 //	====================================== FEATURES ======================================

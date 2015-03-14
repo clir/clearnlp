@@ -19,10 +19,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
-
-import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.IOUtils;
@@ -57,7 +56,7 @@ public class DTHtml
 		String[] t;
 		String line;
 		
-		m_tags = Maps.newHashMap();
+		m_tags = new HashMap<>();
 		
 		try
 		{

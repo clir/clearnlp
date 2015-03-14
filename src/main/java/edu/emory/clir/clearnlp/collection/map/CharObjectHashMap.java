@@ -19,11 +19,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import com.carrotsearch.hppc.CharObjectOpenHashMap;
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectCharPair;
 
@@ -62,7 +62,7 @@ public class CharObjectHashMap<T> implements Serializable, Iterable<ObjectCharPa
 	/** @return a list of (value, key) pairs. */
 	public List<ObjectCharPair<T>> toList()
 	{
-		List<ObjectCharPair<T>> list = Lists.newArrayList();
+		List<ObjectCharPair<T>> list = new ArrayList<>();
 		
 		for (ObjectCharPair<T> p : this)
 			list.add(p);

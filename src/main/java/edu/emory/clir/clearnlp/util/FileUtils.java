@@ -16,9 +16,8 @@
 package edu.emory.clir.clearnlp.util;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 import edu.emory.clir.clearnlp.util.io.FileExtensionFilter;
@@ -38,7 +37,7 @@ public class FileUtils
 	 */
 	static public List<String> getFileList(String path, String extension, boolean recursive)
 	{
-		List<String> list = Lists.newArrayList();
+		List<String> list = new ArrayList<>();
 		File file = new File(path);
 		
 		if (file.isFile())
@@ -69,6 +68,12 @@ public class FileUtils
 			else if (name.endsWith(extension))
 				list.add(name);
 		}
+	}
+	
+	static public String getBaseName(String filename)
+	{
+		int idx = filename.lastIndexOf('/');
+		return filename.substring(idx+1);
 	}
 	
 	/**

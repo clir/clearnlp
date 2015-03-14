@@ -32,8 +32,6 @@ import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.classification.instance.AbstractInstance;
 import edu.emory.clir.clearnlp.classification.instance.AbstractInstanceCollector;
 import edu.emory.clir.clearnlp.classification.instance.IntInstance;
@@ -160,7 +158,7 @@ abstract public class AbstractModel<I extends AbstractInstance<F>, F extends Abs
 	public List<IntInstance> toIntInstanceList(Deque<I> sInstances)
 	{
 		BinUtils.LOG.info("Vectorizing: "+sInstances.size()+"\n");
-		ArrayList<IntInstance> iInstances = Lists.newArrayList();
+		ArrayList<IntInstance> iInstances = new ArrayList<>();
 		final int PRINT = 100000;
 		IntInstance iInstance;
 		

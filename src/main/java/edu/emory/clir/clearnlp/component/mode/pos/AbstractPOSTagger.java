@@ -29,7 +29,7 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSEval, POSFeatureExtractor>
+public abstract class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSState, POSEval, POSFeatureExtractor>
 {
 	private POSLexicon pos_lexicon;
 	
@@ -105,10 +105,12 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 		{
 			List<StringInstance> instances = process(state);
 			
-			if (!isDecode())
+			if (isTrainOrBootstrap())
+				s_models[0].addInstances(instances);
+			else 
 			{
-				if (isTrainOrBootstrap())	s_models[0].addInstances(instances);
-				else if (isEvaluate())		c_eval.countCorrect(tree, state.getOracle());
+				if (isEvaluate()) c_eval.countCorrect(tree, state.getOracle());
+				postProcess(state);
 			}
 		}
 	}
@@ -126,6 +128,8 @@ public class AbstractPOSTagger extends AbstractStatisticalComponent<String, POSS
 		state.save2ndLabel(ps);
 		return ps[0].getLabel();
 	}
+	
+	abstract void postProcess(POSState state);
 	
 //	====================================== ONLINE TRAIN ======================================
 	

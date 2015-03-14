@@ -18,10 +18,9 @@ package edu.emory.clir.clearnlp.experiment;
 import java.io.BufferedReader;
 import java.io.PrintStream;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.lexicon.wikipedia.WikiMap;
 import edu.emory.clir.clearnlp.lexicon.wikipedia.WikiPage;
@@ -67,7 +66,7 @@ public class WikiExtractor
 	Set<String> getNameSet(String filename) throws Exception
 	{
 		BufferedReader reader = IOUtils.createBufferedReader(filename);
-		Set<String> set = Sets.newHashSet();
+		Set<String> set = new HashSet<>();
 		String line;
 		
 		while ((line = reader.readLine()) != null)

@@ -16,17 +16,15 @@
 package edu.emory.clir.clearnlp.conversion;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UnknownFormatConversionException;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.collection.set.IntHashSet;
 import edu.emory.clir.clearnlp.constituent.CTLibEn;
@@ -65,34 +63,34 @@ import edu.emory.clir.clearnlp.util.lang.ENUtils;
 public class EnglishC2DConverter extends AbstractC2DConverter
 {
 	
-	private final Set<String> S_NPADVMOD	= Sets.newHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTTagEn.C_QP);
-	private final Set<String> S_ADVCL		= Sets.newHashSet(CTTagEn.C_S, CTTagEn.C_SBAR, CTTagEn.C_SINV);
-	private final Set<String> S_NFMOD		= Sets.newHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTTagEn.C_WHNP);
-	private final Set<String> S_CCOMP		= Sets.newHashSet(CTTagEn.C_S, CTTagEn.C_SQ, CTTagEn.C_SINV, CTTagEn.C_SBARQ);
-	private final Set<String> S_META		= Sets.newHashSet(CTTagEn.C_EDITED, CTTagEn.C_EMBED, CTTagEn.C_LST, CTTagEn.C_META, CTLibEn.POS_CODE, CTTagEn.C_CAPTION, CTTagEn.C_CIT, CTTagEn.C_HEADING, CTTagEn.C_TITLE);
-	private final Set<String> S_MARK		= Sets.newHashSet(CTLibEn.POS_IN, CTLibEn.POS_TO, CTLibEn.POS_DT);
-	private final Set<String> S_POSS		= Sets.newHashSet(CTLibEn.POS_PRPS, CTLibEn.POS_WPS);
-	private final Set<String> S_INTJ		= Sets.newHashSet(CTTagEn.C_INTJ, CTLibEn.POS_UH);
-	private final Set<String> S_PRT 		= Sets.newHashSet(CTTagEn.C_PRT, CTLibEn.POS_RP);
-	private final Set<String> S_NUM			= Sets.newHashSet(CTLibEn.POS_CD, CTTagEn.C_QP);
-	private final Set<String> S_DET			= Sets.newHashSet(CTLibEn.POS_DT, CTLibEn.POS_WDT, CTLibEn.POS_WP);
-	private final Set<String> S_AUX			= Sets.newHashSet(CTLibEn.POS_MD, CTLibEn.POS_TO);
-	private final Set<String> S_NN			= Sets.newHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTLibEn.POS_FW);
+	private final Set<String> S_NPADVMOD	= DSUtils.toHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTTagEn.C_QP);
+	private final Set<String> S_ADVCL		= DSUtils.toHashSet(CTTagEn.C_S, CTTagEn.C_SBAR, CTTagEn.C_SINV);
+	private final Set<String> S_NFMOD		= DSUtils.toHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTTagEn.C_WHNP);
+	private final Set<String> S_CCOMP		= DSUtils.toHashSet(CTTagEn.C_S, CTTagEn.C_SQ, CTTagEn.C_SINV, CTTagEn.C_SBARQ);
+	private final Set<String> S_META		= DSUtils.toHashSet(CTTagEn.C_EDITED, CTTagEn.C_EMBED, CTTagEn.C_LST, CTTagEn.C_META, CTLibEn.POS_CODE, CTTagEn.C_CAPTION, CTTagEn.C_CIT, CTTagEn.C_HEADING, CTTagEn.C_TITLE);
+	private final Set<String> S_MARK		= DSUtils.toHashSet(CTLibEn.POS_IN, CTLibEn.POS_TO, CTLibEn.POS_DT);
+	private final Set<String> S_POSS		= DSUtils.toHashSet(CTLibEn.POS_PRPS, CTLibEn.POS_WPS);
+	private final Set<String> S_INTJ		= DSUtils.toHashSet(CTTagEn.C_INTJ, CTLibEn.POS_UH);
+	private final Set<String> S_PRT 		= DSUtils.toHashSet(CTTagEn.C_PRT, CTLibEn.POS_RP);
+	private final Set<String> S_NUM			= DSUtils.toHashSet(CTLibEn.POS_CD, CTTagEn.C_QP);
+	private final Set<String> S_DET			= DSUtils.toHashSet(CTLibEn.POS_DT, CTLibEn.POS_WDT, CTLibEn.POS_WP);
+	private final Set<String> S_AUX			= DSUtils.toHashSet(CTLibEn.POS_MD, CTLibEn.POS_TO);
+	private final Set<String> S_NN			= DSUtils.toHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTLibEn.POS_FW);
 
-	private final Set<String> S_ADJT_PHRASE	= Sets.newHashSet(CTTagEn.C_ADJP, CTTagEn.C_WHADJP);
-	private final Set<String> S_NOUN_PHRASE	= Sets.newHashSet(CTTagEn.C_NP, CTTagEn.C_NML);
-	private final Set<String> S_PREP_PHRASE	= Sets.newHashSet(CTTagEn.C_PP, CTTagEn.C_WHPP);
-	private final Set<String> S_ADVB_PHRASE	= Sets.newHashSet(CTTagEn.C_ADJP, CTTagEn.C_ADVP, CTTagEn.C_PP);
-	private final Set<String> S_PREPOSITION	= Sets.newHashSet(CTLibEn.POS_IN, CTLibEn.POS_TO);
-	private final Set<String> S_PARTICIPIAL	= Sets.newHashSet(CTLibEn.POS_VBG, CTLibEn.POS_VBN);
-	private final Set<String> S_PREP_DET	= Sets.newHashSet(CTLibEn.POS_IN, CTLibEn.POS_DT);
+	private final Set<String> S_ADJT_PHRASE	= DSUtils.toHashSet(CTTagEn.C_ADJP, CTTagEn.C_WHADJP);
+	private final Set<String> S_NOUN_PHRASE	= DSUtils.toHashSet(CTTagEn.C_NP, CTTagEn.C_NML);
+	private final Set<String> S_PREP_PHRASE	= DSUtils.toHashSet(CTTagEn.C_PP, CTTagEn.C_WHPP);
+	private final Set<String> S_ADVB_PHRASE	= DSUtils.toHashSet(CTTagEn.C_ADJP, CTTagEn.C_ADVP, CTTagEn.C_PP);
+	private final Set<String> S_PREPOSITION	= DSUtils.toHashSet(CTLibEn.POS_IN, CTLibEn.POS_TO);
+	private final Set<String> S_PARTICIPIAL	= DSUtils.toHashSet(CTLibEn.POS_VBG, CTLibEn.POS_VBN);
+	private final Set<String> S_PREP_DET	= DSUtils.toHashSet(CTLibEn.POS_IN, CTLibEn.POS_DT);
 	
-	private final Set<String> S_COMP_PARENT_S = Sets.newHashSet(CTTagEn.C_VP, CTTagEn.C_SINV, CTTagEn.C_SQ);
-	private final Set<String> S_COMP_PARENT_A = Sets.newHashSet(CTTagEn.C_ADJP, CTTagEn.C_ADVP);
-	private final Set<String> S_NMOD_PARENT	  = Sets.newHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTTagEn.C_NX, CTTagEn.C_WHNP);
-	private final Set<String> S_POSS_PARENT	  = Sets.newHashSet(CTTagEn.C_NP, CTTagEn.C_NML, CTTagEn.C_WHNP, CTTagEn.C_QP, CTTagEn.C_ADJP);
+	private final Set<String> S_COMP_PARENT_S = DSUtils.toHashSet(CTTagEn.C_VP, CTTagEn.C_SINV, CTTagEn.C_SQ);
+	private final Set<String> S_COMP_PARENT_A = DSUtils.toHashSet(CTTagEn.C_ADJP, CTTagEn.C_ADVP);
+	private final Set<String> S_NMOD_PARENT	  = DSUtils.toHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTTagEn.C_NX, CTTagEn.C_WHNP);
+	private final Set<String> S_POSS_PARENT	  = DSUtils.toHashSet(CTTagEn.C_NP, CTTagEn.C_NML, CTTagEn.C_WHNP, CTTagEn.C_QP, CTTagEn.C_ADJP);
 	
-	private final Set<String> S_COMPLM = Sets.newHashSet("that", "if", "whether");
+	private final Set<String> S_COMPLM = DSUtils.toHashSet("that", "if", "whether");
 	private final int SIZE_HEAD_FLAGS = 4;
 	
 	private Set<String> s_semTags;
@@ -142,15 +140,15 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	
 	private void initBasic()
 	{
-		s_semTags = Sets.newHashSet(CTTagEn.F_BNF, CTTagEn.F_DIR, CTTagEn.F_EXT, CTTagEn.F_LOC, CTTagEn.F_MNR, CTTagEn.F_PRP, CTTagEn.F_TMP, CTTagEn.F_VOC);
-		s_synTags = Sets.newHashSet(CTTagEn.F_ADV, CTTagEn.F_CLF, CTTagEn.F_CLR, CTTagEn.F_DTV, CTTagEn.F_NOM, CTTagEn.F_PUT, CTTagEn.F_PRD, CTTagEn.F_TPC);
-		m_rnr     = Maps.newHashMap();
-		m_xsubj   = Maps.newHashMap();
+		s_semTags = DSUtils.toHashSet(CTTagEn.F_BNF, CTTagEn.F_DIR, CTTagEn.F_EXT, CTTagEn.F_LOC, CTTagEn.F_MNR, CTTagEn.F_PRP, CTTagEn.F_TMP, CTTagEn.F_VOC);
+		s_synTags = DSUtils.toHashSet(CTTagEn.F_ADV, CTTagEn.F_CLF, CTTagEn.F_CLR, CTTagEn.F_DTV, CTTagEn.F_NOM, CTTagEn.F_PUT, CTTagEn.F_PRD, CTTagEn.F_TPC);
+		m_rnr     = new HashMap<>();
+		m_xsubj   = new HashMap<>();
 	}
 	
 	private void initCoord()
 	{
-		m_coord = Maps.newHashMap();
+		m_coord = new HashMap<>();
 		
 		m_coord.put(CTTagEn.C_ADJP	, PatternUtils.createClosedORPattern("ADJP","JJ.*","VBN","VBG"));
 		m_coord.put(CTTagEn.C_ADVP	, PatternUtils.createClosedORPattern("ADVP","RB.*"));
@@ -182,7 +180,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		mt_sbj  	= new CTNodeMatcherF(CTTagEn.F_SBJ);
 		mt_prd  	= new CTNodeMatcherF(CTTagEn.F_PRD);
 		mt_np_prd	= new CTNodeMatcherCF(CTTagEn.C_NP, CTTagEn.F_PRD);
-		mt_in_dt	= new CTNodeMatcherSet(Sets.newHashSet(POSTagEn.POS_IN, POSTagEn.POS_DT));
+		mt_in_dt	= new CTNodeMatcherSet(DSUtils.toHashSet(POSTagEn.POS_IN, POSTagEn.POS_DT));
 	}
 
 	private void clearMaps()
@@ -1247,7 +1245,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	/** Called by {@link #addFeats(DEPTree, CTTree, CTNode)}. */
 	private String getFunctionTags(CTNode node, Set<String> sTags)
 	{
-		List<String> tags = Lists.newArrayList();
+		List<String> tags = new ArrayList<>();
 		
 		for (String tag : node.getFunctionTagSet())
 		{
@@ -1281,7 +1279,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	
 	public DEPTree getDEPTreeWithoutEdited(CTTree cTree, DEPTree dTree)
 	{
-		List<DEPNode> nodes = Lists.newArrayList();
+		List<DEPNode> nodes = new ArrayList<>();
 		IntHashSet set = new IntHashSet();
 		int id = 1;
 			
@@ -1320,7 +1318,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	private <T extends AbstractArc<DEPNode>>void removeEditedHeads(List<T> heads, IntHashSet set)
 	{
 		if (heads == null) return;
-		List<T> remove = Lists.newArrayList();
+		List<T> remove = new ArrayList<>();
 		
 		for (T arc : heads)
 		{
@@ -1411,7 +1409,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		
 		for (DEPNode node : tree)
 		{
-			remove = Lists.newArrayList();
+			remove = new ArrayList<>();
 			
 			for (SRLArc arc : node.getSemanticHeadArcList())
 			{
@@ -1458,7 +1456,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	/** Called by {@link #addSemanticHeads(DEPTree, CTTree)}. */
 	private void relabelNumberedArguments(DEPTree tree)
 	{
-		Map<String,DEPNode> map = Maps.newHashMap();
+		Map<String,DEPNode> map = new HashMap<>();
 		String key;
 		
 		for (DEPNode node : tree)

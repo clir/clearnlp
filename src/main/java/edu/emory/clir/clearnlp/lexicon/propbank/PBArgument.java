@@ -16,12 +16,11 @@
 package edu.emory.clir.clearnlp.lexicon.propbank;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -41,13 +40,13 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 	
 	public PBArgument()
 	{
-		l_locations = Lists.newArrayList();
+		l_locations = new ArrayList<>();
 	}
 	
 	/** @param str "<location>(<operator><location>)*-label". */
 	public PBArgument(String str)
 	{
-		l_locations = Lists.newArrayList();
+		l_locations = new ArrayList<>();
 		int idx = str.indexOf(DELIM);
 		String type;
 		

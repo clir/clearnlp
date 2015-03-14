@@ -19,10 +19,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.util.Splitter;
 
@@ -39,12 +38,12 @@ public class WikiMap implements Serializable
 	
 	public WikiMap()
 	{
-		m_wiki = Maps.newHashMap();
+		m_wiki = new HashMap<>();
 	}
 	
 	public WikiMap(InputStream in)
 	{
-		m_wiki = Maps.newHashMap();
+		m_wiki = new HashMap<>();
 		addPages(in);
 	}
 	

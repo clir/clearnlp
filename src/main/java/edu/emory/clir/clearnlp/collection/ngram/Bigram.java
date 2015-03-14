@@ -16,11 +16,10 @@
 package edu.emory.clir.clearnlp.collection.ngram;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
@@ -32,7 +31,7 @@ public class Bigram<T1,T2> implements Serializable
 	
 	public Bigram()
 	{
-		g_map = Maps.newHashMap();
+		g_map = new HashMap<>();
 	}
 	
 	public void add(T1 key1, T2 key2)

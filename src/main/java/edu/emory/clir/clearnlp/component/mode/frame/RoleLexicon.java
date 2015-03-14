@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.sense;
+package edu.emory.clir.clearnlp.component.mode.frame;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -32,13 +32,15 @@ public class RoleLexicon implements Serializable
 {
 	private static final long serialVersionUID = -1309316221225281613L;
 	private Map<String,Set<String>> m_lemmas;
+	private Set<String> auxiliary_verb_labels;
+	private Set<String> verb_tags;
 	
 	public RoleLexicon()
 	{	
 		m_lemmas = new HashMap<>();
 	}
 	
-	public void collect(RoleState state)
+	public void collect(FrameState state)
 	{
 		int i, size = state.getTreeSize();
 		Set<String> set;
@@ -77,7 +79,7 @@ public class RoleLexicon implements Serializable
 	
 	public boolean isVerbPredicate(DEPNode node)
 	{
-		return true;
+		return verb_tags.contains(node.getPOSTag()) && !auxiliary_verb_labels.contains(node.getLabel());
 	}
 }
 

@@ -20,10 +20,9 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 
-import com.google.common.collect.Sets;
-
 import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
+import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 
@@ -52,7 +51,7 @@ public class POSConfiguration extends AbstractConfiguration
 		String[] nnp = Splitter.splitCommas(XmlUtils.getTrimmedTextContent(XmlUtils.getFirstElementByTagName(eMode, "proper_noun_tagset")));
 		
 		setAmbiguityClassThreshold(ac);
-		setProperNounTagset(Sets.newHashSet(nnp));
+		setProperNounTagset(DSUtils.toHashSet(nnp));
 	}
 	
 //	============================== Getters ==============================

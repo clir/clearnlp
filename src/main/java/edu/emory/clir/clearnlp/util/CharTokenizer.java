@@ -15,9 +15,8 @@
  */
 package edu.emory.clir.clearnlp.util;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -46,7 +45,7 @@ public class CharTokenizer
 	
 	public List<String> tokenizeToList(String s, boolean includeEmpty)
 	{
-		List<String> list = Lists.newArrayList();
+		List<String> list = new ArrayList<>();
 		int i, bIndex = 0, len = s.length();
 		char[] cs = s.toCharArray();
 		

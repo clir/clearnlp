@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.util.constant.PatternConst;
 
 /**
@@ -84,7 +82,7 @@ public class Splitter implements PatternConst
 	
 	static public List<String> splitIncludingMatches(Pattern p, String s)
 	{
-		ArrayList<String> list = Lists.newArrayList();
+		ArrayList<String> list = new ArrayList<>();
 		Matcher m = p.matcher(s);
 		int last = 0, curr;
 		

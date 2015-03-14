@@ -15,12 +15,11 @@
  */
 package edu.emory.clir.clearnlp.morphology;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Lists;
 
 
 /**
@@ -44,7 +43,7 @@ abstract public class AbstractAffixMatcher
 		s_affixCanonicalForm = affixCanonicalForm;
 		s_affixPOS           = affixPOS;
 		p_originalPOS        = originalPOS;
-		l_replacers          = Lists.newArrayList();
+		l_replacers          = new ArrayList<>();
 	}
 	
 	public boolean matchesOriginalPOS(String pos)

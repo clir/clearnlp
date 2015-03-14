@@ -21,11 +21,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -71,7 +70,7 @@ public class CTReader
 	/** @return a list of all constituent trees in the input stream. */
 	public List<CTTree> getTreeList()
 	{
-		List<CTTree> trees = Lists.newArrayList();
+		List<CTTree> trees = new ArrayList<>();
 		CTTree tree;
 		
 		while ((tree = nextTree()) != null)

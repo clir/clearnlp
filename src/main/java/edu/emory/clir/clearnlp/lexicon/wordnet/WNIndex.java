@@ -18,8 +18,6 @@ package edu.emory.clir.clearnlp.lexicon.wordnet;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.util.Splitter;
 
 
@@ -36,7 +34,7 @@ public class WNIndex
 
 	public WNIndex()
 	{
-		w_synsets = Lists.newArrayList();
+		w_synsets = new ArrayList<>();
 	}
 	
 	/**

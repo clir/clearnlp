@@ -17,9 +17,8 @@ package edu.emory.clir.clearnlp.pos;
 
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
 import edu.emory.clir.clearnlp.constituent.CTLibEn;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.0
@@ -27,14 +26,19 @@ import edu.emory.clir.clearnlp.constituent.CTLibEn;
  */
 public class POSLibEn implements POSTagEn
 {
-	static private final Set<String> S_PUNCTUATION = Sets.newHashSet(POS_COLON, POS_COMMA, POSTagEn.POS_PERIOD, POS_LQ, POS_RQ, POS_LRB, POS_RRB, POS_HYPH, POS_NFP, POS_SYM, POS_PUNC);
-	static private final Set<String> S_RELATIVIZER = Sets.newHashSet(POS_WDT, POS_WP, POS_WPS, POS_WRB);
+	static private final Set<String> S_PUNCTUATION = DSUtils.toHashSet(POS_COLON, POS_COMMA, POSTagEn.POS_PERIOD, POS_LQ, POS_RQ, POS_LRB, POS_RRB, POS_HYPH, POS_NFP, POS_SYM, POS_PUNC);
+	static private final Set<String> S_RELATIVIZER = DSUtils.toHashSet(POS_WDT, POS_WP, POS_WPS, POS_WRB);
 	
 	private POSLibEn() {}
 	
 	static public boolean isNoun(String posTag)
 	{
 		return posTag.startsWith(POS_NN) || posTag.equals(CTLibEn.POS_PRP) || posTag.equals(CTLibEn.POS_WP);
+	}
+	
+	static public boolean isCommonOrProperNoun(String posTag)
+	{
+		return posTag.startsWith(POS_NN);
 	}
 	
 	static public boolean isPronoun(String posTag)

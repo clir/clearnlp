@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.dependency.DEPFeat;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
@@ -191,7 +189,7 @@ public class TSVReader extends AbstractReader<DEPTree>
 
 	protected DEPTree getDEPTree(List<String[]> lines)
 	{
-		List<DEPNode> nodes = Lists.newArrayList();
+		List<DEPNode> nodes = new ArrayList<>();
 		String form, lemma, pos, feats, nament, seqtag;
 		int id, i, size = lines.size();
 		DEPNode node;
@@ -237,7 +235,7 @@ public class TSVReader extends AbstractReader<DEPTree>
 	
 	private List<DEPArc> getSecondaryHeadList(DEPTree tree, String heads)
 	{
-		List<DEPArc> arcs = Lists.newArrayList();
+		List<DEPArc> arcs = new ArrayList<>();
 		if (heads.equals(BLANK)) return arcs;
 		int headID, idx;
 		String label;
@@ -255,7 +253,7 @@ public class TSVReader extends AbstractReader<DEPTree>
 	
 	private List<SRLArc> getSemanticHeadList(DEPTree tree, String heads)
 	{
-		List<SRLArc> arcs = Lists.newArrayList();
+		List<SRLArc> arcs = new ArrayList<>();
 		if (heads.equals(BLANK)) return arcs;
 		int headID, idx;
 		String label;

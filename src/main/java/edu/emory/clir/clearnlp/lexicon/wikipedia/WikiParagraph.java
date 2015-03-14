@@ -16,9 +16,8 @@
 package edu.emory.clir.clearnlp.lexicon.wikipedia;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -34,7 +33,7 @@ public class WikiParagraph implements Serializable
 	
 	public WikiParagraph()
 	{
-		l_sentences = Lists.newArrayList();		
+		l_sentences = new ArrayList<>();		
 	}
 	
 	public List<String> getSentences()

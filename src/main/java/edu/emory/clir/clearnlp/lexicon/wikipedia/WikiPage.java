@@ -16,9 +16,8 @@
 package edu.emory.clir.clearnlp.lexicon.wikipedia;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -35,7 +34,7 @@ public class WikiPage implements Serializable
 	
 	public WikiPage(String title, String url)
 	{
-		l_paragraphs = Lists.newArrayList();
+		l_paragraphs = new ArrayList<>();
 		setTitle(title);
 		setURL(url);
 	}

@@ -16,14 +16,13 @@
 package edu.emory.clir.clearnlp.lexicon.verbnet;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.StringUtils;
@@ -51,8 +50,8 @@ public class VNSyntax implements Serializable
 		List<Element> list = XmlUtils.getChildElementList(eSyntax);
 		String role;
 		
-		l_thematicRoles = Lists.newArrayList();
-		s_thematicRoles = Sets.newLinkedHashSet();
+		l_thematicRoles = new ArrayList<>();
+		s_thematicRoles = new LinkedHashSet<>();
 		
 		for (Element element : list)
 		{
@@ -109,6 +108,6 @@ public class VNSyntax implements Serializable
 	
 	public String toString(String delim, boolean sort)
 	{
-		return Joiner.join(Lists.newArrayList(s_thematicRoles), delim, sort);
+		return Joiner.join(new ArrayList<String>(s_thematicRoles), delim, sort);
 	}
 }

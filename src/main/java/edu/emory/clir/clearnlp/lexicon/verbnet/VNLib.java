@@ -75,4 +75,18 @@ public class VNLib
 			if (discardNoFrame && vn.getFrameSize() > 0) map.put(vn);
 		}
 	}
+	
+	static public String stripVerbNetClassName(String vncls)
+	{
+		if (vncls.startsWith(","))	vncls = vncls.substring(1);
+		if (vncls.endsWith(",")) 	vncls = vncls.substring(0, vncls.length()-1);
+		
+		if (!Character.isDigit(vncls.charAt(0)))
+		{
+			int idx = vncls.indexOf('-');
+			if (0 < idx && idx+1 < vncls.length()) vncls = vncls.substring(idx+1);	
+		}
+		
+		return vncls.trim();
+	}
 }

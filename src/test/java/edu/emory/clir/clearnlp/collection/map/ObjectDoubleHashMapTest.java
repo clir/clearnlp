@@ -27,9 +27,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.0
@@ -41,7 +40,7 @@ public class ObjectDoubleHashMapTest
 	@SuppressWarnings("unchecked")
 	public void test() throws Exception
 	{
-		List<ObjectDoublePair<String>> items = Lists.newArrayList(new ObjectDoublePair<String>("A",1.5),new ObjectDoublePair<String>("B",2.5),new ObjectDoublePair<String>("C",3.5));
+		List<ObjectDoublePair<String>> items = DSUtils.toArrayList(new ObjectDoublePair<String>("A",1.5),new ObjectDoublePair<String>("B",2.5),new ObjectDoublePair<String>("C",3.5));
 		ObjectDoubleHashMap<String> map = new ObjectDoubleHashMap<>();
 		
 		for (ObjectDoublePair<String> item : items)

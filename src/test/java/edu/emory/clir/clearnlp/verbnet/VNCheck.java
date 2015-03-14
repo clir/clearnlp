@@ -15,19 +15,21 @@
  */
 package edu.emory.clir.clearnlp.verbnet;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import edu.emory.clir.clearnlp.lexicon.verbnet.VNClass;
 import edu.emory.clir.clearnlp.lexicon.verbnet.VNFrame;
 import edu.emory.clir.clearnlp.lexicon.verbnet.VNLib;
 import edu.emory.clir.clearnlp.lexicon.verbnet.VNMap;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.0
@@ -35,11 +37,12 @@ import edu.emory.clir.clearnlp.lexicon.verbnet.VNMap;
  */
 public class VNCheck
 {
-//	@Test
+	@Test
+	@Ignore
 	public void checkThematicRoleSequence()
 	{
 		VNMap vnMap = VNLib.getVerbNetMap("/Users/jdchoi/Desktop/verbnet/verbnet-3.2", true);
-		List<String> ids = Lists.newArrayList(vnMap.keySet());
+		List<String> ids = new ArrayList<>(vnMap.keySet());
 		Map<String,Set<String>> map;
 		Collections.sort(ids);
 		String roles, preds;
@@ -50,7 +53,7 @@ public class VNCheck
 		for (String id : ids)
 		{
 			vn  = vnMap.get(id);
-			map = Maps.newHashMap();
+			map = new HashMap<>();
 			
 			for (VNFrame frame : vn.getFrameList())
 			{
@@ -59,7 +62,7 @@ public class VNCheck
 				set   = map.get(roles);
 				
 				if (set == null)
-					map.put(roles, Sets.newHashSet(preds));
+					map.put(roles, DSUtils.toHashSet(preds));
 				else
 				{
 					if (!set.contains(preds))

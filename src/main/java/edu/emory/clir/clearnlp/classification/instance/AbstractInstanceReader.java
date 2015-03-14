@@ -61,26 +61,27 @@ abstract public class AbstractInstanceReader<I extends AbstractInstance<F>, F ex
 	private String[] splitFeature(String s)
 	{
 		String type, value = null, weight = null;
-		int idx, lidx;
+		int fidx, lidx;
 		
-		idx = s.indexOf(CharConst.COLON);
-		type = s.substring(0, idx);
+		fidx = s.indexOf(CharConst.COLON);
+		if (fidx < 0) return new String[]{s};
 		
+		type = s.substring(0, fidx);
 		lidx = s.lastIndexOf(CharConst.COLON);
 		
-		if (idx+1 < lidx)
+		if (fidx+1 < lidx)
 		{
 			String t = s.substring(lidx+1);
 			
 			if (StringUtils.isDouble(t))
 			{
-				value  = s.substring(idx+1, lidx);
+				value  = s.substring(fidx+1, lidx);
 				weight = t;
 			}
 		}
 		
 		if (value == null)
-			value = s.substring(idx+1);
+			value = s.substring(fidx+1);
 		
 		return (weight != null) ? new String[]{type,value,weight} : new String[]{type,value};
 	}

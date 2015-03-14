@@ -19,14 +19,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import com.carrotsearch.hppc.ObjectIntOpenHashMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 
@@ -65,7 +65,7 @@ public class ObjectIntHashMap<T> implements Serializable, Iterable<ObjectIntPair
 	/** @return a list of (key, value) pairs. */
 	public List<ObjectIntPair<T>> toList()
 	{
-		List<ObjectIntPair<T>> list = Lists.newArrayList();
+		List<ObjectIntPair<T>> list = new ArrayList<>();
 		
 		for (ObjectIntPair<T> p : this)
 			list.add(p);
@@ -76,7 +76,7 @@ public class ObjectIntHashMap<T> implements Serializable, Iterable<ObjectIntPair
 	/** @return a set of keys whose values are greater than the specific cutoff. */
 	public Set<T> keySet(int cutoff)
 	{
-		Set<T> set = Sets.newHashSet();
+		Set<T> set = new HashSet<>();
 		
 		for (ObjectIntPair<T> p : this)
 		{

@@ -17,8 +17,7 @@ package edu.emory.clir.clearnlp.util.lang;
 
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
+import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.StringUtils;
 
 /**
@@ -27,18 +26,18 @@ import edu.emory.clir.clearnlp.util.StringUtils;
  */
 public class ENUtils
 {
-	static private final Set<String> S_BE		= Sets.newHashSet("be","been","being","am","is","was","are","were","'m","'s","'re");
-	static private final Set<String> S_BECOME	= Sets.newHashSet("become","becomes","became","becoming");
-	static private final Set<String> S_GET		= Sets.newHashSet("get","gets","got","gotten","getting");
+	static private final Set<String> S_BE		= DSUtils.toHashSet("be","been","being","am","is","was","are","were","'m","'s","'re");
+	static private final Set<String> S_BECOME	= DSUtils.toHashSet("become","becomes","became","becoming");
+	static private final Set<String> S_GET		= DSUtils.toHashSet("get","gets","got","gotten","getting");
 
-	static public final Set<String> S_NEGATION = Sets.newHashSet("never","not","n't","'nt","no");
-	static public final Set<String> S_RELATIVIZER = Sets.newHashSet("how","however","that","what","whatever","whatsoever","when","whenever","where","whereby","wherein","whereupon","wherever","which","whichever","whither","who","whoever","whom","whose","why");
-	static public final Set<String> S_RELATIVIZER_LINK = Sets.newHashSet("0","that","when","where","whereby","wherein","whereupon","which","who","whom","whose");
-	static public final Set<String> S_CORRELATIVE_CONJUNCTION = Sets.newHashSet("either","neither","whether","both");
+	static public final Set<String> S_NEGATION = DSUtils.toHashSet("never","not","n't","'nt","no");
+	static public final Set<String> S_RELATIVIZER = DSUtils.toHashSet("how","however","that","what","whatever","whatsoever","when","whenever","where","whereby","wherein","whereupon","wherever","which","whichever","whither","who","whoever","whom","whose","why");
+	static public final Set<String> S_RELATIVIZER_LINK = DSUtils.toHashSet("0","that","when","where","whereby","wherein","whereupon","which","who","whom","whose");
+	static public final Set<String> S_CORRELATIVE_CONJUNCTION = DSUtils.toHashSet("either","neither","whether","both");
 	
-//	static private final Set<String> S_DO		= Sets.newHashSet("do","does","did","done","doing");
-//	static private final Set<String> S_HAVE		= Sets.newHashSet("have","has","had","having","'ve","'d");
-//	static private final Set<String> S_BE_FINITE = Sets.newHashSet("am","is","was","are","were");
+//	static private final Set<String> S_DO		= DSUtils.toHashSet("do","does","did","done","doing");
+//	static private final Set<String> S_HAVE		= DSUtils.toHashSet("have","has","had","having","'ve","'d");
+//	static private final Set<String> S_BE_FINITE = DSUtils.toHashSet("am","is","was","are","were");
 
 	/** @return {@code true} if the specific word form is either "be", "become", or "get". */
 	static public boolean isPassiveAuxiliaryVerb(String form)

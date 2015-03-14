@@ -28,11 +28,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -46,7 +45,7 @@ public class IOUtils
 	
 	public static Map<String,byte[]> toByteMap(ZipInputStream stream) throws IOException
 	{
-		Map<String,byte[]> map = Maps.newHashMap();
+		Map<String,byte[]> map = new HashMap<>();
 		ZipEntry zEntry;
 		
 		while ((zEntry = stream.getNextEntry()) != null)

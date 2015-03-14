@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Sets;
-
 import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcher;
 import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherC;
 import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherCF;
@@ -29,6 +27,7 @@ import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherPrefix;
 import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherSet;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.pos.POSTagEn;
+import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.PatternUtils;
 import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -59,17 +58,17 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 	static final public CTNodeMatcher M_WHx			= new CTNodeMatcherPrefix("WH");
 	static final public CTNodeMatcher M_SBARx		= new CTNodeMatcherPrefix(C_SBAR);
 	
-	static final public CTNodeMatcher M_NP_NML		= new CTNodeMatcherSet(Sets.newHashSet(C_NP, C_NML));
-	static final public CTNodeMatcher M_VBD_VBN		= new CTNodeMatcherSet(Sets.newHashSet(POS_VBD, POS_VBN));
-	static final public CTNodeMatcher M_VP_RRC_UCP	= new CTNodeMatcherSet(Sets.newHashSet(C_VP, C_RRC, C_UCP));
+	static final public CTNodeMatcher M_NP_NML		= new CTNodeMatcherSet(DSUtils.toHashSet(C_NP, C_NML));
+	static final public CTNodeMatcher M_VBD_VBN		= new CTNodeMatcherSet(DSUtils.toHashSet(POS_VBD, POS_VBN));
+	static final public CTNodeMatcher M_VP_RRC_UCP	= new CTNodeMatcherSet(DSUtils.toHashSet(C_VP, C_RRC, C_UCP));
 	
-	static final private Set<String> S_LGS_PHRASE		= Sets.newHashSet(C_PP, C_SBAR);
-	static final private Set<String> S_MAIN_CLAUSE		= Sets.newHashSet(C_S, C_SQ, C_SINV);
-	static final private Set<String> S_EDITED_PHRASE	= Sets.newHashSet(C_EDITED, C_EMBED);
-	static final private Set<String> S_NOMINAL_PHRASE	= Sets.newHashSet(C_NP, C_NML, C_NX, C_NAC);
-	static final private Set<String> S_WH_LINK			= Sets.newHashSet(C_WHNP, C_WHPP, C_WHADVP);
-	static final private Set<String> S_SEPARATOR		= Sets.newHashSet(POS_COMMA, POS_COLON);
-	static final private Set<String> S_CONJUNCTION		= Sets.newHashSet(POS_CC, C_CONJP);
+	static final private Set<String> S_LGS_PHRASE		= DSUtils.toHashSet(C_PP, C_SBAR);
+	static final private Set<String> S_MAIN_CLAUSE		= DSUtils.toHashSet(C_S, C_SQ, C_SINV);
+	static final private Set<String> S_EDITED_PHRASE	= DSUtils.toHashSet(C_EDITED, C_EMBED);
+	static final private Set<String> S_NOMINAL_PHRASE	= DSUtils.toHashSet(C_NP, C_NML, C_NX, C_NAC);
+	static final private Set<String> S_WH_LINK			= DSUtils.toHashSet(C_WHNP, C_WHPP, C_WHADVP);
+	static final private Set<String> S_SEPARATOR		= DSUtils.toHashSet(POS_COMMA, POS_COLON);
+	static final private Set<String> S_CONJUNCTION		= DSUtils.toHashSet(POS_CC, C_CONJP);
 	
 	private CTLibEn() {}
 	

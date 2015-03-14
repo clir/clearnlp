@@ -18,8 +18,6 @@ package edu.emory.clir.clearnlp.lexicon.wordnet;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -67,7 +65,7 @@ public class WNSynset
 
 	public WNSynset()
 	{
-		s_words = Lists.newArrayList();
+		s_words = new ArrayList<>();
 	}
 	
 	/**
@@ -181,9 +179,9 @@ public class WNSynset
 	
 	void initRelations(WNMap map)
 	{
-		l_antonym  = Lists.newArrayList();
-		l_hypernym = Lists.newArrayList();
-		l_hyponym  = Lists.newArrayList();
+		l_antonym  = new ArrayList<>();
+		l_hypernym = new ArrayList<>();
+		l_hyponym  = new ArrayList<>();
 		
 		for (WNPointer pointer : a_pointers)
 			initRelation(map, pointer);

@@ -18,8 +18,6 @@ package edu.emory.clir.clearnlp.classification.map;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
@@ -42,7 +40,7 @@ public class FeatureMap implements Serializable
 	
 	public void reset()
 	{
-		l_map = Lists.newArrayList();
+		l_map = new ArrayList<>();
 		n_features = 1;
 	}
 	

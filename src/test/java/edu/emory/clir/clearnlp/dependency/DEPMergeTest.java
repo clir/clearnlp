@@ -72,6 +72,7 @@ public class DEPMergeTest
 	}
 
 	@Test
+	@Ignore
 	public void test3()
 	{
 		DEPTree  t = getDEPTree(5);

@@ -15,10 +15,9 @@
  */
 package edu.emory.clir.clearnlp.srl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.arc.AbstractArc;
@@ -36,8 +35,8 @@ public class SRLNode<NodeType>
 	
 	public SRLNode()
 	{
-		l_predicates = Lists.newArrayList();
-		l_arguments  = Lists.newArrayList();
+		l_predicates = new ArrayList<>();
+		l_arguments  = new ArrayList<>();
 	}
 	
 	public List<AbstractArc<NodeType>> getPredicateList()

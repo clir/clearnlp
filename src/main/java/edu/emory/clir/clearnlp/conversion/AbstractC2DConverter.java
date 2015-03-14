@@ -15,10 +15,9 @@
  */
 package edu.emory.clir.clearnlp.conversion;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.constituent.CTNode;
 import edu.emory.clir.clearnlp.constituent.CTTagEn;
@@ -100,7 +99,7 @@ abstract public class AbstractC2DConverter
 		
 		if (head == null)
 		{
-			nodes = Lists.newArrayList(nodes);
+			nodes = new ArrayList<>(nodes);
 			if (rule.isRightToLeft()) Collections.reverse(nodes);
 			
 			int i, size = nodes.size(), flag;
@@ -179,7 +178,7 @@ abstract public class AbstractC2DConverter
 	protected DEPTree initDEPTree(CTTree cTree)
 	{
 		List<CTNode>  cNodes = cTree.getTokenList();
-		List<DEPNode> dNodes = Lists.newArrayList();
+		List<DEPNode> dNodes = new ArrayList<>();
 		String form, pos;
 		DEPNode dNode;
 		int id;

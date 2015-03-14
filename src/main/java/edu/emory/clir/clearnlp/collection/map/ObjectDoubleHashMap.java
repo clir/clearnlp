@@ -19,11 +19,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import com.carrotsearch.hppc.ObjectDoubleOpenHashMap;
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 
@@ -62,7 +62,7 @@ public class ObjectDoubleHashMap<T> implements Serializable, Iterable<ObjectDoub
 	/** @return a list of (key, value) pairs. */
 	public List<ObjectDoublePair<T>> toList()
 	{
-		List<ObjectDoublePair<T>> list = Lists.newArrayList();
+		List<ObjectDoublePair<T>> list = new ArrayList<>();
 		
 		for (ObjectDoublePair<T> p : this)
 			list.add(p);

@@ -16,8 +16,11 @@
 package edu.emory.clir.clearnlp.lexicon.propbank.frameset;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,11 +28,8 @@ import java.util.Set;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 import edu.emory.clir.clearnlp.lexicon.propbank.PBLib;
+import edu.emory.clir.clearnlp.lexicon.verbnet.VNLib;
 import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -54,8 +54,8 @@ public class PBFRoleset implements Serializable, Comparable<PBFRoleset>
 	
 	private void init(Element eRoleset)
 	{
-		s_vncls = Sets.newHashSet();
-		m_roles = Maps.newHashMap();
+		s_vncls = new HashSet<>();
+		m_roles = new HashMap<>();
 		
 		setID(XmlUtils.getTrimmedAttribute(eRoleset, PBFXml.A_ID));
 		setName(XmlUtils.getTrimmedAttribute(eRoleset, PBFXml.A_NAME));
@@ -119,7 +119,8 @@ public class PBFRoleset implements Serializable, Comparable<PBFRoleset>
 	
 	public void addVerbNetClass(String vncls)
 	{
-		s_vncls.add(vncls);
+		if (vncls.length() > 1)
+			s_vncls.add(VNLib.stripVerbNetClassName(vncls));
 	}
 	
 	public void addRole(PBFRole role)
@@ -136,7 +137,7 @@ public class PBFRoleset implements Serializable, Comparable<PBFRoleset>
 			for (String vncls : role.getVNClasseSet())
 			{
 				if (!s_vncls.contains(vncls))
-					System.err.printf("VerbNet class mismatch: %s - %s\n", s_id, role.getArgKey());
+					System.err.printf("VerbNet class mismatch: %s - %s (%s ^ %s)\n", s_id, role.getArgKey(), vncls, s_vncls.toString());
 			}
 		}
 	}
@@ -181,7 +182,7 @@ public class PBFRoleset implements Serializable, Comparable<PBFRoleset>
 	@Override
 	public String toString()
 	{
-		List<PBFRole> list  = Lists.newArrayList(getRoles());
+		List<PBFRole> list  = new ArrayList<>(getRoles());
 		StringBuilder build = new StringBuilder();
 		Collections.sort(list);
 		

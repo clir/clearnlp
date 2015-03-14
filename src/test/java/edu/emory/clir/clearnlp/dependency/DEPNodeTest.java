@@ -25,13 +25,8 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import com.google.common.collect.Sets;
-
-import edu.emory.clir.clearnlp.dependency.DEPFeat;
-import edu.emory.clir.clearnlp.dependency.DEPLib;
-import edu.emory.clir.clearnlp.dependency.DEPNode;
-import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.PatternUtils;
 
 /**
@@ -133,7 +128,7 @@ public class DEPNodeTest
 		assertEquals(tree.get(1), node.getFirstDependentByLabel(p));
 		assertEquals(null       , node.getFirstDependentByLabel("csubj"));
 		
-		List<DEPNode> list = node.getDependentListByLabel(Sets.newHashSet("nsubj", "dobj"));
+		List<DEPNode> list = node.getDependentListByLabel(DSUtils.toHashSet("nsubj", "dobj"));
 		assertEquals(tree.get(1), list.get(0));
 		assertEquals(tree.get(5), list.get(1));
 		

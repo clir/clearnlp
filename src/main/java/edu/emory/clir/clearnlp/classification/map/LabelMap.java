@@ -18,10 +18,9 @@ package edu.emory.clir.clearnlp.classification.map;
 import java.io.Serializable;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.0
@@ -46,7 +45,7 @@ public class LabelMap implements Serializable
 	
 	public int expand(ObjectIntHashMap<String> map, int cutoff)
 	{
-		List<String> list = Lists.newArrayList(l_labels);
+		List<String> list = DSUtils.toArrayList(l_labels);
 		
 		for (ObjectIntPair<String> p : map)
 		{

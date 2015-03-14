@@ -19,12 +19,11 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Element;
-
-import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.XmlUtils;
@@ -54,8 +53,8 @@ public class PBFMap implements Serializable
 	
 	private void init()
 	{
-		m_verbs = Maps.newHashMap();
-		m_nouns = Maps.newHashMap();
+		m_verbs = new HashMap<>();
+		m_nouns = new HashMap<>();
 	}
 	
 	private PBFType getType(String value)

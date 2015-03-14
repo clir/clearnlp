@@ -18,12 +18,12 @@ package edu.emory.clir.clearnlp.verbnet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.lexicon.verbnet.VNClass;
 import edu.emory.clir.clearnlp.lexicon.verbnet.VNFrame;
@@ -142,11 +142,12 @@ public class VNLibTest
 		assertEquals("not(exist(start(E),theme)) exist(result(E),theme) cause(agent,E) benefit(E,beneficiary)", frame.getSemantics().toString(" "));
 	}
 	
-//	@Test
+	@Test
+	@Ignore
 	public void printVerbNetMap()
 	{
 		VNMap map = VNLib.getVerbNetMap("src/test/resources/verbnet", true);
-		List<String> ids = Lists.newArrayList(map.keySet());
+		List<String> ids = new ArrayList<>(map.keySet());
 		Collections.sort(ids);
 		VNClass vn;
 		

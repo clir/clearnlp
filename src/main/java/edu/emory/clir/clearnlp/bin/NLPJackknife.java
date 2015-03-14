@@ -22,11 +22,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.util.BinUtils;
+import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.Splitter;
 
@@ -42,10 +41,10 @@ public class NLPJackknife extends NLPTrain
 		BinUtils.initArgs(args, this);
 		
 		List<String> trainFiles   = FileUtils.getFileList(s_trainPath, s_trainExt, false);
-		String[]     featureFiles = Splitter.splitColons(s_featureTemplateFile);
+		String[]     featureFiles = Splitter.splitColons(s_featureFiles[0]);
 		NLPMode      mode         = NLPMode.valueOf(s_mode);
 	
-		trainCV(trainFiles, featureFiles, s_configurationFile, mode);
+		trainCV(trainFiles, featureFiles, s_configurationFiles[0], mode);
 	}
 	
 	private void trainCV(List<String> trainFiles, String[] featureFiles, String configurationFile, NLPMode mode)
@@ -56,7 +55,7 @@ public class NLPJackknife extends NLPTrain
 		ExecutorService executor = Executors.newFixedThreadPool(size);
 		
 		for (i=0; i<size; i++)
-			executor.execute(new TrainTask(new ArrayList<>(trainFiles), featureFiles, mode, i));
+			executor.execute(new TrainTask(new ArrayList<>(trainFiles), featureFiles, configurationFile, mode, i));
 		
 		executor.shutdown();
 		
@@ -72,14 +71,16 @@ public class NLPJackknife extends NLPTrain
 		private List<String> train_files;
 		private String[] feature_files;
 		private String develop_file;
+		String configuration_file;
 		private NLPMode nlp_mode;
 		private int dev_index;
 		
 		/** @param currLabel the current label to train. */
-		public TrainTask(List<String> trainFiles, String[] featureFiles, NLPMode mode, int devIndex)
+		public TrainTask(List<String> trainFiles, String[] featureFiles, String configurationFile, NLPMode mode, int devIndex)
 		{
 			train_files  = trainFiles;
 			develop_file = trainFiles.remove(devIndex);
+			configuration_file = configurationFile;
 			feature_files = featureFiles;
 			dev_index = devIndex;
 			nlp_mode = mode;
@@ -87,7 +88,7 @@ public class NLPJackknife extends NLPTrain
 		
 		public void run()
 		{
-			AbstractStatisticalComponent<?,?,?,?> component = train(train_files, Lists.newArrayList(develop_file), feature_files, s_configurationFile, nlp_mode).o;
+			AbstractStatisticalComponent<?,?,?,?> component = train(train_files, DSUtils.toArrayList(develop_file), feature_files, configuration_file, nlp_mode).o;
 			saveModel(component, s_modelPath+"."+dev_index);
 		}
     }

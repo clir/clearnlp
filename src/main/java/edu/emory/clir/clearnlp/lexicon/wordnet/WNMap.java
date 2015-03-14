@@ -17,10 +17,9 @@ package edu.emory.clir.clearnlp.lexicon.wordnet;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
@@ -148,7 +147,7 @@ public class WNMap
 			lb = t;
 		}
 		
-		Set<WNSynset> set = Sets.newHashSet(lb);
+		Set<WNSynset> set = new HashSet<>(lb);
 		
 		for (WNSynset synset : ls)
 		{
@@ -250,7 +249,7 @@ public class WNMap
 	public Set<String> getSynonymSet(char posTag, String lemma, int... senseIDs)
 	{
 		WNIndex index = getIndex(posTag, lemma);
-		Set<String> set = Sets.newHashSet();
+		Set<String> set = new HashSet<>();
 		
 		if (senseIDs.length == 0)
 		{

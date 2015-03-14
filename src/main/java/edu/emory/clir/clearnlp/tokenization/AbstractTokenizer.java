@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.collection.set.CharHashSet;
 import edu.emory.clir.clearnlp.dictionary.AbstractDTTokenizer;
 import edu.emory.clir.clearnlp.dictionary.universal.DTCurrency;
@@ -68,7 +66,7 @@ abstract public class AbstractTokenizer
 	public List<String> tokenize(InputStream in)
 	{
 		BufferedReader reader = IOUtils.createBufferedReader(in);
-		ArrayList<String> tokens = Lists.newArrayList();
+		ArrayList<String> tokens = new ArrayList<>();
 		List<String> t;
 		String line;
 		
@@ -103,7 +101,7 @@ abstract public class AbstractTokenizer
 	 */
 	private List<String> tokenizeWhiteSpaces(String s)
 	{
-		List<String> tokens = Lists.newArrayList();
+		List<String> tokens = new ArrayList<>();
 		int i, len = s.length(), bIndex = 0;
 		char[] cs = s.toCharArray();
 		
@@ -173,7 +171,7 @@ abstract public class AbstractTokenizer
 		}
 		
 		int eIndex = getLastSymbolSequenceIndex(cs);
-		List<int[]> indices = Lists.newArrayList();
+		List<int[]> indices = new ArrayList<>();
 		
 		indices.add(new int[]{0, bIndex});
 		addNextSymbolSequenceIndices(indices, cs, bIndex+1, eIndex-1);

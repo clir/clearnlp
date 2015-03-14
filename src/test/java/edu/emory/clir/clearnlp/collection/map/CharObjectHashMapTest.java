@@ -27,10 +27,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
-import edu.emory.clir.clearnlp.collection.map.CharObjectHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectCharPair;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.0
@@ -42,7 +40,7 @@ public class CharObjectHashMapTest
 	@SuppressWarnings("unchecked")
 	public void test() throws Exception
 	{
-		List<ObjectCharPair<String>> items = Lists.newArrayList(new ObjectCharPair<String>("A",'A'),new ObjectCharPair<String>("B",'B'),new ObjectCharPair<String>("C",'C'));
+		List<ObjectCharPair<String>> items = DSUtils.toArrayList(new ObjectCharPair<String>("A",'A'),new ObjectCharPair<String>("B",'B'),new ObjectCharPair<String>("C",'C'));
 		CharObjectHashMap<String> map = new CharObjectHashMap<>();
 		
 		for (ObjectCharPair<String> item : items)

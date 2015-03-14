@@ -19,11 +19,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import com.carrotsearch.hppc.CharCharOpenHashMap;
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.pair.CharCharPair;
 
@@ -63,7 +63,7 @@ public class CharCharHashMap implements Serializable, Iterable<CharCharPair>
 	/** @return a list of (value, key) pairs. */
 	public List<CharCharPair> toList()
 	{
-		List<CharCharPair> list = Lists.newArrayList();
+		List<CharCharPair> list = new ArrayList<>();
 		
 		for (CharCharPair p : this)
 			list.add(p);

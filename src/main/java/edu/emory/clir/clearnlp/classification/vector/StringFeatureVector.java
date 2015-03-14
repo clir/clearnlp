@@ -17,8 +17,6 @@ package edu.emory.clir.clearnlp.classification.vector;
 
 import java.util.ArrayList;
 
-import com.google.common.collect.Lists;
-
 import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -47,7 +45,7 @@ public class StringFeatureVector extends AbstractFeatureVector
 	private void init()
 	{
 		i_types  = new IntArrayList();
-		s_values = Lists.newArrayList();
+		s_values = new ArrayList<>();
 	}
 	
 	/**

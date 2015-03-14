@@ -16,18 +16,17 @@
 package edu.emory.clir.clearnlp.lexicon.propbank.frameset;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import edu.emory.clir.clearnlp.util.XmlUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -51,8 +50,8 @@ public class PBFPredicate implements Serializable, Comparable<PBFPredicate>
 	
 	private void init(Element ePredicate)
 	{
-		m_rolesets   = Maps.newHashMap();
-		s_rolesetIDs = Sets.newHashSet();
+		m_rolesets   = new HashMap<>();
+		s_rolesetIDs = new HashSet<>();
 		
 		setLemma(XmlUtils.getTrimmedAttribute(ePredicate, PBFXml.A_LEMMA));
 		initRolesets(ePredicate.getElementsByTagName(PBFXml.E_ROLESET));
@@ -95,7 +94,7 @@ public class PBFPredicate implements Serializable, Comparable<PBFPredicate>
 	
 	public List<PBFRoleset> getRolesetListFromVerbNet(String vncls, boolean polysemousOnly)
 	{
-		List<PBFRoleset> rolesets = Lists.newArrayList();
+		List<PBFRoleset> rolesets = new ArrayList<>();
 		Set<String> set;
 		
 		for (PBFRoleset roleset : m_rolesets.values())
@@ -133,7 +132,7 @@ public class PBFPredicate implements Serializable, Comparable<PBFPredicate>
 	@Override
 	public String toString()
 	{
-		List<PBFRoleset> list = Lists.newArrayList(getRolesets());
+		List<PBFRoleset> list = new ArrayList<>(getRolesets());
 		StringBuilder build = new StringBuilder();
 		build.append("===== "+s_lemma+" =====");
 		Collections.sort(list);

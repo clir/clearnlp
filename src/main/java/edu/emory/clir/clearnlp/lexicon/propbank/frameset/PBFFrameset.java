@@ -16,16 +16,17 @@
 package edu.emory.clir.clearnlp.lexicon.propbank.frameset;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -48,7 +49,7 @@ public class PBFFrameset implements Serializable
 	
 	public void init(Element eFrameset, String lemma)
 	{
-		m_predicates = Maps.newHashMap();
+		m_predicates = new HashMap<>();
 		
 		setLemma(lemma);
 		initPredicates(eFrameset.getElementsByTagName(PBFXml.E_PREDICATE));
@@ -88,6 +89,25 @@ public class PBFFrameset implements Serializable
 		return null;
 	}
 	
+	/** @return the only roleset ID if this predicate is monosemous. */
+	public String getMonosemousRolesetID()
+	{
+		if (m_predicates.isEmpty() || m_predicates.size() > 1) return null;
+		PBFPredicate predicate = getPredicates().iterator().next();
+		Set<String> set = predicate.getRolesetIDSet();
+		return (set.size() > 1) ? null : set.iterator().next();
+	}
+	
+	public Set<String> getRolesetIDSet()
+	{
+		Set<String> set = new HashSet<>();
+		
+		for (PBFPredicate predicate : getPredicates())
+			set.addAll(predicate.getRolesetIDSet());
+		
+		return set;
+	}
+	
 	public Collection<PBFPredicate> getPredicates()
 	{
 		return m_predicates.values();
@@ -107,7 +127,7 @@ public class PBFFrameset implements Serializable
 	
 	public List<PBFRoleset> getRolesetListFromVerbNet(String vncls, boolean polysemousOnly)
 	{
-		List<PBFRoleset> list = Lists.newArrayList();
+		List<PBFRoleset> list = new ArrayList<>();
 		
 		for (PBFPredicate predicate : m_predicates.values())
 			list.addAll(predicate.getRolesetListFromVerbNet(vncls, polysemousOnly));
@@ -123,7 +143,7 @@ public class PBFFrameset implements Serializable
 	
 	public String toString()
 	{
-		List<PBFPredicate> list = Lists.newArrayList(getPredicates());
+		List<PBFPredicate> list = new ArrayList<>(getPredicates());
 		StringBuilder build = new StringBuilder();
 		Collections.sort(list);
 		

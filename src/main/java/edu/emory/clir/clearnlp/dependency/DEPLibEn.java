@@ -18,12 +18,11 @@ package edu.emory.clir.clearnlp.dependency;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
 import edu.emory.clir.clearnlp.constituent.CTLibEn;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBLib;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.pos.POSTagEn;
+import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
 import edu.emory.clir.clearnlp.util.lang.ENUtils;
 
@@ -48,7 +47,7 @@ public class DEPLibEn implements DEPTagEn
 	/** Enriches certain dependency labels into finer-grained labels. */
 	static public void enrichLabels(DEPTree tree)
 	{
-		Set<String> subj = Sets.newHashSet(DEP_CSUBJ, DEP_NSUBJ);
+		Set<String> subj = DSUtils.toHashSet(DEP_CSUBJ, DEP_NSUBJ);
 		List<DEPNode> list;
 
 		for (DEPNode node : tree)

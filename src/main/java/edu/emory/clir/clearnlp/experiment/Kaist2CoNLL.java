@@ -22,12 +22,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.kohsuke.args4j.Option;
-
-import com.google.common.collect.Lists;
 
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
@@ -80,7 +79,7 @@ public class Kaist2CoNLL
 	public void encode(String inputPath, String inputExtension, String outputExtension, boolean recursive, String source, String target) throws IOException
 	{
 		ObjectIntHashMap<String> map = new ObjectIntHashMap<>();
-		List<String> list = Lists.newArrayList();
+		List<String> list = new ArrayList<>();
 		StringBuilder build;
 		BufferedReader fin;
 		String line, conll;
@@ -107,7 +106,7 @@ public class Kaist2CoNLL
 						total += list.size();
 					}
 					
-					list = Lists.newArrayList();
+					list = new ArrayList<>();
 				}
 				else
 					list.add(line);
@@ -155,8 +154,8 @@ public class Kaist2CoNLL
 	
 	private String toCoNLL(ObjectIntHashMap<String> map, String line, int id)
 	{
-		List<String> lemma = Lists.newArrayList();
-		List<String> pos   = Lists.newArrayList();
+		List<String> lemma = new ArrayList<>();
+		List<String> pos   = new ArrayList<>();
 		String[] t = Splitter.splitTabs(line);
 		String form, morph, m, p;
 		int idx;
