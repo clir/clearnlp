@@ -1,12 +1,11 @@
 ## ClearNLP
+<img src="http://mathcs.emory.edu/~choi/img/clearnlp-logo.png" width="65" height="65" style="float:left;padding-right:10px"/>
 
-The ClearNLP project provides software and resources for natural language processing.  The project is currently developed by the [Center for Language and Information Research](http://nlp.mathcs.emory.edu) at [Emory University](http://emory.edu).  All the components are written in Java and released to [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cclearnlp).
+The ClearNLP project provides software and resources for natural language processing.  The project is currently developed by the [Center for Language and Information Research](http://nlp.mathcs.emory.edu) at [Emory University](http://emory.edu).  This project is under the [Apache 2](http://www.apache.org/licenses/LICENSE-2.0) license.
 
 * [Documentation](https://github.com/clir/clearnlp-guidelines).
 * [Discussion group](https://groups.google.com/forum/?fromgroups#!forum/clearnlp).
 * Contact: [support@clearnlp.com](support@clearnlp.com).
-
-<img src="http://mathcs.emory.edu/~choi/img/clearnlp-logo.png" width="120" height="120" style="float:right;padding-top:5px;"/>
 
 ## News
 
