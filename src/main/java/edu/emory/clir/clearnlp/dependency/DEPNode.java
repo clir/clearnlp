@@ -67,8 +67,8 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	private SortedArrayList<DEPNode> l_dependents;
 	/** The ID of this node among its sibling (starting with 0). */
 	private int n_siblingID;
+	/** The label of the node in a sequence */
 	private String s_sequenceLabel = null;
-	
 	/** The list of secondary heads of this node (default: empty). */
 	private List<DEPArc> x_heads;
 	/** The list of semantic heads of this node (default: empty). */
@@ -76,31 +76,63 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 //	====================================== Constructors ======================================
 	
+	/**
+	 * Construct an empty DEPNode.
+	 */
 	public DEPNode() {}
 	
+	/**
+	 * Construct DEPNode with id and word-from.
+	 * @param id id of the node
+	 * @param form word-from of the node
+	 */
 	public DEPNode(int id, String form)
 	{
 		init(id, form, null, null, null, new DEPFeat());
 	}
 	
+	/**
+	 * Construct DEPNode with id, word-from, POS tag, and extra features.
+	 * @param id id of the node
+	 * @param form word-from of the node
+	 * @param posTag POS tag of the node
+	 * @param feats extra features of the node
+	 */
 	public DEPNode(int id, String form, String posTag, DEPFeat feats)
 	{
 		init(id, form, null, posTag, null, feats);
 	}
 	
+	/**
+	 * Construct DEPNode with id, word-from, word-form lemma, POS tag, and extra features.
+	 * @param id id of the node
+	 * @param form word-from of the node
+	 * @param lemma word-form lemma of the node
+	 * @param posTag POS tag of the node
+	 * @param feats extra features of the node
+	 */
 	public DEPNode(int id, String form, String lemma, String posTag, DEPFeat feats)
 	{
 		init(id, form, lemma, posTag, null, feats);
 	}
 	
+	/**
+	 * Construct DEPNode with id, word-from, word-form lemma, POS tag, name-entity tag, and extra features.
+	 * @param id id of the node
+	 * @param form word-from of the node
+	 * @param lemma word-form lemma of the node
+	 * @param posTag POS tag of the node
+	 * @param namedEntityTag name-entity tag of the node
+	 * @param feats extra features of the node
+	 */
 	public DEPNode(int id, String form, String lemma, String posTag, String namedEntityTag, DEPFeat feats)
 	{
 		init(id, form, lemma, posTag, namedEntityTag, feats);
 	}
 	
 	/**
-	 * Copies the basic fields from the specific node to this node.
-	 * 
+	 * Copy constuctor that copies the basic fields from the specific node to this node.
+	 * @param node another DEPNode you wish to copy
 	 */
 	public DEPNode(DEPNode node)
 	{
@@ -109,6 +141,15 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 //	====================================== Initialization ======================================
 	
+	/**
+	 * Initializes all fields of a DEPNode.
+	 * @param id id of the node
+	 * @param form word-from of the node
+	 * @param lemma word-form lemma of the node
+	 * @param posTag POS tag of the node
+	 * @param namedEntityTag name-entity tag of the node
+	 * @param feats extra features of the node
+	 */
 	public void init(int id, String form, String lemma, String posTag, String namedEntityTag, DEPFeat feats)
 	{
 		setID(id);
@@ -128,6 +169,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		init(DEPLib.ROOT_ID, DEPLib.ROOT_TAG, DEPLib.ROOT_TAG, DEPLib.ROOT_TAG, DEPLib.ROOT_TAG, new DEPFeat());
 	}
 	
+	/** Initializes the secondary dependency heads of a node. */
 	public void initSecondaryHeads()
 	{
 		x_heads = new ArrayList<>();
@@ -139,6 +181,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		s_heads = new ArrayList<>();
 	}
 	
+	/** Clear all dependencies(head, label, and sibling relations) of the node. */
 	void clearDependencies()
 	{
 		d_head  = null;
@@ -147,16 +190,28 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		l_dependents.clear();
 	}
 	
+	/** 
+	 * Get the sequence label of the node.
+	 * @return the sequence label of the node 
+	 */
 	public String getSequenceLabel()
 	{
 		return s_sequenceLabel;
 	}
 	
+	/**
+	 * Set the sequence label to whatever input string.
+	 * @param label sequence label
+	 */
 	public void setSequenceLabel(String label)
 	{
 		s_sequenceLabel = label;
 	}
 	
+	/**
+	 * Clear the sequence label of the node to {@code null} and return the label.
+	 * @return the removed sequence label of the node
+	 */
 	public String clearSequenceLabel()
 	{
 		String t = s_sequenceLabel;
@@ -164,6 +219,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return t;
 	}
 	
+	/**
+	 * Check if the node has the sequence label of your input.
+	 * @param label sequence label
+	 * @return boolean of whether the node has matching label as the input label
+	 */
 	public boolean isSequenceLabel(String label)
 	{
 		return label.equals(s_sequenceLabel);
@@ -171,62 +231,111 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 //	====================================== Basic fields ======================================
 	
+	/**
+	 * Get the ID of the node.
+	 * @return ID of the node
+	 */
 	public int getID()
 	{
 		return n_id;
 	}
 	
+	/** 
+	 * Get the word-form of the node.
+	 * @return word-form of the node 
+	 */
 	public String getWordForm()
 	{
 		return s_wordForm;
 	}
 	
+	/** 
+	 * Get the simplified word-from of the node.
+	 * @return simplified word-form of the node 
+	 */
 	public String getSimplifiedWordForm()
 	{
 		return s_simplifiedWordForm;
 	}
 	
+	/** 
+	 * Get the simplified word-form of the node in all lower-case characters. 
+	 * @return simplified word-from of the node in all lower-case characters 
+	 */
 	public String getLowerSimplifiedWordForm()
 	{
 		return StringUtils.toLowerCase(s_simplifiedWordForm);
 	}
 	
+	/**
+	 * Get the word shape of the simplified word-form of the node.
+	 * @param maxRepetitions the max count of repetition of a word shape in sequence
+	 * @return the word shape of a node's simplified word-form
+	 */
 	public String getWordShape(int maxRepetitions)
 	{
 		return StringUtils.getShape(s_simplifiedWordForm, maxRepetitions);
 	}
 	
+	/** 
+	 * Get the lemma of the word-form of the node.
+	 * @return lemma of the word-form of the node 
+	 */
 	public String getLemma()
 	{
 		return s_lemma;
 	}
 	
+	/**
+	 * Get the POS tag the node.
+	 * @return POS tag the node 
+	 */
 	public String getPOSTag()
 	{
 		return s_posTag;
 	}
 	
+	/** 
+	 * Get the name-entity tag of the node.
+	 * @return name-entity tag of the node 
+	 */
 	public String getNamedEntityTag()
 	{
 		return s_namedEntityTag;
 	}
 	
+	/** 
+	 * Get the extra features {@code DEDFeat} of the node.
+	 * @return extra features of the node 
+	 */
 	public DEPFeat getFeats()
 	{
 		return d_feats;
 	}
 	
-	/** @return the value of the specific feature if exists; otherwise, {@code null}. */
+	/**
+	 * Get a specific feature of the extra features of the node.
+	 * @param key feature label of the extra feature
+	 * @return the value of the specific feature if exists; otherwise, {@code null}
+	 */
 	public String getFeat(String key)
 	{
 		return d_feats.get(key);
 	}
 	
+	/**
+	 * Set the ID of the node.
+	 * @param id ID of the node
+	 */
 	public void setID(int id)
 	{
 		n_id = id;
 	}
 	
+	/**
+	 * Set the simplified word-form of the node.
+	 * @param form simplified word-form of the node
+	 */
 	public void setWordForm(String form)
 	{
 		s_wordForm = form;
@@ -234,21 +343,37 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 //		b_punctuation = StringUtils.containsPunctuationOnly(s_simplifiedWordForm);
 	}
 	
+	/**
+	 * Set the lemma of the word-form of the node.
+	 * @param lemma lemma of the word-form  of the node
+	 */
 	public void setLemma(String lemma)
 	{
 		s_lemma = lemma;
 	}
 	
+	/**
+	 * Set the POS tag of the node.
+	 * @param posTag POS tag of the node
+	 */
 	public void setPOSTag(String posTag)
 	{
 		s_posTag = posTag;
 	}
 	
+	/**
+	 * Set the name-entity tag of the node.
+	 * @param namedEntityTag name-entity tag of the node
+	 */
 	public void setNamedEntityTag(String namedEntityTag)
 	{
 		s_namedEntityTag = namedEntityTag;
 	}
 	
+	/**
+	 * Set the extra features {@code DEPFeat} of the node.
+	 * @param feats extra features of the node
+	 */
 	public void setFeats(DEPFeat feats)
 	{
 		d_feats = feats;
@@ -257,12 +382,18 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	/**
 	 * Puts an extra feature to this node using the specific key and value.
 	 * This method overwrites an existing value of the same key with the current value. 
+	 * @param key key of the extra feature
+	 * @param value value of the extra feature
 	 */
 	public void putFeat(String key, String value)
 	{
 		d_feats.put(key, value);
 	}
 	
+	/**
+	 * Clear the POS tag of the node to {@code null} and return the POS tag of the node.
+	 * @return the removed POS tag of the node
+	 */
 	public String clearPOSTag()
 	{
 		String pos = s_posTag;
@@ -270,7 +401,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return pos;
 	}
 	
-	/** Removes the feature with the specific key. */
+	/**
+	 * Removes the extra feature with the specific key.
+	 * @param key key of the extra feature
+	 * @return value of the removed extra feature
+	 */
 	public String removeFeat(String key)
 	{
 		return d_feats.remove(key);
@@ -278,30 +413,49 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 //	====================================== Getters ======================================
 	
-	/** @return the dependency label of this node. */
+	/**
+	 * Get the dependency label of the node.
+	 * @return the dependency label of the node
+	 */
 	public String getLabel()
 	{
 		return s_label;
 	}
 	
-	/** @return the dependency head of this node. */
+	/** 
+	 * Get the dependency head of this node.
+	 * @return the dependency head of this node
+	 */
 	public DEPNode getHead()
 	{
 		return d_head;
 	}
 
-	/** @return the dependency grand-head of this node if exists; otherwise, {@code null}. */
+	/**
+	 * Get the  dependency grand-head of the node.
+	 * @return the dependency grand-head of the node if exists; otherwise, {@code null}. 
+	 */
 	public DEPNode getGrandHead()
 	{
 		DEPNode head = getHead();
 		return (head == null) ? null : head.getHead();
 	}
 	
+	/**
+	 * Get the left nearest sibling node of the node.
+	 * Calls {@link #getLeftNearestSibling(int)}, where {@code order=0}
+	 * @return the left nearest sibling node
+	 */
 	public DEPNode getLeftNearestSibling()
 	{
 		return getLeftNearestSibling(0);
 	}
 	
+	/**
+	 * Get the left sibling node with input displacement (0 - leftmost, 1 - second leftmost, etc.).
+	 * @param order left displacement
+	 * @return the left sibling node with input displacement
+	 */
 	public DEPNode getLeftNearestSibling(int order)
 	{
 		if (d_head != null)
@@ -313,11 +467,21 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 
+	/**
+	 * Get the right nearest sibling node of the node.
+	 * Calls {@link #getRightNearestSibling(int)}, where {@code order=0}.
+	 * @return the right nearest sibling node
+	 */
 	public DEPNode getRightNearestSibling()
 	{
 		return getRightNearestSibling(0);
 	}
 	
+	/**
+	 * Get the right sibling node with input displacement (0 - rightmost, 1 - second rightmost, etc.).
+	 * @param order right displacement
+	 * @return the right sibling node with input displacement
+	 */
 	public DEPNode getRightNearestSibling(int order)
 	{
 		if (d_head != null)
@@ -329,16 +493,21 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
-	/** Calls {@link #getLeftMostDependent(int)}, where {@code order=0}. */
+	/**
+	 * Get the left most dependency node of the node.
+	 * Calls {@link #getLeftMostDependent(int)}, where {@code order=0}
+	 * @return the left most dependency node of the node
+	 */
 	public DEPNode getLeftMostDependent()
 	{
 		return getLeftMostDependent(0);
 	}
 	
 	/**
-	 * @param order 0 - leftmost, 1 - 2nd left-most, etc.
-	 * @return the leftmost dependent of this node if exists; otherwise, {@code null}.
+	 * Get the left dependency node with input displacement (0 - leftmost, 1 - second leftmost, etc.).
 	 * The leftmost dependent must be on the left-hand side of this node.
+	 * @param order left displacement
+	 * @return the leftmost dependent of this node if exists; otherwise, {@code null}
 	 */
 	public DEPNode getLeftMostDependent(int order)
 	{
@@ -351,16 +520,21 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
-	/** Calls {@link #getRightMostDependent(int)}, where {@code order=0}. */
+	/** 
+	 * Get the right most dependency node of the node.
+	 * Calls {@link #getRightMostDependent(int)}, where {@code order=0}. 
+	 * @return the right most dependency node of the node
+	 */
 	public DEPNode getRightMostDependent()
 	{
 		return getRightMostDependent(0);
 	}
 	
 	/**
-	 * @param order 0 - rightmost, 1 - 2nd rightmost, etc.
-	 * @return the rightmost dependent of this node if exists; otherwise, {@code null}.
+	 * Get the right dependency node with input displacement (0 - rightmost, 1 - second rightmost, etc.).
 	 * The rightmost dependent must be on the right-hand side of this node.
+	 * @param order right displacement
+	 * @return the rightmost dependent of this node if exists; otherwise, {@code null}
 	 */
 	public DEPNode getRightMostDependent(int order)
 	{
@@ -375,16 +549,21 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
-	/** Calls {@link #getLeftNearestDependent(int)}, where {@code order=0}. */
+	/** 
+	 * Get the left nearest dependency node.
+	 * Calls {@link #getLeftNearestDependent(int)}, where {@code order=0}.
+	 * @return the left nearest dependency node
+	 */
 	public DEPNode getLeftNearestDependent()
 	{
 		return getLeftNearestDependent(0);
 	}
 	
 	/**
-	 * @param order 0 - left-nearest, 1 - 2nd left-nearest, etc.
-	 * @return the left-nearest dependent of this node if exists; otherwise, {@code null}.
-	 * The left-nearest dependent must be on the left-hand side of this node.
+	 * Get the left nearest dependency node with input displacement (0 - left-nearest, 1 - second left-nearest, etc.).
+	 * The left nearest dependent must be on the left-hand side of this node.
+	 * @param order left displacement
+	 * @return the left-nearest dependent of this node if exists; otherwise, {@code null}
 	 */
 	public DEPNode getLeftNearestDependent(int order)
 	{
@@ -392,16 +571,21 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return (index >= 0) ? getDependent(index) : null;
 	}
 	
-	/** Calls {@link #getRightNearestDependent(int)}, where {@code order=0}. */
+	/**
+	 * Get the right nearest dependency node.
+	 * Calls {@link #getRightNearestDependent(int)}, where {@code order=0}. 
+	 * @return the right nearest dependency node
+	 */
 	public DEPNode getRightNearestDependent()
 	{
 		return getRightNearestDependent(0);
 	}
 	
 	/**
-	 * @param order 0 - right-nearest, 1 - 2nd right-nearest, etc.
-	 * @return the right-nearest dependent of this node if exists; otherwise, {@code null}.
+	 * Get the right nearest dependency node with input displacement (0 - right-nearest, 1 - second right-nearest, etc.).
 	 * The right-nearest dependent must be on the right-hand side of this node.
+	 * @param order right displacement
+	 * @return the right-nearest dependent of this node if exists; otherwise, {@code null}
 	 */
 	public DEPNode getRightNearestDependent(int order)
 	{
@@ -409,6 +593,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return (index < getDependentSize()) ? getDependent(index) : null;
 	}
 	
+	/**
+	 * Get the first dependency node of the node by label.
+	 * @param label string label of the first-dependency node
+	 * @return the first-dependency node of the specific label
+	 */
 	public DEPNode getFirstDependentByLabel(String label)
 	{
 		for (DEPNode node : l_dependents)
@@ -420,6 +609,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
+	/**
+	 * Get the first dependency node of the node by label.
+	 * @param pattern pattern label of the first-dependency node
+	 * @return the first-dependency node of the specific label
+	 */
 	public DEPNode getFirstDependentByLabel(Pattern pattern)
 	{
 		for (DEPNode node : l_dependents)
@@ -431,11 +625,20 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
+	/**
+	 * Get the list of all the dependency nodes of the node.
+	 * @return list of all the dependency nodes of the node
+	 */
 	public List<DEPNode> getDependentList()
 	{
 		return l_dependents;
 	}
 	
+	/**
+	 * Get the list of all the dependency nodes of the node by label.
+	 * @param label string label
+	 * @return list of all the dependency nodes of the node by label
+	 */
 	public List<DEPNode> getDependentListByLabel(String label)
 	{
 		List<DEPNode> list = new ArrayList<>();
@@ -449,6 +652,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return list;
 	}
 	
+	/**
+	 * Get the list of all the dependency nodes of the node by labels set.
+	 * @param label labels set
+	 * @return list of all the dependency nodes of the node by labels set
+	 */
 	public List<DEPNode> getDependentListByLabel(Set<String> labels)
 	{
 		List<DEPNode> list = new ArrayList<>();
@@ -462,6 +670,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return list;
 	}
 	
+	/**
+	 * Get the list of all the dependency nodes of the node by label pattern.
+	 * @param label label pattern
+	 * @return list of all the dependency nodes of the node by label pattern
+	 */
 	public List<DEPNode> getDependentListByLabel(Pattern pattern)
 	{
 		List<DEPNode> list = new ArrayList<>();
@@ -475,6 +688,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return list;
 	}
 	
+	/**
+	 * Get the list of all the left dependency nodes of the node.
+	 * @return list of all the left dependency nodes of the node
+	 */
 	public List<DEPNode> getLeftDependentList()
 	{
 		List<DEPNode> list = new ArrayList<>();
@@ -488,6 +705,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return list;
 	}
 	
+	/**
+	 * Get the list of all the left dependency nodes of the node by label pattern.
+	 * @param label label pattern
+	 * @return list of all the left dependency nodes of the node by label pattern
+	 */
 	public List<DEPNode> getLeftDependentListByLabel(Pattern pattern)
 	{
 		List<DEPNode> list = new ArrayList<>();
@@ -501,6 +723,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return list;
 	}
 	
+	/**
+	 * Get the list of all the right dependency nodes of the node.
+	 * @return list of all the right dependency nodes of the node
+	 */
 	public List<DEPNode> getRightDependentList()
 	{
 		List<DEPNode> list = new ArrayList<>();
@@ -514,6 +740,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return list;
 	}
 	
+	/**
+	 * Get the list of all the right dependency nodes of the node by label pattern.
+	 * @param label label pattern
+	 * @return list of all the right dependency nodes of the node by label pattern
+	 */
 	public List<DEPNode> getRightDependentListByLabel(Pattern pattern)
 	{
 		List<DEPNode> list = new ArrayList<>();
@@ -527,7 +758,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return list;
 	}
 	
-	/** @return an unsorted list of grand-dependants. */
+	/**
+	 * Get the list of all grand-dependents of the node. 
+	 * @return an unsorted list of grand-dependents of the node
+	 */
 	public List<DEPNode> getGrandDependentList()
 	{
 		List<DEPNode> list = new ArrayList<>();
@@ -539,10 +773,12 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	}
 	
 	/**
-	 * @return an unsorted list of descendants.
-	 * If {@code height == 1}, return {@link #getDependentList()}
+	 * Get the list of all descendant nodes of the node with specified height.
+	 * If {@code height == 1}, return {@link #getDependentList()}.
 	 * If {@code height > 1} , return all descendants within the depth.
 	 * If {@code height < 1} , return an empty list.
+	 * @param height height level of the descendant nodes
+	 * @return an unsorted list of descendants.
 	 */
 	public List<DEPNode> getDescendantList(int height)
 	{
@@ -565,6 +801,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		}
 	}
 	
+	/**
+	 * Get any descendant node with POS tag.
+	 * @param tag POS tag
+	 * @return s descendant node with the POS tag
+	 */
 	public DEPNode getAnyDescendantByPOSTag(String tag)
 	{
 		return getAnyDescendantByPOSTagAux(this, tag);
@@ -583,7 +824,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 
-	/** @return a sorted list of nodes in the subtree of this node (inclusive). */
+	/**
+	 * Get the sorted list of all the nodes in the subtree of the node.
+	 * @return a sorted list of nodes in the subtree of this node (inclusive)
+	  */
 	public List<DEPNode> getSubNodeList()
 	{
 		List<DEPNode> list = new ArrayList<>();
@@ -592,7 +836,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return list;
 	}
 	
-	/** @return a set of nodes in the subtree of this node (inclusive). */
+	/**
+	 * Get a set of all the nodes is the subtree of the node.
+	 * @return a set of nodes in the subtree of this node (inclusive)
+	 */
 	public Set<DEPNode> getSubNodeSet()
 	{
 		Set<DEPNode> set = new HashSet<>();
@@ -608,6 +855,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 			getSubNodeCollectionAux(col, dep);
 	}
 	
+	/**
+	 * Get the IntHashSet of all the nodes in the subtree (Node ID -> DEPNode).
+	 * @return the ntHashSet of all the nodes in the subtree (inclusive)
+	 */
 	public IntHashSet getSubNodeIDSet()
 	{
 		IntHashSet set = new IntHashSet();
@@ -623,7 +874,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 			getSubNodeIDSetAux(set, dep);
 	}
 	
-	/** @return a sorted array of IDs from the subtree of this node, including the ID of this node. */
+	/** 
+	 * Get a sorted array of IDs of all the nodes in the subtree of the node.
+	 * @return a sorted array of IDs from the subtree of the node (inclusive) 
+	 */
 	public int[] getSubNodeIDSortedArray()
 	{
 		IntHashSet set = getSubNodeIDSet();
@@ -633,7 +887,8 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	}
 	
 	/**
-	 * @return the dependency of this node with the specific index if exists; otherwise, {@code null}.
+	 * Get the dependency node with specific index.
+	 * @return the dependency node of the node with the specific index if exists; otherwise, {@code null}.
 	 * @throws IndexOutOfBoundsException
 	 */
 	public DEPNode getDependent(int index)
@@ -642,19 +897,26 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	}
 	
 	/**
-	 * @return the index of the dependent node among other siblings (starting with 0).
+	 * Get the index of the dependency node of a specified DEPNode.
 	 * If the specific node is not a dependent of this node, returns a negative number.
+	 * @return the index of the dependent node among other siblings (starting with 0).
 	 */
 	public int getDependentIndex(DEPNode node)
 	{
 		return l_dependents.indexOf(node);
 	}
 	
-	/** @return the number of dependents of this node. */
+	/**
+	 * Get the size of the dependents of the node
+	 * @return the number of dependents of the node 
+	 */
 	public int getDependentSize()
 	{
 		return l_dependents.size();
 	}
+	
+	
+	/////*****-----> Start from here <-----*****/////
 	
 	/** @return "0" - no dependents, "<" - left dependents, ">" - right dependents, "<>" - left and right dependents. */
 	public String getValency(DirectionType direction)
