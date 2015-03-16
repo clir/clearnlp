@@ -118,7 +118,7 @@ public class NLPDecode
 		
 		for (i=0; i<size; i++)
 		{
-			tree = new DEPTree(tokens.get(i), 0);
+			tree = new DEPTree(tokens.get(i));
 			process(tree, fout, mode, components);
 		}
 	}
@@ -130,7 +130,7 @@ public class NLPDecode
 		
 		while ((line = reader.next()) != null)
 		{
-			tree = new DEPTree(tokenizer.tokenize(line), 0);
+			tree = new DEPTree(tokenizer.tokenize(line));
 			process(tree, fout, mode, components);
 		}
 	}

@@ -165,8 +165,8 @@ public class DEPNodeTest
 		assertEquals(tree.get(8), list.get(6));
 		assertEquals(tree.get(7), node.getAnyDescendantByPOSTag("WDT"));
 
-		assertEquals(2, node.getLeftValency());
-		assertEquals(3, node.getRightValency());
+		assertEquals("<<", node.getLeftValency());
+		assertEquals(">>", node.getRightValency());
 		
 		node = tree.get(8);
 		list = node.getSubNodeList();
