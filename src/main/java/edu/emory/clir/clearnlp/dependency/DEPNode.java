@@ -670,32 +670,32 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public String getLeftValency()
 	{
-		int i, c = 0, size = getDependentSize();
-		DEPNode node;
+		StringBuilder build = new StringBuilder();
 		
-		for (i=0; i<size; i++)
+		if (getLeftMostDependent() != null)
 		{
-			node = getDependent(i);
-			if (node.n_id > n_id) break;
-			c++;
+			build.append(StringConst.LESS_THAN);
+			
+			if (getLeftMostDependent(1) != null)
+				build.append(StringConst.LESS_THAN);
 		}
 		
-		return (c > 2) ? "2+" : Integer.toString(c);
+		return build.toString();
 	}
 	
 	public String getRightValency()
 	{
-		int i, c = 0;
-		DEPNode node;
+		StringBuilder build = new StringBuilder();
 		
-		for (i=getDependentSize()-1; i>=0; i--)
+		if (getRightMostDependent() != null)
 		{
-			node = getDependent(i);
-			if (node.n_id < n_id) break;
-			c++;
+			build.append(StringConst.GREATER_THAN);
+			
+			if (getRightMostDependent(1) != null)
+				build.append(StringConst.GREATER_THAN);
 		}
 		
-		return (c > 2) ? "2+" : Integer.toString(c);
+		return build.toString();
 	}
 	
 	public String getSubcategorization(DirectionType direction, FieldType field)
