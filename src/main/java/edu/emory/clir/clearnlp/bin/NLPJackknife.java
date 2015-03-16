@@ -22,6 +22,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.kohsuke.args4j.Option;
+
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.util.BinUtils;
@@ -34,6 +36,9 @@ import edu.emory.clir.clearnlp.util.Splitter;
  */
 public class NLPJackknife extends NLPTrain
 {
+	@Option(name="-threads", usage="number of threads (default: 1)", required=false, metaVar="<Integer>")
+	protected int n_threads = 1;
+	
 	public NLPJackknife() {}
 	
 	public NLPJackknife(String[] args)
@@ -44,15 +49,15 @@ public class NLPJackknife extends NLPTrain
 		String[]     featureFiles = Splitter.splitColons(s_featureFiles[0]);
 		NLPMode      mode         = NLPMode.valueOf(s_mode);
 	
-		trainCV(trainFiles, featureFiles, s_configurationFiles[0], mode);
+		trainCV(trainFiles, featureFiles, s_configurationFiles[0], mode, n_threads);
 	}
 	
-	private void trainCV(List<String> trainFiles, String[] featureFiles, String configurationFile, NLPMode mode)
+	private void trainCV(List<String> trainFiles, String[] featureFiles, String configurationFile, NLPMode mode, int threads)
 	{
 		int i, size = trainFiles.size();
 		Collections.sort(trainFiles);
 		
-		ExecutorService executor = Executors.newFixedThreadPool(size);
+		ExecutorService executor = Executors.newFixedThreadPool(threads);
 		
 		for (i=0; i<size; i++)
 			executor.execute(new TrainTask(new ArrayList<>(trainFiles), featureFiles, configurationFile, mode, i));

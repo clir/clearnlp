@@ -71,8 +71,9 @@ public class DEPLibEn implements DEPTagEn
 		List<List<SRLArc>> argLists;
 		int i, size = tree.size();
 		List<SRLArc> list;
-		DEPNode node;
+		DEPNode node = tree.get(0);
 		
+		if (node.getSemanticHeadArcList() == null) return;
 		argLists = tree.getArgumentList();
 		
 		for (i=1; i<size; i++)

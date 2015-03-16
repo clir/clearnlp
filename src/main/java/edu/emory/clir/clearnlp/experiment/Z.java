@@ -21,11 +21,12 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import edu.emory.clir.clearnlp.feature.type.FieldType;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.util.IOUtils;
 
 
 /**
@@ -41,25 +42,18 @@ public class Z
 //		out.writeObject(map);
 //		out.close();
 		
-		Pattern p = FieldType.P_SUBCAT;
-		Matcher m = p.matcher("scll"); m.find();
-		System.out.println(m.group(1)+" "+m.group(2));
+		String filename = "/Users/jdchoi/Documents/Data/experiments/craft-1.1.0/trn.dep";
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
+		DEPTree tree;
 		
-		m = p.matcher("scrd"); m.find();
-		System.out.println(m.group(1)+" "+m.group(2));
+		reader.open(IOUtils.createFileInputStream(filename));
 		
-		m = p.matcher("scap"); m.find();
-		System.out.println(m.group(1)+" "+m.group(2));
-		
-		p = FieldType.P_VALENCY;
-		m = p.matcher("vl"); m.find();
-		System.out.println(m.group(1));
-		
-		m = p.matcher("vr"); m.find();
-		System.out.println(m.group(1));
-		
-		m = p.matcher("va"); m.find();
-		System.out.println(m.group(1));
+		while ((tree = reader.next()) != null)
+		{
+			if (tree.isNonProjective())
+				System.out.println("NONP");
+		}
+		System.out.println("DONE");
 	}
 	
 	class Tmp

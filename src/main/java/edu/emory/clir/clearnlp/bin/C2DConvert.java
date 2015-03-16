@@ -108,7 +108,7 @@ public class C2DConvert
 				fout.println(dTree.toStringSRL()+"\n");
 			}
 			else
-				System.err.println("No token in the tree "+(n+1)+"\n"+cTree.toStringLine()+"\n");
+				System.err.println("No token in the tree "+(n+1)+"\n"+cTree.toStringLine());
 		}
 		
 		reader.close();
