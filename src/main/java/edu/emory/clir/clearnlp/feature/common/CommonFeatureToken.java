@@ -17,7 +17,9 @@ package edu.emory.clir.clearnlp.feature.common;
 
 import java.util.regex.Matcher;
 
+import edu.emory.clir.clearnlp.collection.pair.Pair;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
+import edu.emory.clir.clearnlp.feature.type.DirectionType;
 import edu.emory.clir.clearnlp.feature.type.FieldType;
 import edu.emory.clir.clearnlp.feature.type.RelationType;
 import edu.emory.clir.clearnlp.feature.type.SourceType;
@@ -59,6 +61,26 @@ public class CommonFeatureToken extends AbstractFeatureToken
 		{
 			setField(FieldType.sf);
 			setValue(Integer.parseInt(m.group(1)));
+		}
+		else if ((m = FieldType.P_SUBCAT.matcher(field)).find())
+		{
+			setField(FieldType.sc);
+			setValue(new Pair<DirectionType,FieldType>(DirectionType.valueOf(m.group(1)), FieldType.valueOf(m.group(2))));
+		}
+		else if ((m = FieldType.P_VALENCY.matcher(field)).find())
+		{
+			setField(FieldType.v);
+			setValue(DirectionType.valueOf(m.group(1)));
+		}
+		else if ((m = FieldType.P_DEPENDENTS.matcher(field)).find())
+		{
+			setField(FieldType.ds);
+			setValue(FieldType.valueOf(m.group(1)));
+		}
+		else if ((m = FieldType.P_GRAND_DEPENDENTS.matcher(field)).find())
+		{
+			setField(FieldType.ds);
+			setValue(FieldType.valueOf(m.group(1)));
 		}
 		else
 		{

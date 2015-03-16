@@ -57,9 +57,6 @@ public class NLPDecode
 	@Option(name="-mode", usage="pos|morph|dep|srl", required=true, metaVar="<string>")
 	protected String s_mode;
 	
-	@Option(name="-depBeamSize", usage="beam size for dependency parsing (default: 16)", required=false, metaVar="<integer>")
-	protected int dep_beam_size = 16;
-	
 	private long total_time = 0, total_trees = 0, total_tokens = 0;
 	
 	public NLPDecode() {}
@@ -97,7 +94,7 @@ public class NLPDecode
 		
 		for (String inputFile : inputFiles)
 		{
-			BinUtils.LOG.info(inputFile+"\n");
+			BinUtils.LOG.info(FileUtils.getBaseName(inputFile)+"\n");
 			reader.open(IOUtils.createFileInputStream(inputFile));
 			fout =  IOUtils.createBufferedPrintStream(inputFile + StringConst.PERIOD + ouputExt);
 			

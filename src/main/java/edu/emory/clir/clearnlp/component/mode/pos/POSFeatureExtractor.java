@@ -28,7 +28,7 @@ import edu.emory.clir.clearnlp.feature.common.CommonFeatureToken;
 public class POSFeatureExtractor extends CommonFeatureExtractor<POSState>
 {
 	private static final long serialVersionUID = -7336596053366459297L;
-
+	
 	public POSFeatureExtractor(InputStream in)
 	{
 		super(in);
@@ -37,6 +37,9 @@ public class POSFeatureExtractor extends CommonFeatureExtractor<POSState>
 	@Override
 	protected String getFeature(CommonFeatureToken token, POSState state, DEPNode node)
 	{
+		String ftr = getFormFeature(token, node);
+		if (ftr != null) return state.extractWordFormFeature(node) ? ftr : null;
+		
 		switch (token.getField())
 		{
 		case a : return state.getAmbiguityClass(node);

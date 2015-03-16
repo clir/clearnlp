@@ -129,12 +129,4 @@ public class FrameState extends AbstractState<String,String>
 	{
 		return i_input >= t_size;
 	}
-	
-//	====================================== FEATURES ======================================
-
-	@Override
-	public boolean extractWordFormFeature(DEPNode node)
-	{
-		return true;
-	}
 }

@@ -129,6 +129,4 @@ abstract public class AbstractState<OracleType,LabelType>
 	{
 		return node.getID() + 1 == t_size;
 	}
-	
-	public abstract boolean extractWordFormFeature(DEPNode node);
 }

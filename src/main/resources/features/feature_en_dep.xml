@@ -5,6 +5,8 @@
     <feature f0="j:m"/>
     <feature f0="i:p"/>
     <feature f0="j:p"/>
+    <feature f0="i:d"/>
+    <feature f0="j:d"/>
 
     <feature f0="i:p" f1="i:m"/>
     <feature f0="j:p" f1="j:m"/>
@@ -13,6 +15,11 @@
     <feature f0="i:p" f1="j:m"/>
     <feature f0="i:m" f1="j:p"/>
     <feature f0="i:m" f1="j:m"/>
+
+    <feature f0="i:d" f1="i:p"/>
+    <feature f0="i:d" f1="j:p"/>
+    <feature f0="i:d" f1="i:m"/>
+    <feature f0="i:d" f1="j:m"/>
 
     <!-- 1-gram features -->
     <feature f0="k-1:m"/>
@@ -47,7 +54,6 @@
     <!-- 3-gram features -->
     <feature f0="i-2:p" f1="i-1:p" f2="i:p"/>
     <feature f0="i-1:p" f1="i:p"   f2="i+1:p"/>
-    <feature f0="i:p"   f1="i+1:p" f2="i+2:p" visible="true"/>
     <feature f0="j-1:p" f1="j:p"   f2="j+1:p"/>
     <feature f0="j:p"   f1="j+1:p" f2="j+2:p"/>
 
@@ -65,11 +71,8 @@
     <feature f0="j:v" f1="j:m"/>
 
     <!-- 2nd-order features -->
-    <feature f0="i:d"/>
-    <feature f0="j:d"/>
     <feature f0="i_lmd:d"/>
     <feature f0="i_rmd:d" visible="false"/>
-    <feature f0="j_lmd:d" visible="false"/>
 
     <feature f0="i_h:m"/>
     <feature f0="i_rmd:m"/>
@@ -79,18 +82,11 @@
     <feature f0="i_h:p"/>
     <feature f0="i_rmd:p"/>
     <feature f0="j_lmd:p"/>
-    <feature f0="i_lmd:p" visible="false"/>
-
-    <feature f0="i:d" f1="i:p"/>
-    <feature f0="i:d" f1="j:p"/>
-    <feature f0="i:d" f1="j:m"/>
-    <feature f0="i:d" f1="i:m" visible="false"/>
 
     <feature f0="i:d"     f1="i:p" f2="j:p"/>
     <feature f0="i_lmd:d" f1="i:p" f2="j:p"/>
     <feature f0="j_lmd:d" f1="i:p" f2="j:p"/>
     <feature f0="i_lns:d" f1="i:p" f2="j:p"/>
-    <feature f0="i_rmd:d" f1="i:p" f2="j:p" visible="false"/>
 
     <feature f0="i_lmd:p" f1="i:p" f2="j:p"/>
     <feature f0="i_rmd:p" f1="i:p" f2="j:p"/>
@@ -118,18 +114,22 @@
     <feature f0="i_h:d" f1="j:m"/>
     <feature f0="i_h:d" f1="i:m" visible="false"/>
 
+    <feature f0="i_lmd2:p" f1="i:p" f2="j:p"/>
+    <feature f0="j_lmd2:p" f1="i:p" f2="j:p"/>
+    <feature f0="i_rmd2:p" f1="i:p" f2="j:p"/>
+
     <feature f0="i_h:d"    f1="i:p" f2="j:p"/>
     <feature f0="i_lmd2:d" f1="i:p" f2="j:p"/>
     <feature f0="j_lmd2:d" f1="i:p" f2="j:p"/>
     <feature f0="i_lns2:d" f1="i:p" f2="j:p"/>
     <feature f0="i_rmd2:d" f1="i:p" f2="j:p" visible="false"/>
 
-    <feature f0="i_lmd2:p" f1="i:p" f2="j:p"/>
-    <feature f0="i_rmd2:p" f1="i:p" f2="j:p"/>
-    <feature f0="j_lmd2:p" f1="i:p" f2="j:p"/>
+    <feature f0="i_lmd2:p" f1="i_lmd:p" f2="i:p"/>
+    <feature f0="i_rmd2:p" f1="i_rmd:p" f2="i:p" visible="false"/>
+    <feature f0="j_lmd2:p" f1="j_lmd:p" f2="j:p" visible="false"/>
+    <feature f0="i_h2:p"   f1="i_h:p"   f2="i:p" visible="false"/>
 
     <!-- binary features -->
     <feature f0="i:b0" note="stack is the first token"/>
     <feature f0="j:b1" note="input is the last  token"/>
 </feature_template>
-

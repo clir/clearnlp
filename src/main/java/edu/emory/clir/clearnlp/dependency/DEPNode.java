@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 
 import edu.emory.clir.clearnlp.collection.list.SortedArrayList;
 import edu.emory.clir.clearnlp.collection.set.IntHashSet;
+import edu.emory.clir.clearnlp.feature.type.DirectionType;
+import edu.emory.clir.clearnlp.feature.type.FieldType;
 import edu.emory.clir.clearnlp.reader.TSVReader;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.StringUtils;
@@ -655,30 +657,18 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	}
 	
 	/** @return "0" - no dependents, "<" - left dependents, ">" - right dependents, "<>" - left and right dependents. */
-	public String getValency()
+	public String getValency(DirectionType direction)
 	{
-		StringBuilder build = new StringBuilder();
-		
-		if (getLeftMostDependent() != null)
+		switch (direction)
 		{
-			build.append(StringConst.LESS_THAN);
-			
-			if (getLeftMostDependent(1) != null)
-				build.append(StringConst.LESS_THAN);
+		case  l: return getLeftValency();
+		case  r: return getRightValency();
+		case  a: return getLeftValency()+"-"+getRightValency();
+		default: return null;
 		}
-		
-		if (getRightMostDependent() != null)
-		{
-			build.append(StringConst.GREATER_THAN);
-			
-			if (getRightMostDependent(1) != null)
-				build.append(StringConst.GREATER_THAN);
-		}
-		
-		return build.toString();
 	}
 	
-	public int getLeftValency()
+	public String getLeftValency()
 	{
 		int i, c = 0, size = getDependentSize();
 		DEPNode node;
@@ -690,10 +680,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 			c++;
 		}
 		
-		return c;
+		return (c > 2) ? "2+" : Integer.toString(c);
 	}
 	
-	public int getRightValency()
+	public String getRightValency()
 	{
 		int i, c = 0;
 		DEPNode node;
@@ -705,7 +695,154 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 			c++;
 		}
 		
-		return c;
+		return (c > 2) ? "2+" : Integer.toString(c);
+	}
+	
+	public String getSubcategorization(DirectionType direction, FieldType field)
+	{
+		switch (direction)
+		{
+		case l: return getLeftSubcategorization (field);
+		case r: return getRightSubcategorization(field);
+		case a:
+			String left = getLeftSubcategorization(field);
+			if (left == null) return getRightSubcategorization(field);
+			String right = getRightSubcategorization(field);
+			return  (right == null) ? left : left+right;
+		default: return null; 
+		}
+	}
+	
+	/** @return null if not exist. */
+	public String getLeftSubcategorization(FieldType field)
+	{
+		StringBuilder build = new StringBuilder();
+		int i, size = getDependentSize();
+		DEPNode node;
+		
+		for (i=0; i<size; i++)
+		{
+			node = getDependent(i);
+			if (node.getID() > n_id) break;
+			build.append(StringConst.LESS_THAN);
+			build.append(getTagFeature(field));
+		}
+		
+		return build.length() > 0 ? build.toString() : null;
+	}
+	
+	/** @return null if not exist. */
+	public String getRightSubcategorization(FieldType field)
+	{
+		StringBuilder build = new StringBuilder();
+		int i, size = getDependentSize();
+		DEPNode node;
+		
+		for (i=size-1; i>=0; i++)
+		{
+			node = getDependent(i);
+			if (node.getID() < n_id) break;
+			build.append(StringConst.GREATER_THAN);
+			build.append(getTagFeature(field));
+		}
+		
+		return build.length() > 0 ? build.toString() : null;
+	}
+	
+	public String getPath(DEPNode node, FieldType field)
+	{
+		DEPNode lca = getLowestCommonAncestor(node);
+		return (lca != null) ? getPath(node, lca, field) : null;
+	}
+	
+	public String getPath(DEPNode node, DEPNode lca, FieldType field)
+	{
+		if (node == lca)
+			return getPathAux(lca, this, field, "^", true);
+		
+		if (this == lca)
+			return getPathAux(lca, node, field, "|", true);
+		
+		return getPathAux(lca, this, field, "^", true) + getPathAux(lca, node, field, "|", false);
+	}
+	
+	private String getPathAux(DEPNode top, DEPNode bottom, FieldType field, String delim, boolean includeTop)
+	{
+		StringBuilder build = new StringBuilder();
+		DEPNode node = bottom;
+		int dist = 0;
+		String s;
+		
+		do
+		{
+			s = node.getTagFeature(field);
+			
+			if (s != null)
+			{
+				build.append(delim);
+				build.append(s);
+			}
+			else
+			{
+				dist++;
+			}
+		
+			node = node.getHead();
+		}
+		while (node != top && node != null);
+		
+		if (field == FieldType.t)
+		{
+			build.append(delim);
+			build.append(dist);
+		}
+		else if (field == FieldType.p && includeTop)
+		{
+			build.append(delim);
+			build.append(top.getPOSTag());
+		}
+		
+		return build.length() == 0 ? null : build.toString();
+	}
+	
+	public Set<DEPNode> getAncestorSet()
+	{
+		Set<DEPNode> set = new HashSet<>();
+		DEPNode node = getHead();
+		
+		while (node != null)
+		{
+			set.add(node);
+			node = node.getHead();
+		}
+		
+		return set;
+	}
+	
+	public DEPNode getLowestCommonAncestor(DEPNode node)
+	{
+		Set<DEPNode> set = getAncestorSet();
+		set.add(this);
+		
+		while (node != null)
+		{
+			if (set.contains(node)) return node;
+			node = node.getHead();
+		}
+		
+		return null;
+	}
+	
+	public String getTagFeature(FieldType field)
+	{
+		switch (field)
+		{
+		case m : return getLemma();
+		case p : return getPOSTag();
+		case n : return getNamedEntityTag();
+		case d : return getLabel();
+		default: return null;
+		}
 	}
 	
 //	====================================== Setters ======================================

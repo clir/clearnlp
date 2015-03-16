@@ -376,12 +376,6 @@ public class DEPStateBranch extends AbstractState<DEPArc,DEPLabel> implements DE
 	
 //	====================================== FEATURES ======================================
 
-	@Override
-	public boolean extractWordFormFeature(DEPNode node)
-	{
-		return true;
-	}
-	
 	public int distanceBetweenStackAndInput()
 	{
 		int sID = getStackID();

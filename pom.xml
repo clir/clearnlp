@@ -84,6 +84,11 @@
       <version>2.0.29</version>
     </dependency>
     <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
+    <dependency>
       <groupId>com.carrotsearch</groupId>
       <artifactId>hppc</artifactId>
       <version>0.6.1</version>
@@ -92,11 +97,6 @@
       <groupId>org.tukaani</groupId>
       <artifactId>xz</artifactId>
       <version>1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
     </dependency>
   </dependencies>
 </project>

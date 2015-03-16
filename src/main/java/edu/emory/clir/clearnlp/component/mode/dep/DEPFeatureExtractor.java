@@ -39,7 +39,7 @@ public class DEPFeatureExtractor extends CommonFeatureExtractor<DEPState>
 	{
 		switch (token.getField())
 		{
-		case s2i: return Integer.toString(state.distanceBetweenStackAndInput());
+		case t: return Integer.toString(state.distanceBetweenStackAndInput());
 		default: return super.getFeature(token, state, node);
 		}
 	}

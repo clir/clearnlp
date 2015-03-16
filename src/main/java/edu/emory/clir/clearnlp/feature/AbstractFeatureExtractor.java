@@ -19,7 +19,9 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -30,6 +32,7 @@ import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.common.OrthographicType;
 import edu.emory.clir.clearnlp.feature.type.FeatureXml;
+import edu.emory.clir.clearnlp.feature.type.FieldType;
 import edu.emory.clir.clearnlp.util.CharUtils;
 import edu.emory.clir.clearnlp.util.MetaUtils;
 import edu.emory.clir.clearnlp.util.XmlUtils;
@@ -200,17 +203,16 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType extends Abstr
 //	====================================== Helper methods ======================================
 	
 	/** @return {@code null} if the specific list is empty. */
-	protected String[] toLabelArray(List<DEPNode> nodes)
+	protected String[] toLabelArray(List<DEPNode> nodes, FieldType field)
 	{
 		if (nodes.isEmpty()) return null;
-		
+		Set<String> set = new HashSet<>();
 		int i, size = nodes.size();
-		String[] array = new String[size];
 		
 		for (i=0; i<size; i++)
-			array[i] = nodes.get(i).getLabel();
+			set.add(nodes.get(i).getTagFeature(field));
 		
-		return array;
+		return set.isEmpty() ? null : set.toArray(new String[set.size()]);
 	}
 	
 	protected String[] toArray(Collection<String> list)
@@ -230,7 +232,7 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType extends Abstr
 			getOrthographicFeautureAux(state, node, list, cs);
 		}
 		
-		return toArray(list);
+		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
 	}
 	
 	/** Called by {@link #getOrthographicFeatures(AbstractState, DEPNode)}. */

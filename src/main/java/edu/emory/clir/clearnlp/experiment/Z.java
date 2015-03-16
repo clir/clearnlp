@@ -15,22 +15,17 @@
  */
 package edu.emory.clir.clearnlp.experiment;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import org.tukaani.xz.LZMA2Options;
-import org.tukaani.xz.XZOutputStream;
-
-import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFMap;
+import edu.emory.clir.clearnlp.feature.type.FieldType;
 
 
 /**
@@ -41,10 +36,30 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		PBFMap map = new PBFMap(args[0]);
-		ObjectOutputStream out = new ObjectOutputStream(new XZOutputStream(new BufferedOutputStream(new FileOutputStream("tmp.xz")), new LZMA2Options()));
-		out.writeObject(map);
-		out.close();
+//		PBFMap map = new PBFMap(args[0]);
+//		ObjectOutputStream out = new ObjectOutputStream(new XZOutputStream(new BufferedOutputStream(new FileOutputStream("tmp.xz")), new LZMA2Options()));
+//		out.writeObject(map);
+//		out.close();
+		
+		Pattern p = FieldType.P_SUBCAT;
+		Matcher m = p.matcher("scll"); m.find();
+		System.out.println(m.group(1)+" "+m.group(2));
+		
+		m = p.matcher("scrd"); m.find();
+		System.out.println(m.group(1)+" "+m.group(2));
+		
+		m = p.matcher("scap"); m.find();
+		System.out.println(m.group(1)+" "+m.group(2));
+		
+		p = FieldType.P_VALENCY;
+		m = p.matcher("vl"); m.find();
+		System.out.println(m.group(1));
+		
+		m = p.matcher("vr"); m.find();
+		System.out.println(m.group(1));
+		
+		m = p.matcher("va"); m.find();
+		System.out.println(m.group(1));
 	}
 	
 	class Tmp

@@ -27,19 +27,19 @@ public enum FieldType
 	f2, 	// simplified word-form
 	f3,		// lower simplified word-form
 	f4,		// word-form shape
+	pf,		// prefix
+	sf,		// suffix
 	m,		// lemma
 	p,		// pos tag
 	n,		// named entity tag
 	d,		// dependency label to its head
 	v,		// valency
-	lv,		// left valency
-	rv,		// right valency
+	sc,		// sub-categorization
 	ft,		// feats
 	a,		// ambiguity class (part-of-speech tagging)
-	s2i,	// distance between stack to input (dependency parsing)
+	t,		// distance between i to j (dependency parsing, semantic role labeling)
+	pt,		// path between i and j (dependency parsing, semantic role labeling)
 
-	pf,		// set of prefixes
-	sf,		// set of suffixes
 	ds,		// set of dependency labels of its dependents
 	ds2,	// set of dependency labels of its grand-dependents
 	orth,	// set of orthographic features
@@ -50,6 +50,10 @@ public enum FieldType
 	static public final Pattern P_FEAT    = Pattern.compile("^"+ft+"=(.+)$");
 	static public final Pattern P_PREFIX  = Pattern.compile("^"+pf+"(\\d+)$");
 	static public final Pattern P_SUFFIX  = Pattern.compile("^"+sf+"(\\d+)$");
+	static public final Pattern P_SUBCAT  = Pattern.compile("^"+sc+"("+DirectionType.l+"|"+DirectionType.r+"|"+DirectionType.a+")(.)$");
+	static public final Pattern P_VALENCY = Pattern.compile("^"+v +"("+DirectionType.l+"|"+DirectionType.r+"|"+DirectionType.a+")$");
+	static public final Pattern P_DEPENDENTS       = Pattern.compile("^"+ds +"(.)$");
+	static public final Pattern P_GRAND_DEPENDENTS = Pattern.compile("^"+ds2+"(.)$");
 	
 	static public boolean isBooleanField(FieldType field)
 	{

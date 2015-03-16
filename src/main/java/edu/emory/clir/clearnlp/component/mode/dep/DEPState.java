@@ -400,12 +400,6 @@ public class DEPState extends AbstractState<DEPArc,DEPLabel> implements DEPTrans
 	
 //	====================================== FEATURES ======================================
 
-	@Override
-	public boolean extractWordFormFeature(DEPNode node)
-	{
-		return true;
-	}
-	
 	public int distanceBetweenStackAndInput()
 	{
 		int sID = getStackID();
