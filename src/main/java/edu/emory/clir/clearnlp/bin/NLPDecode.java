@@ -54,10 +54,8 @@ public class NLPDecode
 	protected String s_inputExt = "*";
 	@Option(name="-oe", usage="output file extension (default: cnlp)", required=false, metaVar="<string>")
 	protected String s_outputExt = "cnlp";
-	@Option(name="-mode", usage="pos|morph|dep|srl", required=true, metaVar="<string>")
+	@Option(name="-mode", usage="pos|morph|dep", required=true, metaVar="<string>")
 	protected String s_mode;
-	
-	private long total_time = 0, total_trees = 0, total_tokens = 0;
 	
 	public NLPDecode() {}
 	
@@ -68,9 +66,6 @@ public class NLPDecode
 		List<String> inputFiles = FileUtils.getFileList(s_inputPath, s_inputExt, false);
 		DecodeConfiguration config = new DecodeConfiguration(IOUtils.createFileInputStream(s_configurationFile));
 		decode(inputFiles, s_outputExt, config, mode);
-		
-		BinUtils.LOG.info(String.format("Tokens / Sec: %f\n", 1000d * total_tokens / total_time));
-		BinUtils.LOG.info(String.format("Trees  / Sec: %f\n", 1000d * total_trees  / total_time));
 	}
 	
 	public void decode(List<String> inputFiles, String ouputExt, DecodeConfiguration config, NLPMode mode)
@@ -145,19 +140,10 @@ public class NLPDecode
 	
 	public void process(DEPTree tree, PrintStream fout, NLPMode mode, AbstractComponent[] components)
 	{
-		long st, et;
-		
 		for (AbstractComponent component : components)
-		{
-			st = System.currentTimeMillis();
 			component.process(tree);
-			et = System.currentTimeMillis();
-			total_time += (et - st);
-		}
 
 		fout.println(toString(tree, mode)+StringConst.NEW_LINE);
-		total_tokens += (tree.size() - 1);
-		total_trees++;
 	}
 	
 	private AbstractComponent[] getComponents(TLanguage language, NLPMode mode, DecodeConfiguration config)

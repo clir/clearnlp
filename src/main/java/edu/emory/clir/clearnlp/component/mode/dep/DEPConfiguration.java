@@ -34,6 +34,12 @@ public class DEPConfiguration extends AbstractConfiguration
 	
 //	============================== Initialization ==============================
 	
+	public DEPConfiguration(String rootLabel)
+	{
+		super(NLPMode.dep);
+		setRootLabel(rootLabel);
+	}
+	
 	public DEPConfiguration(InputStream in)
 	{
 		super(in, NLPMode.dep);

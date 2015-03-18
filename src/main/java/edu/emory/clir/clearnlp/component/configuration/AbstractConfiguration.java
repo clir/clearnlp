@@ -51,7 +51,10 @@ public class AbstractConfiguration implements ConfigurationXML
 	
 //	=================================== CONSTRUCTORS ===================================
 	
-	public AbstractConfiguration() {}
+	public AbstractConfiguration(NLPMode mode)
+	{
+		n_mode = mode;
+	}
 	
 	public AbstractConfiguration(InputStream in)
 	{

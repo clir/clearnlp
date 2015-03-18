@@ -10,5 +10,6 @@ The ClearNLP project provides software and resources for natural language proces
 
 ## News
 
+* [03/25/2015] The version 3.0.1 is released ([release notes](https://github.com/clir/clearnlp-guidelines/blob/master/md/release/release_notes.md)).
 * [03/15/2015] The version 3.0.0 is released ([release notes](https://github.com/clir/clearnlp-guidelines/blob/master/md/release/release_notes.md)).
 * [09/01/2014] The project is moved from [github.com/clearnlp](http://github.com/clearnlp/) to [github.com/clir](https://github.com/clir/clearnlp).

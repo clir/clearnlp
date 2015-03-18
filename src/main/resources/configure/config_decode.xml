@@ -2,12 +2,11 @@
     <language>english</language>
 
     <model>
-        <pos>edu/emory/clir/clearnlp/model/english/general/pos.gz</pos>
-        <dep>model/dep.0</dep>
-        <seq>modle/seq.gz</seq>
+        <pos>general-en-pos.xz</pos>
+        <dep>general-en-dep.xz</dep>
     </model>
 
-    <reader type="tsv">
+    <reader type="raw">
         <column index="1" field="id"/>
         <column index="2" field="form"/>
         <column index="4" field="lemma"/>
