@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.emory.clir</groupId>
   <artifactId>clearnlp</artifactId>
-  <version>3.0.1-SNAPSHOT</version>
+  <version>3.0.1</version>
   <packaging>jar</packaging>
   <name>clearnlp</name>
   <url>http://www.clearnlp.com</url>
@@ -11,7 +11,7 @@
     <url>https://github.com/clir/clearnlp</url>
     <connection>scm:git:git://github.com:clir/clearnlp.git</connection>
     <developerConnection>scm:git:git@github.com:clir/clearnlp.git</developerConnection>
-    <tag>clearnlp-3.0.0</tag>
+    <tag>clearnlp-3.0.1</tag>
   </scm>
 
   <licenses>
@@ -68,11 +68,6 @@
         <configuration>
           <skipTests>true</skipTests>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
