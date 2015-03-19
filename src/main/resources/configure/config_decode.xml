@@ -24,7 +24,7 @@
     </reader>
     
     <dep>
-        <beam_size>16</beam_size>
+        <root_label>root</root_label>
     </dep>
 </configuration>
 
