@@ -21,6 +21,7 @@
         <column index="6" field="headId"/>
         <column index="7" field="deprel"/>
         <column index="8" field="sheads"/>
+        <column index="9" field="nament"/>
     </reader>
     
     <dep>
