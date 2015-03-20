@@ -222,7 +222,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	/**
 	 * Check if the node has the sequence label of your input.
 	 * @param label sequence label
-	 * @return boolean of whether the node has matching label as the input label
+	 * @return {@code true} if the node has matching label as the input label
 	 */
 	public boolean isSequenceLabel(String label)
 	{
@@ -907,7 +907,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	}
 	
 	/**
-	 * Get the size of the dependents of the node
+	 * Get the size of the dependents of the node.
 	 * @return the number of dependents of the node 
 	 */
 	public int getDependentSize()
@@ -916,9 +916,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	}
 	
 	
-	/////*****-----> Start from here <-----*****/////
-	
-	/** @return "0" - no dependents, "<" - left dependents, ">" - right dependents, "<>" - left and right dependents. */
+	/**
+	 * Get the the valency of the node.
+	 * @param direction DirectionType of l, r, a 
+	 * @return "0" - no dependents, "<" - left dependents, ">" - right dependents, "<>" - left and right dependents. 
+	 */
 	public String getValency(DirectionType direction)
 	{
 		switch (direction)
@@ -930,6 +932,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		}
 	}
 	
+	/**
+	 * Get the left valency of the node.
+	 * @return "<" - left dependents
+	 */
 	public String getLeftValency()
 	{
 		StringBuilder build = new StringBuilder();
@@ -945,6 +951,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return build.toString();
 	}
 	
+	/**
+	 * Get the right valency of the node.
+	 * @return ">" - right dependents
+	 */
 	public String getRightValency()
 	{
 		StringBuilder build = new StringBuilder();
@@ -960,6 +970,12 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return build.toString();
 	}
 	
+	/**
+	 * Get sub-categorization of the node.
+	 * @param direction direction DirectionType of l, r, a
+	 * @param field FieldType of tag feature
+	 * @return "< {@code TagFeature}" for left sub-categorization, "> {@code TagFeature}" for right-categorization, and {@code null} if not exist
+	 */
 	public String getSubcategorization(DirectionType direction, FieldType field)
 	{
 		switch (direction)
@@ -975,7 +991,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		}
 	}
 	
-	/** @return null if not exist. */
+	/**
+	 * Get left sub-categorization of the node.
+	 * @param field FieldType of tag feature 
+	 * @return "< {@code TagFeature}" for left sub-categorization, {@code null} if not exist. 
+	 */
 	public String getLeftSubcategorization(FieldType field)
 	{
 		StringBuilder build = new StringBuilder();
@@ -993,7 +1013,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return build.length() > 0 ? build.toString() : null;
 	}
 	
-	/** @return null if not exist. */
+	/**
+	 * Get right sub-categorization of the node.
+	 * @param field FieldType of tag feature 
+	 * @return "> {@code TagFeature}" for right sub-categorization, {@code null} if not exist. 
+	 */
 	public String getRightSubcategorization(FieldType field)
 	{
 		StringBuilder build = new StringBuilder();
@@ -1011,12 +1035,26 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return build.length() > 0 ? build.toString() : null;
 	}
 	
+	
+	/**
+	 * Find the path of between this nodes and the input DEPNode.
+	 * @param node the node that you want to find the path from this node
+	 * @param field FieldType of the the node for search
+	 * @return the path between the two nodes
+	 */
 	public String getPath(DEPNode node, FieldType field)
 	{
 		DEPNode lca = getLowestCommonAncestor(node);
 		return (lca != null) ? getPath(node, lca, field) : null;
 	}
 	
+	/**
+	 * Find the path of between this nodes and the input DEPNode with the lowest common ancestor specified.
+	 * @param node the node that you want to find the path from this node
+	 * @param lca the lowest common ancestor DEPNode that you specified for the path
+	 * @param field FieldType of the the node for search
+	 * @return the path between the two nodes
+	 */
 	public String getPath(DEPNode node, DEPNode lca, FieldType field)
 	{
 		if (node == lca)
@@ -1067,6 +1105,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return build.length() == 0 ? null : build.toString();
 	}
 	
+	/**
+	 * Get a set of all the ancestor nodes of the node (ie. Parent node, Grandparent node, etc.).
+	 * @return set of all the ancestor nodes
+	 */
 	public Set<DEPNode> getAncestorSet()
 	{
 		Set<DEPNode> set = new HashSet<>();
@@ -1081,6 +1123,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return set;
 	}
 	
+	/**
+	 * Get the first/lowest commone ancestor of the two given nodes (this node and the input DEPNode).
+	 * @param node the node that you want to find the lowest common ancestor with the node with
+	 * @return the lowest common ancestor of the node and the specified node
+	 */
 	public DEPNode getLowestCommonAncestor(DEPNode node)
 	{
 		Set<DEPNode> set = getAncestorSet();
@@ -1095,6 +1142,12 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
+	
+	/**
+	 * Get a specific tag feature of the node.
+	 * @param field FieldType of the feature
+	 * @return the value of the feature in the node
+	 */
 	public String getTagFeature(FieldType field)
 	{
 		switch (field)
@@ -1109,13 +1162,19 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 //	====================================== Setters ======================================
 
-	/** Sets the dependency label of this node with the specific label. */
+	/** 
+	 * Sets the dependency label of this node with the specific label.
+	 * @param label label of the node 
+	 */
 	public void setLabel(String label)
 	{
 		s_label = label;
 	}
 	
-	/** Sets the dependency head of this node with the specific node. */
+	/** 
+	 * Sets the dependency head of this node with the specific node.
+	 * @param node head node of the node 
+	 */
 	public void setHead(DEPNode node)
 	{
 		if (hasHead())
@@ -1127,18 +1186,31 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		d_head = node;
 	}
 	
-	/** Sets the dependency head of this node with the specific node and the label. */
+	/** 
+	 * Sets the dependency head of this node with the specific node and the label.
+	 * @param node head node of the node
+	 * @param label label of the node 
+	 */
 	public void setHead(DEPNode node, String label)
 	{
 		setHead (node);
 		setLabel(label);
 	}
 	
+	/**
+	 * Add the node as a dependent to a specified node.
+	 * @param node head node that you wish to add the node as a dependent to
+	 */
 	public void addDependent(DEPNode node)
 	{
 		node.setHead(this);
 	}
 	
+	/**
+	 * Add the node as a dependent to a specified node and set the label of the node.
+	 * @param node head node that you wish to add the node as a dependent to
+	 * @param label label of the node
+	 */
 	public void addDependent(DEPNode node, String label)
 	{
 		node.setHead(this, label);
@@ -1146,66 +1218,120 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 //	====================================== Booleans ======================================
 	
-	/** @return {@code true} if this node has the dependency head; otherwise, {@code null}. */
+	/**
+	 * Check if the node has a head node.
+	 * @return {@code true} if this node has the dependency head; otherwise {@code false} if head is {@code null}. 
+	 */
 	public boolean hasHead()
 	{
 		return d_head != null;
 	}
 	
+	/**
+	 * Check if the node contain another as dependent.
+	 * @param node dependent code for check
+	 * @return {@code true} if the node has the input DEPNode as a dependent
+	 */
 	public boolean containsDependent(DEPNode node)
 	{
 		return l_dependents.contains(node);
 	}
 	
+	/**
+	 * Check if the node has the label for its first dependent.
+	 * @param label label of the node for check
+	 * @return {@code true} if the node's first dependent has the input label
+	 */
 	public boolean containsDependent(String label)
 	{
 		return getFirstDependentByLabel(label) != null;
 	}
 	
+	/**
+	 * Check if the node has the pattern for its first dependent.
+	 * @param pattern pattern of the node for check
+	 * @return {@code true} if the node's first dependent has the input pattern
+	 */
 	public boolean containsDependent(Pattern pattern)
 	{
 		return getFirstDependentByLabel(pattern) != null;
 	}
 	
+	/**
+	 * Check if the node has word-form of as the input string.
+	 * @param form word-form for check
+	 * @return {@code true} if the node's word-form is equal to the input string
+	 */
 	public boolean isWordForm(String form)
 	{
 		return form.equals(s_wordForm);
 	}
 	
+	/**
+	 * Check if the node has simplified word-form as the input string.
+	 * @param form simplified word-form for check
+	 * @return {@code true} if the node's simplified word-form is equal to the input string
+	 */
 	public boolean isSimplifiedForm(String form)
 	{
 		return form.equals(s_simplifiedWordForm);
 	}
 	
+	/**
+	 * Check if the node has word-form lemma as the input string.
+	 * @param lemma word-form lemma for check
+	 * @return {@code true} if the node's word-form lemma is equal to the input string
+	 */
 	public boolean isLemma(String lemma)
 	{
 		return lemma.equals(s_lemma);
 	}
 	
-	/** @return {@code true} if the part-of-speech tag of this node equals to the specific tag. */
+	/**
+	 * Check if the node has POS tag as the input string.
+	 * @param tag POS tag string for check 
+	 * @return {@code true} if the part-of-speech tag of this node equals to the specific tag 
+	 */
 	public boolean isPOSTag(String tag)
 	{
 		return tag.equals(s_posTag);
 	}
 	
-	/** @return {@code true} if the part-of-speech tag of this node matches the specific pattern. */
+	/** 
+	 * Check if the node has POS tag as the input pattern.
+	 * @param pattern POS tag pattern for check
+	 * @return {@code true} if the part-of-speech tag of this node matches the specific pattern 
+	 */
 	public boolean isPOSTag(Pattern pattern)
 	{
 		return pattern.matcher(s_posTag).find();
 	}
 	
-	/** @return {@code true} if the named entity tag of this node equals to the specific tag. */
+	/**
+	 * Check if the node has the name-entity tag as the input string.
+	 * @param tag name-entity tag string for check
+	 * @return {@code true} if the named entity tag of this node equals to the specific tag 
+	 */
 	public boolean isNamedEntityTag(String tag)
 	{
 		return tag.equals(s_namedEntityTag);
 	}
 	
-	/** @return {@code true} if the dependency label of this node equals to the specific label. */
+	/**
+	 * Check if the node has the label as the input string.
+	 * @param label label string for check
+	 * @return {@code true} if the dependency label of this node equals to the specific label 
+	 */
 	public boolean isLabel(String label)
 	{
 		return label.equals(s_label);
 	}
 	
+	/**
+	 * Check if the node has the label as any label in the input strings array.
+	 * @param labels label string array for check
+	 * @return {@code true} if the dependency label of this node equals to any of the specific labels
+	 */
 	public boolean isLabelAny(String... labels)
 	{
 		for (String label : labels)
@@ -1217,24 +1343,42 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return false;
 	}
 	
-	/** @return {@code true} if the dependency label of this node matches the specific pattern. */
+	/**
+	 * Check if the node has the label as the input label pattern.
+	 * @param pattern label pattern for check
+	 * @return {@code true} if the dependency label of this node matches the specific pattern
+	 */
 	public boolean isLabel(Pattern pattern)
 	{
 		return pattern.matcher(s_label).find();
 	}
 	
-	/** @return {@code true} if this node is a dependent of the specific node. */
+	/** 
+	 * Check if the node has the input dependent node. 
+	 * @param node dependent node for check
+	 * @return {@code true} if this node is a dependent of the specific node 
+	 */
 	public boolean isDependentOf(DEPNode node)
 	{
 		return d_head == node;
 	}
 	
+	/**
+	 * Check if the node has the input dependent node and the input label string. 
+	 * @param node dependent node for check
+	 * @param label label string for check
+	 * @return @return {@code true} if the node has the specific dependent node and the specific label string
+	 */
 	public boolean isDependentOf(DEPNode node, String label)
 	{
 		return isDependentOf(node) && isLabel(label);
 	}
 	
-	/** @return {@code true} if this node is a descendant of the specific node. */
+	/**
+	 * Check if the node is the descendant of the input head node. 
+	 * @param label label string for check
+	 * @return {@code true} if the node is the dependent of the specific node
+	 */
 	public boolean isDescendantOf(DEPNode node)
 	{
 		DEPNode head = getHead();
@@ -1248,6 +1392,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return false;
 	}
 	
+	/**
+	 * Check if the node has the sibling node.
+	 * @param node sibling node of the node for check
+	 * @return {@code true} if the node has the sibling node
+	 */
 	public boolean isSiblingOf(DEPNode node)
 	{
 		return hasHead() && node.isDependentOf(d_head);
@@ -1255,21 +1404,39 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 //	====================================== Secondary ======================================
 	
+	/**
+	 * Add a secondary head {@code DEPArc} to the node.
+	 * @param arc secondary head arc for add 
+	 */
 	public void addSecondaryHead(DEPArc arc)
 	{
 		x_heads.add(arc);
 	}
 	
+	/**
+	 * Add a secondary head {@code DEPArc} with specified label to the node.
+	 * @param arc secondary head arc for add 
+	 * @param label label of the secondary head
+	 */
 	public void addSecondaryHead(DEPNode head, String label)
 	{
 		addSecondaryHead(new DEPArc(head, label));
 	}
 	
+	/**
+	 * Get a list of all secondary head arc {@code DEPArc} of the node.
+	 * @return list of secondary head arc {@code DEPArc}
+	 */
 	public List<DEPArc> getSecondaryHeadArcList()
 	{
 		return x_heads;
 	}
 	
+	/**
+	 * Get a list of all secondary head arc {@code DEPArc} with the specific label of the node.
+	 * @param label label string of the secondary head arc
+	 * @return list of secondary head arc {@code DEPArc} with specific label
+	 */
 	public List<DEPArc> getSecondaryHeadArcList(String label)
 	{
 		List<DEPArc> list = new ArrayList<>();
@@ -1283,6 +1450,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return list;
 	}
 	
+	/**
+	 * Set list of secondary head arc {@code DEPArc} as the node's secondary heads 
+	 * @param arcs list of secondary head arc {@code DEPArc}
+	 */
 	public void setSecondaryHeads(List<DEPArc> arcs)
 	{
 		x_heads = arcs;
@@ -1290,27 +1461,48 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 //	====================================== Semantics ======================================
 	
-	/** @return the PropBank roleset ID of this node if exists; otherwise, {@code null}. */
+	/**
+	 * Get the PropBank roleset ID of the node(ie. verb.01).
+	 * @return the PropBank roleset ID of the node if exists; otherwise, {@code null}. 
+	 */
 	public String getRolesetID()
 	{
 		return d_feats.get(DEPLib.FEAT_PB);
 	}
 	
+	/**
+	 * Set PropBank roleset ID of the node.
+	 * @param rolesetID PropBank roleset ID
+	 * @return the PropBank roleset ID of the node
+	 */
 	public String setRolesetID(String rolesetID)
 	{
 		return d_feats.put(DEPLib.FEAT_PB, rolesetID);
 	}
 	
+	/**
+	 * Remove the PropBank roleset ID of the node.
+	 */
 	public void clearRolesetID()
 	{
 		d_feats.remove(DEPLib.FEAT_PB);
 	}
 	
+	
+	/**
+	 * Check if the node has a semantic head in its extra features.
+	 * @return {@code true} if the node has a semantic head in its extra features
+	 */
 	public boolean isSemanticHead()
 	{
 		return d_feats.containsKey(DEPLib.FEAT_PB);
 	}
 	
+	/**
+	 * Get a set of semantic head of the node that contains the given label.
+	 * @param label label string to search for in all semantic head of the node
+	 * @return a set of semantic head of the node that contains the given label
+	 */
 	public Set<DEPNode> getSemanticHeadSet(String label)
 	{
 		Set<DEPNode> set = new HashSet<>();
@@ -1324,6 +1516,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return set;
 	}
 	
+	/**
+	 * Get a set of semantic head of the node that contains the given pattern.
+	 * @param pattern label pattern to search for in all semantic head of the node
+	 * @return a set of semantic head of the node that contains the given pattern
+	 */
 	public Set<DEPNode> getSemanticHeadSet(Pattern pattern)
 	{
 		Set<DEPNode> set = new HashSet<>();
@@ -1337,11 +1534,20 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return set;
 	}
 	
+	/**
+	 * Get a list of all semantic head arc of the node.
+	 * @return a list of all semantic head arc of the node
+	 */
 	public List<SRLArc> getSemanticHeadArcList()
 	{
 		return s_heads;
 	}
 	
+	/**
+	 * Get a list of all semantic head arc of the node with the given label.
+	 * @param label String label for the semantic head arc search
+	 * @return Get a list of all semantic head arc of the node with the given label
+	 */
 	public List<SRLArc> getSemanticHeadArcList(String label)
 	{
 		List<SRLArc> list = new ArrayList<>();
@@ -1355,6 +1561,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return list;
 	}
 	
+	/**
+	 * Get the semantic arc relationship between the node and another given node.
+	 * @param node DEPNode to find the semantic arc relationship with the node
+	 * @return semantic arc relationship between the node and another given node
+	 */
 	public SRLArc getSemanticHeadArc(DEPNode node)
 	{
 		for (SRLArc arc : s_heads)
@@ -1366,6 +1577,12 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
+	/**
+	 * Get the semantic arc relationship between the node and another given node with a given label.
+	 * @param node DEPNode to find the semantic arc relationship with the node
+	 * @param label String label of the semantic head arc
+	 * @return the semantic arc relationship between the node and another given node with a given label
+	 */
 	public SRLArc getSemanticHeadArc(DEPNode node, String label)
 	{
 		for (SRLArc arc : s_heads)
@@ -1377,6 +1594,12 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
+	/**
+	 * Get the semantic arc relationship between the node and another given node with a given pattern.
+	 * @param node DEPNode to find the semantic arc relationship with the node
+	 * @param pattern label pattern of the semantic head arc
+	 * @return the semantic arc relationship between the node and another given node with a given pattern
+	 */
 	public SRLArc getSemanticHeadArc(DEPNode node, Pattern pattern)
 	{
 		for (SRLArc arc : s_heads)
@@ -1388,6 +1611,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
+	/**
+	 * Get the semantic label of the node that is related to the given node.
+	 * @param node DEPNode that you want to check the semantic label relationship with
+	 * @return the semantic label of the given in relation to the node
+	 */
 	public String getSemanticLabel(DEPNode node)
 	{
 		for (SRLArc arc : s_heads)
@@ -1399,6 +1627,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
+	/**
+	 * Get the first node that is found to have the semantic head of the given label from the node.
+	 * @param label String label of the semantic head
+	 * @return the first node that is found to have the semantic head of the given label from the node
+	 */
 	public DEPNode getFirstSemanticHead(String label)
 	{
 		for (SRLArc arc : s_heads)
@@ -1410,6 +1643,11 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
+	/**
+	 * Get the first node that is found to have the semantic head of the given pattern from the node.
+	 * @param label label pattern of the semantic head
+	 * @return the first node that is found to have the semantic head of the given pattern from the node
+	 */
 	public DEPNode getFirstSemanticHead(Pattern pattern)
 	{
 		for (SRLArc arc : s_heads)
@@ -1421,26 +1659,48 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return null;
 	}
 	
+	/**
+	 * Add a collection of semantic heads to the node.
+	 * @param arcs {@code Collection<SRLArc>} of the semantic heads
+	 */
 	public void addSemanticHeads(Collection<SRLArc> arcs)
 	{
 		s_heads.addAll(arcs);
 	}
 	
+	/**
+	 * Add a node a give the given semantic label to the node.
+	 * @param head DEPNode the semantic head node for adding
+	 * @param label String label of the semantic label
+	 */
 	public void addSemanticHead(DEPNode head, String label)
 	{
 		addSemanticHead(new SRLArc(head, label));
 	}
 	
+	/**
+	 * Add a semantic arc to the node.
+	 * @param arc semantic arc for adding
+	 */
 	public void addSemanticHead(SRLArc arc)
 	{
 		s_heads.add(arc);
 	}
 	
+	/**
+	 * Set semantic heads of the node.
+	 * @param arcs a list of semantic heads
+	 */
 	public void setSemanticHeads(List<SRLArc> arcs)
 	{
 		s_heads = arcs;
 	}
 	
+	/**
+	 * Remove all semantic heads of the node in relation to a given node.
+	 * @param node DEPNode for semantic head removal in relation to the node 
+	 * @return {@code true}, else {@code false} if nothing gets removed 
+	 */
 	public boolean removeSemanticHead(DEPNode node)
 	{
 		for (SRLArc arc : s_heads)
@@ -1452,51 +1712,99 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return false;
 	}
 	
+	/**
+	 * Remove a specific semantic head of the node.
+	 * @param arc a semantic head for removal
+	 */
 	public void removeSemanticHead(SRLArc arc)
 	{
 		s_heads.remove(arc);
 	}
 	
+	/**
+	 * Remove a collection of specific semantic heads of the node.
+	 * @param arcs a collection of semantic heads for removal
+	 */
 	public void removeSemanticHeads(Collection<SRLArc> arcs)
 	{
 		s_heads.removeAll(arcs);
 	}
 	
+	/**
+	 * Remove all semantic heads of the node that have the given label.
+	 * @param label String label of the semantic head for removal
+	 */
 	public void removeSemanticHeads(String label)
 	{
 		s_heads.removeAll(getSemanticHeadArcList(label));
 	}
 	
+	/**
+	 * Remove all semantic heads of the node.
+	 */
 	public void clearSemanticHeads()
 	{
 		s_heads.clear();
 	}
 	
+	/**
+	 * Check if the node has a semantic role arc with a given node. 
+	 * @param node DEPNode to check the SRL relation with
+	 * @return {@code true}, else {@code false} if there is no SRLArc between the two nodes
+	 */
 	public boolean isArgumentOf(DEPNode node)
 	{
 		return getSemanticHeadArc(node) != null;
 	}
 	
+	/**
+	 * Check if the node has a semantic role arc of the label of a given label.
+	 * @param label String label of a certain semantic role label
+	 * @return {@code true}, else {@code false} if there is no SRLArc with the given label
+	 */
 	public boolean isArgumentOf(String label)
 	{
 		return getFirstSemanticHead(label) != null;
 	}
 	
+	/**
+	 * Check if the node has a semantic role arc of the label of a given pattern.
+	 * @param pattern label pattern of a certain semantic role label
+	 * @return {@code true}, else {@code false} if there is no SRLArc with the given pattern
+	 */
 	public boolean isArgumentOf(Pattern pattern)
 	{
 		return getFirstSemanticHead(pattern) != null;
 	}
 	
+	/**
+	 * Check if the node has a semantic role arc with a given node of a given label.
+	 * @param node DEPNode to check the SRL relation with
+	 * @param label String label of a certain semantic role label
+	 * @return {@code true}, else {@code false} if there is no SRLArc with the given label between the two node
+	 */
 	public boolean isArgumentOf(DEPNode node, String label)
 	{
 		return getSemanticHeadArc(node, label) != null;
 	}
 	
+	/**
+	 * Check if the node has a semantic role arc with a given node of a given pattern.
+	 * @param node DEPNode to check the SRL relation with
+	 * @param pattern String label of a certain semantic role label
+	 * @return {@code true}, else {@code false} if there is no SRLArc with the given pattern between the two node
+	 */
 	public boolean isArgumentOf(DEPNode node, Pattern pattern)
 	{
 		return getSemanticHeadArc(node, pattern) != null;
 	}
 	
+	/**
+	 * Get a list of all DEPNode nodes that are potential argument candidate of the node.
+	 * @param depth the depth of how many level (going up) to search for candidates 
+	 * @param includeSelf whether to include yourself as a candidate or not
+	 * @return a list of all DEPNode nodes that are potential argument candidate of the node
+	 */
 	public Set<DEPNode> getArgumentCandidateSet(int depth, boolean includeSelf)
 	{
 		Set<DEPNode> set = new HashSet<>(getDescendantList(depth));
