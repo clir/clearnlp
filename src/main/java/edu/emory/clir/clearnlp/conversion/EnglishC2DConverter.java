@@ -1322,9 +1322,8 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		
 		for (T arc : heads)
 		{
-			if (arc.getNode() == null) System.out.println("DSFS");
-			if (set.contains(arc.getNode().getID()))
-			remove.add(arc);
+			if (arc.getNode() == null || set.contains(arc.getNode().getID()))
+				remove.add(arc);
 		}
 		
 		heads.removeAll(remove);

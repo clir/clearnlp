@@ -28,6 +28,7 @@ import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.Splitter;
+import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
@@ -120,21 +121,23 @@ public class NLPMerge extends NLPDecode
 	
 	private void evaluateDEP(List<String> tg, String[] ts, int[] eval)
 	{
-//		if (StringUtils.containsPunctuationOnly(tg.get(2))) return;
 		tg.add(9 , ts[5]);
 		tg.add(11, ts[6]);
-		eval[0]++;
 		
-		if (tg.get(8).equals(tg.get(9)))
+		if (!StringUtils.containsPunctuationOnly(tg.get(2)))
 		{
-			eval[1]++;
-			if (tg.get(10).equals(tg.get(11))) eval[2]++;
+			eval[0]++;
+			
+			if (tg.get(8).equals(tg.get(9)))
+			{
+				eval[1]++;
+				if (tg.get(10).equals(tg.get(11))) eval[2]++;
+			}
 		}
 	}
 	
 	static public void main(String[] args)
 	{
 		new NLPMerge(args);
-//		System.out.printf("%5.2f (%d/%d)\n", 100d*DEPState.n_trans2/DEPState.n_trans1, DEPState.n_trans1, DEPState.n_trans2);
 	}
 }

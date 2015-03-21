@@ -1124,7 +1124,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	}
 	
 	/**
-	 * Get the first/lowest commone ancestor of the two given nodes (this node and the input DEPNode).
+	 * Get the first/lowest common ancestor of the two given nodes (this node and the input DEPNode).
 	 * @param node the node that you want to find the lowest common ancestor with the node with
 	 * @return the lowest common ancestor of the node and the specified node
 	 */
