@@ -46,16 +46,16 @@ public class NLPTrain
 	protected String s_configurationFile;
 	@Option(name="-f", usage="feature template files (required)", required=true, metaVar="<filename>", handler=StringArrayOptionHandler.class)
 	protected String[] s_featureFiles;
-	@Option(name="-t", usage="path to training files (required)", required=true, metaVar="<filepath>")
+	@Option(name="-m", usage="model filename (optional)", required=false, metaVar="<filename>")
+	protected String s_modelPath = null;
+	@Option(name="-t", usage="training path (required)", required=true, metaVar="<filepath>")
 	protected String s_trainPath;
+	@Option(name="-d", usage="development path (required)", required=true, metaVar="<filepath>")
+	protected String s_developPath;
 	@Option(name="-te", usage="training file extension (default: *)", required=false, metaVar="<string>")
 	protected String s_trainExt = "*";
-	@Option(name="-d", usage="path to development files (required)", required=true, metaVar="<filepath>")
-	protected String s_developPath;
 	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
 	protected String s_developExt = "*";
-	@Option(name="-m", usage="model path (optional)", required=false, metaVar="<filename>")
-	protected String s_modelPath = null;
 	@Option(name="-mode", usage="pos|dep|srl", required=true, metaVar="<mode>")
 	protected String s_mode = ".*";
 //	@Option(name="-threads", usage="number of threads (default: 1)", required=false, metaVar="<Integer>")
