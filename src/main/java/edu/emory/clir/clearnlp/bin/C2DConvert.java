@@ -43,17 +43,17 @@ import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
 public class C2DConvert
 {
-	@Option(name="-h", usage="name of a headrule file (required)", required=true, metaVar="<filename>")
+	@Option(name="-h", usage="headrule file (required)", required=true, metaVar="<filename>")
 	private String s_headruleFile;
 	@Option(name="-i", usage="input path (required)", required=true, metaVar="<filepath>")
 	private String s_inputPath;
-	@Option(name="-pe", usage="parse file extension (default: parse)", required=false, metaVar="<regex>")
+	@Option(name="-pe", usage="parse file extension (default: parse)", required=false, metaVar="<string>")
 	private String s_parseExt = "parse";
-	@Option(name="-re", usage="propbank file extension (default: prop)", required=false, metaVar="<regex>")
+	@Option(name="-re", usage="propbank file extension (default: prop)", required=false, metaVar="<string>")
 	private String s_propExt = "prop";
 	@Option(name="-oe", usage="output file extension (default: dep)", required=false, metaVar="<string>")
 	private String s_outputExt = "dep";
-	@Option(name="-l", usage="language (default: en)", required=false, metaVar="<language>")
+	@Option(name="-l", usage="language (default: english)", required=false, metaVar="<language>")
 	private String s_language = TLanguage.ENGLISH.toString();
 	@Option(name="-n", usage="if set, normalize empty category indices", required=false, metaVar="<boolean>")
 	private boolean b_normalize = false;

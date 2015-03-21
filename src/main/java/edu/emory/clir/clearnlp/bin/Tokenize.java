@@ -37,12 +37,12 @@ import edu.emory.clir.clearnlp.util.lang.TLanguage;
  */
 public class Tokenize
 {
-	@Option(name="-l", usage="language (default: en)", required=false, metaVar="<language>")
+	@Option(name="-l", usage="language (default: english)", required=false, metaVar="<language>")
 	private String s_language = TLanguage.ENGLISH.toString();
 	@Option(name="-i", usage="input path (required)", required=true, metaVar="<filepath>")
 	private String s_inputPath;
-	@Option(name="-ie", usage="input file extension (default: .*)", required=false, metaVar="<regex>")
-	private String s_inputExt = ".*";
+	@Option(name="-ie", usage="input file extension (default: *)", required=false, metaVar="<regex>")
+	private String s_inputExt = "*";
 	@Option(name="-oe", usage="output file extension (default: tok)", required=false, metaVar="<string>")
 	private String s_outputExt = "tok";
 	
