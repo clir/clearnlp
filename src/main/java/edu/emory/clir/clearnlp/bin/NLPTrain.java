@@ -35,7 +35,6 @@ import edu.emory.clir.clearnlp.component.utils.NLPUtils;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
-import edu.emory.clir.clearnlp.util.Splitter;
 
 /**
  * @since 3.0.0
@@ -43,21 +42,21 @@ import edu.emory.clir.clearnlp.util.Splitter;
  */
 public class NLPTrain
 {
-	@Option(name="-c", usage="confinguration files (required)", required=true, metaVar="<string>", handler=StringArrayOptionHandler.class)
-	protected String[] s_configurationFiles;
-	@Option(name="-f", usage="feature template files (required, delimited by "+"\":\""+")", required=true, metaVar="<string>", handler=StringArrayOptionHandler.class)
+	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<filename>")
+	protected String s_configurationFile;
+	@Option(name="-f", usage="feature template files (required)", required=true, metaVar="<filename>", handler=StringArrayOptionHandler.class)
 	protected String[] s_featureFiles;
 	@Option(name="-t", usage="path to training files (required)", required=true, metaVar="<filepath>")
 	protected String s_trainPath;
-	@Option(name="-te", usage="training file extension (default: *)", required=false, metaVar="<regex>")
+	@Option(name="-te", usage="training file extension (default: *)", required=false, metaVar="<string>")
 	protected String s_trainExt = "*";
 	@Option(name="-d", usage="path to development files (required)", required=true, metaVar="<filepath>")
 	protected String s_developPath;
-	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<regex>")
+	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
 	protected String s_developExt = "*";
 	@Option(name="-m", usage="model path (optional)", required=false, metaVar="<filename>")
 	protected String s_modelPath = null;
-	@Option(name="-mode", usage="pos|dep|srl", required=true, metaVar="<string>")
+	@Option(name="-mode", usage="pos|dep|srl", required=true, metaVar="<mode>")
 	protected String s_mode = ".*";
 //	@Option(name="-threads", usage="number of threads (default: 1)", required=false, metaVar="<Integer>")
 //	protected int n_threads = 1;
@@ -70,10 +69,9 @@ public class NLPTrain
 		
 		List<String> trainFiles   = FileUtils.getFileList(s_trainPath  , s_trainExt  , false);
 		List<String> developFiles = FileUtils.getFileList(s_developPath, s_developExt, false);
-		String[]     featureFiles = Splitter.splitColons(s_featureFiles[0]);
 		NLPMode      mode         = NLPMode.valueOf(s_mode);
 
-		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> p = train(trainFiles, developFiles, featureFiles, s_configurationFiles[0], mode);
+		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> p = train(trainFiles, developFiles, s_featureFiles, s_configurationFile, mode);
 		BinUtils.LOG.info(String.format("Final score: %4.2f\n", p.d));
 		if (s_modelPath != null) saveModel(p.o, s_modelPath);
 	}

@@ -29,7 +29,6 @@ import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
-import edu.emory.clir.clearnlp.util.Splitter;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -45,11 +44,10 @@ public class NLPJackknife extends NLPTrain
 	{
 		BinUtils.initArgs(args, this);
 		
-		List<String> trainFiles   = FileUtils.getFileList(s_trainPath, s_trainExt, false);
-		String[]     featureFiles = Splitter.splitColons(s_featureFiles[0]);
-		NLPMode      mode         = NLPMode.valueOf(s_mode);
+		List<String> trainFiles = FileUtils.getFileList(s_trainPath, s_trainExt, false);
+		NLPMode      mode       = NLPMode.valueOf(s_mode);
 	
-		trainCV(trainFiles, featureFiles, s_configurationFiles[0], mode, n_threads);
+		trainCV(trainFiles, s_featureFiles, s_configurationFile, mode, n_threads);
 	}
 	
 	private void trainCV(List<String> trainFiles, String[] featureFiles, String configurationFile, NLPMode mode, int threads)
