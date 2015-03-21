@@ -39,12 +39,21 @@ public class DEPTree implements Iterable<DEPNode>
 	
 //	====================================== Constructors ======================================
 
-	/** The artificial root node is inserted front automatically. */
+
+	/**
+	 * Create a new tree where the root is automatically added at the top
+	 * @param size
+	 */
 	public DEPTree(int size)
 	{
 		init(size);
 	}
 	
+
+	/**
+	 * Create a DEPTree from a list of DEPNodes
+	 * @param list
+	 */
 	public <T>DEPTree(List<T> list)
 	{
 		int i, size = list.size();
@@ -61,7 +70,11 @@ public class DEPTree implements Iterable<DEPNode>
 				add(new DEPNode(i+1, (String)item));
 		}
 	}
-	
+
+	/**
+	 * Create a DEPTree from an old DEPTree
+	 * @param oTree
+	 */
 	public DEPTree(DEPTree oTree)
 	{
 		DEPNode oNode, nNode, oHead, nHead;
@@ -110,6 +123,11 @@ public class DEPTree implements Iterable<DEPNode>
 		}
 	}
 	
+
+	/**
+	 * Create a new DEPTree with root DEPNode
+	 * @param size
+	 */
 	private void init(int size)
 	{
 		d_tree = new DEPNode[size+1];
@@ -121,18 +139,30 @@ public class DEPTree implements Iterable<DEPNode>
 	
 //	====================================== Tree operations ======================================
 	
-	/** @return the dependency node with the specific ID if exists; otherwise, {@code null}. */
+	/**
+	 * Return the DEPNode of a specific ID if exists
+	 * @param id
+	 * @return 
+	 */
 	public DEPNode get(int id)
 	{
 		return (0 <= id && id < n_size) ? d_tree[id] : null;
 	}
 	
+	/**
+	 * Add a DEPNode to the DEPTree
+	 * @param node
+	 */
 	public void add(DEPNode node)
 	{
 		increaseSize();
 		d_tree[n_size++] = node;
 	}
 	
+	/**
+	 * Check if number of DEPNodes in the DEPTree has reached max size 
+	 * if reached max size then increase DEPTree by 5
+	 */
 	private void increaseSize()
 	{
 		if (n_size == d_tree.length)
@@ -143,12 +173,19 @@ public class DEPTree implements Iterable<DEPNode>
 		}
 	}
 	
+	/**
+	 * Return the number of DEPNodes in the DEPTree 
+	 * @return
+	 */
 	public int size()
 	{
 		return n_size;
 	}
 	
-	/** Removes the node with the specific id from this tree. */
+	/**
+	 * Remove the DEPNode with the specific ID
+	 * @param id
+	 */
 	public void remove(int id)
 	{
 		if (id <= 0 || id >= n_size)
@@ -168,7 +205,11 @@ public class DEPTree implements Iterable<DEPNode>
 		catch (IndexOutOfBoundsException e) {e.printStackTrace();}
 	}
 	
-	/** Inserts the specific node at the specific index of this tree. */
+	/**
+	 * Inserts the specific node at the specific ID of this DEPTree.
+	 * @param id
+	 * @param node
+	 */
 	public void insert(int id, DEPNode node)
 	{
 		if (id <= 0 || id > n_size)
@@ -191,12 +232,18 @@ public class DEPTree implements Iterable<DEPNode>
 		catch (IndexOutOfBoundsException e) {e.printStackTrace();}
 	}
 	
+	/**
+	 * Reset all DEPNodes in DEPTree from beginning ID (inclusive) from ID = 1
+	 */
 	public void resetNodeIDs()
 	{
 		resetNodeIDs(1);
 	}
 	
-	/** @param beginID beginning ID (inclusive). */
+	/**
+	 * Starting from a given ID we reset all the IDs to be in ascending order
+	 * @param beginID
+	 */
 	private void resetNodeIDs(int beginID)
 	{
 		int i, size = size();
@@ -207,12 +254,18 @@ public class DEPTree implements Iterable<DEPNode>
 	
 //	====================================== Initialization ======================================
 
+	/**
+	 * Initialize all secondary heads of this DEPTree
+	 */
 	public void initSecondaryHeads()
 	{
 		for (DEPNode node : this)
 			node.initSecondaryHeads();
 	}
 	
+	/**
+	 * Initialize all semantic heads of this DEPTree
+	 */
 	public void initSemanticHeads()
 	{
 		for (DEPNode node : this)
@@ -221,7 +274,10 @@ public class DEPTree implements Iterable<DEPNode>
 	
 //	====================================== Dependency ======================================
 	
-	/** @return a list of root nodes in this tree. */
+	/**
+	 * Return a list of all the root DEPNodes in this DEPTree
+	 * @return
+	 */
 	public List<DEPNode> getRoots()
 	{
 		List<DEPNode> roots = new ArrayList<>();
@@ -236,6 +292,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return roots;
 	}
 	
+	/**
+	 * Return the first DEPNode of the DEPTree that is not null
+	 * @return
+	 */
 	public DEPNode getFirstRoot()
 	{
 		DEPNode root = get(DEPLib.ROOT_ID);
@@ -249,7 +309,12 @@ public class DEPTree implements Iterable<DEPNode>
 		return null;
 	}
 	
-	/** @return [LAS, UAS]. */
+	/**
+	 * Return Total Count, LAS, UAS scores in an array{3} 
+	 * @param goldHeads
+	 * @param evalPunct
+	 * @return
+	 */
 	public int[] getScoreCounts(DEPArc[] goldHeads, boolean evalPunct)
 	{
 		int i, las = 0, uas = 0, total = 0, size = size();
@@ -276,6 +341,11 @@ public class DEPTree implements Iterable<DEPNode>
 		return new int[]{total, las, uas};
 	}
 	
+	/**
+	 * Convert this DEPTree into a projective tree
+	 * @param left
+	 * @param right
+	 */
 	public void projectivize(String left, String right)
 	{
 		IntHashSet ids = new IntHashSet();
@@ -354,6 +424,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return 0;
 	}
 	
+	/**
+	 * Return true if it is non projective tree
+	 * @return
+	 */
 	public boolean isNonProjective()
 	{
 		DEPNode head, wj, wh;
@@ -388,7 +462,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return false;
 	}
 	
-	/** @return {@code true} if this tree contains a cycle. */
+	/**
+	 * Returns true if this DEPTree contains a cycle
+	 * @return
+	 */
 	public boolean containsCycle()
 	{
 		for (DEPNode node : this)
@@ -402,7 +479,11 @@ public class DEPTree implements Iterable<DEPNode>
 	
 // --------------------------------- Semantics ---------------------------------
 	
-	/** @param beginID exclusive. */
+	/**
+	 * Return the next Semantic Head of this ID
+	 * @param beginID
+	 * @return
+	 */
 	public DEPNode getNextSemanticHead(int beginID)
 	{
 		int i, size = size();
@@ -417,6 +498,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return null;
 	}
 	
+	/**
+	 * Return true if this DEPTree contains a semantic head
+	 * @return
+	 */
 	public boolean containsSemanticHead()
 	{
 		for (DEPNode node : this)
@@ -428,6 +513,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return false;
 	}
 	
+	/**
+	 * Return List of Semantic Role Label Arc
+	 * @return
+	 */
 	public List<List<SRLArc>> getArgumentList()
 	{
 		List<List<SRLArc>> list = new ArrayList<>();
@@ -450,7 +539,7 @@ public class DEPTree implements Iterable<DEPNode>
 	}
 	
 	/**
-	 * @return a semantic tree representing a predicate-argument structure of the specific token if exists; otherwise, {@code null}.
+	 * @return A semantic tree representing a predicate-argument structure of the specific token if exists; otherwise, {@code null}.
 	 * @param predicateID the node ID of a predicate.
 	 */
 	public SRLTree getSRLTree(int predicateID)
@@ -458,6 +547,11 @@ public class DEPTree implements Iterable<DEPNode>
 		return getSRLTree(get(predicateID));
 	}
 	
+	/**
+	 * Return all predicate argument structures of this DEPTree
+	 * @param predicate
+	 * @return
+	 */
 	public SRLTree getSRLTree(DEPNode predicate)
 	{
 		if (!predicate.isSemanticHead())
@@ -479,6 +573,10 @@ public class DEPTree implements Iterable<DEPNode>
 	
 //	====================================== Gold tags ======================================
 	
+	/**
+	 * Return all POS tags of this DEPTree
+	 * @return
+	 */
 	public String[] getPOSTags()
 	{
 		int i, size = size();
@@ -490,6 +588,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return tags;
 	}
 	
+	/**
+	 * Set the POS tags of the DEPNode of this DEPTree to the given String[] of POS tags
+	 * @param tags
+	 */
 	public void setPOSTags(String[] tags)
 	{
 		int i, size = size();
@@ -498,6 +600,10 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).setPOSTag(tags[i]);
 	}
 	
+	/**
+	 * Return all named entity tags in this DEPTree
+	 * @return
+	 */
 	public String[] getNamedEntityTags()
 	{
 		int i, size = size();
@@ -509,6 +615,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return tags;
 	}
 	
+	/**
+	 *  Set the named entity tags of the DEPNode of this DEPTree to the given String[] of named entity tags
+	 * @param tags
+	 */
 	public void setNamedEntityTags(String[] tags)
 	{
 		int i, size = size();
@@ -517,12 +627,20 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).setNamedEntityTag(tags[i]);
 	}
 	
+	/**
+	 * Return an array of all dependency arcs in this DEPTree
+	 * @return
+	 */
 	public DEPArc[] getHeads()
 	{
 		return getHeads(size());
 	}
 	
-	/** @param endIndex the ending index (exclusive). */
+	/**
+	 * Return an array of all dependency arcs in this DEPTree ending at this index
+	 * @param endIndex (exclusive).
+	 * @return
+	 */
 	public DEPArc[] getHeads(int endIndex)
 	{
 		DEPNode node, head;
@@ -541,6 +659,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return heads;
 	}
 	
+	/**
+	 * Starting from top of DEPTree set the heads of the DEPNodes to the DEPArc given
+	 * @param arcs
+	 */
 	public void setHeads(DEPArc[] arcs)
 	{
 		int i, len = arcs.length;
@@ -559,6 +681,9 @@ public class DEPTree implements Iterable<DEPNode>
 		}
 	}
 	
+	/**
+	 * Remove all dependences of all DEPNodes in this DEPTree
+	 */
 	public void clearDependencies()
 	{
 		int i, size = size();
@@ -567,6 +692,11 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).clearDependencies();
 	}
 	
+	/**
+	 * Return all POS tags of this given feature 
+	 * @param key
+	 * @return
+	 */
 	public String[] getFeatureTags(String key)
 	{
 		int i, size = size();
@@ -578,6 +708,11 @@ public class DEPTree implements Iterable<DEPNode>
 		return tags;
 	}
 	
+	/**
+	 * Starting at the top of this DEPTree set this DEPNode with this feature label and this tag
+	 * @param key
+	 * @param tags
+	 */
 	public void setFeatureTags(String key, String[] tags)
 	{
 		int i, size = size();
@@ -586,6 +721,10 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).putFeat(key, tags[i]);
 	}
 	
+	/**
+	 * Starting at the top of this DEPTree remove this feature with this specific key 
+	 * @param key
+	 */
 	public void clearFeatureTags(String key)
 	{
 		int i, size = size();
@@ -594,6 +733,10 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).removeFeat(key);
 	}
 
+	/**
+	 * Return a String[] with all role set IDs
+	 * @return
+	 */
 	public String[] getRolesetIDs()
 	{
 		int i, size = size();
@@ -605,6 +748,9 @@ public class DEPTree implements Iterable<DEPNode>
 		return rolesets;
 	}
 	
+	/**
+	 * Starting at the top of this DEPTree clear all role set IDs
+	 */
 	public void clearRolesetIDs()
 	{
 		int i, size = size();
@@ -613,6 +759,10 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).clearRolesetID();
 	}
 	
+	/**
+	 * 2-Dimension array 'i'th row is the DEPNode and 'j'ith column is the semantic head
+	 * @return
+	 */
 	public SRLArc[][] getSemanticHeads()
 	{
 		int i, j, len, size = size();
@@ -637,6 +787,9 @@ public class DEPTree implements Iterable<DEPNode>
 		return sHeads;
 	}
 	
+	/**
+	 * Starting at the top of the DEPTree clear all the semantic heads
+	 */
 	public void clearSemanticHeads()
 	{
 		int i, size = size();
@@ -645,6 +798,10 @@ public class DEPTree implements Iterable<DEPNode>
 			get(i).clearSemanticHeads();
 	}
 	
+	/**
+	 * Return a list of DEPNodes from a DFS traversal of this DEPTree
+	 * @return
+	 */
 	public List<DEPNode> getDepthFirstNodeList()
 	{
 		List<DEPNode> list = new ArrayList<>(size());
@@ -652,6 +809,11 @@ public class DEPTree implements Iterable<DEPNode>
 		return list;
 	}
 	
+	/**
+	 * Recursive call that does a DFS traversal of this DEPNode's children
+	 * @param list
+	 * @param node
+	 */
 	private void traverseDepthFirst(List<DEPNode> list, DEPNode node)
 	{
 		for (DEPNode child : node.getDependentList())
@@ -662,6 +824,10 @@ public class DEPTree implements Iterable<DEPNode>
 	
 //	====================================== String ======================================
 	
+	/**
+	 * Return a string of all the POS tags of this DEPTree
+	 * @return
+	 */
 	public String toStringPOS()
 	{
 		StringBuilder build = new StringBuilder();
@@ -675,6 +841,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return build.substring(1);
 	}
 	
+	/**
+	 * Return a string of all the morphology of this DEPTree
+	 * @return
+	 */
 	public String toStringMorph()
 	{
 		StringBuilder build = new StringBuilder();
@@ -688,6 +858,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return build.substring(1);
 	}
 	
+	/**
+	 * Return a string of all the dependency labels of this DEPTree
+	 * @return
+	 */
 	public String toStringDEP()
 	{
 		StringBuilder build = new StringBuilder();
@@ -701,6 +875,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return build.substring(1);
 	}
 	
+	/**
+	 * Convert to directed-acyclic-graph format
+	 * @return
+	 */
 	public String toStringDAG()
 	{
 		StringBuilder build = new StringBuilder();
@@ -714,6 +892,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return build.substring(1);
 	}
 	
+	/**
+	 * Return a string of all the semantic role labels of this DEPTree
+	 * @return
+	 */
 	public String toStringSRL()
 	{
 		StringBuilder build = new StringBuilder();
@@ -727,6 +909,10 @@ public class DEPTree implements Iterable<DEPNode>
 		return build.substring(1);
 	}
 	
+	/**
+	 * Convert into CoNLLX format
+	 * @return
+	 */
 	public String toStringCoNLLX()
 	{
 		StringBuilder build = new StringBuilder();
