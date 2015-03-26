@@ -4,6 +4,7 @@
     <reader type="tsv">
         <column index="2" field="form"/>
         <column index="4" field="pos"/>
+        <column index="5" field="feats"/>
     </reader>
 
     <pos>
