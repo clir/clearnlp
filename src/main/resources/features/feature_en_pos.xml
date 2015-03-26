@@ -6,8 +6,6 @@
 	<feature f0="i-1:f2"/>
 	<feature f0="i+1:f2"/>
 	<feature f0="i+2:f2"/>
-	<feature f0="i-3:f2" visible="false"/>
-	<feature f0="i+3:f2" visible="false"/>
 
 	<feature f0="i:a"/>
 	<feature f0="i-3:p"/>
@@ -38,14 +36,7 @@
 	<feature f0="i-2:p" f1="i-1:p" f2="i+1:a"/>
 	<feature f0="i-1:p" f1="i+1:a" f2="i+2:a"/>
 
-	<feature f0="i-2:f3" f1="i-1:f3" f2="i:f3"   visible="false"/>
-	<feature f0="i:f3"   f1="i+1:f3" f2="i+2:f3" visible="false"/>
-	<feature f0="i-1:f3" f1="i:f3"   f2="i+1:f3" visible="false"/>
-	<feature f0="i-2:f3" f1="i-1:f3" f2="i+1:f3" visible="false"/>
-	<feature f0="i-1:f3" f1="i+1:f3" f2="i+2:f3" visible="false"/>
-
 	<!-- affix features -->
-	<feature f0="i:pf1" visible="false"/>
 	<feature f0="i:pf2"/>
 	<feature f0="i:pf3"/>
 
@@ -58,6 +49,6 @@
 	<feature f0="i:orth"/>
 
 	<!-- binary features -->
-	<feature f0="i:b0" note="input is the first token" visible="false"/>
+	<feature f0="i:b0" note="input is the first token"/>
 	<feature f0="i:b1" note="input is the last  token"/>
 </feature_template>

@@ -87,7 +87,7 @@ public class NLPTrain
 //		List<Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>>> tasks = new ArrayList<>();
 //		Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>> c;
 //		ExecutorService executor = Executors.newFixedThreadPool(n_threads);
-//		;
+//		
 //		for (String configurationFile : s_configurationFiles)
 //		{
 //			for (String featureFile : s_featureFiles)
