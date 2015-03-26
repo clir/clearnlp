@@ -16,14 +16,11 @@
 package edu.emory.clir.clearnlp.component.mode.pos;
 
 import java.io.InputStream;
-import java.util.Set;
 
 import org.w3c.dom.Element;
 
 import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
-import edu.emory.clir.clearnlp.util.DSUtils;
-import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 
 /**
@@ -32,56 +29,67 @@ import edu.emory.clir.clearnlp.util.XmlUtils;
  */
 public class POSConfiguration extends AbstractConfiguration
 {
-	private double threshold_ambiguityClass;
-	private Set<String> proper_noun_tagset;
+	private double ambiguity_class_threshold;
+	private int document_frequency_cutoff;
+	private int document_size;
 
 //	============================== Initialization ==============================
+	
+	public POSConfiguration()
+	{
+		super(NLPMode.pos);
+	}
 	
 	public POSConfiguration(InputStream in)
 	{
 		super(in, NLPMode.pos);
-		init();
+		initXml();
 	}
 	
-	private void init()
+	private void initXml()
 	{
 		Element eMode = getModeElement();
 		
-		double ac = XmlUtils.getDoubleTextContent(XmlUtils.getFirstElementByTagName(eMode, "ambiguity_class_threshold"));
-		String[] nnp = Splitter.splitCommas(XmlUtils.getTrimmedTextContent(XmlUtils.getFirstElementByTagName(eMode, "proper_noun_tagset")));
+		double ac = XmlUtils.getDoubleTextContent (XmlUtils.getFirstElementByTagName(eMode, "ambiguity_class_threshold"));
+		int    df = XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, "document_frequency_cutoff"));
+		int    ds = XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, "document_size"));
 		
 		setAmbiguityClassThreshold(ac);
-		setProperNounTagset(DSUtils.toHashSet(nnp));
+		setDocumentFrequencyCutoff(df);
+		setDocumentSize(ds);
 	}
 	
 //	============================== Getters ==============================
 	
 	public double getAmbiguityClassThreshold()
 	{
-		return threshold_ambiguityClass;
+		return ambiguity_class_threshold;
 	}
 	
-	public Set<String> getProperNounTagset()
+	public int getDocumentFrequencyCutoff()
 	{
-		return proper_noun_tagset;
+		return document_frequency_cutoff;
+	}
+	
+	public int getDocumentSize()
+	{
+		return document_size;
 	}
 	
 //	============================== Setters ==============================
 	
 	public void setAmbiguityClassThreshold(double threshold)
 	{
-		threshold_ambiguityClass = threshold;
+		ambiguity_class_threshold = threshold;
 	}
 	
-	public void setProperNounTagset(Set<String> set)
+	public void setDocumentFrequencyCutoff(int cutoff)
 	{
-		proper_noun_tagset = set;
+		document_frequency_cutoff = cutoff;
 	}
 	
-//	============================== Booleans ==============================
-	
-	public boolean isProperNoun(String posTag)
+	public void setDocumentSize(int size)
 	{
-		return proper_noun_tagset.contains(posTag);
+		document_size = size;
 	}
 }

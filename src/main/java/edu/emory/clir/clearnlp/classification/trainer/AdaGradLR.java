@@ -32,18 +32,18 @@ public class AdaGradLR extends AbstractAdaGrad
 	 * @param alpha the learning rate.
 	 * @param rho the smoothing denominator.
 	 */
-	public AdaGradLR(SparseModel model, boolean average, double alpha, double rho)
+	public AdaGradLR(SparseModel model, boolean average, double alpha, double rho, double bias)
 	{
-		super(model, average, alpha, rho);
+		super(model, average, alpha, rho, bias);
 	}
 	
 	/**
 	 * @param alpha the learning rate.
 	 * @param rho the smoothing denominator.
 	 */
-	public AdaGradLR(StringModel model, int labelCutoff, int featureCutoff, boolean average, double alpha, double rho)
+	public AdaGradLR(StringModel model, int labelCutoff, int featureCutoff, boolean average, double alpha, double rho, double bias)
 	{
-		super(model, labelCutoff, featureCutoff, average, alpha, rho);
+		super(model, labelCutoff, featureCutoff, average, alpha, rho, bias);
 	}
 	
 	@Override
@@ -81,31 +81,47 @@ public class AdaGradLR extends AbstractAdaGrad
 		
 		for (j=0; j<lsize; j++)
 			g[j] = MathUtils.sq(gradidents[j]);
+
+		updateGradients(g, 0, d_bias);
 		
 		for (i=0; i<len; i++)
 		{
 			xi = x.getIndex(i);
 			vi = MathUtils.sq(x.getWeight(i));
-			
-			for (j=0; j<lsize; j++)
-				d_gradients[w_vector.getWeightIndex(j, xi)] += vi * g[j];
+			updateGradients(g, xi, vi);
 		}
+	}
+	
+	private void updateGradients(double[] g, int xi, double vi)
+	{
+		int j, lsize = w_vector.getLabelSize();
+		
+		for (j=0; j<lsize; j++)
+			d_gradients[w_vector.getWeightIndex(j, xi)] += vi * g[j];
 	}
 	
 	private void updateWeights(IntInstance instance, double[] gradients, int averageCount)
 	{
 		SparseFeatureVector x = instance.getFeatureVector();
-		int i, j, xi, len = x.size(), lsize = w_vector.getLabelSize();
+		int i, xi, len = x.size();
 		double vi;
+		
+		updateWeights(gradients, 0, d_bias, averageCount);
 		
 		for (i=0; i<len; i++)
 		{
 			xi = x.getIndex(i);
 			vi = x.getWeight(i);
-			
-			for (j=0; j<lsize; j++)
-				updateWeight(w_vector.getWeightIndex(j, xi), vi*gradients[j], averageCount);
+			updateWeights(gradients, xi, vi, averageCount);
 		}
+	}
+	
+	private void updateWeights(double[] gradients, int xi, double vi, int averageCount)
+	{
+		int j, lsize = w_vector.getLabelSize();
+		
+		for (j=0; j<lsize; j++)
+			updateWeight(w_vector.getWeightIndex(j, xi), vi*gradients[j], averageCount);
 	}
 	
 	@Override

@@ -23,9 +23,10 @@ public class AdaGradTrainerConfiguration extends DefaultTrainerConfiguration
 {
 	private double  d_alpha;
 	private double  d_rho;
+	private double  d_bias;
 	private boolean b_average;
 	
-	public AdaGradTrainerConfiguration(byte vectorType, boolean binary, int labelCutoff, int featureCutoff, int numberOfThreads, boolean average, double alpha, double rho)
+	public AdaGradTrainerConfiguration(byte vectorType, boolean binary, int labelCutoff, int featureCutoff, int numberOfThreads, boolean average, double alpha, double rho, double bias)
 	{
 		super(vectorType, binary, labelCutoff, featureCutoff, numberOfThreads);
 		setAverage(average);
@@ -48,6 +49,11 @@ public class AdaGradTrainerConfiguration extends DefaultTrainerConfiguration
 		return d_rho;
 	}
 	
+	public double getBias()
+	{
+		return d_bias;
+	}
+	
 	public void setAverage(boolean average)
 	{
 		b_average = average;
@@ -61,5 +67,10 @@ public class AdaGradTrainerConfiguration extends DefaultTrainerConfiguration
 	public void setRidge(double rho)
 	{
 		d_rho = rho;
+	}
+	
+	public void setBias(double bias)
+	{
+		d_bias = bias;
 	}
 }

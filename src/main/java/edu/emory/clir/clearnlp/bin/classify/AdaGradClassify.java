@@ -36,6 +36,8 @@ public class AdaGradClassify extends AbstractClassifyOnline
 	private double d_alpha = 0.01;
 	@Option(name="-r", usage="the tolerance of termination criterion (default: 0.1)", required=false, metaVar="<double>")
 	private double d_rho   = 0.1;
+	@Option(name="-b", usage="the bias (default: 0.0)", required=false, metaVar="<double>")
+	private double d_bias  = 0d;
 	@Option(name="-average", usage="if set, average weights (default: false)", required=false, metaVar="<boolean>")
 	protected boolean b_average = false;
 	@Option(name="-logistic", usage="if set, logistic regression (default: false)", required=false, metaVar="<boolean>")
@@ -49,7 +51,7 @@ public class AdaGradClassify extends AbstractClassifyOnline
 	@Override
 	protected AbstractTrainerConfiguration createTrainConfiguration()
 	{
-		return new AdaGradTrainerConfiguration(i_vectorType, b_binary, i_labelCutoff, i_featureCutoff, i_numberOfThreads, b_average, d_alpha, d_rho);
+		return new AdaGradTrainerConfiguration(i_vectorType, b_binary, i_labelCutoff, i_featureCutoff, i_numberOfThreads, b_average, d_alpha, d_rho, d_bias);
 	}
 
 	@Override
@@ -59,13 +61,13 @@ public class AdaGradClassify extends AbstractClassifyOnline
 		
 		if (isSparseModel(model))
 		{
-			if (b_logistic)	return new AdaGradLR((SparseModel)model, c.isAverage(), c.getLearningRate(), c.getRidge());
-			else			return new AdaGradSVM   ((SparseModel)model, c.isAverage(), c.getLearningRate(), c.getRidge());
+			if (b_logistic)	return new AdaGradLR ((SparseModel)model, c.isAverage(), c.getLearningRate(), c.getRidge(), c.getBias());
+			else			return new AdaGradSVM((SparseModel)model, c.isAverage(), c.getLearningRate(), c.getRidge(), c.getBias());
 		}
 		else
 		{
-			if (b_average)	return new AdaGradLR((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge());
-			else			return new AdaGradSVM   ((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge());
+			if (b_average)	return new AdaGradLR ((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge(), c.getBias());
+			else			return new AdaGradSVM((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge(), c.getBias());
 		}
 	}
 	

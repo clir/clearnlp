@@ -71,6 +71,6 @@ public class POSState extends AbstractLRState
 	
 	public boolean extractWordFormFeature(DEPNode node)
 	{
-		return c_flag == CFlag.DECODE || c_flag == CFlag.EVALUATE || !pos_lexicon.isProperNoun(node.getSimplifiedWordForm());
+		return c_flag == CFlag.DECODE || c_flag == CFlag.EVALUATE || pos_lexicon.includeForm(node.getLowerSimplifiedWordForm());
 	}
 }

@@ -16,7 +16,6 @@
 package edu.emory.clir.clearnlp.component.configuration;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 
 import org.junit.Test;
@@ -38,8 +37,8 @@ public class POSConfigurationTest
 		POSConfiguration config = new POSConfiguration(IOUtils.createFileInputStream(filename));
 		
 		assertEquals(TLanguage.ENGLISH, config.getLanguage());
-		assertEquals(0.4, config.getAmbiguityClassThreshold(), 1e-15);
-		assertTrue(config.getProperNounTagset().contains("NNP"));
-		assertTrue(config.getProperNounTagset().contains("NNPS"));
+		assertEquals(0.4 , config.getAmbiguityClassThreshold(), 1e-15);
+		assertEquals(2   , config.getDocumentFrequencyCutoff());
+		assertEquals(1500, config.getDocumentSize());
 	}
 }

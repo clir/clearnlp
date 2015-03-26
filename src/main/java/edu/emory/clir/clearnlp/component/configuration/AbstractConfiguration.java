@@ -245,11 +245,12 @@ public class AbstractConfiguration implements ConfigurationXML
 		boolean average = XmlUtils.getBooleanAttribute(eTrainer, "average");
 		double  alpha   = XmlUtils.getDoubleAttribute (eTrainer, "alpha");
 		double  rho     = XmlUtils.getDoubleAttribute (eTrainer, "rho");
+		double  bias    = XmlUtils.getDoubleAttribute (eTrainer, "bias");
 		
 		switch (type)
 		{
-		case V_SUPPORT_VECTOR_MACHINE: return new AdaGradSVM(model, labelCutoff, featureCutoff, average, alpha, rho);
-		case V_LOGISTIC_REGRESSION   : return new AdaGradLR (model, labelCutoff, featureCutoff, average, alpha, rho);
+		case V_SUPPORT_VECTOR_MACHINE: return new AdaGradSVM(model, labelCutoff, featureCutoff, average, alpha, rho, bias);
+		case V_LOGISTIC_REGRESSION   : return new AdaGradLR (model, labelCutoff, featureCutoff, average, alpha, rho, bias);
 		}
 		
 		throw new IllegalArgumentException(type+" is not a valid algorithm type.");

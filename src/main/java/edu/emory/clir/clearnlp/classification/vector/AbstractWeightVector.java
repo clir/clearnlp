@@ -90,6 +90,11 @@ abstract public class AbstractWeightVector implements Serializable
 		f_weights.set(weightIndex, value);
 	}
 	
+	public void set(double[] array)
+	{
+		f_weights.set(array);
+	}
+	
 	public void add(int weightIndex, float value)
 	{
 		f_weights.set(weightIndex, f_weights.get(weightIndex)+value);

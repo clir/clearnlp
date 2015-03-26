@@ -38,7 +38,7 @@ public abstract class AbstractPOSTagger extends AbstractStatisticalComponent<Str
 	{
 		super(configuration);
 		t_configuration = configuration;
-		pos_lexicon = new POSLexicon(configuration.getProperNounTagset());
+		pos_lexicon = new POSLexicon(configuration);
 	}
 	
 	/** Creates a pos tagger for train. */
@@ -70,9 +70,7 @@ public abstract class AbstractPOSTagger extends AbstractStatisticalComponent<Str
 	@Override
 	public Object getLexicons()
 	{
-		if (t_configuration != null)
-			pos_lexicon.finalizeAmbiguityClassFeatures(((POSConfiguration)t_configuration).getAmbiguityClassThreshold());
-		
+		if (isCollect()) pos_lexicon.finalizeCollect();
 		return pos_lexicon;
 	}
 	

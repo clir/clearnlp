@@ -346,7 +346,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 		if (currScore == 100) return;
 		onlineBootstrap(trees);
 		
-		AbstractOnlineTrainer trainer = new AdaGradSVM(s_models[0], 0, 0, false, 0.01, 0.1);
+		AbstractOnlineTrainer trainer = new AdaGradSVM(s_models[0], 0, 0, false, 0.01, 0.1, 0d);
 		byte[] prevModels;
 		double prevScore;
 		

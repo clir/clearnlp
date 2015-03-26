@@ -17,15 +17,18 @@ package edu.emory.clir.clearnlp.component.mode.pos;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.ngram.Bigram;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.Joiner;
+import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
@@ -35,50 +38,70 @@ import edu.emory.clir.clearnlp.util.constant.StringConst;
 public class POSLexicon implements Serializable
 {
 	private static final long serialVersionUID = 8363531867786160098L;
-	private final double PROPER_NOUN_THRESHOLD = 0.9;
-	
+
+	private ObjectIntHashMap<String> document_frequencies;
 	private Map<String,String> ambiguity_class_features;
 	private Bigram<String,String> ambiguity_classes;
-	private Set<String> proper_noun_tags;
+	private Set<String> document; 
+	private int tree_count;
 	
-	public POSLexicon(Set<String> properNounTags)
+	private double ambiguity_class_threshold;
+	private int document_frequency_cutoff;
+	private int document_size;
+	
+	public POSLexicon(POSConfiguration configuration)
 	{	
+		document_frequencies = new ObjectIntHashMap<>();
+		ambiguity_class_features = new HashMap<>();
 		ambiguity_classes = new Bigram<>();
-		proper_noun_tags = properNounTags;
-		ambiguity_class_features = null;
+		initDocument();
+		
+		setAmbiguityClassThreshold(configuration.getAmbiguityClassThreshold());
+		setDocumentFrequencyCutoff(configuration.getDocumentFrequencyCutoff());
+		setDocumentSize(configuration.getDocumentSize());
 	}
 	
 	public void collect(POSState state)
 	{
+		String sf;
+		
 		for (DEPNode node : state.getTree())
-			ambiguity_classes.add(node.getSimplifiedWordForm(), node.getPOSTag());
+		{
+			sf = node.getSimplifiedWordForm();
+			ambiguity_classes.add(sf, node.getPOSTag());
+			document.add(StringUtils.toLowerCase(sf));
+		}
+		
+		if (++tree_count == document_size)
+			initDocument();
 	}
 	
-	public Bigram<String,String> getAmbiguityClassMap()
+	private void initDocument()
 	{
-		return ambiguity_classes;
+		if (document != null) document_frequencies.addAll(document);
+		document = new HashSet<>();
+		tree_count = 0;
 	}
-
+	
 	public String getAmbiguityClassFeature(String simplifiedWordForm)
 	{
 		return ambiguity_class_features.get(simplifiedWordForm);
 	}
 	
-	public Set<String> getAmbiguityClasses(String simplifiedWordForm)
+	public void finalizeCollect()
 	{
-		return ambiguity_classes.getUnigramSet(simplifiedWordForm);
+		finalizeCollect(ambiguity_classes.getBigramSet());
 	}
 	
-	public void finalizeAmbiguityClassFeatures(double threshold)
+	public void finalizeCollect(Set<String> simplifiedWordForms)
 	{
-		if (ambiguity_class_features != null) return;
-		ambiguity_class_features = new HashMap<>();
 		List<ObjectDoublePair<String>> ps;
+		initDocument();
 		
-		for (String key : ambiguity_classes.getBigramSet())
+		for (String key : simplifiedWordForms)
 		{
-			if (isProperNoun(key)) continue;
-			ps = ambiguity_classes.toList(key, threshold);
+			if (!includeForm(StringUtils.toLowerCase(key))) continue;
+			ps = ambiguity_classes.toList(key, ambiguity_class_threshold);
 			
 			if (!ps.isEmpty())
 			{
@@ -88,9 +111,23 @@ public class POSLexicon implements Serializable
 		}
 	}
 	
-	public boolean isProperNoun(String simplifiedWordForm)
+	public boolean includeForm(String lowerSimplifiedWordForm)
 	{
-		ObjectDoublePair<String> p = ambiguity_classes.getBest(simplifiedWordForm);
-		return (p != null) && proper_noun_tags.contains(p.o) && (p.d > PROPER_NOUN_THRESHOLD);
+		return document_frequencies.get(lowerSimplifiedWordForm) > document_frequency_cutoff;
+	}
+	
+	public void setAmbiguityClassThreshold(double threshold)
+	{
+		ambiguity_class_threshold = threshold;
+	}
+	
+	public void setDocumentFrequencyCutoff(int cutoff)
+	{
+		document_frequency_cutoff = cutoff;
+	}
+	
+	public void setDocumentSize(int size)
+	{
+		document_size = size;
 	}
 }

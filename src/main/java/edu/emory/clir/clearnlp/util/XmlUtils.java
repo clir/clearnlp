@@ -117,7 +117,8 @@ public class XmlUtils
 	
 	static public double getDoubleAttribute(Element element, String name)
 	{
-		return Double.parseDouble(getTrimmedAttribute(element, name));
+		String s = getTrimmedAttribute(element, name);
+		return s.isEmpty() ? 0d : Double.parseDouble(s);
 	}
 	
 	static public List<Node> getAttributeNodeList(Element element, Pattern name)

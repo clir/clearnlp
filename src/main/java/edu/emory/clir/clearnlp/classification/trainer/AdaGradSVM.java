@@ -33,18 +33,18 @@ public class AdaGradSVM extends AbstractAdaGrad
 	 * @param alpha the learning rate.
 	 * @param rho the smoothing denominator.
 	 */
-	public AdaGradSVM(SparseModel model, boolean average, double alpha, double rho)
+	public AdaGradSVM(SparseModel model, boolean average, double alpha, double rho, double bias)
 	{
-		super(model, average, alpha, rho);
+		super(model, average, alpha, rho, bias);
 	}
 	
 	/**
 	 * @param alpha the learning rate.
 	 * @param rho the smoothing denominator.
 	 */
-	public AdaGradSVM(StringModel model, int labelCutoff, int featureCutoff, boolean average, double alpha, double rho)
+	public AdaGradSVM(StringModel model, int labelCutoff, int featureCutoff, boolean average, double alpha, double rho, double bias)
 	{
-		super(model, labelCutoff, featureCutoff, average, alpha, rho);
+		super(model, labelCutoff, featureCutoff, average, alpha, rho, bias);
 	}
 	
 	@Override
@@ -75,20 +75,27 @@ public class AdaGradSVM extends AbstractAdaGrad
 		int i, xi, len = x.size();
 		double vi;
 		
+		// bias
+		updateGradients(yp, yn, 0, MathUtils.sq(d_bias));
+		
 		for (i=0; i<len; i++)
 		{
 			xi = x.getIndex(i);
 			vi = MathUtils.sq(x.getWeight(i));
-			
-			if (w_vector.isBinaryLabel())
-			{
-				d_gradients[xi] += vi;
-			}
-			else
-			{
-				d_gradients[w_vector.getWeightIndex(yp, xi)] += vi;
-				d_gradients[w_vector.getWeightIndex(yn, xi)] += vi;
-			}
+			updateGradients(yp, yn, xi, vi);
+		}
+	}
+	
+	private void updateGradients(int yp, int yn, int xi, double vi)
+	{
+		if (w_vector.isBinaryLabel())
+		{
+			d_gradients[xi] += vi;
+		}
+		else
+		{
+			d_gradients[w_vector.getWeightIndex(yp, xi)] += vi;
+			d_gradients[w_vector.getWeightIndex(yn, xi)] += vi;
 		}
 	}
 	
@@ -97,22 +104,29 @@ public class AdaGradSVM extends AbstractAdaGrad
 		SparseFeatureVector x = instance.getFeatureVector();
 		int i, xi, len = x.size();
 		double vi;
+
+		// bias
+		updateWeights(yp, yn, averageCount, 0, d_bias);
 		
 		for (i=0; i<len; i++)
 		{
 			xi = x.getIndex(i);
 			vi = x.getWeight(i);
-			
-			if (w_vector.isBinaryLabel())
-			{
-				if (yp == 1) vi *= -1;
-				updateWeight(xi, vi, averageCount);
-			}
-			else
-			{
-				updateWeight(w_vector.getWeightIndex(yp, xi),  vi, averageCount);
-				updateWeight(w_vector.getWeightIndex(yn, xi), -vi, averageCount);
-			}
+			updateWeights(yp, yn, averageCount, xi, vi);
+		}
+	}
+	
+	private void updateWeights(int yp, int yn, int averageCount, int xi, double vi)
+	{
+		if (w_vector.isBinaryLabel())
+		{
+			if (yp == 1) vi *= -1;
+			updateWeight(xi, vi, averageCount);
+		}
+		else
+		{
+			updateWeight(w_vector.getWeightIndex(yp, xi),  vi, averageCount);
+			updateWeight(w_vector.getWeightIndex(yn, xi), -vi, averageCount);
 		}
 	}
 	

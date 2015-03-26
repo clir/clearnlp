@@ -56,6 +56,14 @@ public class FloatArrayList extends com.carrotsearch.hppc.FloatArrayList impleme
 		trimToSize();
 	}
 	
+	public void set(double[] array)
+	{
+		int i, size = array.length;
+		
+		for (i=0; i<size; i++)
+			set(i, (float)array[i]);
+	}
+	
 	public float[] toArray()
 	{
 		return toArray(0, size());
