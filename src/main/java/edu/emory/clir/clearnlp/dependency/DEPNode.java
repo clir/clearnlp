@@ -1152,6 +1152,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	{
 		switch (field)
 		{
+		case f : return getWordForm();
 		case m : return getLemma();
 		case p : return getPOSTag();
 		case n : return getNamedEntityTag();
@@ -1923,6 +1924,19 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		build.append(toString(s_heads));
 		
 		return build.toString();
+	}
+	
+	public String joinSubNodeFields(FieldType field, String delim)
+	{
+		StringBuilder build = new StringBuilder();
+		
+		for (DEPNode node : getSubNodeList())
+		{
+			build.append(delim);
+			build.append(node.getTagFeature(field));
+		}
+		
+		return build.substring(delim.length());
 	}
 	
 	private String toStringHead()

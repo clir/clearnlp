@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,15 +21,15 @@ import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
-public class EntityReader implements DBPediaXML
+public class DBPediaInstanceExtractor implements DBPediaXML
 {
 	static final Pattern RESOURCE = Pattern.compile("<http://dbpedia.org/resource/(.+?)>");
 	static final Pattern ONTOLOGY = Pattern.compile("<http://dbpedia.org/ontology/(.+?)>");
 	
-	public Map<String,DBPediaInfo> getInstanceMap(DBPediaTypeMap typeMap, InputStream in) throws Exception
+	public DBPediaInfoMap getInfoMap(DBPediaTypeMap typeMap, InputStream in) throws Exception
 	{
 		BufferedReader reader = IOUtils.createBufferedReader(in);
-		Map<String,DBPediaInfo> map = new HashMap<>();
+		DBPediaInfoMap map = new DBPediaInfoMap();
 		String line, title, type;
 		DBPediaInfo info;
 		Matcher m;
@@ -127,17 +126,14 @@ public class EntityReader implements DBPediaXML
 	
 	static public void main(String[] args) throws Exception
 	{
-		EntityReader ex = new EntityReader();
+		DBPediaInstanceExtractor ex = new DBPediaInstanceExtractor();
 		Gson gson = new Gson();
 		
 		DBPediaTypeMap typeMap = gson.fromJson(new InputStreamReader(IOUtils.createXZBufferedInputStream(args[0])), DBPediaTypeMap.class);	// dbpedia.owl.json.xz
-		Map<String,DBPediaInfo> instanceMap = ex.getInstanceMap(typeMap, new FileInputStream(args[1]));	// instance_types_en.nt
-		ex.addRedirects(instanceMap, new FileInputStream(args[2]));
-		
-		PrintStream out = new PrintStream(IOUtils.createXZBufferedOutputStream(args[3]));
-		out.print(gson.toJson(instanceMap));
+		DBPediaInfoMap infoMap = ex.getInfoMap(typeMap, new FileInputStream(args[1]));		// instance_types_en.nt
+		ex.addRedirects(infoMap, new FileInputStream(args[2]));								// redirects_en.ttl
+		PrintStream out = new PrintStream(IOUtils.createXZBufferedOutputStream(args[3]));	// instances_en.json.xz
+		out.print(gson.toJson(infoMap));
 		out.close();
-		
-		System.out.println(instanceMap.size());
 	}
 }

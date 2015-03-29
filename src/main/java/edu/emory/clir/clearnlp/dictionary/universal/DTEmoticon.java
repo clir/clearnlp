@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.emory.clir.clearnlp.collection.tree.AffixTree;
+import edu.emory.clir.clearnlp.collection.tree.CharAffixTree;
 import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
@@ -33,8 +33,8 @@ public class DTEmoticon
 {
 	private final Pattern EMOTICON = Pattern.compile("[\\!\\|;:#%][-]*[\\(\\)\\[\\]\\{\\}\\|<>]+");
 	private Set<String> s_emoticon;
-	private AffixTree   t_prefix;
-	private AffixTree   t_suffix;
+	private CharAffixTree   t_prefix;
+	private CharAffixTree   t_suffix;
 	
 	public DTEmoticon()
 	{
@@ -49,8 +49,8 @@ public class DTEmoticon
 	public void init(InputStream in)
 	{
 		s_emoticon = DSUtils.createStringHashSet(in, true, false);
-		t_prefix = new AffixTree(true);		t_prefix.addAll(s_emoticon);
-		t_suffix = new AffixTree(false);	t_suffix.addAll(s_emoticon);
+		t_prefix = new CharAffixTree(true);		t_prefix.addAll(s_emoticon);
+		t_suffix = new CharAffixTree(false);	t_suffix.addAll(s_emoticon);
 	}
 	
 	public int[] getEmoticonRange(String s)

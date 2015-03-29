@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import edu.emory.clir.clearnlp.collection.tree.AffixTree;
+import edu.emory.clir.clearnlp.collection.tree.CharAffixTree;
 
 /**
  * @since 3.0.0
@@ -30,7 +30,7 @@ public class AffixTreeTest
 	@Test
 	public void testPrefix()
 	{
-		AffixTree tree = new AffixTree(true);
+		CharAffixTree tree = new CharAffixTree(true);
 		
 		tree.add("inter");
 		tree.add("in");
@@ -50,7 +50,7 @@ public class AffixTreeTest
 	@Test
 	public void testMinimumSuffix()
 	{
-		AffixTree tree = new AffixTree(false);
+		CharAffixTree tree = new CharAffixTree(false);
 		
 		tree.add("iness");
 		tree.add("ness");

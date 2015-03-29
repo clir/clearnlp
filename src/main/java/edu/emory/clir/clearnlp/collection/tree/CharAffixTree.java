@@ -23,23 +23,23 @@ import edu.emory.clir.clearnlp.collection.map.CharObjectHashMap;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class AffixTree
+public class CharAffixTree
 {
-	private AffixNode n_root;
+	private CharAffixNode n_root;
 	private boolean   b_prefix;
 	
-	public AffixTree(boolean prefix)
+	public CharAffixTree(boolean prefix)
 	{
 		init(prefix);
 	}
 	
-	public AffixTree(boolean prefix, Collection<String> col)
+	public CharAffixTree(boolean prefix, Collection<String> col)
 	{
 		init(prefix);
 		addAll(col);
 	}
 	
-	public AffixTree(boolean prefix, String[] array)
+	public CharAffixTree(boolean prefix, String[] array)
 	{
 		init(prefix);
 		addAll(array);
@@ -47,7 +47,7 @@ public class AffixTree
 	
 	private void init(boolean prefix)
 	{
-		n_root = new AffixNode();
+		n_root = new CharAffixNode();
 		b_prefix = prefix;
 	}
 	
@@ -67,7 +67,7 @@ public class AffixTree
 	{
 		int i, beginIndex, direction, len = s.length();
 		char[] cs = s.toCharArray();
-		AffixNode curr, next;
+		CharAffixNode curr, next;
 		
 		if (b_prefix)
 		{
@@ -88,7 +88,7 @@ public class AffixTree
 			
 			if (next == null)
 			{
-				next = new AffixNode();
+				next = new CharAffixNode();
 				curr.put(cs[i], next);
 			}
 			
@@ -102,7 +102,7 @@ public class AffixTree
 	{
 		int i, beginIndex, direction, index = -1, len = s.length();
 		char[] cs = s.toCharArray();
-		AffixNode curr = n_root;
+		CharAffixNode curr = n_root;
 		
 		if (b_prefix)
 		{
@@ -130,12 +130,12 @@ public class AffixTree
 		return index;
 	}
 	
-	private class AffixNode extends CharObjectHashMap<AffixNode>
+	private class CharAffixNode extends CharObjectHashMap<CharAffixNode>
 	{
 		private static final long serialVersionUID = 1566684742873455351L;
 		private boolean b_endState;
 		
-		public AffixNode()
+		public CharAffixNode()
 		{
 			b_endState = false;
 		}
