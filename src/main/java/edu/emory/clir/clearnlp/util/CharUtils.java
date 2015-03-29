@@ -56,26 +56,30 @@ public class CharUtils
 		
 		for (i=cs.length-1; i>=0; i--)
 		{
-			c = cs[i];
+			c = toUpperCase(cs[i]);
 			
-			if ((97 <= c && c <= 122) || (224 <= c && c <= 254 && c != 247))
+			if (cs[i] != c)
 			{
-				cs[i] = (char)(c-32);
-				b = true;
-			}
-			else if (c == 154 || c == 156 || c == 158)
-			{
-				cs[i] = (char)(c-16);
-				b = true;
-			}
-			else if (c == 255)
-			{
-				cs[i] = (char)159;
+				cs[i] = c;
 				b = true;
 			}
 		}
 		
 		return b;
+	}
+	
+	static public char toUpperCase(char c)
+	{
+		if ((97 <= c && c <= 122) || (224 <= c && c <= 254 && c != 247))
+			return (char)(c-32);
+
+		if (c == 154 || c == 156 || c == 158)
+			return (char)(c-16);
+		
+		if (c == 255)
+			return (char)159;
+		
+		return c;
 	}
 	
 	static public boolean toLowerCase(char[] cs)
@@ -85,26 +89,30 @@ public class CharUtils
 		
 		for (i=cs.length-1; i>=0; i--)
 		{
-			c = cs[i];
+			c = toLowerCase(cs[i]);
 			
-			if ((65 <= c && c <= 90) || (192 <= c && c <= 222 && c != 215))
+			if (cs[i] != c)
 			{
-				cs[i] = (char)(c+32);
-				b = true;
-			}
-			else if (c == 138 || c == 140 || c == 142)
-			{
-				cs[i] = (char)(c+16);
-				b = true;
-			}
-			else if (c == 159)
-			{
-				cs[i] = (char)255;
+				cs[i] = c;
 				b = true;
 			}
 		}
 		
 		return b;
+	}
+	
+	static public char toLowerCase(char c)
+	{
+		if ((65 <= c && c <= 90) || (192 <= c && c <= 222 && c != 215))
+			return (char)(c+32);
+
+		if (c == 138 || c == 140 || c == 142)
+			return (char)(c+16);
+		
+		if (c == 159)
+			return (char)255;
+		
+		return c;
 	}
 	
 //	----------------------------------- Alphabet -----------------------------------	

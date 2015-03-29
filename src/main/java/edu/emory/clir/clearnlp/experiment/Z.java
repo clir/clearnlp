@@ -18,15 +18,25 @@ package edu.emory.clir.clearnlp.experiment;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFFrameset;
+import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFMap;
+import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRole;
+import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRoleset;
+import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFType;
 import edu.emory.clir.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.util.StringUtils;
 
 
 /**
@@ -37,23 +47,7 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-//		PBFMap map = new PBFMap(args[0]);
-//		ObjectOutputStream out = new ObjectOutputStream(new XZOutputStream(new BufferedOutputStream(new FileOutputStream("tmp.xz")), new LZMA2Options()));
-//		out.writeObject(map);
-//		out.close();
-		
-		String filename = "/Users/jdchoi/Documents/Data/experiments/craft-1.1.0/trn.dep";
-		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
-		DEPTree tree;
-		
-		reader.open(IOUtils.createFileInputStream(filename));
-		
-		while ((tree = reader.next()) != null)
-		{
-			if (tree.isNonProjective())
-				System.out.println("NONP");
-		}
-		System.out.println("DONE");
+		frameset(args);
 	}
 	
 	class Tmp
@@ -64,6 +58,63 @@ public class Z
 		{
 			i += j;
 		}
+	}
+	
+	public void frameset(String[] args) throws Exception
+	{
+//		PBFMap map = new PBFMap(args[0]);
+//		ObjectOutputStream out = new ObjectOutputStream(IOUtils.createXZBufferedOutputStream(args[1]));
+//		out.writeObject(map);
+//		out.close();
+		
+		ObjectInputStream in = new ObjectInputStream(IOUtils.createXZBufferedInputStream(args[0]));
+		PBFMap map = (PBFMap)in.readObject();
+		
+		Map<String,PBFFrameset> framesets = map.getFramesetMap(PBFType.VERB);
+		List<Set<String>> argns = new ArrayList<>();
+		List<String> list; int n;
+		for (n=0; n<6; n++) argns.add(new HashSet<String>());
+		Set<String> rolesets = new HashSet<>();
+//		int count;
+		final int N = Integer.parseInt(args[1]);
+		final String TAG = args.length > 2 ? args[2] : "";
+		
+		for (PBFFrameset frameset : framesets.values())
+		{
+			for (PBFRoleset roleset : frameset.getRolesets())
+			{
+//				count = 0;
+				
+				for (PBFRole role : roleset.getRoles())
+				{
+					if (StringUtils.containsDigitOnly(role.getArgumentNumber()))
+					{
+						n = Integer.parseInt(role.getArgumentNumber());
+						argns.get(n).add(role.getFunctionTag());
+						
+//						if (n == 0 && role.isFunctionTag("PPT")) count++;
+//						if (n == 1 && role.isFunctionTag("PAG")) count++;
+//						if (n == N && role.isFunctionTag(TAG)) rolesets.add(roleset.getID());
+//						if (role.isFunctionTag(TAG)) rolesets.add(roleset.getID());
+						if (n == N && !role.isFunctionTag(TAG)) rolesets.add(roleset.getID());
+//						if (role.isFunctionTag(TAG)) count++;
+					}
+				}
+				
+//				if (count > 1) rolesets.add(roleset.getID());
+			}
+		}
+		
+//		for (n=0; n<argns.size(); n++)
+//		{
+//			list = new ArrayList<>(argns.get(n));
+//			Collections.sort(list);
+//			System.out.println(n+" "+list.toString());
+//		}
+		
+		list = new ArrayList<>(rolesets);
+		Collections.sort(list);
+		for (String s : list) System.out.println(s);
 	}
 	
 	@SuppressWarnings("resource")

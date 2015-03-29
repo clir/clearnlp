@@ -113,6 +113,16 @@ public class PBFFrameset implements Serializable
 		return m_predicates.values();
 	}
 	
+	public List<PBFRoleset> getRolesets() 
+	{
+		List<PBFRoleset> rolesets = new ArrayList<>();
+		
+		for (PBFPredicate predicate : getPredicates())
+			rolesets.addAll(predicate.getRolesets());
+		
+		return rolesets;
+	}
+	
 	/** @return the base lemma (e.g., "run", but not "run_out"). */
 	public String getLemma()
 	{

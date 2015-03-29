@@ -15,6 +15,7 @@
  */
 package edu.emory.clir.clearnlp.util;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -32,6 +33,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.XZInputStream;
+import org.tukaani.xz.XZOutputStream;
 
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -135,6 +140,58 @@ public class IOUtils
 		catch (FileNotFoundException e) {e.printStackTrace();}
 		
 		return out;
+	}
+	
+	static public XZOutputStream createXZBufferedOutputStream(String filename)
+	{
+		XZOutputStream zout = null;
+		
+		try
+		{
+			zout = new XZOutputStream(new BufferedOutputStream(new FileOutputStream(filename)), new LZMA2Options());
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return zout;
+	}
+	
+	static public XZOutputStream createXZBufferedOutputStream(OutputStream out)
+	{
+		XZOutputStream zout = null;
+		
+		try
+		{
+			zout = new XZOutputStream(new BufferedOutputStream(out), new LZMA2Options());
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return zout;
+	}
+	
+	static public XZInputStream createXZBufferedInputStream(InputStream in)
+	{
+		XZInputStream zin = null;
+		
+		try
+		{
+			zin = new XZInputStream(new BufferedInputStream(in));
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return zin;
+	}
+	
+	static public XZInputStream createXZBufferedInputStream(String filename)
+	{
+		XZInputStream zin = null;
+		
+		try
+		{
+			zin = new XZInputStream(new BufferedInputStream(new FileInputStream(filename)));
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return zin;
 	}
 	
 	/** @param in internally wrapped by {@code new ByteArrayInputStream(str.getBytes())}. */
