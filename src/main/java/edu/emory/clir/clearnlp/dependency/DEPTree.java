@@ -18,6 +18,8 @@ package edu.emory.clir.clearnlp.dependency;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringJoiner;
+import java.util.function.Function;
 
 import com.carrotsearch.hppc.cursors.IntCursor;
 
@@ -38,7 +40,6 @@ public class DEPTree implements Iterable<DEPNode>
 	private int n_size;
 	
 //	====================================== Constructors ======================================
-
 
 	/**
 	 * Create a new tree where the root is automatically added at the top
@@ -824,120 +825,20 @@ public class DEPTree implements Iterable<DEPNode>
 	
 //	====================================== String ======================================
 	
-	/**
-	 * Return a string of all the POS tags of this DEPTree
-	 * @return
-	 */
-	public String toStringPOS()
-	{
-		StringBuilder build = new StringBuilder();
-		
-		for (DEPNode node : this)
-		{
-			build.append(StringConst.NEW_LINE);
-			build.append(node.toStringPOS());
-		}
-
-		return build.substring(1);
-	}
-	
-	/**
-	 * Return a string of all the morphology of this DEPTree
-	 * @return
-	 */
-	public String toStringMorph()
-	{
-		StringBuilder build = new StringBuilder();
-		
-		for (DEPNode node : this)
-		{
-			build.append(StringConst.NEW_LINE);
-			build.append(node.toStringMorph());
-		}
-
-		return build.substring(1);
-	}
-	
-	/**
-	 * Return a string of all the dependency labels of this DEPTree
-	 * @return
-	 */
-	public String toStringDEP()
-	{
-		StringBuilder build = new StringBuilder();
-		
-		for (DEPNode node : this)
-		{
-			build.append(StringConst.NEW_LINE);
-			build.append(node.toStringDEP());
-		}
-
-		return build.substring(1);
-	}
-	
-	/**
-	 * Convert to directed-acyclic-graph format
-	 * @return
-	 */
-	public String toStringDAG()
-	{
-		StringBuilder build = new StringBuilder();
-		
-		for (DEPNode node : this)
-		{
-			build.append(StringConst.NEW_LINE);
-			build.append(node.toStringDAG());
-		}
-
-		return build.substring(1);
-	}
-	
-	/**
-	 * Return a string of all the semantic role labels of this DEPTree
-	 * @return
-	 */
-	public String toStringSRL()
-	{
-		StringBuilder build = new StringBuilder();
-		
-		for (DEPNode node : this)
-		{
-			build.append(StringConst.NEW_LINE);
-			build.append(node.toStringSRL());
-		}
-
-		return build.substring(1);
-	}
-	
-	/**
-	 * Convert into CoNLLX format
-	 * @return
-	 */
-	public String toStringCoNLLX()
-	{
-		StringBuilder build = new StringBuilder();
-		
-		for (DEPNode node : this)
-		{
-			build.append(StringConst.NEW_LINE);
-			build.append(node.toStringCoNLLX());
-		}
-
-		return build.substring(1);
-	}
-	
 	@Override
 	public String toString()
 	{
-		StringBuilder build = new StringBuilder();
+		return toString(DEPNode::toString);
+	}
+	
+	public String toString(Function<DEPNode,String> f)
+	{
+		StringJoiner build = new StringJoiner(StringConst.NEW_LINE);
 		
 		for (DEPNode node : this)
-		{
-			build.append(StringConst.NEW_LINE);
-			build.append(node.toString());
-		}
+			build.add(f.apply(node));
 
-		return build.substring(1);
+		return build.toString();
 	}
 
 	@Override
@@ -964,5 +865,10 @@ public class DEPTree implements Iterable<DEPNode>
 		};
 		
 		return it;
+	}
+	
+	public DEPNode[] toNodeArray()
+	{
+		return d_tree;
 	}
 }

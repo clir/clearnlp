@@ -314,6 +314,11 @@ public class DSUtils
 			list.add(value);
 	}
 	
+	static public <T>void removeLast(List<T> list)
+	{
+		if (!list.isEmpty()) list.remove(list.size()-1);
+	}
+	
 	static public int maxIndex(double[] array)
 	{
 		int i, size = array.length, maxIndex = 0;

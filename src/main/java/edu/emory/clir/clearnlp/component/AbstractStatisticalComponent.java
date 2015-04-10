@@ -31,8 +31,6 @@ import org.tukaani.xz.XZOutputStream;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
-import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
-import edu.emory.clir.clearnlp.classification.trainer.AdaGradSVM;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
@@ -54,6 +52,8 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	protected StringModel[] s_models;
 	protected EvalType      c_eval;
 	protected CFlag         c_flag;
+	
+	public AbstractStatisticalComponent() {}
 	
 	/** Constructs a statistical component for collect. */
 	public AbstractStatisticalComponent(AbstractConfiguration configuration)
@@ -194,6 +194,22 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 		save(oos);
 		oos.close();
 		return bos.toByteArray();
+	}
+	
+	public byte[] modelsToByteArray() throws Exception
+	{
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(new XZOutputStream(new BufferedOutputStream(bos), new LZMA2Options()));
+		for (StringModel model : s_models) model.save(oos);
+		oos.close();
+		return bos.toByteArray();
+	}
+	
+	public void byteArrayToModels(byte[] bytes) throws Exception
+	{
+		ObjectInputStream oin = new ObjectInputStream(new XZInputStream(new BufferedInputStream(new ByteArrayInputStream(bytes))));
+		for (StringModel model : s_models) model.load(oin);
+		oin.close();
 	}
 	
 //	====================================== LEXICONS ======================================
@@ -342,32 +358,32 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	
 	protected void onlineTrainSingleAdaGrad(List<DEPTree> trees)
 	{
-		double currScore = onlineScore(trees);
-		if (currScore == 100) return;
-		onlineBootstrap(trees);
-		
-		AbstractOnlineTrainer trainer = new AdaGradSVM(s_models[0], 0, 0, false, 0.01, 0.1, 0d);
-		byte[] prevModels;
-		double prevScore;
-		
-		try
-		{
-			while (true)
-			{
-				prevModels = toByteArray();
-				prevScore  = currScore;
-				
-				trainer.train();
-				currScore = onlineScore(trees);
-				
-				if (prevScore >= currScore)
-				{
-					initDecode(prevModels);
-					break;
-				}
-			}			
-		}
-		catch (Exception e) {e.printStackTrace();}
+//		double currScore = onlineScore(trees);
+//		if (currScore == 100) return;
+//		onlineBootstrap(trees);
+//		
+//		AbstractOnlineTrainer trainer = new AdaGradSVM(s_models[0], 0, 0, false, 0.01, 0.1, 0d);
+//		byte[] prevModels;
+//		double prevScore;
+//		
+//		try
+//		{
+//			while (true)
+//			{
+//				prevModels = toByteArray();
+//				prevScore  = currScore;
+//				
+//				trainer.train();
+//				currScore = onlineScore(trees);
+//				
+//				if (prevScore >= currScore)
+//				{
+//					initDecode(prevModels);
+//					break;
+//				}
+//			}			
+//		}
+//		catch (Exception e) {e.printStackTrace();}
 	}
 	
 	protected double onlineScore(List<DEPTree> trees)

@@ -15,10 +15,6 @@
  */
 package edu.emory.clir.clearnlp.bin.classify;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -87,7 +83,7 @@ abstract public class AbstractClassify
 	{
 		try
 		{
-			ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(modelFile)));
+			ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(modelFile);
 			AbstractModel<?,?> model = vectorType == AbstractClassify.TYPE_SPARSE ? new SparseModel(in) : new StringModel(in);
 			in.close();
 			return model;
@@ -101,7 +97,7 @@ abstract public class AbstractClassify
 	{
 		try
 		{
-			ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(modelFile)));
+			ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(modelFile);
 			model.save(out);
 			out.close();
 		}

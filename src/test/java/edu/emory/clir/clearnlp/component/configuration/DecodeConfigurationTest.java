@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.reader.TReader;
 import edu.emory.clir.clearnlp.reader.TSVReader;
@@ -50,7 +51,7 @@ public class DecodeConfigurationTest
 		
 		while ((tree = reader.next()) != null)
 		{
-			b1.append(tree.toStringSRL());
+			b1.append(tree.toString(DEPNode::toStringSRL));
 			b1.append("\n\n");
 		}
 		

@@ -29,6 +29,11 @@ public class ObjectIntIntTriple<T> implements Serializable
 	public int i1;
 	public int i2;
 	
+	public ObjectIntIntTriple()
+	{
+		set(null, 0, 0);
+	}
+	
 	public ObjectIntIntTriple(T o, int i1, int i2)
 	{
 		set(o, i1, i2);

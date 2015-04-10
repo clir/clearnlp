@@ -87,6 +87,19 @@ public class DBPediaTypeMap extends HashMap<DBPediaType,Set<DBPediaType>> implem
 		return false;
 	}
 	
+	/** Including self. */
+	public Set<DBPediaType> getSubtypeSet(DBPediaType superType)
+	{
+		Set<DBPediaType> set = new HashSet<>();
+		set.add(superType);
+		
+		for (DBPediaType type : keySet())
+			if (isSuperType(type, superType))
+				set.add(type);
+
+		return set;
+	}
+	
 	static public void main(String[] args) throws Exception
 	{
 		// args[0] = "http://mappings.dbpedia.org/server/ontology/dbpedia.owl";

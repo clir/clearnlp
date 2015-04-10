@@ -40,6 +40,16 @@ public class ObjectDoublePair<T> implements Serializable, Comparable<ObjectDoubl
 		this.o = o;
 		this.d = d;
 	}
+	
+	public T getObject()
+	{
+		return o;
+	}
+	
+	public double getDouble()
+	{
+		return d;
+	}
 
 	@Override
 	public int compareTo(ObjectDoublePair<T> p)

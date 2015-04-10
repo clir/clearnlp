@@ -29,6 +29,11 @@ public class Pair<T1, T2> implements Serializable
 	public T1 o1;
 	public T2 o2;
 	
+	public Pair()
+	{
+		set(null, null);
+	}
+	
 	public Pair(T1 o1, T2 o2)
 	{
 		set(o1, o2);

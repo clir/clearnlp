@@ -96,9 +96,8 @@ public class AbstractConfiguration implements ConfigurationXML
 			int iDeprel	= map.get(FIELD_DEPREL)	- 1;
 			int iXHeads = map.get(FIELD_XHEADS)	- 1;
 			int iSHeads = map.get(FIELD_SHEADS)	- 1;
-			int iSeqtag = map.get(FIELD_SHEADS)	- 1;
 			
-			return new TSVReader(iID, iForm, iLemma, iPOSTag, iNament, iFeats, iHeadID, iDeprel, iXHeads, iSHeads, iSeqtag);	
+			return new TSVReader(iID, iForm, iLemma, iPOSTag, iNament, iFeats, iHeadID, iDeprel, iXHeads, iSHeads);	
 		}
 	}
 	

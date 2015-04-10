@@ -506,13 +506,13 @@ abstract public class AbstractTokenizer
 			}
 		}
 		
-		tokenizeLastPeriod(tokens);
+		if (tokens.size() == 1) tokenizeLastPeriod(tokens);
 	}
 	
 	/** Called by {@link #finalize()}. */
 	private int tokenizeNo(List<String> tokens, String token, String lower, int index)
 	{
-		if (index+1 < tokens.size() && lower.equals("no.") && !CharUtils.isDigit(tokens.get(index+1).charAt(0)))
+		if (lower.equals("no.") && (index+1 == tokens.size() || !CharUtils.isDigit(tokens.get(index+1).charAt(0))))
 		{
 			tokens.set(index  , StringUtils.trim(token, 1));
 			tokens.add(index+1, StringConst.PERIOD);

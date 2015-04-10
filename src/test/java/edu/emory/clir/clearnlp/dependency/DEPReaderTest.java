@@ -38,13 +38,13 @@ public class DEPReaderTest
 		TSVReader reader = new TSVReader(1, 3);
 		reader.open(new FileInputStream("src/test/resources/dependency/dependency.cnlp"));
 		DEPTree tree = reader.next();
-		String str = tree.toStringPOS();
+		String str = tree.toString(DEPNode::toStringPOS);
 		
 		reader = new TSVReader(0, 1);
 		reader.open(new ByteArrayInputStream(str.getBytes()));
 		tree = reader.next();
 		
-		assertEquals(str, tree.toStringPOS());
+		assertEquals(str, tree.toString(DEPNode::toStringPOS));
 	}
 	
 	@Test
@@ -53,12 +53,12 @@ public class DEPReaderTest
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
 		reader.open(new FileInputStream("src/test/resources/dependency/dependency.cnlp"));
 		DEPTree tree = reader.next();
-		String str = tree.toStringDEP();
+		String str = tree.toString(DEPNode::toStringDEP);
 		
 		reader.open(new ByteArrayInputStream(str.getBytes()));
 		tree = reader.next();
 		
-		assertEquals(str, tree.toStringDEP());
+		assertEquals(str, tree.toString(DEPNode::toStringDEP));
 	}
 	
 	@Test
@@ -67,11 +67,11 @@ public class DEPReaderTest
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
 		reader.open(new FileInputStream("src/test/resources/dependency/dependency.cnlp"));
 		DEPTree tree = reader.next();
-		String str = tree.toStringSRL();
+		String str = tree.toString(DEPNode::toStringSRL);
 		
 		reader.open(new ByteArrayInputStream(str.getBytes()));
 		tree = reader.next();
 		
-		assertEquals(str, tree.toStringSRL());
+		assertEquals(str, tree.toString(DEPNode::toStringSRL));
 	}
 }

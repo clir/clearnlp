@@ -47,7 +47,19 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		frameset(args);
+//		Gson gson = new Gson();
+//		String infoFile = "/Users/jdchoi/Documents/Data/dbpedia/instances_en.json.xz";
+//		DBPediaInfoMap infoMap = gson.fromJson(new InputStreamReader(IOUtils.createXZBufferedInputStream(infoFile)), DBPediaInfoMap.class);
+//		
+//		DBPediaInfo info = infoMap.get("John_Emory");
+//		System.out.println(info);
+//		
+//		String s = "of Methodist bishop John Emory";
+//		String prefixFile = "/Users/jdchoi/Documents/Data/dbpedia/prefix_ner.xz";
+//		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(prefixFile);
+//		PrefixTree<String,NERInfoList> prefixTree = (PrefixTree<String,NERInfoList>)in.readObject();
+//		ObjectIntPair<NERInfoList> ps = prefixTree.get(s.split(" "), 0, String::toString);
+//		System.out.println(ps.o);
 	}
 	
 	class Tmp

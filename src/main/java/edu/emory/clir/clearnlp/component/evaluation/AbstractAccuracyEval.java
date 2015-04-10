@@ -30,10 +30,27 @@ abstract public class AbstractAccuracyEval<LabelType> extends AbstractEval<Label
 	protected int n_totalTrees;
 	protected int n_correctTokens;
 	protected int n_correctTrees;
+	protected boolean token_based;
 	
 	public AbstractAccuracyEval()
 	{
+		this(true);
+	}
+	
+	public AbstractAccuracyEval(boolean tokenBased)
+	{
+		setTokenBased(tokenBased); 
 		clear();
+	}
+	
+	public boolean isTokenBased()
+	{
+		return token_based;
+	}
+	
+	public void setTokenBased(boolean b)
+	{
+		token_based = b;
 	}
 	
 	public void countCorrect(DEPTree sTree, LabelType[] gLabels)
@@ -67,7 +84,7 @@ abstract public class AbstractAccuracyEval<LabelType> extends AbstractEval<Label
 	@Override
 	public double getScore()
 	{
-		return 100d * n_correctTokens / n_totalTokens;
+		return token_based ? MathUtils.getAccuracy(n_correctTokens, n_totalTokens) : MathUtils.getAccuracy(n_correctTrees, n_totalTrees);
 	}
 	
 	@Override

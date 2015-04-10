@@ -27,6 +27,7 @@ import edu.emory.clir.clearnlp.component.configuration.DecodeConfiguration;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.component.utils.NLPUtils;
+import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.reader.AbstractReader;
 import edu.emory.clir.clearnlp.reader.LineReader;
@@ -54,7 +55,7 @@ public class NLPDecode
 	protected String s_inputExt = "*";
 	@Option(name="-oe", usage="output file extension (default: cnlp)", required=false, metaVar="<string>")
 	protected String s_outputExt = "cnlp";
-	@Option(name="-mode", usage="pos|morph|dep", required=true, metaVar="<string>")
+	@Option(name="-mode", usage="pos|morph|dep|ner", required=true, metaVar="<string>")
 	protected String s_mode;
 	
 	public NLPDecode() {}
@@ -153,6 +154,7 @@ public class NLPDecode
 		switch (mode)
 		{
 		case srl  :
+		case ner  : list.add(NLPUtils.getNERecognizer(language, config.getModelPath(NLPMode.ner)));
 		case dep  : list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), new DEPConfiguration(IOUtils.createFileInputStream(s_configurationFile))));
 		case morph: list.add(NLPUtils.getMPAnalyzer(language));
 		case pos  : list.add(NLPUtils.getPOSTagger(language, config.getModelPath(NLPMode.pos)));
@@ -168,6 +170,9 @@ public class NLPDecode
 		switch (mode)
 		{
 		case srl:
+		case ner:
+			if (!reader.hasNamedEntityTags())
+				list.add(NLPUtils.getNERecognizer(language, config.getModelPath(NLPMode.ner)));
 		case dep:
 			if (!reader.hasDependencyHeads())
 				list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), new DEPConfiguration(IOUtils.createFileInputStream(s_configurationFile))));
@@ -193,10 +198,11 @@ public class NLPDecode
 	{
 		switch (mode)
 		{
-		case srl  : return tree.toStringSRL();
-		case dep  : return tree.toStringDEP();
-		case morph: return tree.toStringMorph();
-		case pos  : return tree.toStringPOS();
+		case srl  : return tree.toString(DEPNode::toStringSRL);
+		case ner  : return tree.toString(DEPNode::toStringNER);
+		case dep  : return tree.toString(DEPNode::toStringDEP);
+		case morph: return tree.toString(DEPNode::toStringMorph);
+		case pos  : return tree.toString(DEPNode::toStringPOS);
 		}
 
 		throw new IllegalArgumentException("Invalid mode: "+mode.toString());

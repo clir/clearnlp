@@ -24,6 +24,10 @@
         <column index="9" field="nament"/>
     </reader>
     
+    <ner>
+        <dictionary_path>prefix_ner.xz</dictionary_path>
+    </ner>
+    
     <dep>
         <root_label>root</root_label>
     </dep>

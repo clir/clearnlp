@@ -512,4 +512,9 @@ public class CTTree
 	{
 		return n_root.getPBHeads() != null;
 	}
+	
+	public boolean hasNamedEntity()
+	{
+		return getTerminal(0).getNamedEntityTag() != null;
+	}
 }

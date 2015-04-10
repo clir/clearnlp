@@ -27,6 +27,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -192,6 +194,58 @@ public class IOUtils
 		catch (IOException e) {e.printStackTrace();}
 		
 		return zin;
+	}
+	
+	static public ObjectInputStream createObjectXZBufferedInputStream(String filename)
+	{
+		ObjectInputStream oin = null;
+		
+		try
+		{
+			oin = new ObjectInputStream(createXZBufferedInputStream(filename));
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return oin;
+	}
+	
+	static public ObjectInputStream createObjectXZBufferedInputStream(InputStream in)
+	{
+		ObjectInputStream oin = null;
+		
+		try
+		{
+			oin = new ObjectInputStream(createXZBufferedInputStream(in));
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return oin;
+	}
+	
+	static public ObjectOutputStream createObjectXZBufferedOutputStream(String filename)
+	{
+		ObjectOutputStream out = null;
+		
+		try
+		{
+			out = new ObjectOutputStream(createXZBufferedOutputStream(filename));
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return out;
+	}
+	
+	static public ObjectOutputStream createObjectXZBufferedOutputStream(OutputStream out)
+	{
+		ObjectOutputStream oout = null;
+		
+		try
+		{
+			oout = new ObjectOutputStream(createXZBufferedOutputStream(out));
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return oout;
 	}
 	
 	/** @param in internally wrapped by {@code new ByteArrayInputStream(str.getBytes())}. */

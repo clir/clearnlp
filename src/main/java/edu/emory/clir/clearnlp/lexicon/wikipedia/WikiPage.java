@@ -30,13 +30,11 @@ public class WikiPage implements Serializable
 	private static final long serialVersionUID = -4615946922954348026L;
 	private List<WikiParagraph> l_paragraphs;
 	private String s_title;
-	private String s_url;
 	
-	public WikiPage(String title, String url)
+	public WikiPage(String title)
 	{
 		l_paragraphs = new ArrayList<>();
 		setTitle(title);
-		setURL(url);
 	}
 	
 	public List<WikiParagraph> getParagraphs()
@@ -57,16 +55,6 @@ public class WikiPage implements Serializable
 	public void setTitle(String title)
 	{
 		s_title = title;
-	}
-	
-	public String getURL()
-	{
-		return s_url;
-	}
-	
-	public void setURL(String url)
-	{
-		s_url = url;
 	}
 	
 	@Override

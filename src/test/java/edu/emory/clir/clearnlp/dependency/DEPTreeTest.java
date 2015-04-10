@@ -75,13 +75,13 @@ public class DEPTreeTest
 		reader.open(new FileInputStream("src/test/resources/dependency/dependency.cnlp"));
 		DEPTree tree = reader.next();
 		DEPTree copy = new DEPTree(tree);
-		String str = tree.toStringSRL();
+		String str = tree.toString(DEPNode::toStringSRL);
 		DEPNode pred = tree.get(0);
 		SRLTree sTree;
 		
 		
 		
-		System.out.println(tree.toStringDEP()+"\n");
+		System.out.println(tree.toString(DEPNode::toStringDEP)+"\n");
 		System.out.println(tree.getDepthFirstNodeList().stream().map(DEPNode::getWordForm).collect(Collectors.joining(StringConst.SPACE)));
 		
 		
@@ -99,7 +99,7 @@ public class DEPTreeTest
 		// insert
 		tree.remove(2);
 		tree.remove(5);
-		assertEquals(reader.next().toStringSRL(), tree.toStringSRL());
+		assertEquals(reader.next().toString(DEPNode::toStringSRL), tree.toString(DEPNode::toStringSRL));
 		
 		// semantic heads
 		DEPNode node = new DEPNode(0, "tomorrow", "tomorrow", "NN", null, new DEPFeat());
@@ -107,11 +107,11 @@ public class DEPTreeTest
 		node.initSemanticHeads();
 		node.addSemanticHead(new SRLArc(tree.get(2), "AM-TMP"));
 		tree.insert(5, node);
-		assertEquals(reader.next().toStringSRL(), tree.toStringSRL());
+		assertEquals(reader.next().toString(DEPNode::toStringSRL), tree.toString(DEPNode::toStringSRL));
 		
 		// projectivize
 		tree.projectivize("<",">");
-		assertEquals(reader.next().toStringSRL(), tree.toStringSRL());
+		assertEquals(reader.next().toString(DEPNode::toStringSRL), tree.toString(DEPNode::toStringSRL));
 		
 		// roots
 		tree.get(7).setHead(tree.get(0), "root");
@@ -122,7 +122,7 @@ public class DEPTreeTest
 		assertEquals(tree.get(7), roots.get(1));
 
 		// clone
-		assertEquals(str, copy.toStringSRL());
+		assertEquals(str, copy.toString(DEPNode::toStringSRL));
 		
 		// argument list
 		List<List<SRLArc>> args = copy.getArgumentList();

@@ -1129,7 +1129,16 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		if (cTree.hasPropBank())
 			addSemanticHeads(dTree, cTree);
 		
+		if (cTree.hasNamedEntity())
+			addNamedEntities(dTree, cTree);
+		
 		return getDEPTreeWithoutEdited(cTree, dTree);
+	}
+	
+	public void addNamedEntities(DEPTree dTree, CTTree cTree)
+	{
+		for (CTNode node : cTree.getTokenList())
+			dTree.get(node.getTokenID()+1).setNamedEntityTag(node.getNamedEntityTag());
 	}
 	
 	/** Adds dependency heads. */

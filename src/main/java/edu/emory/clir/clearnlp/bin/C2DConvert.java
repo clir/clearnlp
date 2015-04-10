@@ -15,16 +15,20 @@
  */
 package edu.emory.clir.clearnlp.bin;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.kohsuke.args4j.Option;
 
 import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
+import edu.emory.clir.clearnlp.collection.triple.ObjectIntIntTriple;
 import edu.emory.clir.clearnlp.component.mode.morph.AbstractMPAnalyzer;
 import edu.emory.clir.clearnlp.component.utils.NLPUtils;
+import edu.emory.clir.clearnlp.constituent.CTNode;
 import edu.emory.clir.clearnlp.constituent.CTReader;
 import edu.emory.clir.clearnlp.constituent.CTTree;
 import edu.emory.clir.clearnlp.conversion.AbstractC2DConverter;
@@ -33,10 +37,13 @@ import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBInstance;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBReader;
+import edu.emory.clir.clearnlp.ner.BILOU;
+import edu.emory.clir.clearnlp.ner.NERTag;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
@@ -51,6 +58,8 @@ public class C2DConvert
 	private String s_parseExt = "parse";
 	@Option(name="-re", usage="propbank file extension (default: prop)", required=false, metaVar="<string>")
 	private String s_propExt = "prop";
+	@Option(name="-ne", usage="named entity file extension (default: name)", required=false, metaVar="<string>")
+	private String s_nameExt = "name";
 	@Option(name="-oe", usage="output file extension (default: dep)", required=false, metaVar="<string>")
 	private String s_outputExt = "dep";
 	@Option(name="-l", usage="language (default: english)", required=false, metaVar="<language>")
@@ -75,16 +84,18 @@ public class C2DConvert
 		
 		for (String parseFile : parseFiles)
 		{
-			n = convert(converter, analyzer, parseFile, s_parseExt, s_propExt, s_outputExt, b_normalize);
+			n = convert(converter, analyzer, parseFile, s_parseExt, s_propExt, s_nameExt, s_outputExt, b_normalize);
 			System.out.printf("%s: %d trees\n", parseFile, n);
 		}
 	}
 	
-	protected int convert(AbstractC2DConverter converter, AbstractMPAnalyzer analyzer, String parseFile, String parseExt, String propExt, String outputExt, boolean normalize)
+	protected int convert(AbstractC2DConverter converter, AbstractMPAnalyzer analyzer, String parseFile, String parseExt, String propExt, String nameExt, String outputExt, boolean normalize) throws Exception
 	{
+		IntObjectHashMap<List<ObjectIntIntTriple<String>>> mName = getNamedEntityMap(parseFile, parseExt, nameExt);
 		IntObjectHashMap<List<PBInstance>> mProp = getPBInstanceMap(parseFile, parseExt, propExt);
 		PrintStream fout = IOUtils.createBufferedPrintStream(parseFile+"."+outputExt);
 		CTReader reader = new CTReader(IOUtils.createFileInputStream(parseFile));
+		List<ObjectIntIntTriple<String>> names = null;
 		List<PBInstance> instances = null;
 		CTTree  cTree;
 		DEPTree dTree;
@@ -93,7 +104,8 @@ public class C2DConvert
 		for (n=0; (cTree = reader.nextTree()) != null; n++)
 		{
 			if (normalize) cTree.normalizeIndices();
-			if (mProp != null && (instances = mProp.get(n)) != null) initPropBank(cTree, instances);
+			if (mProp != null && (instances = mProp.get(n)) != null)	initPropBank(cTree, instances);
+			if (mName != null && (names = mName.get(n)) != null)		initNamedEntities(cTree, names);
 			dTree = converter.toDEPTree(cTree);
 			
 			if (dTree != null)
@@ -105,7 +117,7 @@ public class C2DConvert
 				}
 				
 				analyzer.process(dTree);
-				fout.println(dTree.toStringSRL()+"\n");
+				fout.println(dTree.toString()+"\n");
 			}
 			else
 				System.err.println("No token in the tree "+(n+1)+"\n"+cTree.toStringLine());
@@ -119,10 +131,16 @@ public class C2DConvert
 	
 	private IntObjectHashMap<List<PBInstance>> getPBInstanceMap(String parseFile, String parseExt, String propExt)
 	{
-		if (parseExt == null || propExt == null) return null;
-		String propFile = FileUtils.replaceExtension(parseFile, parseExt, propExt);
-		if (propFile == null || !new File(propFile).isFile()) return null;
-		return new PBReader(IOUtils.createFileInputStream(propFile)).getInstanceMap();
+		String filename = getFilename(parseFile, parseExt, propExt); 
+		return filename != null ? new PBReader(IOUtils.createFileInputStream(filename)).getInstanceMap() : null;
+	}
+	
+	private String getFilename(String parseFile, String parseExt, String otherExt)
+	{
+		if (parseExt == null || otherExt == null) return null;
+		String filename = FileUtils.replaceExtension(parseFile, parseExt, otherExt);
+		if (filename == null || !new File(filename).isFile()) return null;
+		return filename;
 	}
 	
 	private void initPropBank(CTTree tree, List<PBInstance> instances)
@@ -173,6 +191,71 @@ public class C2DConvert
 		}
 		
 		return null;
+	}
+	
+	private IntObjectHashMap<List<ObjectIntIntTriple<String>>> getNamedEntityMap(String parseFile, String parseExt, String nameExt) throws Exception
+	{
+		String filename = getFilename(parseFile, parseExt, nameExt);
+		if (filename == null) return null;
+		
+		IntObjectHashMap<List<ObjectIntIntTriple<String>>> map = new IntObjectHashMap<>();
+		BufferedReader fin = IOUtils.createBufferedReader(filename);
+		String[] tmp;
+		String line;
+		int treeID;
+		
+		while ((line = fin.readLine()) != null)
+		{
+			tmp    = Splitter.splitSpace(line);
+			treeID = Integer.parseInt(tmp[1]);
+			map.put(treeID, getNamedEntityList(tmp));
+		}
+		
+		fin.close();
+		return map;
+	}
+	
+	private List<ObjectIntIntTriple<String>> getNamedEntityList(String[] names)
+	{
+		int i, bIdx, eIdx, size = names.length;
+		List<ObjectIntIntTriple<String>> list = new ArrayList<>(size-2);
+		String[] t0, t1;
+		String ent;
+
+		for (i=2; i<size; i++)
+		{
+			t0   = Splitter.splitHyphens(names[i]);
+			t1   = Splitter.splitColons(t0[0]);
+			ent  = t0[1];
+			bIdx = Integer.parseInt(t1[0]);
+			eIdx = Integer.parseInt(t1[1]);
+			list.add(new ObjectIntIntTriple<>(ent, bIdx, eIdx));
+		}
+		
+		return list;
+	}
+	
+	private void initNamedEntities(CTTree cTree, List<ObjectIntIntTriple<String>> names)
+	{
+		if (names == null)	return;
+		int i;
+		
+		for (CTNode node : cTree.getTerminalList())
+			node.setNamedEntityTag(BILOU.O.toString());
+		
+		for (ObjectIntIntTriple<String> t : names)
+		{
+			if (t.i1 == t.i2)
+				cTree.getTerminal(t.i1).setNamedEntityTag(NERTag.toBILOUTag(BILOU.U, t.o));
+			else
+			{
+				cTree.getTerminal(t.i1).setNamedEntityTag(NERTag.toBILOUTag(BILOU.B, t.o));
+				cTree.getTerminal(t.i2).setNamedEntityTag(NERTag.toBILOUTag(BILOU.L, t.o));
+				
+				for (i=t.i1+1; i<t.i2; i++)
+					cTree.getTerminal(i).setNamedEntityTag(NERTag.toBILOUTag(BILOU.I, t.o));
+			}
+		}
 	}
 	
 	public static void main(String[] args)

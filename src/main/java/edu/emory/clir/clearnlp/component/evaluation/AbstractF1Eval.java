@@ -42,6 +42,12 @@ abstract public class AbstractF1Eval<LabelType> extends AbstractEval<LabelType>
 	}
 	
 	@Override
+	public double getScore()
+	{
+		return getScores()[0];
+	}
+	
+	@Override
 	public String toString()
 	{
 		double[] d = getScores();

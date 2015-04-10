@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 import edu.emory.clir.clearnlp.collection.list.SortedArrayList;
@@ -67,8 +68,6 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	private SortedArrayList<DEPNode> l_dependents;
 	/** The ID of this node among its sibling (starting with 0). */
 	private int n_siblingID;
-	/** The label of the node in a sequence */
-	private String s_sequenceLabel = null;
 	/** The list of secondary heads of this node (default: empty). */
 	private List<DEPArc> x_heads;
 	/** The list of semantic heads of this node (default: empty). */
@@ -188,45 +187,6 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		s_label = null;
 		n_siblingID = 0;
 		l_dependents.clear();
-	}
-	
-	/** 
-	 * Get the sequence label of the node.
-	 * @return the sequence label of the node 
-	 */
-	public String getSequenceLabel()
-	{
-		return s_sequenceLabel;
-	}
-	
-	/**
-	 * Set the sequence label to whatever input string.
-	 * @param label sequence label
-	 */
-	public void setSequenceLabel(String label)
-	{
-		s_sequenceLabel = label;
-	}
-	
-	/**
-	 * Clear the sequence label of the node to {@code null} and return the label.
-	 * @return the removed sequence label of the node
-	 */
-	public String clearSequenceLabel()
-	{
-		String t = s_sequenceLabel;
-		setSequenceLabel(null);
-		return t;
-	}
-	
-	/**
-	 * Check if the node has the sequence label of your input.
-	 * @param label sequence label
-	 * @return {@code true} if the node has matching label as the input label
-	 */
-	public boolean isSequenceLabel(String label)
-	{
-		return label.equals(s_sequenceLabel);
 	}
 	
 //	====================================== Basic fields ======================================
@@ -399,6 +359,13 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		String pos = s_posTag;
 		setPOSTag(null);
 		return pos;
+	}
+	
+	public String clearNamedEntityTag()
+	{
+		String ner = s_namedEntityTag;
+		setNamedEntityTag(null);
+		return ner;
 	}
 	
 	/**
@@ -1828,82 +1795,65 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	
 	public String toStringPOS()
 	{
-		StringBuilder build = new StringBuilder();
+		StringJoiner build = new StringJoiner(TSVReader.DELIM_COLUMN);
 		
-		build.append(s_wordForm);	build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_posTag);	build.append(TSVReader.DELIM_COLUMN);
-		build.append(d_feats.toString());
+		build.add(s_wordForm);
+		build.add(s_posTag);
+		build.add(d_feats.toString());
 		
 		return build.toString();
 	}
 	
 	public String toStringMorph()
 	{
-		StringBuilder build = new StringBuilder();
+		StringJoiner build = new StringJoiner(TSVReader.DELIM_COLUMN);
 		
-		build.append(s_wordForm);	build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_lemma);	build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_posTag);	build.append(TSVReader.DELIM_COLUMN);
-		build.append(d_feats.toString());
+		build.add(s_wordForm);
+		build.add(s_lemma);
+		build.add(s_posTag);
+		build.add(d_feats.toString());
 		
 		return build.toString();
 	}
 	
 	public String toStringDEP()
 	{
-		StringBuilder build = new StringBuilder();
+		StringJoiner build = new StringJoiner(TSVReader.DELIM_COLUMN);
 		
-		build.append(n_id);					build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_wordForm);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_lemma);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(d_feats.toString());	build.append(TSVReader.DELIM_COLUMN);
-		build.append(toStringHead());
+		build.add(Integer.toString(n_id));
+		build.add(toStringMorph());
+		build.add(toStringHead());
+		
+		return build.toString();
+	}
+	
+	public String toStringNER()
+	{
+		StringJoiner build = new StringJoiner(TSVReader.DELIM_COLUMN);
+		
+		build.add(toStringDEP());
+		if (s_namedEntityTag != null)	build.add(s_namedEntityTag);
+		else							build.add(TSVReader.BLANK);
 		
 		return build.toString();
 	}
 	
 	public String toStringDAG()
 	{
-		StringBuilder build = new StringBuilder();
+		StringJoiner build = new StringJoiner(TSVReader.DELIM_COLUMN);
 		
-		build.append(n_id);					build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_wordForm);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_lemma);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(d_feats.toString());	build.append(TSVReader.DELIM_COLUMN);
-		build.append(toStringHead());		build.append(TSVReader.DELIM_COLUMN);
-		build.append(toString(x_heads));
+		build.add(toStringDEP());
+		build.add(toString(x_heads));
 		
 		return build.toString();
 	}
 	
 	public String toStringSRL()
 	{
-		StringBuilder build = new StringBuilder();
+		StringJoiner build = new StringJoiner(TSVReader.DELIM_COLUMN);
 		
-		build.append(n_id);					build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_wordForm);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_lemma);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(d_feats.toString());	build.append(TSVReader.DELIM_COLUMN);
-		build.append(toStringHead());		build.append(TSVReader.DELIM_COLUMN);
-		build.append(toString(s_heads));
-		
-		return build.toString();
-	}
-	
-	public String toStringCoNLLX()
-	{
-		StringBuilder build = new StringBuilder();
-		
-		build.append(n_id);					build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_wordForm);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_lemma);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(d_feats.toString());	build.append(TSVReader.DELIM_COLUMN);
-		build.append(toStringHead());		build.append(TSVReader.DELIM_COLUMN);
+		build.add(toStringDEP());
+		build.add(toString(s_heads));
 		
 		return build.toString();
 	}
@@ -1911,17 +1861,12 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	@Override
 	public String toString()
 	{
-		StringBuilder build = new StringBuilder();
-		
-		build.append(n_id);					build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_wordForm);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_lemma);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_posTag);				build.append(TSVReader.DELIM_COLUMN);
-		build.append(s_namedEntityTag);		build.append(TSVReader.DELIM_COLUMN);
-		build.append(d_feats.toString());	build.append(TSVReader.DELIM_COLUMN);
-		build.append(toStringHead());		build.append(TSVReader.DELIM_COLUMN);
-		build.append(toString(x_heads));	build.append(TSVReader.DELIM_COLUMN);
-		build.append(toString(s_heads));
+		StringJoiner build = new StringJoiner(TSVReader.DELIM_COLUMN);
+
+		build.add(toStringSRL());
+		build.add(toString(x_heads));
+		if (s_namedEntityTag != null)	build.add(s_namedEntityTag);
+		else							build.add(TSVReader.BLANK);
 		
 		return build.toString();
 	}

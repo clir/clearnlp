@@ -49,7 +49,7 @@ public class DEPMergeTest
 		m.addEdge(t.get(1), t.get(2), "", 4);
 		
 		m.merge();
-		System.out.println(t.toStringDEP());
+		System.out.println(t.toString(DEPNode::toStringDEP));
 	}
 	
 	@Test
@@ -68,7 +68,7 @@ public class DEPMergeTest
 		m.addEdge(t.get(1), t.get(2), "", 2);
 		
 		m.merge();
-		System.out.println(t.toStringDEP());
+		System.out.println(t.toString(DEPNode::toStringDEP));
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class DEPMergeTest
 		m.addEdge(t.get(3), t.get(4), "", 30);
 		
 		m.merge();
-		System.out.println(t.toStringDEP());
+		System.out.println(t.toString(DEPNode::toStringDEP));
 	}
 	
 	DEPTree getDEPTree(int size)

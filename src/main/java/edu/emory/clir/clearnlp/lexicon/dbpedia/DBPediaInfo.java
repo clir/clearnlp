@@ -27,7 +27,7 @@ public class DBPediaInfo implements Serializable
 {
 	private static final long serialVersionUID = -2801491629112590441L;
 	private Set<DBPediaType> types;
-	private Set<String>  aliases;
+	private Set<String> aliases;
 	
 	public DBPediaInfo()
 	{
@@ -68,5 +68,16 @@ public class DBPediaInfo implements Serializable
 	public void addAlias(String alias)
 	{
 		aliases.add(alias);
+	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder build = new StringBuilder();
+		build.append("type: ");
+		build.append(types.toString());
+		build.append("\naliases: ");
+		build.append(aliases.toString());
+		return build.toString();
 	}
 }

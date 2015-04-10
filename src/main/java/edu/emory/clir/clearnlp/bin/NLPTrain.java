@@ -56,7 +56,7 @@ public class NLPTrain
 	protected String s_trainExt = "*";
 	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
 	protected String s_developExt = "*";
-	@Option(name="-mode", usage="pos|dep|srl", required=true, metaVar="<mode>")
+	@Option(name="-mode", usage="pos|dep|ner|srl", required=true, metaVar="<mode>")
 	protected String s_mode = ".*";
 //	@Option(name="-threads", usage="number of threads (default: 1)", required=false, metaVar="<Integer>")
 //	protected int n_threads = 1;

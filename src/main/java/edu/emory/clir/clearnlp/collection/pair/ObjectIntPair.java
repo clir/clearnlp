@@ -28,6 +28,11 @@ public class ObjectIntPair<T> implements Serializable, Comparable<ObjectIntPair<
 	public T   o;
 	public int i;
 	
+	public ObjectIntPair()
+	{
+		set(null, 0);
+	}
+	
 	public ObjectIntPair(T o, int i)
 	{
 		set(o, i);

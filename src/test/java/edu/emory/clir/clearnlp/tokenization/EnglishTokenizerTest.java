@@ -112,7 +112,7 @@ public class EnglishTokenizerTest
 
 		// abbreviations
 		s = "Dr. ph.d. w.r.t. 1.2. A-1. a.1 (e.g., bcd. BCD. and. T. T.. T.";
-		r = "[Dr., ph.d., w.r.t., 1.2., A-1., a.1, (, e.g., ,, bcd., BCD., and, ., T., T, .., T, .]";
+		r = "[Dr., ph.d., w.r.t., 1.2., A-1., a.1, (, e.g., ,, bcd., BCD., and, ., T., T, .., T.]";
 		assertEquals(r, t.tokenize(s).toString());
 		
 		// symbols in numbers

@@ -26,7 +26,7 @@ import edu.emory.clir.clearnlp.collection.map.CharObjectHashMap;
 public class CharAffixTree
 {
 	private CharAffixNode n_root;
-	private boolean   b_prefix;
+	private boolean b_prefix;
 	
 	public CharAffixTree(boolean prefix)
 	{

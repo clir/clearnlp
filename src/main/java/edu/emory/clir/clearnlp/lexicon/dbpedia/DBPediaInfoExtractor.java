@@ -1,7 +1,6 @@
 package edu.emory.clir.clearnlp.lexicon.dbpedia;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -18,10 +17,12 @@ import com.google.gson.Gson;
 
 import edu.emory.clir.clearnlp.util.CharUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.util.PatternUtils;
 import edu.emory.clir.clearnlp.util.StringUtils;
+import edu.emory.clir.clearnlp.util.constant.PatternConst;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
-public class DBPediaInstanceExtractor implements DBPediaXML
+public class DBPediaInfoExtractor implements DBPediaXML
 {
 	static final Pattern RESOURCE = Pattern.compile("<http://dbpedia.org/resource/(.+?)>");
 	static final Pattern ONTOLOGY = Pattern.compile("<http://dbpedia.org/ontology/(.+?)>");
@@ -60,8 +61,8 @@ public class DBPediaInstanceExtractor implements DBPediaXML
 	
 	private void trimInstanceTypes(DBPediaTypeMap typeMap, Set<DBPediaType> set)
 	{
-		List<DBPediaType> list = new ArrayList<>(set);
-		Set<DBPediaType>  remove = new HashSet<>();
+		List<DBPediaType>  list = new ArrayList<>(set);
+		Set<DBPediaType> remove = new HashSet<>();
 		int i, j, size = list.size();
 		DBPediaType ti, tj;
 		
@@ -86,7 +87,7 @@ public class DBPediaInstanceExtractor implements DBPediaXML
 	private String getAlias(String s)
 	{
 		if (StringUtils.containsPunctuation(s) || StringUtils.containsUpperCaseOnly(s))
-			return StringUtils.toLowerCase(s);
+			return PatternUtils.replaceAll(PatternConst.UNDERSCORE, s, StringConst.SPACE);
 		
 		StringBuilder build = new StringBuilder();
 		char[] cs = s.toCharArray();
@@ -95,15 +96,15 @@ public class DBPediaInstanceExtractor implements DBPediaXML
 		for (i=0; i<len; i++)
 		{
 			if (0 < i&&i < len-1 && CharUtils.isLowerCase(cs[i-1]) && CharUtils.isUpperCase(cs[i]))
-				build.append(StringConst.UNDERSCORE);
+				build.append(StringConst.SPACE);
 			
-			build.append(CharUtils.toLowerCase(cs[i]));
+			build.append(cs[i]);
 		}
 		
 		return build.toString();
 	}
 	
-	public void addRedirects(Map<String,DBPediaInfo> instanceMap, InputStream in) throws Exception
+	public void addRedirects(Map<String,DBPediaInfo> infoMap, InputStream in) throws Exception
 	{
 		BufferedReader reader = IOUtils.createBufferedReader(in);
 		String line, redirect, title;
@@ -119,21 +120,22 @@ public class DBPediaInstanceExtractor implements DBPediaXML
 			if (!m.find()) continue;
 			title = m.group(1);
 			
-			if ((info = instanceMap.get(title)) != null)
+			if ((info = infoMap.get(title)) != null)
 				info.addAlias(getAlias(redirect));
 		}
 	}
 	
 	static public void main(String[] args) throws Exception
 	{
-		DBPediaInstanceExtractor ex = new DBPediaInstanceExtractor();
+		DBPediaInfoExtractor ex = new DBPediaInfoExtractor();
 		Gson gson = new Gson();
 		
 		DBPediaTypeMap typeMap = gson.fromJson(new InputStreamReader(IOUtils.createXZBufferedInputStream(args[0])), DBPediaTypeMap.class);	// dbpedia.owl.json.xz
-		DBPediaInfoMap infoMap = ex.getInfoMap(typeMap, new FileInputStream(args[1]));		// instance_types_en.nt
-		ex.addRedirects(infoMap, new FileInputStream(args[2]));								// redirects_en.ttl
-		PrintStream out = new PrintStream(IOUtils.createXZBufferedOutputStream(args[3]));	// instances_en.json.xz
+		DBPediaInfoMap infoMap = ex.getInfoMap(typeMap, IOUtils.createXZBufferedInputStream(args[1]));	// instance_types_en.nt.xz
+		ex.addRedirects(infoMap, IOUtils.createXZBufferedInputStream(args[2]));							// redirects_en.ttl.xz
+		PrintStream out = new PrintStream(IOUtils.createXZBufferedOutputStream(args[3]));				// instances_en.json.xz
 		out.print(gson.toJson(infoMap));
 		out.close();
+		System.out.println(infoMap.get("Abraham_Lincoln").getAliases());
 	}
 }

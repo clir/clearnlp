@@ -65,6 +65,7 @@ public class CTNode implements Comparable<CTNode>
 	
 	// conversion
 	private C2DInfo c2d_info = null;
+	private String  named_entity_tag = null;
 	
 //	======================== Constructors ========================
 	
@@ -83,6 +84,11 @@ public class CTNode implements Comparable<CTNode>
 	}
 	
 //	======================== Getters ========================
+	
+	public String getNamedEntityTag()
+	{
+		return named_entity_tag;
+	}
 
 	/** @return all tags of this node in the Penn Treebank format. */
 	public String getTags()
@@ -482,6 +488,11 @@ public class CTNode implements Comparable<CTNode>
 	}
 	
 //	======================== Setters ========================
+	
+	public void setNamedEntityTag(String tag)
+	{
+		named_entity_tag = tag;
+	}
 	
 	/** @param tags tags in the Penn Treebank format (e.g., "NP-SBJ-TMP-1=2"). */
 	public void setTags(String tags)

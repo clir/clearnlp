@@ -24,13 +24,13 @@ import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class AbstractLRState extends AbstractState<String,String>
+public abstract class AbstractTagState extends AbstractState<String,String>
 {
 	protected int i_input;
 	
 //	====================================== INITIALIZATION ======================================
 	
-	public AbstractLRState(DEPTree tree, CFlag flag)
+	public AbstractTagState(DEPTree tree, CFlag flag)
 	{
 		super(tree, flag);
 		setInput(1);
@@ -96,5 +96,7 @@ public abstract class AbstractLRState extends AbstractState<String,String>
 		return i_input >= t_size;
 	}
 	
-	protected abstract void setLabel(DEPNode node, String label); 
+	protected abstract void setLabel(DEPNode node, String label);
+	
+	abstract public String getAmbiguityClass(DEPNode node);
 }

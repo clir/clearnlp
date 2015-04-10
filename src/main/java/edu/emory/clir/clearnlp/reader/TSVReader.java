@@ -54,12 +54,11 @@ public class TSVReader extends AbstractReader<DEPTree>
 	protected int i_deprel;
 	protected int i_xheads;
 	protected int i_sheads;
-	protected int i_sequenceLabel;
 	
 	public TSVReader(int iForm)
 	{
 		super(TReader.TSV);
-		init(-1, iForm, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+		init(-1, iForm, -1, -1, -1, -1, -1, -1, -1, -1);
 	}
 	
 	/**
@@ -69,7 +68,7 @@ public class TSVReader extends AbstractReader<DEPTree>
 	public TSVReader(int iForm, int iPOSTag)
 	{
 		super(TReader.TSV);
-		init(-1, iForm, -1, iPOSTag, -1, -1, -1, -1, -1, -1, -1);
+		init(-1, iForm, -1, iPOSTag, -1, -1, -1, -1, -1, -1);
 	}
 	
 	/**
@@ -79,7 +78,7 @@ public class TSVReader extends AbstractReader<DEPTree>
 	public TSVReader(int iID, int iForm, int iLemma, int iPOSTag, int iFeats, int iHeadID, int iDeprel)
 	{
 		super(TReader.TSV);
-		init(iID, iForm, iLemma, iPOSTag, -1, iFeats, iHeadID, iDeprel, -1, -1, -1);
+		init(iID, iForm, iLemma, iPOSTag, -1, iFeats, iHeadID, iDeprel, -1, -1);
 	}
 	
 	/**
@@ -89,24 +88,16 @@ public class TSVReader extends AbstractReader<DEPTree>
 	public TSVReader(int iID, int iForm, int iLemma, int iPOSTag, int iFeats, int iHeadID, int iDeprel, int iSHeads)
 	{
 		super(TReader.TSV);
-		init(iID, iForm, iLemma, iPOSTag, -1, iFeats, iHeadID, iDeprel, -1, iSHeads, -1);
+		init(iID, iForm, iLemma, iPOSTag, -1, iFeats, iHeadID, iDeprel, -1, iSHeads);
 	}
 	
 	/**
-	 * Including all except for secondary dependencies.
-	 * @see #init(int, int, int, int, int, int, int, int, int, int)
+	 * Including all.
 	 */
-	public TSVReader(int iID, int iForm, int iLemma, int iPOSTag, int iNamedEntityTag, int iFeats, int iHeadID, int iDeprel, int iSHeads)
+	public TSVReader(int iID, int iForm, int iLemma, int iPOSTag, int iNamedEntityTag, int iFeats, int iHeadID, int iDeprel, int iXHeads, int iSHeads)
 	{
 		super(TReader.TSV);
-		init(iID, iForm, iLemma, iPOSTag, iNamedEntityTag, iFeats, iHeadID, iDeprel, -1, iSHeads, -1);
-	}
-	
-	/** @see #init(int, int, int, int, int, int, int, int, int, int) */
-	public TSVReader(int iID, int iForm, int iLemma, int iPOSTag, int iNamedEntityTag, int iFeats, int iHeadID, int iDeprel, int iXHeads, int iSHeads, int iSequenceLabel)
-	{
-		super(TReader.TSV);
-		init(iID, iForm, iLemma, iPOSTag, iNamedEntityTag, iFeats, iHeadID, iDeprel, iXHeads, iSHeads, iSequenceLabel);
+		init(iID, iForm, iLemma, iPOSTag, iNamedEntityTag, iFeats, iHeadID, iDeprel, iXHeads, iSHeads);
 	}
 	
 	/**
@@ -122,7 +113,7 @@ public class TSVReader extends AbstractReader<DEPTree>
 	 * @param iXHeads the column index of the secondary dependency field.
 	 * @param iSHeads the column index of the semantic head field.
 	 */
-	public void init(int iID, int iForm, int iLemma, int iPOSTag, int iNamedEntityTag, int iFeats, int iHeadID, int iDeprel, int iXHeads, int iSHeads, int iSequenceLabel)
+	public void init(int iID, int iForm, int iLemma, int iPOSTag, int iNamedEntityTag, int iFeats, int iHeadID, int iDeprel, int iXHeads, int iSHeads)
 	{
 		i_id				= iID;
 		i_form				= iForm;
@@ -134,7 +125,6 @@ public class TSVReader extends AbstractReader<DEPTree>
 		i_deprel			= iDeprel;
 		i_xheads			= iXHeads;
 		i_sheads			= iSHeads;
-		i_sequenceLabel     = iSequenceLabel;
 	}
 
 	public DEPTree next()
@@ -190,7 +180,7 @@ public class TSVReader extends AbstractReader<DEPTree>
 	protected DEPTree getDEPTree(List<String[]> lines)
 	{
 		List<DEPNode> nodes = new ArrayList<>();
-		String form, lemma, pos, feats, nament, seqtag;
+		String form, lemma, pos, feats, nament;
 		int id, i, size = lines.size();
 		DEPNode node;
 		String[] tmp;
@@ -204,11 +194,9 @@ public class TSVReader extends AbstractReader<DEPTree>
 			lemma  = (i_lemma  < 0) ? null  : tmp[i_lemma];
 			pos    = (i_posTag < 0) ? null  : tmp[i_posTag];
 			feats  = (i_feats  < 0) ? BLANK : tmp[i_feats];
-			nament = (i_namedEntityTag < 0) ? null : tmp[i_namedEntityTag];
-			seqtag = (i_sequenceLabel < 0) ? null : tmp[i_sequenceLabel];
+			nament = (i_namedEntityTag < 0 || tmp[i_namedEntityTag].equals(BLANK)) ? null : tmp[i_namedEntityTag];
 
 			node = new DEPNode(id, form, lemma, pos, nament, new DEPFeat(feats));
-			node.setSequenceLabel(seqtag);
 			nodes.add(node);			
 		}
 		
@@ -277,6 +265,11 @@ public class TSVReader extends AbstractReader<DEPTree>
 	public boolean hasLemmas()
 	{
 		return i_lemma >= 0;
+	}
+	
+	public boolean hasNamedEntityTags()
+	{
+		return i_namedEntityTag >= 0;
 	}
 	
 	public boolean hasDependencyHeads()

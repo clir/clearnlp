@@ -16,7 +16,7 @@
 package edu.emory.clir.clearnlp.component.mode.pos;
 
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
-import edu.emory.clir.clearnlp.component.state.AbstractLRState;
+import edu.emory.clir.clearnlp.component.state.AbstractTagState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
@@ -26,7 +26,7 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSState extends AbstractLRState
+public class POSState extends AbstractTagState
 {
 	private POSLexicon pos_lexicon;
 
@@ -64,6 +64,7 @@ public class POSState extends AbstractLRState
 	
 //	====================================== FEATURES ======================================
 	
+	@Override
 	public String getAmbiguityClass(DEPNode node)
 	{
 		return pos_lexicon.getAmbiguityClassFeature(node.getSimplifiedWordForm());

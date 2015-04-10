@@ -24,5 +24,6 @@ public enum NLPMode
 	pos,
 	morph,
 	dep,
+	ner,
 	srl;
 }

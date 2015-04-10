@@ -16,7 +16,13 @@
 package edu.emory.clir.clearnlp.collection.tree;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
+import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
+import edu.emory.clir.clearnlp.collection.triple.ObjectIntIntTriple;
+import edu.emory.clir.clearnlp.util.DSUtils;
 
 /**
  * @since 3.0.3
@@ -25,78 +31,91 @@ import java.util.HashMap;
 public class PrefixTree<K extends Comparable<K>,V> implements Serializable
 {
 	private static final long serialVersionUID = 6471355272521434323L;
-	private PrefixNode n_root;
+	private PrefixNode<K,V> n_root;
 	
 	public PrefixTree()
 	{
-		n_root = new PrefixNode();
+		n_root = new PrefixNode<K,V>();
 	}
 	
-	public void add(K[] keys, V value)
+	public PrefixNode<K,V> getRoot()
 	{
-		PrefixNode next, curr = n_root;
-		int i, len = keys.length;
+		return n_root;
+	}
+	
+	public void setRoot(PrefixNode<K,V> node)
+	{
+		n_root = node;
+	}
+	
+	/**
+	 * @param beginIndex inclusive
+	 * @param endIndex exclusive
+	 */
+	public <A>PrefixNode<K,V> add(A[] keys, int beginIndex, int endIndex, Function<A,K> f)
+	{
+		PrefixNode<K,V> next, curr = n_root;
 		
-		for (i=0; i<len; i++)
+		for (int i=beginIndex; i<endIndex; i++)
 		{
 			next = curr.get(keys[i]);
 			
 			if (next == null)
 			{
-				next = new PrefixNode();
-				curr.put(keys[i], next);
+				next = new PrefixNode<K,V>();
+				curr.put(f.apply(keys[i]), next);
 			}
 			
 			curr = next;
 		}
-		
-		curr.setValue(value);
+	
+		return curr;
 	}
 	
-	public V getValue(K[] keys, int beginIndex, boolean minimum)
+	public <A>void set(A[] keys, V value, Function<A,K> f)
 	{
-		PrefixNode curr = n_root;
+		add(keys, 0, keys.length, f).setValue(value);
+	}
+	
+	public <A>ObjectIntPair<V> get(A[] keys, int beginIndex, Function<A,K> f)
+	{
+		ObjectIntPair<V> p = new ObjectIntPair<>();
+		PrefixNode<K,V> curr = n_root;
 		int i, len = keys.length;
-		V value = null;
 		
 		for (i=beginIndex; i<len; i++)
 		{
-			curr = curr.get(keys[i]);
+			curr = curr.get(f.apply(keys[i]));
 			if (curr == null) break;
-			
-			if (curr.hasValue())
-			{
-				value = curr.getValue();
-				if (minimum) break;
-			}
+			if (curr.hasValue()) p.set(curr.getValue(), i);
 		}
 		
-		return value;
+		return p.o != null ? p : null;
 	}
 	
-	private class PrefixNode extends HashMap<K,PrefixNode>
+	public <A>List<ObjectIntIntTriple<V>> getAll(A[] keys, int beginIndex, Function<A,K> f, boolean removeSubset, boolean removeOverlap)
 	{
-		private static final long serialVersionUID = 1566684742873455351L;
-		private V value;
+		List<ObjectIntIntTriple<V>> list = new ArrayList<>();
+		int i, size = keys.length;
+		for (i=beginIndex; i<size; i++) getAllAux(keys, i, f, list, removeSubset, removeOverlap);
+		return list;
+	}
+	
+	private <A>void getAllAux(A[] keys, int beginIndex, Function<A,K> f, List<ObjectIntIntTriple<V>> list, boolean removeSubset, boolean removeOverlap)
+	{
+		ObjectIntPair<V> v = get(keys, beginIndex, f);
+		if (v == null) return;
+		ObjectIntIntTriple<V> t = DSUtils.getLast(list);
+		if (removeSubset  && t != null && t.i2 >= v.i) return;
 		
-		public PrefixNode()
+		if (removeOverlap && t != null && t.i2 >= beginIndex)
 		{
-			value = null;
+			if (t.i2 - t.i1 < v.i - beginIndex)
+				DSUtils.removeLast(list);
+			else
+				return;
 		}
 		
-		public V getValue()
-		{
-			return value;
-		}
-		
-		public void setValue(V value)
-		{
-			this.value = value;
-		}
-		
-		public boolean hasValue()
-		{
-			return value != null;
-		}
+		list.add(new ObjectIntIntTriple<V>(v.o, beginIndex, v.i));
 	}
 }

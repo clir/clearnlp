@@ -97,6 +97,11 @@ public class PatternUtils implements PatternConst
 		add(new Pair<Pattern,String>(Pattern.compile("-RCB-"), "}"));
 	}};
 	
-//	====================================== URL ======================================
+//	====================================== Replace ======================================
 
+	static public String replaceAll(Pattern p, String s, String replacement)
+	{
+		Matcher m = p.matcher(s);
+		return m.replaceAll(replacement);
+	}
 }

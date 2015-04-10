@@ -55,17 +55,21 @@ public abstract class AbstractNLPTrainer
 		byte[] backup;
 		int boot = 1;
 		
+//		prev.o.getModels()
+		
 		try
 		{
 			while (true)
 			{
 				// save the previous model
-				backup = prev.o.toByteArray();
+//				backup = prev.o.toByteArray();
+				backup = prev.o.modelsToByteArray();
 				curr = train(trainFiles, developFiles, lexicons, prev.o.getModels(), boot++);
 				
 				if (prev.d >= curr.d)
 				{
-					prev.o = createComponentForDecode(backup);
+//					prev.o = createComponentForDecode(backup);
+					prev.o.byteArrayToModels(backup);
 					return prev;
 				}
 				

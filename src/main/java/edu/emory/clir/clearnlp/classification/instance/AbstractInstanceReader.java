@@ -63,12 +63,14 @@ abstract public class AbstractInstanceReader<I extends AbstractInstance<F>, F ex
 		String type, value = null, weight = null;
 		int fidx, lidx;
 		
+		// index
 		fidx = s.indexOf(CharConst.COLON);
 		if (fidx < 0) return new String[]{s};
 		
 		type = s.substring(0, fidx);
 		lidx = s.lastIndexOf(CharConst.COLON);
 		
+		// weight
 		if (fidx+1 < lidx)
 		{
 			String t = s.substring(lidx+1);

@@ -66,7 +66,7 @@ public class AdaGradClassify extends AbstractClassifyOnline
 		}
 		else
 		{
-			if (b_average)	return new AdaGradLR ((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge(), c.getBias());
+			if (b_logistic)	return new AdaGradLR ((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge(), c.getBias());
 			else			return new AdaGradSVM((StringModel)model, c.getLabelCutoff(), c.getFeatureCutoff(), c.isAverage(), c.getLearningRate(), c.getRidge(), c.getBias());
 		}
 	}

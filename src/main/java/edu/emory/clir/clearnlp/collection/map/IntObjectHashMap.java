@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
+import com.carrotsearch.hppc.ObjectContainer;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 
@@ -68,6 +69,11 @@ public class IntObjectHashMap<T> implements Serializable, Iterable<ObjectIntPair
 			list.add(p);
 		
 		return list;
+	}
+	
+	public ObjectContainer<T> values()
+	{
+		return g_map.values();
 	}
 	
 	/** Puts a the list of (value, key) pairs to this map. */
