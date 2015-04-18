@@ -7,7 +7,7 @@
     </reader>
 
 	<ner>
-        <trainer algorithm="adagrad" type="svm" labelCutoff="4" featureCutoff="3" alpha="0.02" rho="0.1" bias="0" average="false"/>
+        <trainer algorithm="adagrad" type="svm" labelCutoff="4" featureCutoff="0" alpha="0.02" rho="0.1" bias="0" average="false"/>
         <dictionary_path>general-en-ner-dict.xz</dictionary_path>
         <dictionary_cutoff>0</dictionary_cutoff>
         <bootstraps>true</bootstraps>

@@ -56,24 +56,40 @@ public class DEPTrainer extends AbstractNLPTrainer
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object lexicons)
 	{
-		return new DefaultDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons);
+		switch (t_configuration.getLanguage())
+		{
+		case ENGLISH: return new EnglishDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons);
+		default     : return new DefaultDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons);
+		}
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
 	{
-		return new DefaultDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons, models, true);
+		switch (t_configuration.getLanguage())
+		{
+		case ENGLISH: return new EnglishDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons, models, true);
+		default     : return new DefaultDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons, models, true);
+		}
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
 	{
-		return new DefaultDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons, models, false);
+		switch (t_configuration.getLanguage())
+		{
+		case ENGLISH: return new EnglishDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons, models, false);
+		default     : return new DefaultDEPParser((DEPConfiguration)t_configuration, f_extractors, lexicons, models, false);	
+		}
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models)
 	{
-		return new DefaultDEPParser((DEPConfiguration)t_configuration, models);
+		switch (t_configuration.getLanguage())
+		{
+		case ENGLISH: return new EnglishDEPParser((DEPConfiguration)t_configuration, models);
+		default     : return new DefaultDEPParser((DEPConfiguration)t_configuration, models);
+		}
 	}
 }

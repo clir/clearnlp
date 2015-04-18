@@ -38,7 +38,6 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBInstance;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBReader;
 import edu.emory.clir.clearnlp.ner.BILOU;
-import edu.emory.clir.clearnlp.ner.NERTag;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
@@ -246,14 +245,14 @@ public class C2DConvert
 		for (ObjectIntIntTriple<String> t : names)
 		{
 			if (t.i1 == t.i2)
-				cTree.getTerminal(t.i1).setNamedEntityTag(NERTag.toBILOUTag(BILOU.U, t.o));
+				cTree.getTerminal(t.i1).setNamedEntityTag(BILOU.U+"-"+t.o);
 			else
 			{
-				cTree.getTerminal(t.i1).setNamedEntityTag(NERTag.toBILOUTag(BILOU.B, t.o));
-				cTree.getTerminal(t.i2).setNamedEntityTag(NERTag.toBILOUTag(BILOU.L, t.o));
+				cTree.getTerminal(t.i1).setNamedEntityTag(BILOU.B+"-"+t.o);
+				cTree.getTerminal(t.i2).setNamedEntityTag(BILOU.L+"-"+t.o);
 				
 				for (i=t.i1+1; i<t.i2; i++)
-					cTree.getTerminal(i).setNamedEntityTag(NERTag.toBILOUTag(BILOU.I, t.o));
+					cTree.getTerminal(i).setNamedEntityTag(BILOU.I+"-"+t.o);
 			}
 		}
 	}

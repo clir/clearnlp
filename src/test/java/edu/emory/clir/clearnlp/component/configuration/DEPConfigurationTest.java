@@ -16,9 +16,8 @@
 package edu.emory.clir.clearnlp.component.configuration;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
@@ -30,15 +29,14 @@ import edu.emory.clir.clearnlp.util.IOUtils;
 public class DEPConfigurationTest
 {
 	@Test
-	@Ignore
+//	@Ignore
 	public void test()
 	{
-		String filename = "src/main/resources/configure/config_train.xml";
+		String filename = "src/test/resources/nlp/configuration/configure.xml";
 		DEPConfiguration config = new DEPConfiguration(IOUtils.createFileInputStream(filename));
 		
 		assertEquals(config.getBeamSize(), 32);
-		assertEquals(config.getMarginThreshold(), 0.87, 0);
 		assertEquals(config.getRootLabel(), "root");
-		assertFalse(config.evaluatePunctuation());
+		assertTrue(config.evaluatePunctuation());
 	}
 }

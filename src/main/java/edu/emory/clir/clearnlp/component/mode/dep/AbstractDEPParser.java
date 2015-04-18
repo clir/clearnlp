@@ -22,8 +22,11 @@ import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
+import edu.emory.clir.clearnlp.collection.ngram.Bigram;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
+import edu.emory.clir.clearnlp.component.mode.dep.state.AbstractDEPState;
+import edu.emory.clir.clearnlp.component.mode.dep.state.DEPStateBranch;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 
@@ -31,10 +34,12 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DEPState, DEPEval, DEPFeatureExtractor> implements DEPTransition
+public abstract class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, AbstractDEPState, DEPEval, DEPFeatureExtractor> implements DEPTransition
 {
 	private DEPConfiguration d_configuration;
 	private int[][] label_indices;
+	
+	static public Bigram<Integer, Integer> abcd = new Bigram<>();
 	
 	/** Creates a dependency parser for train. */
 	public AbstractDEPParser(DEPConfiguration configuration, DEPFeatureExtractor[] extractors, Object lexicons)
@@ -66,7 +71,7 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	
 	private void init(DEPConfiguration configuration)
 	{
-		label_indices = new DEPState().initLabelIndices(s_models[0].getLabels());
+		label_indices = AbstractDEPState.initLabelIndices(s_models[0].getLabels());
 		d_configuration = configuration;
 	}
 	
@@ -84,21 +89,21 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	{
 		c_eval = new DEPEval(((DEPConfiguration)t_configuration).evaluatePunctuation());
 	}
-
+	
 //	====================================== PROCESS ======================================
 	
 	@Override
 	public void process(DEPTree tree)
 	{
-		DEPState state = new DEPState(tree, c_flag, d_configuration);
+		AbstractDEPState state = new DEPStateBranch(tree, c_flag, d_configuration);
 		List<StringInstance> instances = process(state);
 		
-//		if (state.startBranching())
-//		{
-//			while (state.nextBranch()) state.saveBest(process(state));
-//			List<StringInstance> tmp = state.setBest(); 
-//			if (tmp != null) instances.addAll(tmp);
-//		}
+		if (state.startBranching())
+		{
+			while (state.nextBranch()) state.saveBest(process(state));
+			List<StringInstance> tmp = state.setBest(); 
+			if (tmp != null) instances.addAll(tmp);
+		}
 		
 		if (isTrainOrBootstrap())
 			s_models[0].addInstances(instances);
@@ -110,29 +115,32 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 	}
 
 	@Override
-	protected StringFeatureVector createStringFeatureVector(DEPState state)
+	protected StringFeatureVector createStringFeatureVector(AbstractDEPState state)
 	{
 		return f_extractors[0].createStringFeatureVector(state);
 	}
 	
 	@Override
-	protected DEPLabel getAutoLabel(DEPState state, StringFeatureVector vector)
+	protected DEPLabel getAutoLabel(AbstractDEPState state, StringFeatureVector vector)
 	{
 		StringPrediction[] ps = getPredictions(state, vector);
 		DEPLabel autoLabel = new DEPLabel(ps[0]);
 		if (autoLabel.isArc(ARC_NO)) state.save2ndHead(ps);
+		state.saveBranch(ps);
 		return autoLabel;
 	}
 	
-	protected StringPrediction[] getPredictions(DEPState state, StringFeatureVector vector)
+	protected StringPrediction[] getPredictions(AbstractDEPState state, StringFeatureVector vector)
 	{
 		int[] indices = state.getLabelIndices(label_indices);		
-		return (indices != null) ? s_models[0].predictTop2(vector, indices) : s_models[0].predictTop2(vector);
+		StringPrediction[] ps = (indices != null) ? s_models[0].predictTop2(vector, indices) : s_models[0].predictTop2(vector);
+		for (StringPrediction p : ps) p.setScore(1/(1+Math.exp(-p.getScore())));
+		return ps;
 	}
 	
 //	====================================== POST-PROCESS ======================================
 	
-	private void processHeadless(DEPState state)
+	private void processHeadless(AbstractDEPState state)
 	{
 		ObjectIntPair<StringPrediction> max;
 		int i, size = state.getTreeSize();
@@ -145,8 +153,8 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 			if (!node.hasHead() && !state.find2ndHead(node))
 			{
 				max = new ObjectIntPair<StringPrediction>(null, -1000);
-				processHeadlessAll(state, node, max, label_indices[DEPState.RIGHT_ARC], -1);
-				processHeadlessAll(state, node, max, label_indices[DEPState.LEFT_ARC] ,  1);
+				processHeadlessAll(state, node, max, label_indices[AbstractDEPState.RIGHT_ARC], -1);
+				processHeadlessAll(state, node, max, label_indices[AbstractDEPState. LEFT_ARC] ,  1);
 				
 				if (max.o == null)
 					node.setHead(state.getNode(0), d_configuration.getRootLabel());
@@ -156,7 +164,7 @@ public class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, DE
 		}
 	}
 	
-	private void processHeadlessAll(DEPState state, DEPNode node, ObjectIntPair<StringPrediction> max, int[] indices, int dir)
+	private void processHeadlessAll(AbstractDEPState state, DEPNode node, ObjectIntPair<StringPrediction> max, int[] indices, int dir)
 	{
 		int i, currID = node.getID(), size = state.getTreeSize();
 		StringFeatureVector vector;

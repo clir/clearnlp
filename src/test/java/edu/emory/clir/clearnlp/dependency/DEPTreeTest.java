@@ -110,7 +110,7 @@ public class DEPTreeTest
 		assertEquals(reader.next().toString(DEPNode::toStringSRL), tree.toString(DEPNode::toStringSRL));
 		
 		// projectivize
-		tree.projectivize("<",">");
+		tree.projectivize();
 		assertEquals(reader.next().toString(DEPNode::toStringSRL), tree.toString(DEPNode::toStringSRL));
 		
 		// roots

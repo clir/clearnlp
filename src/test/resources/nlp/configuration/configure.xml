@@ -22,8 +22,12 @@
     </pos>
 
     <dep>
-        <trainer algorithm="adagrad" type="svm" labelCutoff="0" featureCutoff="0" alpha="0.01" rho="0.1" average="true"/>
+        <trainer algorithm="adagrad" type="svm" labelCutoff="4" featureCutoff="3" alpha="0.02" rho="0.1" average="false"/>
+        <evaluate_punctuation>true</evaluate_punctuation>
+        <beam_size_train>16</beam_size_train>
         <bootstraps>true</bootstraps>
+        <root_label>root</root_label>
+        <beam_size>32</beam_size>
     </dep>
 
 </configuration>

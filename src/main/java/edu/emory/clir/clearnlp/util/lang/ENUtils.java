@@ -30,7 +30,7 @@ public class ENUtils
 	static private final Set<String> S_BECOME	= DSUtils.toHashSet("become","becomes","became","becoming");
 	static private final Set<String> S_GET		= DSUtils.toHashSet("get","gets","got","gotten","getting");
 
-	static public final Set<String> S_NEGATION = DSUtils.toHashSet("never","not","n't","'nt","no");
+	static public final Set<String> S_NEGATION = DSUtils.toHashSet("never","not","n't","'nt","no","neither","non");
 	static public final Set<String> S_RELATIVIZER = DSUtils.toHashSet("how","however","that","what","whatever","whatsoever","when","whenever","where","whereby","wherein","whereupon","wherever","which","whichever","whither","who","whoever","whom","whose","why");
 	static public final Set<String> S_RELATIVIZER_LINK = DSUtils.toHashSet("0","that","when","where","whereby","wherein","whereupon","which","who","whom","whose");
 	static public final Set<String> S_CORRELATIVE_CONJUNCTION = DSUtils.toHashSet("either","neither","whether","both");

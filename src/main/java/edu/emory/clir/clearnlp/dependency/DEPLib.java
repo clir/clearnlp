@@ -49,4 +49,7 @@ public class DEPLib
 	static public final String FEAT_SA  = "sa";
 	/** The feat-key of sentiments (for root). */
 	static public final String FEAT_SAR = "sar";
+	
+	static public final String NPROJ_LEFT  = "<";
+	static public final String NPROJ_RIGHT = ">";
 }

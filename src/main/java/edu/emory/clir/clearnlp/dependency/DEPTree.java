@@ -342,12 +342,8 @@ public class DEPTree implements Iterable<DEPNode>
 		return new int[]{total, las, uas};
 	}
 	
-	/**
-	 * Convert this DEPTree into a projective tree
-	 * @param left
-	 * @param right
-	 */
-	public void projectivize(String left, String right)
+	/** Convert this DEPTree into a projective tree. */
+	public void projectivize()
 	{
 		IntHashSet ids = new IntHashSet();
 		DEPNode nonProj, head, gHead;
@@ -361,7 +357,7 @@ public class DEPTree implements Iterable<DEPNode>
 		{
 			head  = nonProj.getHead();
 			gHead = head.getHead();
-			dir = (head.getID() < gHead.getID()) ? left : right;
+			dir = (head.getID() < gHead.getID()) ? DEPLib.NPROJ_LEFT: DEPLib.NPROJ_RIGHT;
 			nonProj.setHead(gHead, nonProj.getLabel()+dir+head.getLabel());
 		}
 	}
@@ -821,6 +817,16 @@ public class DEPTree implements Iterable<DEPNode>
 			traverseDepthFirst(list, child);
 		
 		list.add(node);
+	}
+	
+	public int countHeaded()
+	{
+		int c = 0;
+		
+		for (DEPNode node : this)
+			if (node.hasHead()) c++;
+		
+		return c;
 	}
 	
 //	====================================== String ======================================

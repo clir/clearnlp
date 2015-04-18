@@ -55,6 +55,12 @@ public class NERInfoList implements Serializable
 		return info_list;
 	}
 	
+	public void merge(NERInfoList list)
+	{
+		for (NERInfo info : list.getList())
+			pick(info.getNamedEntityTag(), info.getPickCount());
+	}
+	
 	public void add(NERInfo info)
 	{
 		info_list.add(info);
@@ -102,7 +108,7 @@ public class NERInfoList implements Serializable
 		correct_count += count;
 	}
 	
-	public void pick(String tag, int inc)
+	public boolean pick(String tag, int inc)
 	{
 		int i, size = info_list.size();
 		NERInfo info;
@@ -114,12 +120,13 @@ public class NERInfoList implements Serializable
 			if (info.isNamedEntityTag(tag))
 			{
 				info.incrementPickCount(inc);
-				sort(i); return;
+				sort(i); return true;
 			}
 		}
 		
 		info_list.add(new NERInfo(tag, 1));
 		sort(info_list.size()-1);
+		return false;
 	}
 	
 	public String joinTags(String delim)

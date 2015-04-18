@@ -15,6 +15,8 @@
  */
 package edu.emory.clir.clearnlp.feature;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
+import edu.emory.clir.clearnlp.collection.tree.PrefixTree;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
@@ -34,7 +37,9 @@ import edu.emory.clir.clearnlp.feature.common.OrthographicType;
 import edu.emory.clir.clearnlp.feature.type.FeatureXml;
 import edu.emory.clir.clearnlp.feature.type.FieldType;
 import edu.emory.clir.clearnlp.util.CharUtils;
+import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.MetaUtils;
+import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 import edu.emory.clir.clearnlp.util.constant.CharConst;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -322,5 +327,32 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType extends Abstr
 		
 		if (!allPunct && !hasPeriod && !hasHyphen && hasPunct)
 			list.add(OrthographicType.HAS_OTHER_PUNCT);
+	}
+	
+	static public PrefixTree<String,String[]> getBrownClusters(InputStream in) throws IOException
+	{
+		BufferedReader reader = IOUtils.createBufferedReader(in);
+		PrefixTree<String,String[]> tree = new PrefixTree<>();
+		List<String[]> instances = new ArrayList<>();
+		String[] tokens, v;
+		String line;
+		int i, len;
+		
+		while ((line = reader.readLine()) != null)
+			instances.add(Splitter.splitTabs(line));
+		
+		for (String[] t : instances)
+		{
+			len = t[0].length();
+			v = new String[len];
+	
+			for (i=0; i<len; i++)
+				v[i] = t[0].substring(0,i+1);
+			
+			tokens = Splitter.splitHyphens(t[1]);
+			tree.set(tokens, v, String::toString);
+		}
+		
+		return tree;
 	}
 }

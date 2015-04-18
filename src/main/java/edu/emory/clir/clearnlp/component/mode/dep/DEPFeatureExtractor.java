@@ -17,6 +17,7 @@ package edu.emory.clir.clearnlp.component.mode.dep;
 
 import java.io.InputStream;
 
+import edu.emory.clir.clearnlp.component.mode.dep.state.AbstractDEPState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.feature.common.CommonFeatureExtractor;
 import edu.emory.clir.clearnlp.feature.common.CommonFeatureToken;
@@ -25,7 +26,7 @@ import edu.emory.clir.clearnlp.feature.common.CommonFeatureToken;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPFeatureExtractor extends CommonFeatureExtractor<DEPState>
+public class DEPFeatureExtractor extends CommonFeatureExtractor<AbstractDEPState>
 {
 	private static final long serialVersionUID = -7336596053366459297L;
 
@@ -35,7 +36,7 @@ public class DEPFeatureExtractor extends CommonFeatureExtractor<DEPState>
 	}
 	
 	@Override
-	protected String getFeature(CommonFeatureToken token, DEPState state, DEPNode node)
+	protected String getFeature(CommonFeatureToken token, AbstractDEPState state, DEPNode node)
 	{
 		switch (token.getField())
 		{

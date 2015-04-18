@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -30,6 +31,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import edu.emory.clir.clearnlp.collection.tree.PrefixTree;
+import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFFrameset;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFMap;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRole;
@@ -47,19 +50,11 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-//		Gson gson = new Gson();
-//		String infoFile = "/Users/jdchoi/Documents/Data/dbpedia/instances_en.json.xz";
-//		DBPediaInfoMap infoMap = gson.fromJson(new InputStreamReader(IOUtils.createXZBufferedInputStream(infoFile)), DBPediaInfoMap.class);
-//		
-//		DBPediaInfo info = infoMap.get("John_Emory");
-//		System.out.println(info);
-//		
-//		String s = "of Methodist bishop John Emory";
-//		String prefixFile = "/Users/jdchoi/Documents/Data/dbpedia/prefix_ner.xz";
-//		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(prefixFile);
-//		PrefixTree<String,NERInfoList> prefixTree = (PrefixTree<String,NERInfoList>)in.readObject();
-//		ObjectIntPair<NERInfoList> ps = prefixTree.get(s.split(" "), 0, String::toString);
-//		System.out.println(ps.o);
+		String filename = "/Users/jdchoi/Downloads/IllinoisNerExtended-v2.3/data/ner-ext/BrownHierarchicalWordClusters/brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt";
+		PrefixTree<String,String[]> tree = AbstractFeatureExtractor.getBrownClusters(new FileInputStream(filename));
+		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(filename+".xz");
+		out.writeObject(tree);
+		out.close();
 	}
 	
 	class Tmp

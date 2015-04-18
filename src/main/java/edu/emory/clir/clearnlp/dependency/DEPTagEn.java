@@ -26,6 +26,8 @@ public interface DEPTagEn
 	/** The dependency label for subjects. */
 	String DEP_SUBJ	= "subj";
 	
+	/** The dependency label for finite and non-finite clausal modifier. */
+	String DEP_ACL			= "acl";
 	/** The dependency label for adjectival complements. */
 	String DEP_ACOMP		= "acomp";
 	/** The dependency label for adverbial clause modifiers. */
@@ -44,20 +46,24 @@ public interface DEPTagEn
 	String DEP_AUX			= "aux";
 	/** The dependency label for passive auxiliary verbs. */
 	String DEP_AUXPASS		= DEP_AUX+DEP_PASS;
+	/** The dependency label for case marker. */
+	String DEP_CASE 		= "case";
 	/** The dependency label for coordinating conjunctions. */
 	String DEP_CC			= "cc";
 	/** The dependency label for clausal complements. */
 	String DEP_CCOMP		= "ccomp";
 //	/** The dependency label for complementizers. */
 //	String DEP_COMPLM		= "complm";
-//	/** The dependency label for compound nouns/numbers. */
-//	String DEP_COMPOUND		= "compound";
+	/** The dependency label for compound nouns/numbers. */
+	String DEP_COMPOUND		= "compound";
 	/** The dependency label for conjuncts. */
 	String DEP_CONJ			= "conj";
 	/** The dependency label for clausal subjects. */
 	String DEP_CSUBJ		= "c"+DEP_SUBJ;
 	/** The dependency label for clausal passive subjects. */
 	String DEP_CSUBJPASS	= DEP_CSUBJ+DEP_PASS;
+	/** The dependency label for dative. */
+	String DEP_DATIVE  		= "dative";
 	/** The dependency label for unknown dependencies. */
 	String DEP_DEP  		= "dep";
 	/** The dependency label for determiners. */
@@ -67,10 +73,10 @@ public interface DEPTagEn
 	/** The dependency label for expletives. */
 	String DEP_EXPL 		= "expl";
 	/** The dependency label for modifiers in hyphenation. */
-	String DEP_HMOD 		= "hmod";
-	/** The dependency label for hyphenation. */
-	String DEP_HYPH 		= "hyph";
-	/** The dependency label for indirect objects. */
+//	String DEP_HMOD 		= "hmod";
+//	/** The dependency label for hyphenation. */
+//	String DEP_HYPH 		= "hyph";
+//	/** The dependency label for indirect objects. */
 	String DEP_IOBJ 		= "iobj";
 	/** The dependency label for interjections. */
 	String DEP_INTJ			= "intj";
@@ -80,14 +86,12 @@ public interface DEPTagEn
 	String DEP_META			= "meta";
 	/** The dependency label for negation modifiers. */
 	String DEP_NEG			= "neg";
-	/** The dependency label for non-finite modifiers. */
-	String DEP_NFMOD		= "nfmod";
 //	/** The dependency label for infinitival modifiers. */
 //	String DEP_INFMOD		= "infmod";
 	/** The dependency label for noun phrase modifiers. */
-	String DEP_NMOD 		= "nmod";
-	/** The dependency label for noun compound modifiers. */
-	String DEP_NN			= "nn";
+	String DEP_NOUNMOD 		= "nmod";
+//	/** The dependency label for noun compound modifiers. */
+//	String DEP_NN			= "nn";
 	/** The dependency label for noun phrase as adverbial modifiers. */
 	String DEP_NPADVMOD		= "npadvmod";
 	/** The dependency label for nominal subjects. */
@@ -95,9 +99,9 @@ public interface DEPTagEn
 	/** The dependency label for nominal passive subjects. */
 	String DEP_NSUBJPASS	= DEP_NSUBJ+DEP_PASS;
 	/** The dependency label for numeric modifiers. */
-	String DEP_NUM			= "num";
-	/** The dependency label for elements of compound numbers. */
-	String DEP_NUMBER		= "number";
+	String DEP_NUMMOD		= "nummod";
+//	/** The dependency label for elements of compound numbers. */
+//	String DEP_NUMBER		= "number";
 	/** The dependency label for object predicates. */
 	String DEP_OPRD			= "oprd";
 	/** The dependency label for parataxis. */
@@ -112,8 +116,6 @@ public interface DEPTagEn
 	String DEP_POBJ 		= "pobj";
 	/** The dependency label for possession modifiers. */
 	String DEP_POSS			= "poss";
-	/** The dependency label for possessive modifiers. */
-	String DEP_POSSESSIVE 	= "possessive";
 	/** The dependency label for pre-conjuncts. */
 	String DEP_PRECONJ		= "preconj";
 	/** The dependency label for pre-determiners. */
@@ -124,12 +126,10 @@ public interface DEPTagEn
 	String DEP_PRT 			= "prt";
 	/** The dependency label for punctuation. */
 	String DEP_PUNCT		= "punct";
-	/** The dependency label for modifiers of quantifiers. */
-	String DEP_QMOD			= "qmod";
 	/** The dependency label for quantifier phrase modifiers. */
 	String DEP_QUANTMOD		= "quantmod";
 	/** The dependency label for relative clause modifiers. */
-	String DEP_RCMOD		= "rcmod";
+	String DEP_RELCL		= "relcl";
 	/** The dependency label for roots. */
 	String DEP_ROOT 		= "root";
 	/** The dependency label for open clausal modifiers. */

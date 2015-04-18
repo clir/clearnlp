@@ -93,11 +93,24 @@ public class PrefixTree<K extends Comparable<K>,V> implements Serializable
 		return p.o != null ? p : null;
 	}
 	
-	public <A>List<ObjectIntIntTriple<V>> getAll(A[] keys, int beginIndex, Function<A,K> f, boolean removeSubset, boolean removeOverlap)
+	public <A>PrefixNode<K,V> get(A[] keys, int beginIndex, int endIndex, Function<A,K> f)
+	{
+		PrefixNode<K,V> curr = n_root;
+		
+		for (int i=beginIndex; i<endIndex; i++)
+		{
+			curr = curr.get(f.apply(keys[i]));
+			if (curr == null) return null;
+		}
+		
+		return curr;
+	}
+	
+	public <A>List<ObjectIntIntTriple<V>> getAll(A[] array, int beginIndex, Function<A,K> f, boolean removeSubset, boolean removeOverlap)
 	{
 		List<ObjectIntIntTriple<V>> list = new ArrayList<>();
-		int i, size = keys.length;
-		for (i=beginIndex; i<size; i++) getAllAux(keys, i, f, list, removeSubset, removeOverlap);
+		int i, size = array.length;
+		for (i=beginIndex; i<size; i++) getAllAux(array, i, f, list, removeSubset, removeOverlap);
 		return list;
 	}
 	

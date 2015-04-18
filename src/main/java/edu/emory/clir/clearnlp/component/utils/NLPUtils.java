@@ -22,28 +22,19 @@ import java.io.ObjectInputStream;
 
 import org.tukaani.xz.XZInputStream;
 
-import edu.emory.clir.clearnlp.collection.tree.PrefixTree;
 import edu.emory.clir.clearnlp.component.mode.dep.AbstractDEPParser;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
-import edu.emory.clir.clearnlp.component.mode.dep.DEPTrainer;
 import edu.emory.clir.clearnlp.component.mode.dep.DefaultDEPParser;
 import edu.emory.clir.clearnlp.component.mode.dep.EnglishDEPParser;
 import edu.emory.clir.clearnlp.component.mode.morph.AbstractMPAnalyzer;
 import edu.emory.clir.clearnlp.component.mode.morph.DefaultMPAnalyzer;
 import edu.emory.clir.clearnlp.component.mode.morph.EnglishMPAnalyzer;
-import edu.emory.clir.clearnlp.component.mode.ner.AbstractNERecognizer;
-import edu.emory.clir.clearnlp.component.mode.ner.DefaultNERecognizer;
-import edu.emory.clir.clearnlp.component.mode.ner.EnglishNERecognizer;
-import edu.emory.clir.clearnlp.component.mode.ner.NERTrainer;
 import edu.emory.clir.clearnlp.component.mode.pos.AbstractPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.EnglishPOSTagger;
-import edu.emory.clir.clearnlp.component.mode.pos.POSTrainer;
-import edu.emory.clir.clearnlp.component.trainer.AbstractNLPTrainer;
 import edu.emory.clir.clearnlp.conversion.AbstractC2DConverter;
 import edu.emory.clir.clearnlp.conversion.EnglishC2DConverter;
 import edu.emory.clir.clearnlp.conversion.headrule.HeadRuleMap;
-import edu.emory.clir.clearnlp.ner.NERInfoList;
 import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
 import edu.emory.clir.clearnlp.tokenization.EnglishTokenizer;
 import edu.emory.clir.clearnlp.util.BinUtils;
@@ -90,16 +81,16 @@ public class NLPUtils
 		}
 	}
 	
-	static public AbstractNERecognizer getNERecognizer(TLanguage language, ObjectInputStream in)
-	{
-		BinUtils.LOG.info("Loading named entity recognition models.\n");
-		
-		switch (language)
-		{
-		case ENGLISH: return new EnglishNERecognizer(in);
-		default     : return new DefaultNERecognizer(in);
-		}
-	}
+//	static public AbstractNERecognizer getNERecognizer(TLanguage language, ObjectInputStream in)
+//	{
+//		BinUtils.LOG.info("Loading named entity recognition models.\n");
+//		
+//		switch (language)
+//		{
+//		case ENGLISH: return new EnglishNERecognizer(in);
+//		default     : return new DefaultNERecognizer(in);
+//		}
+//	}
 	
 	static public AbstractDEPParser getDEPParser(TLanguage language, ObjectInputStream in, DEPConfiguration configuration)
 	{
@@ -112,21 +103,6 @@ public class NLPUtils
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	static public PrefixTree<String,NERInfoList> getNEDictionary(TLanguage language, ObjectInputStream in)
-	{
-		BinUtils.LOG.info("Loading named entity dictionary.\n");
-		PrefixTree<String,NERInfoList> tree = null;
-		
-		try
-		{
-			tree = (PrefixTree<String,NERInfoList>)in.readObject();
-		}
-		catch (Exception e) {e.printStackTrace();}
-		
-		return tree;
-	}
-	
 	static public AbstractPOSTagger getPOSTagger(TLanguage language, String modelPath)
 	{
 		return getPOSTagger(language, getObjectInputStream(modelPath));
@@ -137,17 +113,12 @@ public class NLPUtils
 		return getDEPParser(language, getObjectInputStream(modelPath), configuration);
 	}
 	
-	static public AbstractNERecognizer getNERecognizer(TLanguage language, String modelPath)
-	{
-		return getNERecognizer(language, getObjectInputStream(modelPath));
-	}
+//	static public AbstractNERecognizer getNERecognizer(TLanguage language, String modelPath)
+//	{
+//		return getNERecognizer(language, getObjectInputStream(modelPath));
+//	}
 	
-	static public PrefixTree<String,NERInfoList> getNEDictionary(TLanguage language, String modelPath)
-	{
-		return getNEDictionary(language, getObjectInputStream(modelPath));
-	}
-	
-	static private ObjectInputStream getObjectInputStream(String modelPath)
+	static public ObjectInputStream getObjectInputStream(String modelPath)
 	{
 		try
 		{
@@ -156,17 +127,5 @@ public class NLPUtils
 		catch (IOException e) {e.printStackTrace();}
 
 		return null;
-	}
-	
-	static public AbstractNLPTrainer getTrainer(NLPMode mode, InputStream configuration, InputStream[] features)
-	{
-		switch (mode)
-		{
-		case pos: return new POSTrainer(configuration, features);
-		case ner: return new NERTrainer(configuration, features);
-		case dep: return new DEPTrainer(configuration, features);
-		case srl: return null;
-		default : throw new IllegalArgumentException("Invalid mode: "+mode.toString()); 
-		}
 	}
 }

@@ -130,7 +130,7 @@ public class DEPLibEn implements DEPTagEn
 		DEPNode top  = getHeightVerbInChain(verb);
 		DEPNode head = top.getHead();
 		
-		if (top.isLabel(DEP_RCMOD) && !head.isArgumentOf(verb))
+		if (top.isLabel(DEP_RELCL) && !head.isArgumentOf(verb))
 		{
 			for (SRLArc arc : argList)
 			{
@@ -218,7 +218,7 @@ public class DEPLibEn implements DEPTagEn
 				add = false;
 			}
 			
-			if (dep.isLabel(DEP_NN) || dep.isPOSTag(CTLibEn.POS_PRPS))
+			if (dep.isLabel(DEP_COMPOUND) || dep.isPOSTag(CTLibEn.POS_PRPS))
 			{
 				build.append(delim);
 				build.append(dep.getLemma());

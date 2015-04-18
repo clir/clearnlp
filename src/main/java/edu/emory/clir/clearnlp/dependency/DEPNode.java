@@ -433,6 +433,22 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		
 		return null;
 	}
+	
+	public DEPNode getLeftNearestSibling(String label)
+	{
+		if (d_head != null)
+		{
+			DEPNode node;
+			
+			for (int i=n_siblingID-1; i>=0; i--)
+			{	
+				node = d_head.getDependent(i);
+				if (node.isLabel(label)) return node;
+			}
+		}
+		
+		return null;
+	}
 
 	/**
 	 * Get the right nearest sibling node of the node.
@@ -455,6 +471,23 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		{
 			order = n_siblingID + order + 1;
 			if (order < d_head.getDependentSize()) return d_head.getDependent(order);
+		}
+		
+		return null;
+	}
+	
+	public DEPNode getRightNearestSibling(String label)
+	{
+		if (d_head != null)
+		{
+			int i, size = d_head.getDependentSize();
+			DEPNode node;
+			
+			for (i=n_siblingID+1; i<size; i++)
+			{	
+				node = d_head.getDependent(i);
+				if (node.isLabel(label)) return node;
+			}
 		}
 		
 		return null;

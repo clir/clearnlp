@@ -154,7 +154,7 @@ public class NLPDecode
 		switch (mode)
 		{
 		case srl  :
-		case ner  : list.add(NLPUtils.getNERecognizer(language, config.getModelPath(NLPMode.ner)));
+//		case ner  : list.add(NLPUtils.getNERecognizer(language, config.getModelPath(NLPMode.ner)));
 		case dep  : list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), new DEPConfiguration(IOUtils.createFileInputStream(s_configurationFile))));
 		case morph: list.add(NLPUtils.getMPAnalyzer(language));
 		case pos  : list.add(NLPUtils.getPOSTagger(language, config.getModelPath(NLPMode.pos)));
@@ -170,9 +170,9 @@ public class NLPDecode
 		switch (mode)
 		{
 		case srl:
-		case ner:
-			if (!reader.hasNamedEntityTags())
-				list.add(NLPUtils.getNERecognizer(language, config.getModelPath(NLPMode.ner)));
+//		case ner:
+//			if (!reader.hasNamedEntityTags())
+//				list.add(NLPUtils.getNERecognizer(language, config.getModelPath(NLPMode.ner)));
 		case dep:
 			if (!reader.hasDependencyHeads())
 				list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), new DEPConfiguration(IOUtils.createFileInputStream(s_configurationFile))));
@@ -199,7 +199,7 @@ public class NLPDecode
 		switch (mode)
 		{
 		case srl  : return tree.toString(DEPNode::toStringSRL);
-		case ner  : return tree.toString(DEPNode::toStringNER);
+//		case ner  : return tree.toString(DEPNode::toStringNER);
 		case dep  : return tree.toString(DEPNode::toStringDEP);
 		case morph: return tree.toString(DEPNode::toStringMorph);
 		case pos  : return tree.toString(DEPNode::toStringPOS);

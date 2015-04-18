@@ -31,14 +31,9 @@ public class DEPConfiguration extends AbstractConfiguration
 {
 	private boolean eval_punct;
 	private String root_label;
+	private int beam_size;
 	
 //	============================== Initialization ==============================
-	
-	public DEPConfiguration(String rootLabel)
-	{
-		super(NLPMode.dep);
-		setRootLabel(rootLabel);
-	}
 	
 	public DEPConfiguration(InputStream in)
 	{
@@ -52,24 +47,21 @@ public class DEPConfiguration extends AbstractConfiguration
 
 		boolean evalPunct = XmlUtils.getBooleanTextContent(XmlUtils.getFirstElementByTagName(eMode, "evaluate_punctuation"));
 		String rootLabel  = XmlUtils.getTrimmedTextContent(XmlUtils.getFirstElementByTagName(eMode, "root_label"));
+		int beamSize = XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, "beam_size"));
 		
 		setEvaluatePunctuation(evalPunct);
 		setRootLabel(rootLabel);
+		setBeamSize(beamSize);
 	}
 	
 	public int getBeamSize()
 	{
-		return getBeamSize(NLPMode.dep);
+		return beam_size;
 	}
 	
-	public double getMarginThreshold()
+	public void setBeamSize(int size)
 	{
-		return getMarginThreshold(NLPMode.dep);
-	}
-	
-	public boolean useBranching()
-	{
-		return getBeamSize() > 1;
+		beam_size = size;
 	}
 	
 	public String getRootLabel()

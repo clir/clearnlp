@@ -76,13 +76,7 @@ public class Joiner
 	
 	static public <T>String join(T[] array, String delim, int beginIndex, int endIndex)
 	{
-		if (endIndex - beginIndex == 0) return StringConst.EMPTY;
-		StringJoiner build = new StringJoiner(delim);
-		
-		for (int i=beginIndex; i<endIndex; i++)
-			build.add(array[i].toString());
-		
-		return build.toString();
+		return join(array, delim, beginIndex, endIndex, n -> n.toString());
 	}
 	
 	static public <T>String join(T[] array, String delim)

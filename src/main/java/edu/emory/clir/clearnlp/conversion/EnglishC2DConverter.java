@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UnknownFormatConversionException;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import edu.emory.clir.clearnlp.collection.set.IntHashSet;
@@ -45,9 +46,12 @@ import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTagEn;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBLib;
+import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.pos.POSTagEn;
 import edu.emory.clir.clearnlp.util.DSUtils;
+import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.PatternUtils;
+import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.arc.AbstractArc;
 import edu.emory.clir.clearnlp.util.arc.PBArc;
@@ -75,7 +79,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	private final Set<String> S_NUM			= DSUtils.toHashSet(CTLibEn.POS_CD, CTTagEn.C_QP);
 	private final Set<String> S_DET			= DSUtils.toHashSet(CTLibEn.POS_DT, CTLibEn.POS_WDT, CTLibEn.POS_WP);
 	private final Set<String> S_AUX			= DSUtils.toHashSet(CTLibEn.POS_MD, CTLibEn.POS_TO);
-	private final Set<String> S_NN			= DSUtils.toHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTLibEn.POS_FW);
+//	private final Set<String> S_NN			= DSUtils.toHashSet(CTTagEn.C_NML, CTTagEn.C_NP);
 
 	private final Set<String> S_ADJT_PHRASE	= DSUtils.toHashSet(CTTagEn.C_ADJP, CTTagEn.C_WHADJP);
 	private final Set<String> S_NOUN_PHRASE	= DSUtils.toHashSet(CTTagEn.C_NP, CTTagEn.C_NML);
@@ -133,6 +137,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		}
 		catch (Exception e) {e.printStackTrace();}
 		
+		if (tree != null) finalize(tree);
 		return tree;
 	}
 	
@@ -265,7 +270,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		else	// relative clauses
 		{
 			CTNode parent = ante.getHighestChainedAncestor(CTLibEn.M_SBAR);
-			if (parent != null) parent.addFunctionTag(DEPLibEn.DEP_RCMOD);
+			if (parent != null) parent.addFunctionTag(DEPLibEn.DEP_RELCL);
 			replaceEC(ec, ante);
 		}
 	}
@@ -421,7 +426,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	{
 		if (findHeadsCoordination(rule, curr))	return;
 		
-		findHyphens(curr);
+//		findHyphens(curr);
 		findHeadsApposition(curr);
 		findHeadsSmallClause(curr);
 
@@ -572,7 +577,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		node.getC2DInfo().setHead(head, label, head.isTerminal());
 	}
 	
-	private boolean findHyphens(CTNode node)
+	boolean findHyphens(CTNode node)
 	{
 		int i, size = node.getChildrenSize();
 		CTNode prev, hyph, next;
@@ -589,14 +594,14 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 			{
 				if (isVP)
 				{
-					prev.getC2DInfo().setLabel(DEPLibEn.DEP_HMOD);
-					hyph.getC2DInfo().setLabel(DEPLibEn.DEP_HYPH);
-					next.getC2DInfo().setLabel(DEPLibEn.DEP_HMOD);
+					prev.getC2DInfo().setLabel(DEPLibEn.DEP_COMPOUND);
+					hyph.getC2DInfo().setLabel(DEPLibEn.DEP_PUNCT);
+					next.getC2DInfo().setLabel(DEPLibEn.DEP_COMPOUND);
 				}
 				else
 				{
-					prev.getC2DInfo().setHead(next, DEPLibEn.DEP_HMOD);
-					hyph.getC2DInfo().setHead(next, DEPLibEn.DEP_HYPH);
+					prev.getC2DInfo().setHead(next, DEPLibEn.DEP_COMPOUND);
+					hyph.getC2DInfo().setHead(next, DEPLibEn.DEP_PUNCT);
 				}
 				
 				isFound = true;
@@ -702,7 +707,6 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		CTNode d = C.getC2DInfo().getTerminalHead();
 		String label;
 		
-		// function tags
 		if (hasAdverbialTag(C))
 		{
 			if (C.isConstituentTagAny(S_ADVCL))
@@ -712,6 +716,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 				return DEPLibEn.DEP_NPADVMOD;
 		}
 		
+		// function tags
 		if ((label = getSubjectLabel(C, d)) != null)
 			return label;
 		
@@ -741,9 +746,10 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		
 		if (P.isConstituentTagAny(S_NFMOD))
 		{
-			if (isNfmod(C))	return DEPLibEn.DEP_NFMOD; // isInfMod(C) ? DEPLibEn.DEP_INFMOD : DEPLibEn.DEP_PARTMOD;
-			if (isRcmod(C))	return DEPLibEn.DEP_RCMOD;
-			if (isCcomp(C))	return DEPLibEn.DEP_CCOMP;
+			if (isRcmod(C))	return DEPLibEn.DEP_RELCL;
+			if (isNfmod(C) || isCcomp(C)) return DEPLibEn.DEP_ACL;
+//			if (isNfmod(C))	return isInfMod(C) ? DEPLibEn.DEP_INFMOD : DEPLibEn.DEP_PARTMOD;
+//			if (isCcomp(C))	return DEPLibEn.DEP_CCOMP;
 		}
 		
 		if (isPoss(C, P))
@@ -776,14 +782,14 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		
 		if (P.isConstituentTag(CTTagEn.C_QP))
 		{
-			if (C.isConstituentTag(CTLibEn.POS_CD))
-				return DEPLibEn.DEP_NUMBER;
-			else
-				return DEPLibEn.DEP_QUANTMOD;
+//			if (C.isConstituentTag(CTLibEn.POS_CD) && p.isConstituentTag(CTLibEn.POS_CD))
+//				return DEPLibEn.DEP_COMPOUND;
+//			else
+			return DEPLibEn.DEP_QUANTMOD;
 		}
 		
 		if (P.isConstituentTagAny(S_NMOD_PARENT) || CTLibEn.isNoun(p))
-			return getNmodLabel(C);
+			return getNmodLabel(C, d);
 		
 		if (c != null)
 		{
@@ -835,7 +841,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		{
 			if (CTLibEn.isClause(C))
 				return DEPLibEn.DEP_CSUBJ;
-			else if (d.isConstituentTag(CTLibEn.POS_EX))
+			else if (d.isConstituentTag(CTLibEn.POS_EX) || d.isWordFormIgnoreCase("there"))
 				return DEPLibEn.DEP_EXPL;
 			else
 				return DEPLibEn.DEP_NSUBJ;
@@ -851,7 +857,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		String label;
 		
 		if (isHyph(C))
-			return DEPLibEn.DEP_HYPH;
+			return DEPLibEn.DEP_PUNCT;
 		
 		if (isAmod(C))
 			return DEPLibEn.DEP_AMOD;
@@ -920,27 +926,27 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		return null;
 	}
 	
-	private String getNmodLabel(CTNode node)
+	private String getNmodLabel(CTNode C, CTNode d)
 	{
-		if (node.isConstituentTagAny(S_PARTICIPIAL))
+		if (C.isConstituentTagAny(S_PARTICIPIAL))
 			return DEPLibEn.DEP_AMOD;
 		
-		if (node.isConstituentTagAny(S_DET))
+		if (C.isConstituentTagAny(S_DET))
 			return DEPLibEn.DEP_DET;
 		
-		if (node.isConstituentTagAny(S_NN) || node.matches(CTLibEn.M_NNx))
-			return DEPLibEn.DEP_NN;
+//		if (C.isConstituentTagAny(S_NN) || (C.matches(CTLibEn.M_NNx) || C.isConstituentTag(CTLibEn.POS_FW)))
+//			return DEPLibEn.DEP_COMPOUND;
 		
-		if (node.isConstituentTagAny(S_NUM))
-			return DEPLibEn.DEP_NUM;
+		if (C.isConstituentTagAny(S_NUM) || d.isConstituentTag(CTLibEn.POS_CD))
+			return DEPLibEn.DEP_NUMMOD;
 
-		if (node.isConstituentTag(CTLibEn.POS_POS))
-			return DEPLibEn.DEP_POSSESSIVE;
+		if (C.isConstituentTag(CTLibEn.POS_POS))
+			return DEPLibEn.DEP_CASE;
 		
-		if (node.isConstituentTag(CTLibEn.POS_PDT))
+		if (C.isConstituentTag(CTLibEn.POS_PDT))
 			return DEPLibEn.DEP_PREDET;
 		
-		return DEPLibEn.DEP_NMOD;
+		return DEPLibEn.DEP_NOUNMOD;
 	}
 	
 	private String getPmodLabel(CTNode C, CTNode d)
@@ -1035,7 +1041,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 			if (node.containsChild(CTLibEn.M_VP) && (sbj == null || sbj.isEmptyCategoryTerminal()))
 				return true;
 		}
-		else if (node.hasFunctionTag(DEPLibEn.DEP_RCMOD))
+		else if (node.hasFunctionTag(DEPLibEn.DEP_RELCL))
 		{
 			CTNode s = node.getFirstChild(mt_s);
 			if (s != null)	return isXcomp(s);
@@ -1066,7 +1072,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 				}
 			}
 			
-			if (node.hasFunctionTag(DEPLibEn.DEP_RCMOD) || node.containsChild(CTLibEn.M_WHx))
+			if (node.hasFunctionTag(DEPLibEn.DEP_RELCL) || node.containsChild(CTLibEn.M_WHx))
 				return true;
 		}
 		
@@ -1104,7 +1110,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	
 	private boolean isRcmod(CTNode curr)
 	{
-		return curr.isConstituentTag(CTTagEn.C_RRC) || curr.hasFunctionTag(DEPLibEn.DEP_RCMOD) || (curr.isConstituentTag(CTTagEn.C_SBAR) && curr.containsChild(CTLibEn.M_WHx));
+		return curr.isConstituentTag(CTTagEn.C_RRC) || curr.hasFunctionTag(DEPLibEn.DEP_RELCL) || (curr.isConstituentTag(CTTagEn.C_SBAR) && curr.containsChild(CTLibEn.M_WHx));
 	}
 	
 	private boolean isComplm(CTNode curr)
@@ -1264,16 +1270,7 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 		
 		if (tags.isEmpty())	return null;
 		Collections.sort(tags);
-
-		StringBuilder build = new StringBuilder();
-		
-		for (String tag : tags)
-		{
-			build.append(DEPFeat.DELIM_VALUES);
-			build.append(tag);
-		}
-		
-		return build.substring(DEPFeat.DELIM_VALUES.length());
+		return Joiner.join(tags, DEPFeat.DELIM_VALUES);
 	}
 	
 	private DEPNode getDEPNode(DEPTree dTree, CTNode cNode)
@@ -1484,6 +1481,63 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 					arc.setLabel(PBLib.PREFIX_CONCATENATION + arc.getLabel());
 				else
 					map.put(key, node);
+			}
+		}
+	}
+	
+	private void finalize(DEPTree tree)
+	{
+		finalizeDative(tree);
+		finalizeCompound(tree, POSTagEn.POS_NN, DEPTagEn.DEP_NOUNMOD , n -> n.getPOSTag().startsWith(POSTagEn.POS_NNP) || n.isLabel(DEPTagEn.DEP_NOUNMOD) || n.isLabel(DEPTagEn.DEP_DEP));
+		finalizeCompound(tree, POSTagEn.POS_CD, DEPTagEn.DEP_QUANTMOD, n -> n.isLabel(DEPTagEn.DEP_QUANTMOD) || n.isLabel(DEPTagEn.DEP_DEP));
+	}
+	
+	private void finalizeDative(DEPTree tree)
+	{
+		for (DEPNode node : tree)
+		{
+			if (isDative(node))
+				node.setLabel(DEPLibEn.DEP_DATIVE);
+		}
+	}
+	
+	private boolean isDative(DEPNode node)
+	{
+		if (!POSLibEn.isVerb(node.getHead().getPOSTag())) return false;
+		if (node.isLabel(DEPLibEn.DEP_IOBJ)) return true;
+		String feat;
+		
+		if ((feat = node.getFeat(DEPLib.FEAT_SYN)) != null && DSUtils.toHashSet(Splitter.splitCommas(feat)).contains(CTTagEn.F_DTV)) return true;
+		if (CTTagEn.F_BNF.equals(node.getFeat(DEPLib.FEAT_SEM))) return true;
+		
+		return false;
+	}
+	
+	private void finalizeCompound(DEPTree tree, String pos, String label, Predicate<DEPNode> p)
+	{
+		DEPNode node, head;
+		int i, j;
+		
+		for (i=tree.size()-1; i>0; i--)
+		{
+			head = tree.get(i);
+			
+			if (head.getPOSTag().startsWith(pos) && !head.isLabel(label))
+			{
+				for (j=i-1; j>0; j--)
+				{
+					node = tree.get(j);
+					
+					if (node.getPOSTag().startsWith(pos) && node.isDescendantOf(head) && node.getHead().getID() > node.getID() && p.test(node))
+					{
+						node.setLabel(DEPLibEn.DEP_COMPOUND);
+						i = j;
+					}
+					else if (node.isPOSTag(POSTagEn.POS_HYPH))
+						continue;
+					else
+						break;
+				}
 			}
 		}
 	}
