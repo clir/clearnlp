@@ -288,4 +288,13 @@ public class AbstractConfiguration implements ConfigurationXML
 		Element eMode = getModeElement();
 		return XmlUtils.getDoubleTextContent(XmlUtils.getFirstElementByTagName(eMode, E_MARGIN_THRESHOLD));
 	}
+	
+//	=================================== BEAM ===================================
+
+	protected String getPath(String tagName)
+	{
+		String path = XmlUtils.getTrimmedTextContent(XmlUtils.getFirstElementByTagName(getModeElement(), tagName));
+		return path != null && path.isEmpty() ? null : path;
+	}
+	
 }

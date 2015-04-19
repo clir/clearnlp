@@ -39,7 +39,7 @@ public enum FieldType
 	a,		// ambiguity class (part-of-speech tagging)
 	t,		// distance between i to j (dependency parsing, semantic role labeling)
 	pt,		// path between i and j (dependency parsing, semantic role labeling)
-	c,		// cluster #
+	ct,		// clusters
 
 	ds,		// set of dependency labels of its dependents
 	ds2,	// set of dependency labels of its grand-dependents
@@ -47,6 +47,7 @@ public enum FieldType
 	
 	b;		// boolean #
 	
+	static public final Pattern P_CLUSTER = Pattern.compile("^"+ct+"(\\d+)$");
 	static public final Pattern P_BOOLEAN = Pattern.compile("^"+b+"(\\d+)$");
 	static public final Pattern P_FEAT    = Pattern.compile("^"+ft+"=(.+)$");
 	static public final Pattern P_PREFIX  = Pattern.compile("^"+pf+"(\\d+)$");
@@ -63,6 +64,6 @@ public enum FieldType
 	
 	static public boolean isSetField(FieldType field)
 	{
-		return field == ds || field == ds2 || field == orth || field == c;
+		return field == ds || field == ds2 || field == orth || field == ct;
 	}
 }

@@ -19,7 +19,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,16 +28,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import edu.emory.clir.clearnlp.collection.tree.PrefixTree;
-import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
+import edu.emory.clir.clearnlp.constituent.CTNode;
+import edu.emory.clir.clearnlp.constituent.CTReader;
+import edu.emory.clir.clearnlp.constituent.CTTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFFrameset;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFMap;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRole;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRoleset;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFType;
+import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.StringUtils;
 
@@ -50,11 +53,26 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		String filename = "/Users/jdchoi/Downloads/IllinoisNerExtended-v2.3/data/ner-ext/BrownHierarchicalWordClusters/brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt";
-		PrefixTree<String,String[]> tree = AbstractFeatureExtractor.getBrownClusters(new FileInputStream(filename));
-		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(filename+".xz");
-		out.writeObject(tree);
-		out.close();
+		String filename = "/Users/jdchoi/Documents/Data/general/annotations/onto.parse";
+		CTReader reader = new CTReader(new FileInputStream(filename));
+		PrintStream fout = IOUtils.createBufferedPrintStream(filename+".raw");
+		StringJoiner joiner;
+		CTTree tree;
+		
+		while ((tree = reader.nextTree()) != null)
+		{
+			joiner = new StringJoiner(" ");
+			
+			for (CTNode node : tree.getTokenList())
+			{
+				if (!POSLibEn.isPunctuation(node.getConstituentTag()))
+					joiner.add(node.getWordForm());
+			}
+			
+			fout.println(joiner.toString());
+		}
+		
+		fout.close();
 	}
 	
 	class Tmp

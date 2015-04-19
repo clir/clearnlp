@@ -23,7 +23,6 @@ import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.collection.stack.IntPStack;
 import edu.emory.clir.clearnlp.collection.triple.ObjectObjectDoubleTriple;
-import edu.emory.clir.clearnlp.component.mode.dep.AbstractDEPParser;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPLabel;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPTransition;
@@ -42,8 +41,6 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 	private boolean save_branch;
 	private int beam_size;
 	private int max_heads;
-	
-	public int best_index = 0;
 	
 //	====================================== Initialization ======================================
 	
@@ -93,14 +90,12 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 		{
 			best_tree.set(d_tree.getHeads(), instances, score);
 			max_heads = heads;
-			best_index = beam_size + 1;
 		}
 	}
 	
 	public List<StringInstance> setBest()
 	{
 		d_tree.setHeads(best_tree.o1);
-		AbstractDEPParser.abcd.add(t_size, best_index);
 		return best_tree.o2;
 	}
 	
@@ -125,7 +120,7 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 	private void addBranch(DEPLabel fstLabel, DEPLabel sndLabel)
 	{
 		if (!fstLabel.isArc(sndLabel) || !fstLabel.isList(sndLabel))
-			q_branches.add(new DEPBranch(sndLabel));
+			q_branches.add(new DEPBranch(fstLabel, sndLabel));
 	}
 	
 	private class DEPBranch implements Comparable<DEPBranch>
@@ -134,17 +129,19 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 		private IntPStack stack;
 		private IntPStack inter;
 		private int       input;
-		private DEPLabel  label;
+		private DEPLabel  fstLabel;
+		private DEPLabel  sndLabel;
 		private double    totalScore;
 		private int       numTransitions;
 		
-		public DEPBranch(DEPLabel nextLabel)
+		public DEPBranch(DEPLabel fstLabel, DEPLabel sndLabel)
 		{
 			heads = d_tree.getHeads(i_input+1);
 			stack = new IntPStack(i_stack);
 			inter = new IntPStack(i_inter);
 			input = i_input;
-			label = nextLabel;
+			this.fstLabel = fstLabel;
+			this.sndLabel = sndLabel;
 			totalScore = total_score;
 			numTransitions = num_transitions;
 		}
@@ -157,73 +154,13 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 			i_input = input;
 			total_score = totalScore;
 			num_transitions = numTransitions;
-			next(label);
+			next(sndLabel);
 		}
 
 		@Override
 		public int compareTo(DEPBranch o)
 		{
-			return label.compareTo(o.label);
+			return sndLabel.compareTo(o.sndLabel);
 		}
 	}
-	
-//	====================================== STATE HISTORY ======================================
-	
-//	private StringBuilder s_states = new StringBuilder();
-//	
-//	private void saveState(DEPLabel label)
-//	{
-//		s_states.append(label.toString());
-//		s_states.append(StringConst.TAB);
-//		s_states.append(getState(d_stack));
-//		s_states.append(StringConst.TAB);
-//		s_states.append(getState(d_inter));
-//		s_states.append(StringConst.TAB);
-//		s_states.append(i_input);
-//		s_states.append(StringConst.NEW_LINE);
-//	}
-//	
-//	private String getState(List<DEPNode> nodes)
-//	{
-//		StringBuilder build = new StringBuilder();
-//		build.append("[");
-//		
-//		if (nodes.size() > 0)
-//			build.append(nodes.get(0).getID());
-//		
-//		if (nodes.size() > 1)
-//		{
-//			build.append(",");
-//			build.append(nodes.get(nodes.size()-1).getID());
-//		}
-//		
-//		build.append("]");
-//		return build.toString();
-//	}
-//	
-//	public String stateHistory()
-//	{
-//		return s_states.toString();
-//	}
-//	
-//	private String getSnapshot()
-//	{
-//		StringBuilder build = new StringBuilder();
-//		int i;
-//		
-//		for (i=i_stack.size()-1; i>0; i--)
-//		{
-//			build.append(i_stack.get(i));
-//			build.append(StringConst.COMMA);
-//		}	build.append(StringConst.PIPE);
-//		
-//		for (i=i_inter.size()-1; i>=0; i--)
-//		{
-//			build.append(i_inter.get(i));
-//			build.append(StringConst.COMMA);
-//		}	build.append(StringConst.PIPE);
-//		
-//		build.append(i_input);
-//		return build.toString();
-//	}
 }
