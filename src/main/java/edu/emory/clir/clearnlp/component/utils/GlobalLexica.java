@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 
 import org.w3c.dom.Element;
 
-import edu.emory.clir.clearnlp.collection.tree.PrefixTree;
-import edu.emory.clir.clearnlp.ner.NERInfoSet;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 
@@ -35,7 +33,6 @@ import edu.emory.clir.clearnlp.util.XmlUtils;
 public class GlobalLexica
 {
 	static private List<Map<String,Set<String>>> distributional_semantics_words;
-	static private PrefixTree<String,NERInfoSet> ner_dictionary;
 	
 	static public void init(InputStream in)
 	{
@@ -44,8 +41,6 @@ public class GlobalLexica
 		if (eLexica == null) return;
 		
 		initDistributionalSemanticsWords(XmlUtils.getTrimmedTextContents(eLexica, "distributional_semantics_path"));
-		Element e = XmlUtils.getFirstElementByTagName(eLexica, "ner_dictionary_path");
-		if (e != null) initNamedEntityDictionary(XmlUtils.getTrimmedTextContent(e));
 	}
 	
 	static public void initDistributionalSemanticsWords(List<String> paths)
@@ -61,15 +56,5 @@ public class GlobalLexica
 		String[] t = new String[set.size()];
 		set.toArray(t);
 		return t;
-	}
-	
-	static public void initNamedEntityDictionary(String path)
-	{
-		ner_dictionary = NLPUtils.getNERDictionary(path);
-	}
-	
-	static public PrefixTree<String,NERInfoSet> getNamedEntityDictionary()
-	{
-		return ner_dictionary;
 	}
 }

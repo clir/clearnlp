@@ -31,6 +31,8 @@ import org.tukaani.xz.XZOutputStream;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
+import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
+import edu.emory.clir.clearnlp.classification.trainer.AdaGradSVM;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
 import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
@@ -358,32 +360,32 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	
 	protected void onlineTrainSingleAdaGrad(List<DEPTree> trees)
 	{
-//		double currScore = onlineScore(trees);
-//		if (currScore == 100) return;
-//		onlineBootstrap(trees);
-//		
-//		AbstractOnlineTrainer trainer = new AdaGradSVM(s_models[0], 0, 0, false, 0.01, 0.1, 0d);
-//		byte[] prevModels;
-//		double prevScore;
-//		
-//		try
-//		{
-//			while (true)
-//			{
-//				prevModels = toByteArray();
-//				prevScore  = currScore;
-//				
-//				trainer.train();
-//				currScore = onlineScore(trees);
-//				
-//				if (prevScore >= currScore)
-//				{
-//					initDecode(prevModels);
-//					break;
-//				}
-//			}			
-//		}
-//		catch (Exception e) {e.printStackTrace();}
+		double currScore = onlineScore(trees);
+		if (currScore == 100) return;
+		onlineBootstrap(trees);
+		
+		AbstractOnlineTrainer trainer = new AdaGradSVM(s_models[0], 0, 0, false, 0.01, 0.1, 0d);
+		byte[] prevModels;
+		double prevScore;
+		
+		try
+		{
+			while (true)
+			{
+				prevModels = toByteArray();
+				prevScore  = currScore;
+				
+				trainer.train();
+				currScore = onlineScore(trees);
+				
+				if (prevScore >= currScore)
+				{
+					initDecode(prevModels);
+					break;
+				}
+			}			
+		}
+		catch (Exception e) {e.printStackTrace();}
 	}
 	
 	protected double onlineScore(List<DEPTree> trees)

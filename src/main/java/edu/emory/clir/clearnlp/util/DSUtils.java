@@ -457,4 +457,11 @@ public class DSUtils
 		for (T item : items) set.add(item);
 		return set;
 	}
+	
+	static public String[] toArray(Collection<String> col)
+	{
+		String[] array = new String[col.size()];
+		col.toArray(array);
+		return array;
+	}
 }
