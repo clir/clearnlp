@@ -30,6 +30,7 @@ import org.tukaani.xz.XZOutputStream;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.trainer.AbstractNLPTrainer;
+import edu.emory.clir.clearnlp.component.utils.GlobalLexica;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
@@ -77,6 +78,7 @@ public abstract class AbstractNLPTrain
 	
 	public ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> train(List<String> trainFiles, List<String> developFiles, String[] featureFiles, String configurationFile, NLPMode mode)
 	{
+		GlobalLexica.init(IOUtils.createFileInputStream(configurationFile));
 		InputStream configuration  = IOUtils.createFileInputStream(configurationFile);
 		InputStream[] features     = IOUtils.createFileInputStreams(featureFiles);
 		AbstractNLPTrainer trainer = getTrainer(mode, configuration, features);

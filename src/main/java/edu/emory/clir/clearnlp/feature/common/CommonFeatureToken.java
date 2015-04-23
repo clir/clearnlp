@@ -49,7 +49,7 @@ public class CommonFeatureToken extends AbstractFeatureToken
 		}
 		else if ((m = FieldType.P_CLUSTER.matcher(field)).find())
 		{
-			setField(FieldType.ct);
+			setField(FieldType.dsw);
 			setValue(Integer.parseInt(m.group(1)));
 		}
 		else if ((m = FieldType.P_FEAT.matcher(field)).find())

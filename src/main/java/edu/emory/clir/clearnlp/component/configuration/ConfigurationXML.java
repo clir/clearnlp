@@ -26,8 +26,6 @@ public interface ConfigurationXML
 	String E_MODEL		= "model";
 	String E_COLUMN		= "column";
 	String E_BOOTSTRAPS	= "bootstraps";
-	String E_BEAM_SIZE	= "beam_size";
-	String E_MARGIN_THRESHOLD = "margin_threshold";
 	
 	String A_TYPE		= "type";
 	String A_FIELD		= "field";
@@ -59,8 +57,8 @@ public interface ConfigurationXML
 	String A_NUMBER_OF_THREADS	= "threads";
 	String ALG_ADAGRAD			= "adagrad";
 	String ALG_LIBLINEAR		= "liblinear";
-
 	String E_THREAD_SIZE  		= "thread_size";
-	String E_TRAIN_BEAM_SIZE	= "train_beam_size";
-	String E_DECODE_BEAM_SIZE	= "decode_beam_size";
+
+	String E_BEAM_SIZE			= "beam_size";
+	String E_KNOWLEDGE_PATH		= "knowledge_path";
 }

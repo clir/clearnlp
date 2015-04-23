@@ -13,5 +13,9 @@
         <document_frequency_cutoff>2</document_frequency_cutoff>
         <document_size>1500</document_size>
         <bootstraps>true</bootstraps>
+        
+        <word_vec_paths>
+            <word_vec_path>brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt.xz</word_vec_path>
+        </word_vec_paths>
     </pos>
 </configuration>

@@ -19,9 +19,13 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.tukaani.xz.XZInputStream;
 
+import edu.emory.clir.clearnlp.collection.tree.PrefixTree;
 import edu.emory.clir.clearnlp.component.mode.dep.AbstractDEPParser;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
 import edu.emory.clir.clearnlp.component.mode.dep.DefaultDEPParser;
@@ -35,6 +39,7 @@ import edu.emory.clir.clearnlp.component.mode.pos.EnglishPOSTagger;
 import edu.emory.clir.clearnlp.conversion.AbstractC2DConverter;
 import edu.emory.clir.clearnlp.conversion.EnglishC2DConverter;
 import edu.emory.clir.clearnlp.conversion.headrule.HeadRuleMap;
+import edu.emory.clir.clearnlp.ner.NERInfoSet;
 import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
 import edu.emory.clir.clearnlp.tokenization.EnglishTokenizer;
 import edu.emory.clir.clearnlp.util.BinUtils;
@@ -81,16 +86,10 @@ public class NLPUtils
 		}
 	}
 	
-//	static public AbstractNERecognizer getNERecognizer(TLanguage language, ObjectInputStream in)
-//	{
-//		BinUtils.LOG.info("Loading named entity recognition models.\n");
-//		
-//		switch (language)
-//		{
-//		case ENGLISH: return new EnglishNERecognizer(in);
-//		default     : return new DefaultNERecognizer(in);
-//		}
-//	}
+	static public AbstractPOSTagger getPOSTagger(TLanguage language, String modelPath)
+	{
+		return getPOSTagger(language, getObjectInputStream(modelPath));
+	}
 	
 	static public AbstractDEPParser getDEPParser(TLanguage language, ObjectInputStream in, DEPConfiguration configuration)
 	{
@@ -103,20 +102,66 @@ public class NLPUtils
 		}
 	}
 	
-	static public AbstractPOSTagger getPOSTagger(TLanguage language, String modelPath)
-	{
-		return getPOSTagger(language, getObjectInputStream(modelPath));
-	}
-	
 	static public AbstractDEPParser getDEPParser(TLanguage language, String modelPath, DEPConfiguration configuration)
 	{
 		return getDEPParser(language, getObjectInputStream(modelPath), configuration);
 	}
 	
+//	static public AbstractNERecognizer getNERecognizer(TLanguage language, ObjectInputStream in)
+//	{
+//		BinUtils.LOG.info("Loading named entity recognition models.\n");
+//		
+//		switch (language)
+//		{
+//		case ENGLISH: return new EnglishNERecognizer(in);
+//		default     : return new DefaultNERecognizer(in);
+//		}
+//	}
+//	
 //	static public AbstractNERecognizer getNERecognizer(TLanguage language, String modelPath)
 //	{
 //		return getNERecognizer(language, getObjectInputStream(modelPath));
 //	}
+	
+	@SuppressWarnings("unchecked")
+	static public PrefixTree<String,NERInfoSet> getNERDictionary(ObjectInputStream in)
+	{
+		BinUtils.LOG.info("Loading named entity dictionary.\n");
+		PrefixTree<String,NERInfoSet> tree = null;
+		
+		try
+		{
+			tree = (PrefixTree<String,NERInfoSet>)in.readObject();
+		}
+		catch (Exception e) {e.printStackTrace();}
+		
+		return tree;
+	}
+	
+	static public PrefixTree<String,NERInfoSet> getNERDictionary(String modelPath)
+	{
+		return getNERDictionary(NLPUtils.getObjectInputStream(modelPath));
+	}
+	
+	@SuppressWarnings("unchecked")
+	static public Map<String,Set<String>> getDistributionalSemantics(ObjectInputStream in)
+	{
+		BinUtils.LOG.info("Loading distributional semantics.\n");
+		Map<String,Set<String>> map = null;
+		
+		try
+		{
+			map = (HashMap<String,Set<String>>)in.readObject();
+		}
+		catch (Exception e) {e.printStackTrace();}
+		
+		return map;
+	}
+	
+	static public Map<String,Set<String>> getDistributionalSemantics(String modelPath)
+	{
+		return getDistributionalSemantics(getObjectInputStream(modelPath));
+	}
 	
 	static public ObjectInputStream getObjectInputStream(String modelPath)
 	{

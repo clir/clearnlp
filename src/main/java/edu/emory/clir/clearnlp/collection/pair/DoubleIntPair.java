@@ -28,6 +28,11 @@ public class DoubleIntPair implements Serializable
 	public double d;
 	public int i;
 	
+	public DoubleIntPair(int i, double d)
+	{
+		set(d, i);
+	}
+	
 	public DoubleIntPair(double d, int i)
 	{
 		set(d, i);

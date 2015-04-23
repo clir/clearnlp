@@ -189,7 +189,7 @@ public abstract class AbstractNLPTrainer
 		trainer.train();
 		process(component, developFiles, false);
 		double currScore = eval.getScore();
-		BinUtils.LOG.info(String.format("%4.2f\n", currScore));
+		BinUtils.LOG.info(eval.toString());
 		return currScore;
 	}
 	

@@ -43,7 +43,7 @@ public class DEPConfiguration extends AbstractConfiguration
 	
 	public DEPConfiguration(InputStream in)
 	{
-		super(in, NLPMode.dep);
+		super(NLPMode.dep, in);
 		init();
 	}
 	

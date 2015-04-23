@@ -22,9 +22,11 @@ import java.util.List;
 
 import org.kohsuke.args4j.Option;
 
+import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.component.AbstractComponent;
 import edu.emory.clir.clearnlp.component.configuration.DecodeConfiguration;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
+import edu.emory.clir.clearnlp.component.mode.dep.state.DEPStateBranch;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.component.utils.NLPUtils;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
@@ -38,6 +40,7 @@ import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.util.MathUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
@@ -104,6 +107,12 @@ public class NLPDecode
 			reader.close();
 			fout.close();
 		}
+		
+		List<ObjectIntPair<String>> list = DEPStateBranch.mmm.toList();
+		Collections.sort(list, Collections.reverseOrder());
+		
+		for (ObjectIntPair<String> p : list)
+			System.out.println(p.o+"\t"+p.i);
 	}
 	
 	public void process(RawReader reader, PrintStream fout, NLPMode mode, AbstractComponent[] components, AbstractTokenizer tokenizer)

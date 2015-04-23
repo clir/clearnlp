@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.evaluation;
-
-import edu.emory.clir.clearnlp.dependency.DEPTree;
+package edu.emory.clir.clearnlp.lexicon.dbpedia;
 
 /**
- * @since 3.0.0
+ * @since 3.0.3
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractEval<LabelType>
+public interface DBPediaXML
 {
-	abstract public void countCorrect(DEPTree sTree, LabelType[] gLabels);
-	abstract public double getScore();
-	abstract public void clear();
+	String OWL_CLASS = "owl:Class";
+	String RDF_ABOUT = "rdf:about";
+	String RDF_RESOURCE = "rdf:resource";
+	String RDFS_SUBCLASS_OF = "rdfs:subClassOf";
+	String DBPEDIA_ORG_ONTOLOGY = "http://dbpedia.org/ontology/";
+	String DBPEDIA_ORG_RESOURCE = "http://dbpedia.org/resource/";
 }

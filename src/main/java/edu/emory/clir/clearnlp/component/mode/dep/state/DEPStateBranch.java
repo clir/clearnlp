@@ -21,6 +21,7 @@ import java.util.PriorityQueue;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
+import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.stack.IntPStack;
 import edu.emory.clir.clearnlp.collection.triple.ObjectObjectDoubleTriple;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
@@ -54,12 +55,16 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 	
 	private void init(DEPConfiguration configuration)
 	{
-		save_branch = t_configuration.getBeamSize() > 1;
+		beam_size = t_configuration.getBeamSize();
+		save_branch = beam_size > 1;
 		if (save_branch) q_branches = new PriorityQueue<>(Collections.reverseOrder());
 	}
 	
 //	====================================== BRANCH ======================================
 
+	static public ObjectIntHashMap<String> mmm = new ObjectIntHashMap<>();
+	private String beta_index, best_index;
+	
 	public boolean startBranching()
 	{
 		if (q_branches == null || q_branches.isEmpty()) return false;
@@ -67,6 +72,8 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 		beam_size   = Math.min(beam_size - 1, q_branches.size());
 		max_heads   = d_tree.countHeaded();
 		save_branch = false;
+		
+		best_index = null;
 		return true;
 	}
 	
@@ -90,12 +97,17 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 		{
 			best_tree.set(d_tree.getHeads(), instances, score);
 			max_heads = heads;
+			best_index = beta_index;
 		}
 	}
 	
 	public List<StringInstance> setBest()
 	{
 		d_tree.setHeads(best_tree.o1);
+		
+		if (best_index != null)
+			mmm.add(best_index);
+
 		return best_tree.o2;
 	}
 	
@@ -148,6 +160,7 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 		
 		public void reset()
 		{
+			beta_index = fstLabel.getArc()+"-"+fstLabel.getList()+" "+sndLabel.getArc()+"-"+sndLabel.getList();
 			d_tree.setHeads(heads);
 			i_stack = stack;
 			i_inter = inter;

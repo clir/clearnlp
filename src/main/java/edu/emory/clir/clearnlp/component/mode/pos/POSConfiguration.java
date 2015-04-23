@@ -21,7 +21,6 @@ import org.w3c.dom.Element;
 
 import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
-import edu.emory.clir.clearnlp.util.XmlUtils;
 
 /**
  * @since 3.0.0
@@ -30,19 +29,14 @@ import edu.emory.clir.clearnlp.util.XmlUtils;
 public class POSConfiguration extends AbstractConfiguration
 {
 	private double ambiguity_class_threshold;
-	private int document_frequency_cutoff;
-	private int document_size;
-
-//	============================== Initialization ==============================
+	private int    document_frequency_cutoff;
+	private int    document_size;
 	
-	public POSConfiguration()
-	{
-		super(NLPMode.pos);
-	}
+//	============================== Initialization ==============================
 	
 	public POSConfiguration(InputStream in)
 	{
-		super(in, NLPMode.pos);
+		super(NLPMode.pos);
 		initXml();
 	}
 	
@@ -50,13 +44,9 @@ public class POSConfiguration extends AbstractConfiguration
 	{
 		Element eMode = getModeElement();
 		
-		double ac = XmlUtils.getDoubleTextContent (XmlUtils.getFirstElementByTagName(eMode, "ambiguity_class_threshold"));
-		int    df = XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, "document_frequency_cutoff"));
-		int    ds = XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, "document_size"));
-		
-		setAmbiguityClassThreshold(ac);
-		setDocumentFrequencyCutoff(df);
-		setDocumentSize(ds);
+		setDocumentFrequencyCutoff(getIntegerTextContent(eMode, "document_frequency_cutoff"));
+		setAmbiguityClassThreshold(getDoubleTextContent(eMode, "ambiguity_class_threshold"));
+		setDocumentSize(getIntegerTextContent(eMode, "document_size"));
 	}
 	
 //	============================== Getters ==============================

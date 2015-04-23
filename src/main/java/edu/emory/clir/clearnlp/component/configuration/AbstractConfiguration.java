@@ -45,15 +45,15 @@ import edu.emory.clir.clearnlp.util.lang.TLanguage;
  */
 public class AbstractConfiguration implements ConfigurationXML
 {
-	private   Element           x_top;
-	private   AbstractReader<?> d_reader;
-	protected NLPMode n_mode;
+	private AbstractReader<?> d_reader;
+	private NLPMode           n_mode;
+	private Element           x_top;
 	
 //	=================================== CONSTRUCTORS ===================================
 	
 	public AbstractConfiguration(NLPMode mode)
 	{
-		n_mode = mode;
+		setMode(mode);
 	}
 	
 	public AbstractConfiguration(InputStream in)
@@ -61,16 +61,17 @@ public class AbstractConfiguration implements ConfigurationXML
 		init(in);
 	}
 	
-	public AbstractConfiguration(InputStream in, NLPMode mode)
+	public AbstractConfiguration(NLPMode mode, InputStream in)
 	{
+		this(mode);
 		init(in);
-		setMode(mode);
 	}
 	
 	private void init(InputStream in)
 	{
 		x_top    = XmlUtils.getDocumentElement(in);
 		d_reader = initReader();
+		
 	}
 	
 	private AbstractReader<?> initReader()
@@ -136,18 +137,6 @@ public class AbstractConfiguration implements ConfigurationXML
 		return TLanguage.getType(language);
 	}
 	
-	public int getTrainBeamSize(NLPMode mode)
-	{
-		Element eMode = getModeElement(mode);
-		return XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, E_TRAIN_BEAM_SIZE));
-	}
-	
-	public int getDecodeBeamSize(NLPMode mode)
-	{
-		Element eMode = getModeElement(mode);
-		return XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, E_DECODE_BEAM_SIZE));
-	}
-	
 	public int getThreadSize()
 	{
 		return XmlUtils.getIntegerTextContent(getFirstElement(E_THREAD_SIZE));
@@ -173,9 +162,8 @@ public class AbstractConfiguration implements ConfigurationXML
 				return (Element)node;
 		}
 		
-		return null;//getFirstElement(mode.toString());
+		return null;
 	}
-	
 
 //	=================================== MODE ===================================
 	
@@ -275,6 +263,23 @@ public class AbstractConfiguration implements ConfigurationXML
 		throw new IllegalArgumentException(type+" is not a valid algorithm type.");
 	}
 	
+//	=================================== TEXT CONTENTS ===================================
+
+	public double getDoubleTextContent(Element eMode, String tagName)
+	{
+		return XmlUtils.getDoubleTextContent(XmlUtils.getFirstElementByTagName(eMode, tagName));
+	}
+	
+	public int getIntegerTextContent(Element eMode, String tagName)
+	{
+		return XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, tagName));
+	}
+	
+	public String getTextContent(Element eMode, String tagName)
+	{
+		return XmlUtils.getTrimmedTextContent(XmlUtils.getFirstElementByTagName(eMode, tagName));
+	}
+	
 //	=================================== BEAM ===================================
 	
 	public int getBeamSize(NLPMode mode)
@@ -282,19 +287,4 @@ public class AbstractConfiguration implements ConfigurationXML
 		Element eMode = getModeElement();
 		return XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, E_BEAM_SIZE));
 	}
-	
-	public double getMarginThreshold(NLPMode mode)
-	{
-		Element eMode = getModeElement();
-		return XmlUtils.getDoubleTextContent(XmlUtils.getFirstElementByTagName(eMode, E_MARGIN_THRESHOLD));
-	}
-	
-//	=================================== BEAM ===================================
-
-	protected String getPath(String tagName)
-	{
-		String path = XmlUtils.getTrimmedTextContent(XmlUtils.getFirstElementByTagName(getModeElement(), tagName));
-		return path != null && path.isEmpty() ? null : path;
-	}
-	
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.evaluation;
+package edu.emory.clir.clearnlp.lexicon.dbpedia;
 
-import edu.emory.clir.clearnlp.dependency.DEPTree;
+import java.util.HashMap;
 
 /**
- * @since 3.0.0
+ * @since 3.0.3
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractEval<LabelType>
+public class DBPediaInfoMap extends HashMap<String,DBPediaInfo>
 {
-	abstract public void countCorrect(DEPTree sTree, LabelType[] gLabels);
-	abstract public double getScore();
-	abstract public void clear();
+	private static final long serialVersionUID = 6100722532796570642L;
 }

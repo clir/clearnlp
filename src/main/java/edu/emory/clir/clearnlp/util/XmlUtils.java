@@ -85,6 +85,18 @@ public class XmlUtils
 		return (element != null) ? element.getTextContent().trim() : null;
 	}
 	
+	static public List<String> getTrimmedTextContents(Element element, String tagName)
+	{
+		List<String> contents = new ArrayList<>();
+		NodeList list = element.getElementsByTagName(tagName);
+		int i, len = list.getLength();
+		
+		for (i=0; i<len; i++)
+			contents.add(XmlUtils.getTrimmedTextContent((Element)list.item(i)));
+		
+		return contents;
+	}
+	
 	static public int getIntegerTextContent(Element element)
 	{
 		String s = getTrimmedTextContent(element);

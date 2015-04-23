@@ -42,12 +42,13 @@ public class POSLexicon implements Serializable
 	private ObjectIntHashMap<String> document_frequencies;
 	private Map<String,String> ambiguity_class_features;
 	private Bigram<String,String> ambiguity_classes;
+	private String[] word_vector_paths;
 	private Set<String> document; 
-	private int tree_count;
 	
 	private double ambiguity_class_threshold;
 	private int document_frequency_cutoff;
 	private int document_size;
+	private int tree_count;
 	
 	public POSLexicon(POSConfiguration configuration)
 	{	
@@ -60,6 +61,8 @@ public class POSLexicon implements Serializable
 		setDocumentFrequencyCutoff(configuration.getDocumentFrequencyCutoff());
 		setDocumentSize(configuration.getDocumentSize());
 	}
+	
+//	============================== Collect ==============================
 	
 	public void collect(POSState state)
 	{
@@ -83,17 +86,12 @@ public class POSLexicon implements Serializable
 		tree_count = 0;
 	}
 	
-	public String getAmbiguityClassFeature(String simplifiedWordForm)
-	{
-		return ambiguity_class_features.get(simplifiedWordForm);
-	}
-	
 	public void finalizeCollect()
 	{
 		finalizeCollect(ambiguity_classes.getBigramSet());
 	}
 	
-	public void finalizeCollect(Set<String> simplifiedWordForms)
+	private void finalizeCollect(Set<String> simplifiedWordForms)
 	{
 		List<ObjectDoublePair<String>> ps;
 		initDocument();
@@ -110,11 +108,25 @@ public class POSLexicon implements Serializable
 			}
 		}
 	}
+
+//	============================== Getters ==============================
+	
+	public String getAmbiguityClassFeature(String simplifiedWordForm)
+	{
+		return ambiguity_class_features.get(simplifiedWordForm);
+	}
+	
+	public String[] getWordVectorPaths()
+	{
+		return word_vector_paths;
+	}
 	
 	public boolean includeForm(String lowerSimplifiedWordForm)
 	{
 		return document_frequencies.get(lowerSimplifiedWordForm) > document_frequency_cutoff;
 	}
+	
+//	============================== Setters ==============================
 	
 	public void setAmbiguityClassThreshold(double threshold)
 	{
@@ -129,5 +141,10 @@ public class POSLexicon implements Serializable
 	public void setDocumentSize(int size)
 	{
 		document_size = size;
+	}
+	
+	public void setWordVectorPaths(String[] paths)
+	{
+		word_vector_paths = paths;
 	}
 }
