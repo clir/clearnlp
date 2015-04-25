@@ -28,6 +28,7 @@ public interface NERTag
 	String LOCATION     = "LOC";
 	String WORK         = "WORK";
 	String EVENT        = "EVENT";
+	String JOB  		= "JOB";
 	
 	/**
 	 * @param tag e.g., "B-ORG".
@@ -46,6 +47,11 @@ public interface NERTag
 	static String toNamedEntity(String tag)
 	{
 		return tag.substring(2);
+	}
+	
+	static String changeChunkType(BILOU newBilou, String tag)
+	{
+		return toBILOUTag(newBilou, toNamedEntity(tag));
 	}
 	
 	static String fromDBPediaType(DBPediaType type)

@@ -71,7 +71,6 @@ public class AbstractConfiguration implements ConfigurationXML
 	{
 		x_top    = XmlUtils.getDocumentElement(in);
 		d_reader = initReader();
-		
 	}
 	
 	private AbstractReader<?> initReader()

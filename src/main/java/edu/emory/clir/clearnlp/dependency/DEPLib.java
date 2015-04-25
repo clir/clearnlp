@@ -43,8 +43,10 @@ public class DEPLib
 	static public final String FEAT_VN	= "vn";
 	/** The feat-key of word senses. */
 	static public final String FEAT_WS	= "ws";
-	/** The feat-key of word senses. */
+	/** The feat-key of 2nd pos tag. */
 	static public final String FEAT_POS2 = "p2";
+	/** The feat-key of 2nd ner tag. */
+	static public final String FEAT_NER2 = "n2";
 	/** The feat-key of sentiments. */
 	static public final String FEAT_SA  = "sa";
 	/** The feat-key of sentiments (for root). */

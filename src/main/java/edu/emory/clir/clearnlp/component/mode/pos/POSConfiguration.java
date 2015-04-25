@@ -36,7 +36,7 @@ public class POSConfiguration extends AbstractConfiguration
 	
 	public POSConfiguration(InputStream in)
 	{
-		super(NLPMode.pos);
+		super(NLPMode.pos, in);
 		initXml();
 	}
 	

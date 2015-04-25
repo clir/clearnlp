@@ -15,6 +15,7 @@
  */
 package edu.emory.clir.clearnlp.component.state;
 
+import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
@@ -94,6 +95,15 @@ public abstract class AbstractTagState extends AbstractState<String,String>
 	public boolean isTerminate()
 	{
 		return i_input >= t_size;
+	}
+	
+	public void save2ndLabel(StringPrediction[] ps, String featKey)
+	{
+		StringPrediction fst = ps[0];
+		StringPrediction snd = ps[1];
+		
+		if (fst.getScore() - snd.getScore() < 1)
+			getInput().putFeat(featKey, snd.getLabel());
 	}
 	
 	protected abstract void setLabel(DEPNode node, String label);

@@ -34,9 +34,9 @@ import edu.emory.clir.clearnlp.feature.common.OrthographicType;
 import edu.emory.clir.clearnlp.feature.type.FeatureXml;
 import edu.emory.clir.clearnlp.feature.type.FieldType;
 import edu.emory.clir.clearnlp.util.CharUtils;
-import edu.emory.clir.clearnlp.util.MetaUtils;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 import edu.emory.clir.clearnlp.util.constant.CharConst;
+import edu.emory.clir.clearnlp.util.constant.MetaConst;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 /**
@@ -224,7 +224,7 @@ abstract public class AbstractFeatureExtractor<FeatureTemplateType extends Abstr
 	{
 		List<String> list = new ArrayList<>();
 		
-		if (node.isSimplifiedForm(MetaUtils.META_HYPERLINK))
+		if (node.isSimplifiedForm(MetaConst.HYPERLINK))
 			list.add(OrthographicType.HYPERLINK);
 		else
 		{

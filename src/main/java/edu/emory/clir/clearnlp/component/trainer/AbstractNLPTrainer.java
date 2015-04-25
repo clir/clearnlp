@@ -18,6 +18,7 @@ package edu.emory.clir.clearnlp.component.trainer;
 import java.io.InputStream;
 import java.util.List;
 
+import edu.emory.clir.clearnlp.bin.helper.AbstractNLPTrain;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOneVsAllTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
@@ -166,7 +167,10 @@ public abstract class AbstractNLPTrainer
 			eval.clear();
 			process(component, developFiles, false);
 			currScore = eval.getScore();
-			BinUtils.LOG.info(String.format("%3d: %4.2f\n", iter, currScore));
+			BinUtils.LOG.info(String.format("%3d: %s\n", iter, eval.toString()));
+			
+			if (0 < AbstractNLPTrain.d_stop && AbstractNLPTrain.d_stop <= currScore)
+				break;
 			
 			if (prevScore < currScore)
 			{

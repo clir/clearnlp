@@ -26,10 +26,10 @@ import edu.emory.clir.clearnlp.util.constant.CharConst;
  */
 public class MetaUtils
 {
+
 	private MetaUtils() {}
 	
-	static public final String META_HYPERLINK = "#hlink#";
-	
+	static public final Pattern EMOTICON = Pattern.compile("[\\!\\|;:#%][-]*[\\(\\)\\[\\]\\{\\}\\|<>]+");
 	static public final CharAffixTree FILE_EXTENSION = new CharAffixTree(false, new String[]{"3gp","7z","ace","ai","aif","aiff","amr","asf","asp","aspx","asx","avi","bat","bin","bmp","bup","cab","cbr","cda","cdl","cdr","chm","dat","divx","dll","dmg","doc","dss","dvf","dwg","eml","eps","exe","fla","flv","gif","gz","hqx","htm","html","shtml","ifo","indd","iso","jar","jsp","jpg","jpeg","lnk","log","m4a","m4b","m4p","m4v","mcd","mdb","mid","mov","mp2","mp3","mp4","mpg","mpeg","msi","mswmm","ogg","pdf","php","png","pps","ppt","ps","psd","pst","ptb","pub","qbb","qbw","qxd","ram","rar","rm","rmvb","rtf","sea","ses","sit","sitx","sql","ss","swf","tgz","tif","torrent","ttf","txt","vcd","vob","wav","wma","wmv","wpd","wps","xls","xml","xtm","zip"});
 	
 	static public final Pattern HYPERLINK = Pattern.compile(

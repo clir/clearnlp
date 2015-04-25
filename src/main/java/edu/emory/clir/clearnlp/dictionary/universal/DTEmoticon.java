@@ -18,12 +18,12 @@ package edu.emory.clir.clearnlp.dictionary.universal;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import edu.emory.clir.clearnlp.collection.tree.CharAffixTree;
 import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.util.MetaUtils;
 
 /**
  * @since 3.0.0
@@ -31,10 +31,9 @@ import edu.emory.clir.clearnlp.util.IOUtils;
  */
 public class DTEmoticon
 {
-	private final Pattern EMOTICON = Pattern.compile("[\\!\\|;:#%][-]*[\\(\\)\\[\\]\\{\\}\\|<>]+");
-	private Set<String> s_emoticon;
-	private CharAffixTree   t_prefix;
-	private CharAffixTree   t_suffix;
+	private Set<String>   s_emoticon;
+	private CharAffixTree t_prefix;
+	private CharAffixTree t_suffix;
 	
 	public DTEmoticon()
 	{
@@ -58,7 +57,7 @@ public class DTEmoticon
 		if (s_emoticon.contains(s))
 			return new int[]{0, s.length()};
 		
-		Matcher m = EMOTICON.matcher(s);
+		Matcher m = MetaUtils.EMOTICON.matcher(s);
 		
 		if (m.find())
 			return new int[]{m.start(), m.end()};

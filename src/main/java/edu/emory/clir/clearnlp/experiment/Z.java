@@ -40,7 +40,6 @@ import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFMap;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRole;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRoleset;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFType;
-import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.StringUtils;
 
@@ -53,7 +52,7 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		String filename = "/Users/jdchoi/Documents/Data/general/annotations/onto.parse";
+		String filename = "/Users/jdchoi/Documents/Data/general/google.parse";
 		CTReader reader = new CTReader(new FileInputStream(filename));
 		PrintStream fout = IOUtils.createBufferedPrintStream(filename+".raw");
 		StringJoiner joiner;
@@ -64,10 +63,7 @@ public class Z
 			joiner = new StringJoiner(" ");
 			
 			for (CTNode node : tree.getTokenList())
-			{
-				if (!POSLibEn.isPunctuation(node.getConstituentTag()))
-					joiner.add(node.getWordForm());
-			}
+				joiner.add(node.getWordForm());
 			
 			fout.println(joiner.toString());
 		}

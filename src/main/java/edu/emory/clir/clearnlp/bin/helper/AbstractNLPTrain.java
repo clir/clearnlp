@@ -61,6 +61,9 @@ public abstract class AbstractNLPTrain
 //	@Option(name="-threads", usage="number of threads (default: 1)", required=false, metaVar="<Integer>")
 //	protected int n_threads = 1;
 	
+	@Option(name="-stop", usage="stopping score for training", required=false, metaVar="<double>")
+	static public double d_stop = 0;
+	
 	public AbstractNLPTrain() {}
 	
 	public AbstractNLPTrain(String[] args) throws InterruptedException, ExecutionException
@@ -71,6 +74,7 @@ public abstract class AbstractNLPTrain
 		List<String> developFiles = FileUtils.getFileList(s_developPath, s_developExt, false);
 		NLPMode      mode         = NLPMode.valueOf(s_mode);
 
+//		Collections.sort(trainFiles);
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> p = train(trainFiles, developFiles, s_featureFiles, s_configurationFile, mode);
 		BinUtils.LOG.info(String.format("Final score: %4.2f\n", p.d));
 		if (s_modelPath != null) saveModel(p.o, s_modelPath);
@@ -78,9 +82,9 @@ public abstract class AbstractNLPTrain
 	
 	public ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> train(List<String> trainFiles, List<String> developFiles, String[] featureFiles, String configurationFile, NLPMode mode)
 	{
-		GlobalLexica.init(IOUtils.createFileInputStream(configurationFile));
 		InputStream configuration  = IOUtils.createFileInputStream(configurationFile);
 		InputStream[] features     = IOUtils.createFileInputStreams(featureFiles);
+		GlobalLexica.init(IOUtils.createFileInputStream(configurationFile));
 		AbstractNLPTrainer trainer = getTrainer(mode, configuration, features);
 		return trainer.train(trainFiles, developFiles);
 	}

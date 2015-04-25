@@ -51,7 +51,7 @@ abstract public class AbstractF1Eval<LabelType> extends AbstractEval<LabelType>
 	public String toString()
 	{
 		double[] d = getScores();
-		return String.format("F1: %5.2f, P: %5.2f, R: %5.2f\n", d[0], d[1], d[2]);
+		return String.format("F1: %5.2f, P: %5.2f, R: %5.2f", d[0], d[1], d[2]);
 	}
 	
 	private double[] getScores()

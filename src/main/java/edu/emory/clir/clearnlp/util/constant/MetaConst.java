@@ -22,6 +22,7 @@ package edu.emory.clir.clearnlp.util.constant;
 public interface MetaConst
 {
 	String HYPERLINK = "#hlink#";
+	String EMOTICON  = "#emo#";
 	String CARDINAL  = "#crd#";
 	String ORDINAL   = "#ord#";
 }

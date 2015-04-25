@@ -15,10 +15,8 @@
  */
 package edu.emory.clir.clearnlp.component.mode.pos;
 
-import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.component.state.AbstractTagState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
-import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 
@@ -51,15 +49,6 @@ public class POSState extends AbstractTagState
 	protected void setLabel(DEPNode node, String label)
 	{
 		node.setPOSTag(label);
-	}
-	
-	public void save2ndLabel(StringPrediction[] ps)
-	{
-		StringPrediction fst = ps[0];
-		StringPrediction snd = ps[1];
-		
-		if (fst.getScore() - snd.getScore() < 1)
-			getInput().putFeat(DEPLib.FEAT_POS2, snd.getLabel());
 	}
 	
 //	====================================== FEATURES ======================================
