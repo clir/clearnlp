@@ -18,19 +18,15 @@ package edu.emory.clir.clearnlp.experiment;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.PrintStream;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import edu.emory.clir.clearnlp.bin.NLPDecode;
 import edu.emory.clir.clearnlp.component.configuration.DecodeConfiguration;
-import edu.emory.clir.clearnlp.component.mode.dep.AbstractDEPParser;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.Joiner;
-import edu.emory.clir.clearnlp.util.MathUtils;
 import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -53,15 +49,6 @@ public class NLPMerge extends NLPDecode
 		try
 		{
 			merge(inputFiles, s_outputExt, mode);
-			
-			PrintStream fout = IOUtils.createBufferedPrintStream("tmp.out");
-			for (int i : AbstractDEPParser.abcd.getBigramSet())
-			{
-				Set<Integer> set = AbstractDEPParser.abcd.getUnigramSet(i);
-				int sum = 0; for (int p : set) sum += p;
-				fout.println(i+"\t"+MathUtils.divide(sum, set.size())+"\t"+Collections.max(set)+"\t"+Collections.min(set));
-			}
-			fout.close();
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}

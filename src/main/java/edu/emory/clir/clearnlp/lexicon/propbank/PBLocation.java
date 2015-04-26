@@ -91,6 +91,11 @@ public class PBLocation implements Serializable, Comparable<PBLocation>
 		i_height     = height;
 	}
 	
+	public void setHeight(int height)
+	{
+		i_height = height;
+	}
+	
 	public void setType(String type)
 	{
 		s_type = type;
@@ -108,7 +113,7 @@ public class PBLocation implements Serializable, Comparable<PBLocation>
 		return i_terminalID == terminalID && i_height == height;
 	}
 	
-	public boolean isOperator(String type)
+	public boolean isType(String type)
 	{
 		return s_type.equals(type);
 	}

@@ -44,6 +44,8 @@ public interface StringConst
 	String TILDA		= Character.toString(CharConst.TILDA);
 	String LESS_THAN	= Character.toString(CharConst.LESS_THAN);
 	String GREATER_THAN	= Character.toString(CharConst.GREATER_THAN);
+	String SINGLE_QUOTE	= Character.toString(CharConst.SINGLE_QUOTE);
+	String DOUBLE_QUOTE	= Character.toString(CharConst.DOUBLE_QUOTE);
 	
 	String LRB			= Character.toString(CharConst.LRB);
 	String RRB			= Character.toString(CharConst.RRB);

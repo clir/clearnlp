@@ -46,6 +46,8 @@ public interface CharConst
 	char EMPTY			= 0;
 	char LESS_THAN		= '<';
 	char GREATER_THAN	= '>';
+	char SINGLE_QUOTE	= '\'';
+	char DOUBLE_QUOTE	= '"';
 	
 	char LRB			= '(';
 	char RRB			= ')';

@@ -22,7 +22,6 @@ import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
-import edu.emory.clir.clearnlp.collection.ngram.Bigram;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.mode.dep.state.AbstractDEPState;
@@ -38,8 +37,6 @@ public abstract class AbstractDEPParser extends AbstractStatisticalComponent<DEP
 {
 	private DEPConfiguration d_configuration;
 	private int[][] label_indices;
-	
-	static public Bigram<Integer, Integer> abcd = new Bigram<>();
 	
 	/** Creates a dependency parser for train. */
 	public AbstractDEPParser(DEPConfiguration configuration, DEPFeatureExtractor[] extractors, Object lexicons)

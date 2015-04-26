@@ -162,13 +162,13 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 		Collections.sort(l_locations);
 		PBLocation fst = l_locations.get(0), loc;
 		
-		if (!fst.isOperator(StringConst.EMPTY))
+		if (!fst.isType(StringConst.EMPTY))
 		{
 			for (int i=1; i<l_locations.size(); i++)
 			{
 				loc = l_locations.get(i);
 				
-				if (loc.isOperator(StringConst.EMPTY))
+				if (loc.isType(StringConst.EMPTY))
 				{
 					loc.setType(fst.getType());
 					break;
@@ -183,7 +183,7 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 	{
 		for (PBLocation loc : l_locations)
 		{
-			if (loc.isOperator(operator))
+			if (loc.isType(operator))
 				return true;
 		}
 		

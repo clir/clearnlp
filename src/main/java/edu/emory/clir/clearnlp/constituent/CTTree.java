@@ -231,6 +231,11 @@ public class CTTree
 		return true;
 	}
 	
+	public boolean isRange(PBLocation loc)
+	{
+		return isRange(loc.getTerminalID(), loc.getHeight());
+	}
+	
 	public boolean compareBrackets(CTTree tree)
 	{
 		int i, size = n_termainals.size();

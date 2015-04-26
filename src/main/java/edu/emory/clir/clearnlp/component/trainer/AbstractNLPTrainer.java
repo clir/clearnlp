@@ -51,7 +51,7 @@ public abstract class AbstractNLPTrainer
 	{
 		Object lexicons = getLexicons(trainFiles);
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> prev = train(trainFiles, developFiles, lexicons, null, 0);
-		if (!t_configuration.isBootstrap()) return prev;
+		if (!t_configuration.isBootstrap() || AbstractNLPTrain.d_stop > 0) return prev;
 		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> curr;
 		byte[] backup;
 		int boot = 1;
