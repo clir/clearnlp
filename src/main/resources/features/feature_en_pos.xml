@@ -1,54 +1,59 @@
 <!--Feature template for POS tagging in English -->
 <feature_template>
-    <!-- 1-gram features -->
-    <feature f0="i:f2"/>
-    <feature f0="i-2:f2"/>
-    <feature f0="i-1:f2"/>
-    <feature f0="i+1:f2"/>
-    <feature f0="i+2:f2"/>
+	<!-- 1-gram features -->
+	<feature f0="i:f2"/>
+	<feature f0="i-2:f2"/>
+	<feature f0="i-1:f2"/>
+	<feature f0="i+1:f2"/>
+	<feature f0="i+2:f2"/>
 
-    <feature f0="i:a"/>
-    <feature f0="i-3:p"/>
-    <feature f0="i-2:p"/>
-    <feature f0="i-1:p"/>
-    <feature f0="i+1:a"/>
-    <feature f0="i+2:a"/>
-    <feature f0="i+3:a"/>
+	<feature f0="i:a"/>
+	<feature f0="i-3:p"/>
+	<feature f0="i-2:p"/>
+	<feature f0="i-1:p"/>
+	<feature f0="i+1:a"/>
+	<feature f0="i+2:a"/>
+	<feature f0="i+3:a"/>
 
-    <feature f0="i:f4"/>
-    <feature f0="i-1:f4"/>
-    <feature f0="i+1:f4"/>
+	<feature f0="i:f4"/>
+	<feature f0="i-1:f4"/>
+	<feature f0="i+1:f4"/>
 
-    <!-- 2-gram features -->
-    <feature f0="i-2:f3" f1="i-1:f3"/>
-    <feature f0="i-1:f3" f1="i:f3"/>
-    <feature f0="i:f3"   f1="i+1:f3"/>
-    <feature f0="i-1:f3" f1="i+1:f3"/>
-    <feature f0="i+1:f3" f1="i+2:f3"/>
+	<!-- 2-gram features -->
+	<feature f0="i-2:f3" f1="i-1:f3"/>
+	<feature f0="i-1:f3" f1="i:f3"/>
+	<feature f0="i:f3"   f1="i+1:f3"/>
+	<feature f0="i-1:f3" f1="i+1:f3"/>
+	<feature f0="i+1:f3" f1="i+2:f3"/>
 
-    <feature f0="i-2:p" f1="i-1:p"/>
-    <feature f0="i+1:a" f1="i+2:a"/>
-    <feature f0="i-1:p" f1="i+1:a"/>
+	<feature f0="i-2:p" f1="i-1:p"/>
+	<feature f0="i+1:a" f1="i+2:a"/>
+	<feature f0="i-1:p" f1="i+1:a"/>
 
-    <!-- 3-gram features -->
-    <feature f0="i-2:p" f1="i-1:p" f2="i:a"/>
-    <feature f0="i-1:p" f1="i:a"   f2="i+1:a"/>
-    <feature f0="i-2:p" f1="i-1:p" f2="i+1:a"/>
-    <feature f0="i-1:p" f1="i+1:a" f2="i+2:a"/>
+	<!-- 3-gram features -->
+	<feature f0="i-2:p" f1="i-1:p" f2="i:a"/>
+	<feature f0="i-1:p" f1="i:a"   f2="i+1:a"/>
+	<feature f0="i-2:p" f1="i-1:p" f2="i+1:a"/>
+	<feature f0="i-1:p" f1="i+1:a" f2="i+2:a"/>
 
-    <!-- affix features -->
-    <feature f0="i:pf2"/>
-    <feature f0="i:pf3"/>
+	<!-- affix features -->
+	<feature f0="i:pf2"/>
+	<feature f0="i:pf3"/>
 
-    <feature f0="i:sf1"/>
-    <feature f0="i:sf2"/>
-    <feature f0="i:sf3"/>
-    <feature f0="i:sf4"/>
+	<feature f0="i:sf1"/>
+	<feature f0="i:sf2"/>
+	<feature f0="i:sf3"/>
+	<feature f0="i:sf4"/>
 
-    <!-- orthographic features -->
-    <feature f0="i:orth"/>
+	<!-- orthographic features -->
+	<feature f0="i:orth"/>
 
-    <!-- binary features -->
-    <feature f0="i:b0" note="input is the first token"/>
-    <feature f0="i:b1" note="input is the last  token"/>
+	<!-- distributional semantics features -->
+	<feature f0="i:dsw0"/>
+	<feature f0="i-1:dsw0"/>
+	<feature f0="i+1:dsw0"/>
+
+	<!-- binary features -->
+	<feature f0="i:b0" note="input is the first token"/>
+	<feature f0="i:b1" note="input is the last  token"/>
 </feature_template>

@@ -32,7 +32,7 @@
 	<feature f0="i:f3"   f1="i:p"/>
 	<feature f0="i+1:f3" f1="i:p"/>
 
-	<feature f0="i-2:p" f1="i-1:p"/>
+	<feature f0="i-1:p" f1="i-2:p"/>
 	<feature f0="i+1:a" f1="i+2:a"/>
 
 	<!-- 3-gram features -->
@@ -43,6 +43,7 @@
 	<feature f0="i-1:sf3" f1="i-1:n" f2="i-1:p"/>
 
     <!-- affix features -->
+	<feature f0="i:sf1"/>
 	<feature f0="i:sf3"/>
 	<feature f0="i+1:pf3"/>
 
@@ -53,11 +54,9 @@
 	<feature f0="i:orth"/>
 	<feature f0="i+1:orth"/>
 
-    <!-- distributional semantics features -->
 	<feature f0="i:dsw0"/>
 	<feature f0="i+1:dsw0"/>
 	<feature f0="i+2:dsw0"/>
-	<feature f0="i-2:dsw0"/>
 
 	<feature f0="i:dsw1"/>
 	<feature f0="i:dsw2"/>

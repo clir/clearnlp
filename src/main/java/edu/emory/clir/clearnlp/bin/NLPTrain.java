@@ -19,6 +19,7 @@ import java.io.InputStream;
 
 import edu.emory.clir.clearnlp.bin.helper.AbstractNLPTrain;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPTrainer;
+import edu.emory.clir.clearnlp.component.mode.ner.NERTrainer;
 import edu.emory.clir.clearnlp.component.mode.pos.POSTrainer;
 import edu.emory.clir.clearnlp.component.trainer.AbstractNLPTrainer;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
@@ -52,6 +53,7 @@ public class NLPTrain extends AbstractNLPTrain
 		{
 		case pos: return new POSTrainer(configuration, features);
 		case dep: return new DEPTrainer(configuration, features);
+		case ner: return new NERTrainer(configuration, features);
 		case srl: return null;
 		default : throw new IllegalArgumentException("Invalid mode: "+mode.toString()); 
 		}

@@ -307,4 +307,26 @@ public class CharUtils
 		
 		return true;
 	}
+	
+	public static boolean containsPunctuationOrWhiteSpacesOnly(char[] cs)
+	{
+		for (char c : cs)
+		{
+			if (!isPunctuation(c) && !isWhiteSpace(c))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	public static boolean containsPunctuationOrDigitsOrWhiteSpacesOnly(char[] cs)
+	{
+		for (char c : cs)
+		{
+			if (!isPunctuation(c) && !isDigit(c) && !isWhiteSpace(c))
+				return false;
+		}
+		
+		return true;
+	}
 }

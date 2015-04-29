@@ -15,6 +15,9 @@
  */
 package edu.emory.clir.clearnlp.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.emory.clir.clearnlp.util.constant.CharConst;
 import edu.emory.clir.clearnlp.util.constant.MetaConst;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
@@ -240,6 +243,32 @@ public class StringUtils
 		return (build.length() < size) ? build.toString() : s;
 	}
 	
+	static public List<String> stripPunctuation(List<String> tokens)
+	{
+		List<String> list = new ArrayList<>();
+		
+		for (String token : tokens)
+		{
+			if (!containsPunctuationOnly(token))
+				list.add(token);
+		}
+		
+		return list;
+	}
+	
+	static public List<String> stripPunctuation(String[] tokens)
+	{
+		List<String> list = new ArrayList<>();
+		
+		for (String token : tokens)
+		{
+			if (!containsPunctuationOnly(token))
+				list.add(token);
+		}
+		
+		return list;
+	}
+	
 //	====================================== Boolean ======================================
 	
 	/**
@@ -318,6 +347,16 @@ public class StringUtils
 	public static boolean containsPunctuationOnly(String s)
 	{
 		return CharUtils.containsPunctuationOnly(s.toCharArray());
+	}
+	
+	public static boolean containsPunctuationOrWhiteSpacesOnly(String s)
+	{
+		return CharUtils.containsPunctuationOrWhiteSpacesOnly(s.toCharArray());
+	}
+	
+	public static boolean containsPunctuationOrDigitsOrWhiteSpacesOnly(String s)
+	{
+		return CharUtils.containsPunctuationOrDigitsOrWhiteSpacesOnly(s.toCharArray());
 	}
 	
 	public static boolean isDouble(String s)

@@ -18,7 +18,6 @@ import edu.emory.clir.clearnlp.component.utils.NLPUtils;
 import edu.emory.clir.clearnlp.ner.NERInfoSet;
 import edu.emory.clir.clearnlp.ner.NERTag;
 import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
-import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.StringUtils;
@@ -90,7 +89,7 @@ public class PrefixTreeGenerator implements DBPediaXML
 		
 		if (set.isEmpty()) return null;
 		NERInfoSet list = new NERInfoSet();
-		for (DBPediaType type : set) list.addCategory(NERTag.fromDBPediaType(type));
+		for (DBPediaType type : set) list.addCategory(NERTag.fromDBPediaTypeCoNLL03(type));
 		return list;
 	}
 	
@@ -159,13 +158,13 @@ public class PrefixTreeGenerator implements DBPediaXML
 		DBPediaTypeMap typeMap = gson.fromJson(new InputStreamReader(IOUtils.createXZBufferedInputStream(typeMapFile)), DBPediaTypeMap.class);
 		DBPediaInfoMap infoMap = gson.fromJson(new InputStreamReader(IOUtils.createXZBufferedInputStream(infoMapFile)), DBPediaInfoMap.class);
 		AbstractTokenizer tokenizer = NLPUtils.getTokenizer(TLanguage.ENGLISH);
-		PrefixTreeGenerator ptg = new PrefixTreeGenerator(typeMap, infoMap, DSUtils.toHashSet(DBPediaType.Person, DBPediaType.Mayor, DBPediaType.PersonFunction, DBPediaType.Name, DBPediaType.Place, DBPediaType.Organisation, DBPediaType.Website, DBPediaType.Competition, DBPediaType.SocietalEvent, DBPediaType.Artwork, DBPediaType.Film, DBPediaType.MusicalWork, DBPediaType.WrittenWork, DBPediaType.TelevisionShow));
+		PrefixTreeGenerator ptg = new PrefixTreeGenerator(typeMap, infoMap, NERTag.DBPediaTypeSet);
 		PrefixTree<String,NERInfoSet> prefixTree = ptg.getPrefixTree(tokenizer);
 		ObjectOutputStream out = new ObjectOutputStream(IOUtils.createXZBufferedOutputStream(prefixTreeFile));
 		out.writeObject(prefixTree);
 		out.close();
 		
-		String[] array = "John Emory Werner Erhard 1 Revolutionary Communist Party Project X 42nd Infantry Division".split(" ");
+		String[] array = "John Emory Democratic Party London Bridge Emory University South Korea Rocky Mountains M16 New Years Eve The Catcher in the Rye Korean Ming Dynasty Euro".split(" ");
 		
 		for (ObjectIntIntTriple<NERInfoSet> t : prefixTree.getAll(array, 0, String::toString, true, true))
 			System.out.println(t.o+" "+Joiner.join(array, " ", t.i1, t.i2+1));

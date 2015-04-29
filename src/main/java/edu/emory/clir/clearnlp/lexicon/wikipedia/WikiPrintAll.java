@@ -38,7 +38,7 @@ public class WikiPrintAll
 	
 	public WikiPrintAll(String zipFile, String outputFile) throws Exception
 	{
-		f_out = new PrintStream(IOUtils.createXZBufferedOutputStream(outputFile));
+		f_out = IOUtils.createBufferedPrintStream(outputFile);
 		tokenizer = NLPUtils.getTokenizer(TLanguage.ENGLISH);
 		@SuppressWarnings("resource")
 		ZipFile file = new ZipFile(zipFile);

@@ -61,43 +61,32 @@ public class TSVReader extends AbstractReader<DEPTree>
 		init(-1, iForm, -1, -1, -1, -1, -1, -1, -1, -1);
 	}
 	
-	/**
-	 * For part-of-speech tagging.
-	 * @see #init(int, int, int, int, int, int, int, int, int, int)
-	 */
+	/** For part-of-speech tagging. */
 	public TSVReader(int iForm, int iPOSTag)
 	{
 		super(TReader.TSV);
 		init(-1, iForm, -1, iPOSTag, -1, -1, -1, -1, -1, -1);
 	}
 	
-	/**
-	 * For dependency parsing.
-	 * @see #init(int, int, int, int, int, int, int, int, int, int)
-	 */
+	/** For dependency parsing. */
 	public TSVReader(int iID, int iForm, int iLemma, int iPOSTag, int iFeats, int iHeadID, int iDeprel)
 	{
 		super(TReader.TSV);
 		init(iID, iForm, iLemma, iPOSTag, -1, iFeats, iHeadID, iDeprel, -1, -1);
 	}
 	
-	/**
-	 * For semantic role labeling.
-	 * @see #init(int, int, int, int, int, int, int, int, int, int)
-	 */
+	/** For semantic role labeling. */
 	public TSVReader(int iID, int iForm, int iLemma, int iPOSTag, int iFeats, int iHeadID, int iDeprel, int iSHeads)
 	{
 		super(TReader.TSV);
 		init(iID, iForm, iLemma, iPOSTag, -1, iFeats, iHeadID, iDeprel, -1, iSHeads);
 	}
 	
-	/**
-	 * Including all.
-	 */
-	public TSVReader(int iID, int iForm, int iLemma, int iPOSTag, int iNamedEntityTag, int iFeats, int iHeadID, int iDeprel, int iXHeads, int iSHeads)
+	/** Including all. */
+	public TSVReader(int iID, int iForm, int iLemma, int iPOSTag, int iNERTag, int iFeats, int iHeadID, int iDeprel, int iXHeads, int iSHeads)
 	{
 		super(TReader.TSV);
-		init(iID, iForm, iLemma, iPOSTag, iNamedEntityTag, iFeats, iHeadID, iDeprel, iXHeads, iSHeads);
+		init(iID, iForm, iLemma, iPOSTag, iNERTag, iFeats, iHeadID, iDeprel, iXHeads, iSHeads);
 	}
 	
 	/**

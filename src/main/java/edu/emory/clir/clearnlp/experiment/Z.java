@@ -52,6 +52,12 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
+		
+		
+	}
+	
+	public void printRaw(String[] args) throws Exception
+	{
 		String filename = "/Users/jdchoi/Documents/Data/general/google.parse";
 		CTReader reader = new CTReader(new FileInputStream(filename));
 		PrintStream fout = IOUtils.createBufferedPrintStream(filename+".raw");

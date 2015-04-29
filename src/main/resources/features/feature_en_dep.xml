@@ -90,6 +90,14 @@
     <feature f0="i_rmd:p" f1="i:p" f2="j:p"/>
     <feature f0="j_lmd:p" f1="i:p" f2="j:p"/>
 
+    <feature f0="i:d"     f1="j:p" visible="true"/>
+    <feature f0="i_lmd:d" f1="j:p" visible="true"/>
+    <feature f0="i_rmd:d" f1="j:p" visible="true"/>
+
+    <feature f0="i_h:p"   f1="j:p" visible="true"/>
+    <feature f0="i_lmd:p" f1="j:p" visible="true"/>
+    <feature f0="i_rmd:p" f1="j:p" visible="true"/>
+
     <!-- 3rd-order features -->
     <feature f0="i_h:d"/>
     <feature f0="j_h:d"/>
@@ -117,6 +125,12 @@
     <feature f0="i_rmd2:p" f1="i:p" f2="j:p"/>
 
     <feature f0="i_lmd2:p" f1="i_lmd:p" f2="i:p"/>
+
+    <!-- distributional semantics features -->
+    <feature f0="i:dsw0"/>
+    <feature f0="j:dsw0"/>
+    <feature f0="i+1:dsw0"/>
+    <feature f0="j+1:dsw0"/>
 
     <!-- binary features -->
     <feature f0="i:b0" note="stack is the first token"/>

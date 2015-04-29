@@ -36,12 +36,6 @@ import edu.emory.clir.clearnlp.collection.pair.Pair;
 public class DSUtilsTest
 {
 	@Test
-	public void testToCollection()
-	{
-		
-	}
-	
-	@Test
 	public void testListUtils()
 	{
 		List<String> list = DSUtils.toArrayList("B","A","E","C","D");

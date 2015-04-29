@@ -15,6 +15,7 @@
  */
 package edu.emory.clir.clearnlp.bin;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -45,6 +46,8 @@ public class Tokenize
 	private String s_inputExt = "*";
 	@Option(name="-oe", usage="output file extension (default: tok)", required=false, metaVar="<string>")
 	private String s_outputExt = "tok";
+	@Option(name="-line", usage="if set, treat each line as one sentence", required=false, metaVar="<boolean>")
+	private boolean b_line = false;
 	
 	public Tokenize() {}
 	
@@ -59,7 +62,8 @@ public class Tokenize
 			for (String inputFile : FileUtils.getFileList(s_inputPath, s_inputExt, false))
 			{
 				System.out.println(inputFile);
-				tokenize(tokenizer, inputFile, inputFile+"."+s_outputExt);
+				if (b_line) tokenizeLines(tokenizer, inputFile, inputFile+"."+s_outputExt);
+				else		tokenize(tokenizer, inputFile, inputFile+"."+s_outputExt);
 			}
 		}
 		catch (IOException e) {e.printStackTrace();}
@@ -74,6 +78,19 @@ public class Tokenize
 			out.println(Joiner.join(tokens, StringConst.SPACE));
 		
 		in.close();
+		out.close();
+	}
+	
+	public void tokenizeLines(AbstractTokenizer tokenizer, String inputFile, String outputFile) throws IOException
+	{
+		BufferedReader reader = IOUtils.createBufferedReader(inputFile);
+		PrintStream out = IOUtils.createBufferedPrintStream(outputFile);
+		String line;
+		
+		while ((line = reader.readLine()) != null)
+			out.println(Joiner.join(tokenizer.tokenize(line), StringConst.SPACE));
+		
+		reader.close();
 		out.close();
 	}
 	

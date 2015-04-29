@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 import org.w3c.dom.Element;
 
+import edu.emory.clir.clearnlp.collection.tree.PrefixTree;
+import edu.emory.clir.clearnlp.ner.NERInfoSet;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.XmlUtils;
 
@@ -33,19 +35,32 @@ import edu.emory.clir.clearnlp.util.XmlUtils;
 public class GlobalLexica
 {
 	static private List<Map<String,Set<String>>> distributional_semantics_words;
+	static private PrefixTree<String,NERInfoSet> named_entity_dictionary;
 	
 	static public void init(InputStream in)
 	{
 		Element doc = XmlUtils.getDocumentElement(in);
-		Element eLexica = XmlUtils.getFirstElementByTagName(doc, "global_lexica");
+		Element eLexica = XmlUtils.getFirstElementByTagName(doc, "global");
 		if (eLexica == null) return;
 		
-		initDistributionalSemanticsWords(XmlUtils.getTrimmedTextContents(eLexica, "distributional_semantics_path"));
+		initDistributionalSemanticsWords(XmlUtils.getTrimmedTextContents(eLexica, "distributional_semantics"));
+		initNamedEntityDictionary(XmlUtils.getTrimmedTextContent(eLexica, "named_entity_dictionary"));
+	}
+	
+	static public void initNamedEntityDictionary(String path)
+	{
+		if (path != null && !path.isEmpty())
+			named_entity_dictionary = NLPUtils.getNERDictionary(path);
 	}
 	
 	static public void initDistributionalSemanticsWords(List<String> paths)
 	{
 		distributional_semantics_words = paths.stream().map(path -> NLPUtils.getDistributionalSemantics(path)).collect(Collectors.toList());
+	}
+	
+	static public PrefixTree<String,NERInfoSet> getNamedEntityDictionary()
+	{
+		return named_entity_dictionary;
 	}
 	
 	static public String[] getDistributionalSemanticFeatures(int index, String word)

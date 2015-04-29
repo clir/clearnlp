@@ -23,16 +23,13 @@ import java.util.regex.Pattern;
 
 import org.kohsuke.args4j.Option;
 
-import edu.emory.clir.clearnlp.constituent.CTLibEn;
 import edu.emory.clir.clearnlp.constituent.CTTagEn;
 import edu.emory.clir.clearnlp.constituent.CTTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBArgument;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBInstance;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBLocation;
-import edu.emory.clir.clearnlp.lexicon.propbank.PBReader;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBTag;
 import edu.emory.clir.clearnlp.util.BinUtils;
-import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
 /**
@@ -71,30 +68,30 @@ public class PBPostProcess
 	
 	public void postProcess(String propFile, String postFile, String treeDir, boolean norm, TLanguage language)
 	{
-		PBReader reader = new PBReader(IOUtils.createFileInputStream(propFile));
-		List<PBInstance> instances = reader.getSortedInstanceList(treeDir, norm);
-		List<PBInstance> remove = new ArrayList<>();
-		mergeLightVerbs(instances);
-		PBArgument aDSP;
-		CTTree tree;
-		
-		for (PBInstance instance : instances)
-		{
-			System.out.println(instance.getKey());
-			tree = instance.getTree();
-			
-			// LINK-SLC, LINK-PSV are found here
-			switch (language)
-			{
-			case ENGLISH: CTLibEn.preprocess(tree); break;
-			}
-			
-			// removes instances that do not align with the constituent tree
-			if (isSkip(instance, tree))		// varies by languages
-			{
-				remove.add(instance);
-				continue;
-			}
+//		PBReader reader = new PBReader(IOUtils.createFileInputStream(propFile));
+//		List<PBInstance> instances = reader.getSortedInstanceList(treeDir, norm);
+//		List<PBInstance> remove = new ArrayList<>();
+//		mergeLightVerbs(instances);
+//		PBArgument aDSP;
+//		CTTree tree;
+//		
+//		for (PBInstance instance : instances)
+//		{
+//			System.out.println(instance.getKey());
+//			tree = instance.getTree();
+//			
+//			// LINK-SLC, LINK-PSV are found here
+//			switch (language)
+//			{
+//			case ENGLISH: CTLibEn.preprocess(tree); break;
+//			}
+//			
+//			// removes instances that do not align with the constituent tree
+//			if (isSkip(instance, tree))		// varies by languages
+//			{
+//				remove.add(instance);
+//				continue;
+//			}
 			
 			// sorts by arguments' terminal IDs
 //			instance.sortArguments();
@@ -115,7 +112,7 @@ public class PBPostProcess
 //			addLinks(instance);
 //			raiseEmptyArguments(instance);					// English only
 //			if (aDSP != null)	instance.addArgument(aDSP);	// English only
-		}
+//		}
 //		
 //		instances.removeAll(remove);
 //		
@@ -131,7 +128,7 @@ public class PBPostProcess
 	 * @param tree a constituent tree associated with the PropBank instance.
 	 * @return {@code true} if the specific PropBank instance is valid.
 	 */
-	private boolean isSkip(PBInstance instance, CTTree tree)
+	boolean isSkip(PBInstance instance, CTTree tree)
 	{
 		if (ILLEGAL_ROLESET.matcher(instance.getRolesetID()).find())
 			return true;
@@ -149,7 +146,7 @@ public class PBPostProcess
 	// PRE : parse 25 11 gold determination-n determination.01 ----- 10:0-ARGM-LVB 11:0-rel 12:2-ARGM-MNR
 	// POST: parse 25 10 gold make-v make.LV ----- 10:0-rel 11:1-ARGM-PRR
 	// POST: parse 25 11 gold determination-n determination.01 ----- 1:1-ARG0 10:0,11:0-rel 12:2-ARGM-MNR 
-	private void mergeLightVerbs(List<PBInstance> instances)
+	void mergeLightVerbs(List<PBInstance> instances)
 	{
 		Map<String,PBInstance> mNouns   = new HashMap<>();
 		List<PBInstance> lightVerbs     = new ArrayList<>();

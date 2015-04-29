@@ -23,6 +23,14 @@
         <column index="8" field="sheads"/>
         <column index="9" field="nament"/>
     </reader>
+
+    <global>
+        <distributional_semantics_path>brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt.xz</distributional_semantics_path>
+        <distributional_semantics_path>model-2030000000.LEARNING_RATE=1e-09.EMBEDDING_LEARNING_RATE=1e-06.EMBEDDING_SIZE=100.txt.xz</distributional_semantics_path>
+        <distributional_semantics_path>hlbl_reps_clean_2.50d.rcv1.clean.tokenized-CoNLL03.case-intact.txt.xz</distributional_semantics_path>
+    </global>
+
+
     
     <ner>
         <dictionary_path>prefix_ner.xz</dictionary_path>

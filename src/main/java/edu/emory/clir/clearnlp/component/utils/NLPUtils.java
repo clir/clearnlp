@@ -33,6 +33,9 @@ import edu.emory.clir.clearnlp.component.mode.dep.EnglishDEPParser;
 import edu.emory.clir.clearnlp.component.mode.morph.AbstractMPAnalyzer;
 import edu.emory.clir.clearnlp.component.mode.morph.DefaultMPAnalyzer;
 import edu.emory.clir.clearnlp.component.mode.morph.EnglishMPAnalyzer;
+import edu.emory.clir.clearnlp.component.mode.ner.AbstractNERecognizer;
+import edu.emory.clir.clearnlp.component.mode.ner.DefaultNERecognizer;
+import edu.emory.clir.clearnlp.component.mode.ner.EnglishNERecognizer;
 import edu.emory.clir.clearnlp.component.mode.pos.AbstractPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.EnglishPOSTagger;
@@ -107,21 +110,21 @@ public class NLPUtils
 		return getDEPParser(language, getObjectInputStream(modelPath), configuration);
 	}
 	
-//	static public AbstractNERecognizer getNERecognizer(TLanguage language, ObjectInputStream in)
-//	{
-//		BinUtils.LOG.info("Loading named entity recognition models.\n");
-//		
-//		switch (language)
-//		{
-//		case ENGLISH: return new EnglishNERecognizer(in);
-//		default     : return new DefaultNERecognizer(in);
-//		}
-//	}
-//	
-//	static public AbstractNERecognizer getNERecognizer(TLanguage language, String modelPath)
-//	{
-//		return getNERecognizer(language, getObjectInputStream(modelPath));
-//	}
+	static public AbstractNERecognizer getNERecognizer(TLanguage language, ObjectInputStream in)
+	{
+		BinUtils.LOG.info("Loading named entity recognition models.\n");
+		
+		switch (language)
+		{
+		case ENGLISH: return new EnglishNERecognizer(in);
+		default     : return new DefaultNERecognizer(in);
+		}
+	}
+	
+	static public AbstractNERecognizer getNERecognizer(TLanguage language, String modelPath)
+	{
+		return getNERecognizer(language, getObjectInputStream(modelPath));
+	}
 	
 	@SuppressWarnings("unchecked")
 	static public PrefixTree<String,NERInfoSet> getNERDictionary(ObjectInputStream in)

@@ -458,10 +458,24 @@ public class DSUtils
 		return set;
 	}
 	
+	static public <T>Set<T> merge(List<Set<T>> sets)
+	{
+		Set<T> merge = new HashSet<>();
+		for (Set<T> set : sets) merge.addAll(set);
+		return merge;
+	}
+	
 	static public String[] toArray(Collection<String> col)
 	{
 		String[] array = new String[col.size()];
 		col.toArray(array);
 		return array;
+	}
+	
+	static public <T>List<T> removeAll(Collection<T> source, Collection<T> remove)
+	{
+		List<T> list = new ArrayList<>(source);
+		list.removeAll(remove);
+		return list;
 	}
 }
