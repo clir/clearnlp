@@ -41,7 +41,6 @@ import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
-import edu.emory.clir.clearnlp.util.MathUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
@@ -62,7 +61,7 @@ public class NLPDecode
 	@Option(name="-mode", usage="pos|morph|dep|ner", required=true, metaVar="<string>")
 	protected String s_mode;
 	
-	private long time = 0, tokens = 0, trees = 0;
+//	private long time = 0, tokens = 0, trees = 0;
 	
 	public NLPDecode() {}
 	
@@ -73,9 +72,8 @@ public class NLPDecode
 		List<String> inputFiles = FileUtils.getFileList(s_inputPath, s_inputExt, false);
 		DecodeConfiguration config = new DecodeConfiguration(IOUtils.createFileInputStream(s_configurationFile));
 		decode(inputFiles, s_outputExt, config, mode);
-
-		System.out.printf("Tokens / Sec.: %d\n", Math.round(MathUtils.divide(tokens*1000, time)));
-		System.out.printf("Sents. / Sec.: %d\n", Math.round(MathUtils.divide(trees *1000, time)));
+//		System.out.printf("Tokens / Sec.: %d\n", Math.round(MathUtils.divide(tokens*1000, time)));
+//		System.out.printf("Sents. / Sec.: %d\n", Math.round(MathUtils.divide(trees *1000, time)));
 	}
 	
 	public void decode(List<String> inputFiles, String ouputExt, DecodeConfiguration config, NLPMode mode)
@@ -157,18 +155,18 @@ public class NLPDecode
 	
 	public void process(DEPTree tree, PrintStream fout, NLPMode mode, AbstractComponent[] components)
 	{
-		long st, et;
+//		long st, et;
 		
 		for (AbstractComponent component : components)
 		{
-			st = System.currentTimeMillis();
+//			st = System.currentTimeMillis();
 			component.process(tree);
-			et = System.currentTimeMillis();
-			time += et - st;
+//			et = System.currentTimeMillis();
+//			time += et - st;
 		}
 
-		tokens += tree.size() - 1;
-		trees++;
+//		tokens += tree.size() - 1;
+//		trees++;
 		fout.println(toString(tree, mode)+StringConst.NEW_LINE);
 	}
 	

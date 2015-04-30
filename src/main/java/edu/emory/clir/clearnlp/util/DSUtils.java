@@ -478,4 +478,16 @@ public class DSUtils
 		list.removeAll(remove);
 		return list;
 	}
+	
+	/** @return true if s2 is a subset of s1. */
+	static public <T>boolean isSubset(Collection<T> s1, Collection<T> s2)
+	{
+		for (T t : s2)
+		{
+			if (!s1.contains(t))
+				return false;
+		}
+		
+		return true;
+	}
 }

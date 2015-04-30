@@ -15,6 +15,8 @@
  */
 package edu.emory.clir.clearnlp.bin;
 
+import java.io.File;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,13 +25,20 @@ import java.util.regex.Pattern;
 
 import org.kohsuke.args4j.Option;
 
+import edu.emory.clir.clearnlp.collection.list.SortedArrayList;
+import edu.emory.clir.clearnlp.constituent.CTLibEn;
+import edu.emory.clir.clearnlp.constituent.CTNode;
 import edu.emory.clir.clearnlp.constituent.CTTagEn;
 import edu.emory.clir.clearnlp.constituent.CTTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBArgument;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBInstance;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBLib;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBLocation;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBReader;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBTag;
 import edu.emory.clir.clearnlp.util.BinUtils;
+import edu.emory.clir.clearnlp.util.DSUtils;
+import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
 /**
@@ -66,60 +75,62 @@ public class PBPostProcess
 		postProcess(s_propFile, s_postFile, s_treeDir, b_norm, TLanguage.getType(s_language));
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	public void postProcess(String propFile, String postFile, String treeDir, boolean norm, TLanguage language)
 	{
-//		PBReader reader = new PBReader(IOUtils.createFileInputStream(propFile));
-//		List<PBInstance> instances = reader.getSortedInstanceList(treeDir, norm);
-//		List<PBInstance> remove = new ArrayList<>();
-//		mergeLightVerbs(instances);
-//		PBArgument aDSP;
-//		CTTree tree;
-//		
-//		for (PBInstance instance : instances)
-//		{
-//			System.out.println(instance.getKey());
-//			tree = instance.getTree();
-//			
-//			// LINK-SLC, LINK-PSV are found here
-//			switch (language)
-//			{
-//			case ENGLISH: CTLibEn.preprocess(tree); break;
-//			}
-//			
-//			// removes instances that do not align with the constituent tree
-//			if (isSkip(instance, tree))		// varies by languages
-//			{
-//				remove.add(instance);
-//				continue;
-//			}
+		PBReader reader = new PBReader(IOUtils.createFileInputStream(propFile));
+		List<PBInstance> instances = reader.getSortedInstanceList(treeDir, norm);
+		List<PBInstance> remove = new ArrayList<>();
+		mergeLightVerbs(instances);
+		PBArgument aDSP;
+		CTTree tree;
+		
+		for (PBInstance instance : instances)
+		{
+			System.out.println(instance.getKey());
+			tree = instance.getTree();
+			
+			// LINK-SLC, LINK-PSV are found here
+			switch (language)
+			{
+			case ENGLISH: CTLibEn.preprocess(tree); break;
+			}
+			
+			// removes instances that do not align with the constituent tree
+			if (isSkip(instance, tree))		// varies by languages
+			{
+				remove.add(instance);
+				continue;
+			}
 			
 			// sorts by arguments' terminal IDs
-//			instance.sortArguments();
-//			
-//			joinConcatenations(instance);
-//			fixCyclicLocations(instance);
-//			removeRedundantLocs(instance);
-//			
-//			// annotating NP(PRO) under S following the verb
-//			if (instance.isVerbPredicate())					// English only
-//				fixIllegalPROs(instance);
-//			aDSP = getArgDSP(instance);						// English only
-//			getLinks(instance);
-//			normalizeLinks(instance);						// varies by languages
-//			instance.sortArguments();
-//			removeRedundantLocs(instance);
-//			findOverlappingArguments(instance);
-//			addLinks(instance);
-//			raiseEmptyArguments(instance);					// English only
-//			if (aDSP != null)	instance.addArgument(aDSP);	// English only
-//		}
-//		
-//		instances.removeAll(remove);
-//		
-//		if (postFile == null)
-//			printInstances(instances, treeDir);
-//		else
-//			PBLib.printInstances(instances, IOUtils.createFileOutputStream(postFile));
+			instance.sortArguments();
+			
+			joinConcatenations(instance);
+			fixCyclicLocations(instance);
+			removeRedundantLocations(instance);
+			
+			// annotating NP(PRO) under S following the verb
+			if (instance.isVerbPredicate())					// English only
+				fixIllegalPROs(instance);
+			
+			aDSP = getArgumentDSP(instance);				// English only
+			setLinks(instance);
+			normalizeLinks(instance);						// varies by languages
+			instance.sortArguments();
+			removeRedundantLocations(instance);
+			findOverlappingArguments(instance);
+			addLinks(instance);
+			raiseEmptyArguments(instance);					// English only
+			if (aDSP != null) instance.addArgument(aDSP);	// English only
+		}
+		
+		instances.removeAll(remove);
+		
+		if (postFile == null)
+			printInstances(instances, treeDir);
+		else
+			PBLib.printInstances(instances, IOUtils.createFileOutputStream(postFile));
 	}
 	
 	/**
@@ -259,236 +270,236 @@ public class PBPostProcess
 		return false;
 	}
 	
-//	/**
-//	 * Joins concatenated locations by replacing them with higher nodes.
-//	 * PRE: {@link PBInstance#sortArgs()} is called.
-//	 */
-//	private void joinConcatenations(PBInstance instance)
-//	{
-//		SortedArrayList<Integer> ids = new SortedArrayList<>();
-//		CTTree tree = instance.getTree();
-//		int terminalId, height;
-//		CTNode node, parent;
-//		List<PBLocation> lNew;
-//		
-//		for (PBArgument arg : instance.getArgumentList())
-//		{
-//			if (arg.isLabel(PBTag.PB_REL))	continue;
-//			ids.clear();
-//			
-//			for (PBLocation loc : arg.getLocationList())
-//			{
-//				if (!loc.isType("") && !loc.isType(","))	return;
-//				if (loc.getHeight() > 0)					return;
-//				ids.add(loc.getTerminalID());
-//			}
-//			
-//			lNew = new ArrayList<PBLocation>();
-//			
-//			while (!ids.isEmpty())
-//			{
-//				terminalId = ids.get(0);
-//				height     = 0;
-//				node       = tree.getNode(terminalId, height);
-//				
-//				while ((parent = node.getParent()) != null && !parent.isConstituentTag(CTTagEn.TOP) && UTHppc.isSubset(ids, parent.getSubTerminalIdSet()))
-//				{
-//					node = parent;
-//					height++;
-//				}
-//				
-//				lNew.add(new PBLocation(terminalId, height, ","));
-//				ids.removeAll(node.getSubTerminalIdSet());
-//			}
-//			
-//			if (lNew.size() < arg.getLocationSize())
-//			{
-//				lNew.get(0).setType("");
-//				arg.replaceLocs(lNew);
-//			}
-//		}
-//	}
-//	
-//	/**
-//	 * Fixes locations cyclic to its predicate.
-//	 * PRE: {@link PBInstance#sortArgs()} is called.
-//	 */
-//	private void fixCyclicLocations(PBInstance instance)
-//	{
-//		CTTree   tree    = instance.getTree();
-//		int    predId    = instance.getPredicateID();
-//		boolean isCyclic = false;
-//		CTNode  node, tmp;
-//		
-//		StringBuilder build = new StringBuilder();
-//		build.append(ERR_CYCLIC);
-//		
-//		for (PBArgument arg : instance.getArgumentList())
-//		{
-//			if (arg.isLabel(PBTag.PB_REL))	continue;
-//			
-//			for (PBLocation loc : arg.getLocationList())
-//			{
-//				if ((node = tree.getNode(loc)).getSubTerminalIdSet().contains(predId))
-//				{
-//					if (arg.isLabel(PBTag.PB_ARGM_MOD))
-//						loc.setHeight(0);
+	/**
+	 * Joins concatenated locations by replacing them with higher nodes.
+	 * PRE: {@link PBInstance#sortArgs()} is called.
+	 */
+	private void joinConcatenations(PBInstance instance)
+	{
+		SortedArrayList<Integer> ids = new SortedArrayList<>();
+		CTTree tree = instance.getTree();
+		int terminalId, height;
+		CTNode node, parent;
+		List<PBLocation> lNew;
+		
+		for (PBArgument arg : instance.getArgumentList())
+		{
+			if (arg.isLabel(PBTag.PB_REL))	continue;
+			ids.clear();
+			
+			for (PBLocation loc : arg.getLocationList())
+			{
+				if (!loc.isType("") && !loc.isType(","))	return;
+				if (loc.getHeight() > 0)					return;
+				ids.add(loc.getTerminalID());
+			}
+			
+			lNew = new ArrayList<PBLocation>();
+			
+			while (!ids.isEmpty())
+			{
+				terminalId = ids.get(0);
+				height     = 0;
+				node       = tree.getNode(terminalId, height);
+				
+				while ((parent = node.getParent()) != null && !parent.isConstituentTag(CTTagEn.TOP) && DSUtils.isSubset(ids, parent.getTerminalIDSet()))
+				{
+					node = parent;
+					height++;
+				}
+				
+				lNew.add(new PBLocation(terminalId, height, ","));
+				ids.removeAll(node.getTerminalIDSet());
+			}
+			
+			if (lNew.size() < arg.getLocationSize())
+			{
+				lNew.get(0).setType("");
+				arg.setLocations(lNew);
+			}
+		}
+	}
+	
+	/**
+	 * Fixes locations cyclic to its predicate.
+	 * PRE: {@link PBInstance#sortArgs()} is called.
+	 */
+	private void fixCyclicLocations(PBInstance instance)
+	{
+		CTTree   tree    = instance.getTree();
+		int    predId    = instance.getPredicateID();
+		boolean isCyclic = false;
+		CTNode  node, tmp;
+		
+		StringBuilder build = new StringBuilder();
+		build.append(ERR_CYCLIC);
+		
+		for (PBArgument arg : instance.getArgumentList())
+		{
+			if (arg.isLabel(PBTag.PB_REL))	continue;
+			
+			for (PBLocation loc : arg.getLocationList())
+			{
+				if ((node = tree.getNode(loc)).getTerminalIDSet().contains(predId))
+				{
+					if (arg.isLabel(PBTag.PB_ARGM_MOD))
+						loc.setHeight(0);
 //					else if (arg.isLabel(PBTag.PB_LINK_SLC) && node.isConstituentTag(CTLibEn.C_SBAR) && (tmp = node.getFirstChild("+WH.*")) != null)
 //						loc.set(tmp.getPBLocation(), loc.getType());
-//					else if (node.isPTag(CTLibEn.PTAG_NP) && (tmp = node.getChild(0)).isPTag(CTLibEn.PTAG_NP) && !tmp.getSubTerminalIdSet().contains(predId))
-//						loc.height--;
-//					else
-//					{
-//						build.append(":");
-//						build.append(arg.label);
-//						isCyclic = true;
-//						break;
-//					}
-//				}
-//			}
-//		}
-//		
-//		if (isCyclic)
-//		{
-//			build.append(" ");
-//			build.append(instance.toString());
-//			System.err.println(build.toString());
-//		//	System.err.println(tree.toString(true,true));
-//		}
-//	}
-//	
-//	/**
-//	 * Removes redundant or overlapping locations of this argument.
-//	 * PRE: {@link PBInstance#sortArgs()} is called.
-//	 */
-//	private void removeRedundantLocs(PBInstance instance)
-//	{
-//		List<PBLoc> lDel = new ArrayList<PBLoc>();
-//		PBLoc curr, next;
-//		int i, size;
-//		
-//		for (PBArg arg : instance.getArgs())
-//		{
-//			size = arg.getLocSize() - 1;
-//			lDel.clear();
-//			
-//			for (i=0; i<size; i++)
-//			{
-//				curr = arg.getLoc(i);
-//				next = arg.getLoc(i+1);
-//				
-//				if (curr.terminalId == next.terminalId)
-//					lDel.add(curr);
-//			}
-//			
-//			if (!lDel.isEmpty())
-//				arg.removeLocs(lDel);
-//		}
-//	}
-//	
-//	/** Fixes illegal PROs. */
-//	private void fixIllegalPROs(PBInstance instance)
-//	{
-//		CTTree tree = instance.getTree();
-//		CTNode node;
-//		
-//		for (PBArg arg : instance.getArgs())
-//		{
-//			if (arg.isLabel(PBLib.PB_REL))	continue;
-//			
-//			for (PBLoc loc : arg.getLocs())
-//			{
-//				if (loc.terminalId > instance.predId)
-//				{
-//					node = tree.getNode(loc);
-//					
-//					if (node.isEmptyCategoryRec() && node.hasFTag(CTLibEn.FTAG_SBJ) && node.getParent().isPTag(CTLibEn.PTAG_S))
-//						loc.height++;
-//				}
-//			}
-//		}
-//	}
-//	
-//	/**
-//	 * Adds antecedents from manual annotation of LINK-*.
-//	 * PRE: {@link PBInstance#sortArgs()} is called. 
-//	 */
-//	private void getLinks(PBInstance instance)
-//	{
-//		CTTree tree = instance.getTree();
-//		CTNode node, link;
-//		List<PBArg> lLinks = new ArrayList<PBArg>();
-//		PBLoc loc; int i;
-//		
-//		for (PBArg arg : instance.getArgs())
-//		{
-//			if (arg.label.startsWith("LINK"))
-//				lLinks.add(arg);
-//			
-//			for (i=arg.getLocSize()-1; i>0; i--)
-//			{
-//				loc  = arg.getLoc(i);
-//				node = tree.getNode(loc);
-//				
-//				if (node.pTag.startsWith("WH"))
-//				{
-//					link = CTLibEn.getComplementizer(node);
-//
-//					if (link.getAntecedent() == null)
-//					{
-//						link.setAntecedent(tree.getNode(arg.getLoc(i-1)));
-//						break;
-//					}
-//				}
-//				else if (CTLibEn.isComplementizer(node))
-//				{
-//					if (node.getAntecedent() == null)
-//					{
-//						node.setAntecedent(tree.getNode(arg.getLoc(i-1)));
-//						break;
-//					}
-//				}
-//				else if (node.isEmptyCategoryRec() && loc.isType("*"))
-//				{
-//					link = node.getFirstTerminal();
-//					
-//					if (link.getAntecedent() == null)
-//						link.setAntecedent(tree.getNode(arg.getLoc(i-1)));
-//				}
-//			}
-//		}
-//		
-//		if (!lLinks.isEmpty())
-//			instance.removeArgs(lLinks);
-//	}
-//	
-//	/**
-//	 * Normalizes links.
-//	 * PRE: {@link CTTree#setPBLocs()} and {@link C} needs to be called before.
-//	 */
-//	private void normalizeLinks(PBInstance instance)
-//	{
-//		List<PBLoc> lDel = new ArrayList<PBLoc>();
+					else if (node.isConstituentTag(CTLibEn.C_NP) && (tmp = node.getChild(0)).isConstituentTag(CTLibEn.C_NP) && !tmp.getTerminalIDSet().contains(predId))
+						loc.setHeight(loc.getHeight()-1);
+					else
+					{
+						build.append(":");
+						build.append(arg.getLabel());
+						isCyclic = true;
+						break;
+					}
+				}
+			}
+		}
+		
+		if (isCyclic)
+		{
+			build.append(" ");
+			build.append(instance.toString());
+			System.err.println(build.toString());
+		//	System.err.println(tree.toString(true,true));
+		}
+	}
+	
+	/**
+	 * Removes redundant or overlapping locations of this argument.
+	 * PRE: {@link PBInstance#sortArgs()} is called.
+	 */
+	private void removeRedundantLocations(PBInstance instance)
+	{
+		List<PBLocation> lDel = new ArrayList<PBLocation>();
+		PBLocation curr, next;
+		int i, size;
+		
+		for (PBArgument arg : instance.getArgumentList())
+		{
+			size = arg.getLocationSize() - 1;
+			lDel.clear();
+			
+			for (i=0; i<size; i++)
+			{
+				curr = arg.getLocation(i);
+				next = arg.getLocation(i+1);
+				
+				if (curr.getTerminalID() == next.getTerminalID())
+					lDel.add(curr);
+			}
+			
+			if (!lDel.isEmpty())
+				arg.removeLocations(lDel);
+		}
+	}
+	
+	/** Fixes illegal PROs. */
+	private void fixIllegalPROs(PBInstance instance)
+	{
+		CTTree tree = instance.getTree();
+		CTNode node;
+		
+		for (PBArgument arg : instance.getArgumentList())
+		{
+			if (arg.isLabel(PBTag.PB_REL))	continue;
+			
+			for (PBLocation loc : arg.getLocationList())
+			{
+				if (loc.getTerminalID() > instance.getPredicateID())
+				{
+					node = tree.getNode(loc);
+					
+					if (node.isEmptyCategoryTerminal() && node.hasFunctionTag(CTLibEn.F_SBJ) && node.getParent().isConstituentTag(CTLibEn.C_S))
+						loc.setHeight(loc.getHeight()+1);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Adds antecedents from manual annotation of LINK-*.
+	 * PRE: {@link PBInstance#sortArgs()} is called. 
+	 */
+	private void setLinks(PBInstance instance)
+	{
+		List<PBArgument> lLinks = new ArrayList<PBArgument>();
+		CTTree tree = instance.getTree();
+		CTNode node, link;
+		PBLocation loc; int i;
+		
+		for (PBArgument arg : instance.getArgumentList())
+		{
+			if (arg.getLabel().startsWith("LINK"))
+				lLinks.add(arg);
+			
+			for (i=arg.getLocationSize()-1; i>0; i--)
+			{
+				loc  = arg.getLocation(i);
+				node = tree.getNode(loc);
+				
+				if (node.getConstituentTag().startsWith("WH"))
+				{
+					link = CTLibEn.getRelativizer(node);
+
+					if (link.getAntecedent() == null)
+					{
+						link.setAntecedent(tree.getNode(arg.getLocation(i-1)));
+						break;
+					}
+				}
+				else if (CTLibEn.isRelativizer(node))
+				{
+					if (node.getAntecedent() == null)
+					{
+						node.setAntecedent(tree.getNode(arg.getLocation(i-1)));
+						break;
+					}
+				}
+				else if (node.isEmptyCategoryTerminal() && loc.isType("*"))
+				{
+					link = node.getFirstTerminal();
+					
+					if (link.getAntecedent() == null)
+						link.setAntecedent(tree.getNode(arg.getLocation(i-1)));
+				}
+			}
+		}
+		
+		if (!lLinks.isEmpty())
+			instance.removeArguments(lLinks);
+	}
+	
+	/**
+	 * Normalizes links.
+	 * PRE: {@link CTTree#setPBLocs()} and {@link C} needs to be called before.
+	 */
+	private void normalizeLinks(PBInstance instance)
+	{
+//		List<PBLocation> lDel = new ArrayList<>();
 //		CTTree tree = instance.getTree();
 //		CTNode curr, node, ante;
-//		PBLoc  cLoc; int i;
+//		PBLocation cLoc; int i;
 //		List<CTNode> list;
-//		CTNode pred = tree.getTerminal(instance.predId);
+//		CTNode pred = tree.getTerminal(instance.getPredicateID());
 //		
-//		for (PBArg arg : instance.getArgs())
+//		for (PBArgument arg : instance.getArgumentList())
 //		{
-//			if (arg.isLabel(PBLib.PB_REL))	continue;
+//			if (arg.isLabel(PBTag.PB_REL))	continue;
 //			lDel.clear();
 //			
-//			for (i=0; i<arg.getLocSize(); i++)	// size() gets changed dynamically
+//			for (i=0; i<arg.getLocationSize(); i++)	// size() gets changed dynamically
 //			{
-//				cLoc = arg.getLoc(i);
+//				cLoc = arg.getLocation(i);
 //				curr = tree.getNode(cLoc);
 //				
-//				if (CTLibEn.isComplementizer(curr))
+//				if (CTLibEn.isRelativizer(curr))
 //				{
 //					if ((ante = curr.getAntecedent()) != null)
-//						arg.addLoc(new PBLoc(ante.getPBLoc(), "*"));
+//						arg.addLocation(new PBLocation(ante.getPBLocation(), "*"));
 //					
 //					if ((node = getCoIndexedWHNode(curr)) != null)
 //						cLoc.set(node.getPBLoc(), "*");
@@ -534,8 +545,8 @@ public class PBPostProcess
 //			for (PBLoc rLoc : lDel)
 //				arg.removeLoc(rLoc.terminalId, rLoc.height);
 //		}
-//	}
-//	
+	}
+	
 //	/** Called by {@link PBLibEn#normalizeLinks(CTTree, PBArg, int)}. */
 //	private CTNode getCoIndexedWHNode(CTNode node)
 //	{
@@ -569,17 +580,17 @@ public class PBPostProcess
 //		return false;
 //	}
 //	
-//	private boolean findOverlappingArguments(PBInstance instance)
-//	{
+	private boolean findOverlappingArguments(PBInstance instance)
+	{
 //		CTTree  tree = instance.getTree();
-//		PBArg ai, aj;
+//		PBArgument ai, aj;
 //		IntOpenHashSet si, sj;
-//		int i, j, size = instance.getArgSize(), ni, nj;
-//		List<PBArg> lDel = new ArrayList<PBArg>();
+//		int i, j, size = instance.getArgumentSize(), ni, nj;
+//		List<PBArgument> lDel = new ArrayList<PBArgument>();
 //		
 //		for (i=0; i<size; i++)
 //		{
-//			ai = instance.getArg(i);
+//			ai = instance.getArgument(i);
 //			si = getTerminalIdSet(ai, tree);
 //			ni = si.size();
 //			
@@ -617,9 +628,9 @@ public class PBPostProcess
 //		}
 //		
 //		instance.removeArgs(lDel);
-//		return false;
-//	}
-//	
+		return false;
+	}
+	
 //	/** Returns the set of terminal IDs associated with this argument. */
 //	private IntOpenHashSet getTerminalIdSet(PBArg arg, CTTree tree)
 //	{
@@ -634,105 +645,105 @@ public class PBPostProcess
 //		return set;
 //	}
 //	
-//	private void addLinks(PBInstance instance)
-//	{
-//		CTTree tree = instance.getTree();
-//		CTNode node, comp, ante = null;
-//		String label;
-//		List<PBArg> lAdd = new ArrayList<PBArg>();
-//		PBArg nArg;
-//		
-//		for (PBArg arg : instance.getArgs())
-//		{
-//			for (PBLoc loc : arg.getLocs())
-//			{
-//				node  = tree.getNode(loc);
-//				label = null;
-//				
-//				if (node.pTag.startsWith("WH"))
-//				{
-//					if ((comp = CTLibEn.getComplementizer(node)) != null && (ante = comp.getAntecedent()) != null)
-//						label = PBLib.PB_LINK_SLC;
-//				}
-//				else if (node.isEmptyCategory())
-//				{
-//					if ((ante = node.getAntecedent()) != null)
-//					{
-//						if (node.form.equals(CTLibEn.EC_NULL))
-//							label = PBLib.PB_LINK_PSV;
-//						else if (node.form.equals(CTLibEn.EC_PRO))
-//							label = PBLib.PB_LINK_PRO;
-//					}
-//				}
-//				
-//				if (label != null)
-//				{
-//					nArg = new PBArg();
-//					nArg.label = label;
-//					nArg.addLoc(new PBLoc(ante.getPBLoc(), ""));
-//					nArg.addLoc(new PBLoc(node.getPBLoc(), "*"));
-//					
-//					lAdd.add(nArg);
-//				}
-//			}
-//		}
-//		
-//		instance.addArgs(lAdd);
-//	}
-//	
-//	private void raiseEmptyArguments(PBInstance instance)
-//	{
-//		CTTree tree = instance.getTree();
-//		CTNode node, parent;
-//		PBLocation loc;
-//		int i, size;
-//		
-//		for (PBArgument arg : instance.getArgumentList())
-//		{
-//			if (arg.isLabel(PBLib.PB_REL))	continue;
-//			size = arg.getLocSize();
-//			
-//			for (i=0; i<size; i++)
-//			{
-//				loc  = arg.getLoc(i);
-//				node = tree.getNode(loc);
-//				parent = node.getParent();
-//				
-//				if (parent != null && !parent.isPTag(CTLib.PTAG_TOP) && parent.getChildrenSize() == 1)
-//					node = parent;
-//				
-//				loc.set(node.getPBLoc(), loc.type);
-//			}
-//		}
-//	}
-//	
-//	private void printInstances(List<PBInstance> instances, String treeDir)
-//	{
-//		String treePath = "", propPath;
-//		PrintStream fout = null;
-//		
-//		for (PBInstance instance : instances)
-//		{
-//			if (!treePath.equals(instance.treePath))
-//			{
-//				if (fout != null)	fout.close();
-//				treePath = instance.treePath;
-//				propPath = treePath.substring(0, treePath.lastIndexOf(".")) + ".prop";
-//				
-//				if (new File(propPath).exists())
-//					System.err.println("Warning: '"+propPath+"' already exists");
-//				
-//				fout = UTOutput.createPrintBufferedFileStream(treeDir+File.separator+propPath);
-//			}
-//			
-//			fout.println(instance.toString());
-//		}
-//		
-//		if (fout != null)	fout.close();
-//	}
-//	
-//	private PBArgument getArgDSP(PBInstance instance)
-//	{
+	private void addLinks(PBInstance instance)
+	{
+		CTTree tree = instance.getTree();
+		CTNode node, comp, ante = null;
+		String label;
+		List<PBArgument> lAdd = new ArrayList<>();
+		PBArgument nArg;
+		
+		for (PBArgument arg : instance.getArgumentList())
+		{
+			for (PBLocation loc : arg.getLocationList())
+			{
+				node  = tree.getNode(loc);
+				label = null;
+				
+				if (node.getConstituentTag().startsWith("WH"))
+				{
+					if ((comp = CTLibEn.getRelativizer(node)) != null && (ante = comp.getAntecedent()) != null)
+						label = PBTag.PB_LINK_SLC;
+				}
+				else if (node.isEmptyCategory())
+				{
+					if ((ante = node.getAntecedent()) != null)
+					{
+						if (node.isWordForm(CTLibEn.E_NULL))
+							label = PBTag.PB_LINK_PSV;
+						else if (node.isWordForm(CTLibEn.E_PRO))
+							label = PBTag.PB_LINK_PRO;
+					}
+				}
+				
+				if (label != null)
+				{
+					nArg = new PBArgument();
+					nArg.setLabel(label);
+					nArg.addLocation(new PBLocation(ante.getPBLocation(), ""));
+					nArg.addLocation(new PBLocation(node.getPBLocation(), "*"));
+					
+					lAdd.add(nArg);
+				}
+			}
+		}
+		
+		instance.addArguments(lAdd);
+	}
+	
+	private void raiseEmptyArguments(PBInstance instance)
+	{
+		CTTree tree = instance.getTree();
+		CTNode node, parent;
+		PBLocation loc;
+		int i, size;
+		
+		for (PBArgument arg : instance.getArgumentList())
+		{
+			if (arg.isLabel(PBTag.PB_REL))	continue;
+			size = arg.getLocationSize();
+			
+			for (i=0; i<size; i++)
+			{
+				loc  = arg.getLocation(i);
+				node = tree.getNode(loc);
+				parent = node.getParent();
+				
+				if (parent != null && !parent.isConstituentTag(CTLibEn.TOP) && parent.getChildrenSize() == 1)
+					node = parent;
+				
+				loc.set(node.getPBLocation(), loc.getType());
+			}
+		}
+	}
+	
+	private void printInstances(List<PBInstance> instances, String treeDir)
+	{
+		String treePath = "", propPath;
+		PrintStream fout = null;
+		
+		for (PBInstance instance : instances)
+		{
+			if (!treePath.equals(instance.getTreePath()))
+			{
+				if (fout != null)	fout.close();
+				treePath = instance.getTreePath();
+				propPath = treePath.substring(0, treePath.lastIndexOf(".")) + ".prop";
+				
+				if (new File(propPath).exists())
+					System.err.println("Warning: '"+propPath+"' already exists");
+				
+				fout = IOUtils.createBufferedPrintStream(treeDir+File.separator+propPath);
+			}
+			
+			fout.println(instance.toString());
+		}
+		
+		if (fout != null)	fout.close();
+	}
+	
+	private PBArgument getArgumentDSP(PBInstance instance)
+	{
 //		CTTree tree = instance.getTree();
 //		CTNode pred = tree.getTerminal(instance.predId);
 //		Pair<CTNode,CTNode> pair = getESMPair(pred);
@@ -768,15 +779,15 @@ public class PBPostProcess
 //		{
 //			PBArg arg = new PBArg();
 //			arg.addLoc(dsp.getPBLoc());
-//			arg.label = max.o1.label+"-"+PBLib.PB_DSP;
+//			arg.label = max.o1.label+"-"+PBTag.PB_DSP;
 //			instance.removeArgs(max.o1.label);
 //			
 //			return arg;
 //		}
-//		
-//		return null;
-//	}
-//	
+		
+		return null;
+	}
+	
 //	private Pair<CTNode,CTNode> getESMPair(CTNode pred)
 //	{
 //		CTNode s = pred.getNearestAncestor("+S.*");

@@ -37,6 +37,11 @@ public class PBLocation implements Serializable, Comparable<PBLocation>
 	private int    i_height;
 	private String s_type;
 	
+	public PBLocation(PBLocation loc, String type)
+	{
+		set(loc, type);
+	}
+	
 	public PBLocation(int terminalID, int height, String type)
 	{
 		set(terminalID, height, type);
@@ -83,6 +88,11 @@ public class PBLocation implements Serializable, Comparable<PBLocation>
 		i_terminalID = terminalID;
 		i_height     = height;
 		s_type       = type;
+	}
+	
+	public void set(PBLocation loc, String type)
+	{
+		set(loc.getTerminalID(), loc.getHeight(), type);
 	}
 
 	public void set(int terminalID, int height)

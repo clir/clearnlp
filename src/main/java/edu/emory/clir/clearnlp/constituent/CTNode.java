@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcher;
 import edu.emory.clir.clearnlp.conversion.C2DInfo;
@@ -405,6 +406,11 @@ public class CTNode implements Comparable<CTNode>
 	private CTNode getLastTerminalAux(CTNode node)
 	{
 		return node.isTerminal() ? node : getLastTerminalAux(node.getLastChild());
+	}
+	
+	public Set<Integer> getTerminalIDSet()
+	{
+		return getTerminalList().stream().map(node -> node.getTerminalID()).collect(Collectors.toSet());
 	}
 	
 	/** @return a list of terminal nodes in the subtree of this node. */

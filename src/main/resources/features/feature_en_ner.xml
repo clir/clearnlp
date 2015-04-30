@@ -1,3 +1,4 @@
+<!--Feature template for named entity recognition in English -->
 <feature_template>
     <!-- 1-gram features -->
 	<feature f0="i:f2"/>
