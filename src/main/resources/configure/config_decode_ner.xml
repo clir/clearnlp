@@ -1,7 +1,9 @@
 <configuration>
     <language>english</language>
-
-    <reader type="raw"/>
+    
+    <reader type="raw">
+    	<column index="1" field="form"/>
+    </reader>
 
     <global>
         <distributional_semantics>brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt.xz</distributional_semantics>
