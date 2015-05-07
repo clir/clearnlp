@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.emory.clir</groupId>
   <artifactId>clearnlp</artifactId>
-  <version>3.1.1</version>
+  <version>3.1.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>clearnlp</name>
   <url>http://www.clearnlp.com</url>
@@ -11,7 +11,7 @@
     <url>https://github.com/clir/clearnlp</url>
     <connection>scm:git:git://github.com:clir/clearnlp.git</connection>
     <developerConnection>scm:git:git@github.com:clir/clearnlp.git</developerConnection>
-    <tag>clearnlp-3.1.1</tag>
+    <tag>clearnlp-3.0.1</tag>
   </scm>
 
   <licenses>
