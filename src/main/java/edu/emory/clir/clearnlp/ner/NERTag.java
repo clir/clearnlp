@@ -89,7 +89,9 @@ import static edu.emory.clir.clearnlp.lexicon.dbpedia.DBPediaType.Train;
 import static edu.emory.clir.clearnlp.lexicon.dbpedia.DBPediaType.Website;
 import static edu.emory.clir.clearnlp.lexicon.dbpedia.DBPediaType.WrittenWork;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -104,41 +106,43 @@ import edu.emory.clir.clearnlp.util.DSUtils;
  */
 public interface NERTag
 {
-	static public Set<DBPediaType> PERSON = DSUtils.toHashSet(Person, PersonFunction, Mayor, Name);
-	static public Set<DBPediaType> NORP = DSUtils.toHashSet(GeopoliticalOrganisation, Legislature, Parliament, PoliticalParty, ReligiousOrganisation, EthnicGroup);
-	static public Set<DBPediaType> FACILITY = DSUtils.toHashSet(ArchitecturalStructure, Cemetery, ConcentrationCamp, Garden, HistoricPlace, Mine, Monument, SkiResort, SportFacility, Park, Street);
-	static public Set<DBPediaType> ORGANIZATION = DSUtils.toHashSet(GovernmentAgency, Broadcaster, Company, EducationalInstitution, EmployersOrganisation, NonProfitOrganisation, SambaSchool, SportsLeague, SportsTeam, Website);
-	static public Set<DBPediaType> GPE = DSUtils.toHashSet(Country, Settlement, State);
-	static public Set<DBPediaType> LOCATION = DSUtils.toHashSet(Region, NaturalRegion, HistoricalRegion, Street, Territory, ProtectedArea, SkiArea, Island, NaturalPlace, Continent);
-	static public Set<DBPediaType> PRODUCT = DSUtils.toHashSet(Aircraft, Automobile, Locomotive, MilitaryVehicle, Motorcycle, Rocket, Ship, SpaceShuttle, Spacecraft, Train, Device, Drug, Food);
-	static public Set<DBPediaType> EVENT = DSUtils.toHashSet(NaturalEvent, Competition, SocietalEvent);
-	static public Set<DBPediaType> WORK_OF_ART = DSUtils.toHashSet(Artwork, Cartoon, CollectionOfValuables, Document, Film, Musical, MusicalWork, WrittenWork, TelevisionShow);
-	static public Set<DBPediaType> LANGUAGE = DSUtils.toHashSet(Language);
-	static public Set<DBPediaType> DATE = DSUtils.toHashSet(TimePeriod);
-	static public Set<DBPediaType> MONEY = DSUtils.toHashSet(Currency);
+	@SuppressWarnings("serial")
+	static public List<Set<DBPediaType>> DBPediaTypeList = new ArrayList<Set<DBPediaType>>() {{
+		add(DSUtils.toHashSet(Person, PersonFunction, Mayor, Name)); // PERSON
+		add(DSUtils.toHashSet(GeopoliticalOrganisation, Legislature, Parliament, PoliticalParty, ReligiousOrganisation, EthnicGroup)); // NORP
+		add(DSUtils.toHashSet(ArchitecturalStructure, Cemetery, ConcentrationCamp, Garden, HistoricPlace, Mine, Monument, SkiResort, SportFacility, Park, Street)); // FACILITY
+		add(DSUtils.toHashSet(GovernmentAgency, Broadcaster, Company, EducationalInstitution, EmployersOrganisation, NonProfitOrganisation, SambaSchool, SportsLeague, SportsTeam, Website)); // ORGANIZATION
+		add(DSUtils.toHashSet(Country, Settlement, State)); // GPE
+		add(DSUtils.toHashSet(Region, NaturalRegion, HistoricalRegion, Street, Territory, ProtectedArea, SkiArea, Island, NaturalPlace, Continent)); // LOCATION
+		add(DSUtils.toHashSet(Aircraft, Automobile, Locomotive, MilitaryVehicle, Motorcycle, Rocket, Ship, SpaceShuttle, Spacecraft, Train, Device, Drug, Food)); // PRODUCT
+		add(DSUtils.toHashSet(NaturalEvent, Competition, SocietalEvent)); // EVENT
+		add(DSUtils.toHashSet(Artwork, Cartoon, CollectionOfValuables, Document, Film, Musical, MusicalWork, WrittenWork, TelevisionShow)); // WORK_OF_ART
+		add(DSUtils.toHashSet(Language)); // LANGUAGE
+		add(DSUtils.toHashSet(TimePeriod)); // DATE
+		add(DSUtils.toHashSet(Currency)); // MONEY
+	}};
 	
-	@SuppressWarnings("unchecked")
-	static public List<Set<DBPediaType>> DBPediaTypeList = DSUtils.toArrayList(PERSON, NORP, FACILITY, ORGANIZATION, GPE, LOCATION, PRODUCT, EVENT, WORK_OF_ART, LANGUAGE, DATE, MONEY);
-	static public Map<DBPediaType,String> DBPediaTypeMap = createMap(DBPediaTypeList);
-	static public Set<DBPediaType> DBPediaTypeSet = DSUtils.merge(DBPediaTypeList);
+	@SuppressWarnings("serial")
+	static public Set<DBPediaType> DBPediaTypeSet = new HashSet<DBPediaType>() {{
+		for (Set<DBPediaType> p : DBPediaTypeList) addAll(p);
+	}};
+	
+	@SuppressWarnings("serial")
+	static public Map<DBPediaType,String> DBPediaTypeMap = new HashMap<DBPediaType,String>() {{
+		int i, size = DBPediaTypeList.size();
+		Set<DBPediaType> p;
+		
+		for (i=0; i<size; i++)
+		{
+			p = DBPediaTypeList.get(i);
+			for (DBPediaType type : p)
+				put(type, Integer.toString(i));
+		}
+	}};
 	
 	public static String fromDBPediaType(DBPediaType type)
 	{
 		return DBPediaTypeMap.getOrDefault(type, type.toString());
-	}
-	
-	public static Map<DBPediaType,String> createMap(List<Set<DBPediaType>> sets)
-	{
-		Map<DBPediaType,String> map = new HashMap<>();
-		int i, size = sets.size();
-		
-		for (i=0; i<size; i++)
-		{
-			for (DBPediaType type : sets.get(i))
-				map.put(type, Integer.toString(i));
-		}
-		
-		return map;
 	}
 	
 	

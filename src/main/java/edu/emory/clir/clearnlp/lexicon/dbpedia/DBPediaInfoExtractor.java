@@ -132,7 +132,7 @@ public class DBPediaInfoExtractor implements DBPediaXML
 		
 		DBPediaTypeMap typeMap = gson.fromJson(new InputStreamReader(IOUtils.createXZBufferedInputStream(args[0])), DBPediaTypeMap.class);	// dbpedia.owl.json.xz
 		DBPediaInfoMap infoMap = ex.getInfoMap(typeMap, IOUtils.createXZBufferedInputStream(args[1]));	// instance_types_en.nt.xz
-		ex.addRedirects(infoMap, IOUtils.createXZBufferedInputStream(args[2]));							// redirects_en.ttl.xz
+//		ex.addRedirects(infoMap, IOUtils.createXZBufferedInputStream(args[2]));							// redirects_en.ttl.xz
 		PrintStream out = new PrintStream(IOUtils.createXZBufferedOutputStream(args[3]));				// instances_en.json.xz
 		out.print(gson.toJson(infoMap));
 		out.close();

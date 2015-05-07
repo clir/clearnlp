@@ -55,9 +55,51 @@ public class NERState extends AbstractTagState
 	public void init(PrefixTree<String,NERInfoSet> namedEntityDictionary)
 	{
 		ne_dictionary = namedEntityDictionary;
-		info_list = ne_dictionary.getAll(d_tree.toNodeArray(), 1, DEPNode::getWordForm, true, false);
+//		info_list = ne_dictionary.getAll(d_tree.toNodeArray(), 1, DEPNode::getWordForm, true, false);
+		info_list = ne_dictionary.getAll(d_tree.toNodeArray(), 1, DEPNode::getLowerSimplifiedWordForm, true, false);
 		ambiguity_classes = getAmbiguityClasses();
 	}
+	
+//	private void initAmbiguityClasses()
+//	{
+//		List<Set<String>> sets = IntStream.range(0, t_size).mapToObj(k -> new HashSet<String>()).collect(Collectors.toList());
+//		StringJoiner[] joiners = new StringJoiner[t_size];
+//		int i, j, size = info_list.size();
+//		ObjectIntIntTriple<NERInfoSet> t;
+//		String tag;
+//		
+//		for (i=1; i<t_size; i++)
+//			joiners[i] = new StringJoiner("-");
+//		
+//		for (i=0; i<size; i++)
+//		{
+//			t = info_list.get(i);
+//			tag = t.o.joinTags(StringConst.COLON);
+//			
+//			if (t.i1 == t.i2)
+//				joiners[t.i1].add(NERLib.toBILOUTag(BILOU.U, tag));
+//			else
+//			{
+//				joiners[t.i1].add(NERLib.toBILOUTag(BILOU.B, tag));
+//				joiners[t.i2].add(NERLib.toBILOUTag(BILOU.L, tag));
+//				
+//				for (j=t.i1+1; j<t.i2; j++)
+//					joiners[j].add(NERLib.toBILOUTag(BILOU.I, tag));
+//			}
+//			
+//			for (j=t.i1; j<=t.i2; j++)
+//				sets.get(j).addAll(t.o.getCategorySet());
+//		}
+//		
+//		ambiguity_class_set = new String[t_size][];
+//		ambiguity_classes = new String[t_size];
+//		
+//		for (i=1; i<t_size; i++)
+//		{
+//			ambiguity_classes  [i] = joiners.length == 0 ? null : joiners[i].toString();
+//			ambiguity_class_set[i] = DSUtils.toArray(sets.get(i));
+//		}
+//	}
 	
 	private String[] getAmbiguityClasses()
 	{
@@ -116,6 +158,11 @@ public class NERState extends AbstractTagState
 		return ambiguity_classes[node.getID()];
 	}
 	
+//	public String[] getAmbiguityClasses(DEPNode node)
+//	{
+//		return ambiguity_class_set[node.getID()];
+//	}
+//	
 //	public String[] getCooccuranceFeatures(DEPNode node)
 //	{
 //		String[] categories = {"PER", "LOC", "ORG", "MISC"};

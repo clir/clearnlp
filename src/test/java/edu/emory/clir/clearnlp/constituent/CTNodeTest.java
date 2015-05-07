@@ -24,18 +24,6 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import edu.emory.clir.clearnlp.constituent.CTNode;
-import edu.emory.clir.clearnlp.constituent.CTTagEn;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherC;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherCFa;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherCFo;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherCo;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherF;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherFa;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherFo;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherP;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherPFa;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherPFo;
 import edu.emory.clir.clearnlp.util.PatternUtils;
 
 /**
@@ -87,31 +75,31 @@ public class CTNodeTest
 		Pattern p = PatternUtils.createClosedORPattern("PP","CC");
 		List<CTNode> list;
 		
-		list = curr.getChildrenList(new CTNodeMatcherC("NP"));
+		list = curr.getChildrenList(CTLib.matchC("NP"));
 		assertEquals("[(NP-LOC null), (NP-TMP null)]", list.toString());
 		
-		list = curr.getChildrenList(new CTNodeMatcherCo("PP", "CC"));
+		list = curr.getChildrenList(CTLib.matchCo("PP", "CC"));
 		assertEquals("[(CC and), (PP-LOC-PRD null)]", list.toString());
 		
-		list = curr.getChildrenList(new CTNodeMatcherP(p));
+		list = curr.getChildrenList(CTLib.matchP(p));
 		assertEquals("[(CC and), (PP-LOC-PRD null)]", list.toString());
 		
-		list = curr.getChildrenList(new CTNodeMatcherFa("LOC", "PRD"));
+		list = curr.getChildrenList(CTLib.matchFa("LOC", "PRD"));
 		assertEquals("[(PP-LOC-PRD null)]", list.toString());
 		
-		list = curr.getChildrenList(new CTNodeMatcherFo("TMP", "PRD"));
+		list = curr.getChildrenList(CTLib.matchFo("TMP", "PRD"));
 		assertEquals("[(NP-TMP null), (PP-LOC-PRD null)]", list.toString());
 		
-		list = curr.getChildrenList(new CTNodeMatcherCFa("NP","LOC","PRD"));
+		list = curr.getChildrenList(CTLib.matchCFa("NP","LOC","PRD"));
 		assertEquals("[]", list.toString());
 		
-		list = curr.getChildrenList(new CTNodeMatcherCFo("NP","LOC","PRD"));
+		list = curr.getChildrenList(CTLib.matchCFo("NP","LOC","PRD"));
 		assertEquals("[(NP-LOC null)]", list.toString());
 		
-		list = curr.getChildrenList(new CTNodeMatcherPFa(p, "TMP","PRD"));
+		list = curr.getChildrenList(CTLib.matchPFa(p, "TMP","PRD"));
 		assertEquals("[]", list.toString());
 		
-		list = curr.getChildrenList(new CTNodeMatcherPFo(p, "TMP","PRD"));
+		list = curr.getChildrenList(CTLib.matchPFo(p, "TMP","PRD"));
 		assertEquals("[(PP-LOC-PRD null)]", list.toString());
 		
 		assertEquals(null, curr.getChild(-1));
@@ -127,22 +115,22 @@ public class CTNodeTest
 		node = children[0].getParent();
 		assertEquals(curr, node);
 		
-		node = gChild.getNearestAncestor(new CTNodeMatcherF("TMP"));
+		node = gChild.getNearestAncestor(CTLib.matchF("TMP"));
 		assertEquals(children[2], node);
 		
-		node = gChild.getNearestAncestor(new CTNodeMatcherF("LOC"));
+		node = gChild.getNearestAncestor(CTLib.matchF("LOC"));
 		assertEquals(curr, node);
 		
-		node = gChild.getNearestAncestor(new CTNodeMatcherF("BNF"));
+		node = gChild.getNearestAncestor(CTLib.matchF("BNF"));
 		assertEquals(null, node);
 		
-		node = gChild.getHighestChainedAncestor(new CTNodeMatcherF("LOC"));
+		node = gChild.getHighestChainedAncestor(CTLib.matchF("LOC"));
 		assertEquals(null, node);
 		
-		node = gChild.getHighestChainedAncestor(new CTNodeMatcherF("TMP"));
+		node = gChild.getHighestChainedAncestor(CTLib.matchF("TMP"));
 		assertEquals(children[2], node);
 		
-		node = gChild.getHighestChainedAncestor(new CTNodeMatcherFo("LOC","TMP"));
+		node = gChild.getHighestChainedAncestor(CTLib.matchFo("LOC","TMP"));
 		assertEquals(curr, node);
 
 		node = children[1].getLowestCommonAncestor(gChild);
@@ -159,13 +147,13 @@ public class CTNodeTest
 	{
 		CTNode node;
 		
-		node = children[3].getLeftNearestSibling(new CTNodeMatcherFo("TMP"));
+		node = children[3].getLeftNearestSibling(CTLib.matchFo("TMP"));
 		assertEquals(children[2], node);
 		
-		node = children[3].getLeftNearestSibling(new CTNodeMatcherFo("LOC"));
+		node = children[3].getLeftNearestSibling(CTLib.matchFo("LOC"));
 		assertEquals(children[0], node);
 		
-		node = children[0].getRightNearestSibling(new CTNodeMatcherFo("PRD"));
+		node = children[0].getRightNearestSibling(CTLib.matchFo("PRD"));
 		assertEquals(children[3], node);
 	}
 	
@@ -173,13 +161,13 @@ public class CTNodeTest
 	{
 		CTNode node;
 		
-		node = curr.getFirstDescendant(new CTNodeMatcherC("NP"));
+		node = curr.getFirstDescendant(CTLib.matchC("NP"));
 		assertEquals(children[0], node);
 		
-		node = curr.getFirstDescendant(new CTNodeMatcherC("NNP"));
+		node = curr.getFirstDescendant(CTLib.matchC("NNP"));
 		assertEquals(children[2].getFirstChild(), node);
 		
-		node = curr.getFirstLowestChainedDescendant(new CTNodeMatcherC("PP"));
+		node = curr.getFirstLowestChainedDescendant(CTLib.matchC("PP"));
 		assertEquals(children[3].getFirstChild(), node);
 	}
 	

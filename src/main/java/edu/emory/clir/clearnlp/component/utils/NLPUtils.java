@@ -129,7 +129,7 @@ public class NLPUtils
 	@SuppressWarnings("unchecked")
 	static public PrefixTree<String,NERInfoSet> getNERDictionary(ObjectInputStream in)
 	{
-		BinUtils.LOG.info("Loading named entity dictionary.\n");
+		BinUtils.LOG.info("Loading named entity gazetteers.\n");
 		PrefixTree<String,NERInfoSet> tree = null;
 		
 		try

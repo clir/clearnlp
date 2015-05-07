@@ -16,6 +16,9 @@
 package edu.emory.clir.clearnlp.constituent;
 
 import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -34,5 +37,70 @@ public class CTLib
 		}
 		
 		return build.substring(delim.length());
+	}
+	
+	static public Predicate<CTNode> matchC(String constituentTag)
+	{
+		return node -> node.isConstituentTag(constituentTag);
+	}
+	
+	static public Predicate<CTNode> matchCo(String... constituentTags)
+	{
+		return node -> node.isConstituentTagAny(constituentTags);
+	}
+	
+	static public Predicate<CTNode> matchCo(Set<String> constituentTags)
+	{
+		return node -> constituentTags.contains(node.getConstituentTag());
+	}
+	
+	static public Predicate<CTNode> matchCp(String constituentPrefix)
+	{
+		return node -> node.getConstituentTag().startsWith(constituentPrefix);
+	}
+	
+	static public Predicate<CTNode> matchCF(String constituentTag, String functionTag)
+	{
+		return node -> node.isConstituentTag(constituentTag) && node.hasFunctionTag(functionTag);
+	}
+	
+	static public Predicate<CTNode> matchCFa(String constituentTag, String... functionTags)
+	{
+		return node -> node.isConstituentTag(constituentTag) && node.hasFunctionTagAll(functionTags);
+	}
+	
+	static public Predicate<CTNode> matchCFo(String constituentTag, String... functionTags)
+	{
+		return node -> node.isConstituentTag(constituentTag) && node.hasFunctionTagAny(functionTags);
+	}
+	
+	static public Predicate<CTNode> matchF(String functionTag)
+	{
+		return node -> node.hasFunctionTag(functionTag);
+	}
+	
+	static public Predicate<CTNode> matchFa(String... functionTags)
+	{
+		return node -> node.hasFunctionTagAll(functionTags);
+	}
+	
+	static public Predicate<CTNode> matchFo(String... functionTags)
+	{
+		return node -> node.hasFunctionTagAny(functionTags);
+	}
+	
+	static public Predicate<CTNode> matchP(Pattern constituentPattern)
+	{
+		return node -> node.matchesConstituentTag(constituentPattern);
+	}
+	
+	static public Predicate<CTNode> matchPFa(Pattern constituentPattern, String... functionTags)
+	{
+		return node -> node.matchesConstituentTag(constituentPattern) && node.hasFunctionTagAll(functionTags);		
+	}
+	
+	static public Predicate<CTNode> matchPFo(Pattern constituentPattern, String... functionTags)
+	{
+		return node -> node.matchesConstituentTag(constituentPattern) && node.hasFunctionTagAny(functionTags);		
 	}
 }

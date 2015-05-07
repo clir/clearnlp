@@ -22,10 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcher;
 import edu.emory.clir.clearnlp.conversion.C2DInfo;
 import edu.emory.clir.clearnlp.lexicon.propbank.PBLocation;
 import edu.emory.clir.clearnlp.util.DSUtils;
@@ -183,13 +183,13 @@ public class CTNode implements Comparable<CTNode>
 		return n_children.subList(fstId, lstId);
 	}
 	
-	public List<CTNode> getChildrenList(CTNodeMatcher matcher)
+	public List<CTNode> getChildrenList(Predicate<CTNode> matcher)
 	{
 		List<CTNode> list = new ArrayList<>();
 		
 		for (CTNode child : n_children)
 		{
-			if (matcher.matches(child))
+			if (matcher.test(child))
 				list.add(child);
 		}
 		
@@ -221,18 +221,18 @@ public class CTNode implements Comparable<CTNode>
 		return getChild(n_children.size()-1);
 	}
 	
-	public CTNode getFirstChild(CTNodeMatcher matcher)
+	public CTNode getFirstChild(Predicate<CTNode> matcher)
 	{
 		for (CTNode child : n_children)
 		{
-			if (matcher.matches(child))
+			if (matcher.test(child))
 				return child;
 		}
 		
 		return null;
 	}
 	
-	public CTNode getLastChild(CTNodeMatcher matcher)
+	public CTNode getLastChild(Predicate<CTNode> matcher)
 	{
 		CTNode child;	int i;
 		
@@ -240,7 +240,7 @@ public class CTNode implements Comparable<CTNode>
 		{
 			child = n_children.get(i);
 			
-			if (matcher.matches(child))
+			if (matcher.test(child))
 				return child;
 		}
 		
@@ -253,26 +253,26 @@ public class CTNode implements Comparable<CTNode>
 		return n_parent;
 	}
 	
-	public CTNode getNearestAncestor(CTNodeMatcher matcher)
+	public CTNode getNearestAncestor(Predicate<CTNode> matcher)
 	{
 		CTNode node = n_parent;
 		
 		while (node != null)
 		{
-			if (matcher.matches(node)) return node;
+			if (matcher.test(node)) return node;
 			node = node.n_parent;
 		}
 		
 		return null;
 	}
 	
-	public CTNode getHighestChainedAncestor(CTNodeMatcher matcher)
+	public CTNode getHighestChainedAncestor(Predicate<CTNode> matcher)
 	{
 		CTNode node = n_parent, ancestor = null;
 		
 		while (node != null)
 		{
-			if (matcher.matches(node))	ancestor = node;
+			if (matcher.test(node))	ancestor = node;
 			else						break;
 
 			node = node.n_parent;
@@ -299,16 +299,16 @@ public class CTNode implements Comparable<CTNode>
 		return null;
 	}
 	
-	public CTNode getFirstDescendant(CTNodeMatcher matcher)
+	public CTNode getFirstDescendant(Predicate<CTNode> matcher)
 	{
 		return getFirstDescendantAux(n_children, matcher);
 	}
 	
-	private CTNode getFirstDescendantAux(Collection<CTNode> nodes, CTNodeMatcher matcher)
+	private CTNode getFirstDescendantAux(Collection<CTNode> nodes, Predicate<CTNode> matcher)
 	{
 		for (CTNode node : nodes)
 		{
-			if (matcher.matches(node))
+			if (matcher.test(node))
 				return node;
 			
 			if ((node = getFirstDescendantAux(node.n_children, matcher)) != null)
@@ -318,7 +318,7 @@ public class CTNode implements Comparable<CTNode>
 		return null;
 	}
 	
-	public CTNode getFirstLowestChainedDescendant(CTNodeMatcher matcher)
+	public CTNode getFirstLowestChainedDescendant(Predicate<CTNode> matcher)
 	{
 		CTNode node = getFirstChild(matcher), descendant = null;
 		
@@ -337,13 +337,13 @@ public class CTNode implements Comparable<CTNode>
 		return n_leftSibling;
 	}
 	
-	public CTNode getLeftNearestSibling(CTNodeMatcher matcher)
+	public CTNode getLeftNearestSibling(Predicate<CTNode> matcher)
 	{
 		CTNode node = n_leftSibling;
 		
 		while (node != null)
 		{
-			if (matcher.matches(node))
+			if (matcher.test(node))
 				return node;
 			
 			node = node.n_leftSibling;
@@ -358,13 +358,13 @@ public class CTNode implements Comparable<CTNode>
 		return n_rightSibling;
 	}
 	
-	public CTNode getRightNearestSibling(CTNodeMatcher matcher)
+	public CTNode getRightNearestSibling(Predicate<CTNode> matcher)
 	{
 		CTNode node = n_rightSibling;
 		
 		while (node != null)
 		{
-			if (matcher.matches(node))
+			if (matcher.test(node))
 				return node;
 			
 			node = node.n_rightSibling;
@@ -713,9 +713,9 @@ public class CTNode implements Comparable<CTNode>
 		return false;
 	}
 	
-	public boolean matches(CTNodeMatcher matcher)
+	public boolean matches(Predicate<CTNode> matcher)
 	{
-		return matcher.matches(this);
+		return matcher.test(this);
 	}
 	
 	/** @return {@code true} if this node matches the specific pattern of constituent tags. */
@@ -864,7 +864,7 @@ public class CTNode implements Comparable<CTNode>
 		return s_wordForm.startsWith(prefix);
 	}
 	
-	public boolean containsChild(CTNodeMatcher matcher)
+	public boolean containsChild(Predicate<CTNode> matcher)
 	{
 		return getFirstChild(matcher) != null;
 	}

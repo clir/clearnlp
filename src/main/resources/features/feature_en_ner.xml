@@ -60,9 +60,6 @@
 	<feature f0="i+2:dsw0"/>
 	<feature f0="i-2:dsw0"/>
 
-	<feature f0="i:dsw1"/>
-	<feature f0="i:dsw2"/>
-
     <feature f0="i_h:m"/>
     <feature f0="i_h:p"/>
 </feature_template>

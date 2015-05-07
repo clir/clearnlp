@@ -44,4 +44,14 @@ public class NERFeatureExtractor extends CommonFeatureExtractor<NERState>
 		default: return super.getFeature(token, state, node);
 		}
 	}
+	
+//	@Override
+//	protected String[] getFeatures(CommonFeatureToken token, NERState state, DEPNode node)
+//	{
+//		switch (token.getField())
+//		{
+//		case as: return state.getAmbiguityClasses(node);
+//		default: return super.getFeatures(token, state, node);
+//		}
+//	}
 }

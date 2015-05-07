@@ -28,15 +28,11 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import edu.emory.clir.clearnlp.collection.set.IntHashSet;
+import edu.emory.clir.clearnlp.constituent.CTLib;
 import edu.emory.clir.clearnlp.constituent.CTLibEn;
 import edu.emory.clir.clearnlp.constituent.CTNode;
 import edu.emory.clir.clearnlp.constituent.CTTagEn;
 import edu.emory.clir.clearnlp.constituent.CTTree;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcher;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherC;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherCF;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherF;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherSet;
 import edu.emory.clir.clearnlp.conversion.headrule.HeadRule;
 import edu.emory.clir.clearnlp.conversion.headrule.HeadRuleMap;
 import edu.emory.clir.clearnlp.dependency.DEPFeat;
@@ -104,14 +100,14 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	private Map<CTNode,Deque<CTNode>> m_xsubj;
 	private Map<String,Pattern>       m_coord;
 	
-	private CTNodeMatcher mt_s;
-	private CTNodeMatcher mt_to;
-	private CTNodeMatcher mt_pos;
-	private CTNodeMatcher mt_sbj;
-	private CTNodeMatcher mt_prd;
-	private CTNodeMatcher mt_none;
-	private CTNodeMatcher mt_in_dt;
-	private CTNodeMatcher mt_np_prd;
+	private Predicate<CTNode> mt_s;
+	private Predicate<CTNode> mt_to;
+	private Predicate<CTNode> mt_pos;
+	private Predicate<CTNode> mt_sbj;
+	private Predicate<CTNode> mt_prd;
+	private Predicate<CTNode> mt_none;
+	private Predicate<CTNode> mt_in_dt;
+	private Predicate<CTNode> mt_np_prd;
 	
 	public EnglishC2DConverter(HeadRuleMap headrules)
 	{
@@ -177,15 +173,15 @@ public class EnglishC2DConverter extends AbstractC2DConverter
 	
 	private void initMatchers()
 	{
-		mt_s		= new CTNodeMatcherC(CTTagEn.C_S);
-		mt_to		= new CTNodeMatcherC(POSTagEn.POS_TO);
-		mt_pos		= new CTNodeMatcherC(POSTagEn.POS_POS);
-		mt_none		= new CTNodeMatcherC(CTLibEn.NONE);
+		mt_s		= CTLib.matchC(CTTagEn.C_S);
+		mt_to		= CTLib.matchC(POSTagEn.POS_TO);
+		mt_pos		= CTLib.matchC(POSTagEn.POS_POS);
+		mt_none		= CTLib.matchC(CTLibEn.NONE);
 		
-		mt_sbj  	= new CTNodeMatcherF(CTTagEn.F_SBJ);
-		mt_prd  	= new CTNodeMatcherF(CTTagEn.F_PRD);
-		mt_np_prd	= new CTNodeMatcherCF(CTTagEn.C_NP, CTTagEn.F_PRD);
-		mt_in_dt	= new CTNodeMatcherSet(DSUtils.toHashSet(POSTagEn.POS_IN, POSTagEn.POS_DT));
+		mt_sbj  	= CTLib.matchF(CTTagEn.F_SBJ);
+		mt_prd  	= CTLib.matchF(CTTagEn.F_PRD);
+		mt_np_prd	= CTLib.matchCF(CTTagEn.C_NP, CTTagEn.F_PRD);
+		mt_in_dt	= CTLib.matchCo(DSUtils.toHashSet(POSTagEn.POS_IN, POSTagEn.POS_DT));
 	}
 
 	private void clearMaps()

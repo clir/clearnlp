@@ -17,14 +17,9 @@ package edu.emory.clir.clearnlp.constituent;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcher;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherC;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherCF;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherF;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherPrefix;
-import edu.emory.clir.clearnlp.constituent.matcher.CTNodeMatcherSet;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.pos.POSTagEn;
 import edu.emory.clir.clearnlp.util.DSUtils;
@@ -41,26 +36,26 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 {
 	static final public Pattern P_PASSIVE_NULL = PatternUtils.createClosedORPattern("\\*","\\*-\\d+");
 	
-	static final public CTNodeMatcher M_NP			= new CTNodeMatcherC(C_NP);
-	static final public CTNodeMatcher M_VP			= new CTNodeMatcherC(C_VP);
-	static final public CTNodeMatcher M_QP			= new CTNodeMatcherC(C_QP);
-	static final public CTNodeMatcher M_ADVP		= new CTNodeMatcherC(C_ADVP);
-	static final public CTNodeMatcher M_SBAR		= new CTNodeMatcherC(C_SBAR);
-	static final public CTNodeMatcher M_EDITED		= new CTNodeMatcherC(C_EDITED);
+	static final public Predicate<CTNode> M_NP			= CTLib.matchC(C_NP);
+	static final public Predicate<CTNode> M_VP			= CTLib.matchC(C_VP);
+	static final public Predicate<CTNode> M_QP			= CTLib.matchC(C_QP);
+	static final public Predicate<CTNode> M_ADVP		= CTLib.matchC(C_ADVP);
+	static final public Predicate<CTNode> M_SBAR		= CTLib.matchC(C_SBAR);
+	static final public Predicate<CTNode> M_EDITED		= CTLib.matchC(C_EDITED);
 	
-	static final public CTNodeMatcher M_NOM			= new CTNodeMatcherF(F_NOM);
-	static final public CTNodeMatcher M_PRD			= new CTNodeMatcherF(F_PRD);
+	static final public Predicate<CTNode> M_NOM			= CTLib.matchF(F_NOM);
+	static final public Predicate<CTNode> M_PRD			= CTLib.matchF(F_PRD);
 	
-	static final public CTNodeMatcher M_NP_SBJ		= new CTNodeMatcherCF(C_NP, F_SBJ);
+	static final public Predicate<CTNode> M_NP_SBJ		= CTLib.matchCF(C_NP, F_SBJ);
 	
-	static final public CTNodeMatcher M_NNx			= new CTNodeMatcherPrefix(POS_NN);
-	static final public CTNodeMatcher M_VBx			= new CTNodeMatcherPrefix(POS_VB);
-	static final public CTNodeMatcher M_WHx			= new CTNodeMatcherPrefix("WH");
-	static final public CTNodeMatcher M_SBARx		= new CTNodeMatcherPrefix(C_SBAR);
+	static final public Predicate<CTNode> M_NNx			= CTLib.matchCp(POS_NN);
+	static final public Predicate<CTNode> M_VBx			= CTLib.matchCp(POS_VB);
+	static final public Predicate<CTNode> M_WHx			= CTLib.matchCp("WH");
+	static final public Predicate<CTNode> M_SBARx		= CTLib.matchCp(C_SBAR);
 	
-	static final public CTNodeMatcher M_NP_NML		= new CTNodeMatcherSet(DSUtils.toHashSet(C_NP, C_NML));
-	static final public CTNodeMatcher M_VBD_VBN		= new CTNodeMatcherSet(DSUtils.toHashSet(POS_VBD, POS_VBN));
-	static final public CTNodeMatcher M_VP_RRC_UCP	= new CTNodeMatcherSet(DSUtils.toHashSet(C_VP, C_RRC, C_UCP));
+	static final public Predicate<CTNode> M_NP_NML		= CTLib.matchCo(DSUtils.toHashSet(C_NP, C_NML));
+	static final public Predicate<CTNode> M_VBD_VBN		= CTLib.matchCo(DSUtils.toHashSet(POS_VBD, POS_VBN));
+	static final public Predicate<CTNode> M_VP_RRC_UCP	= CTLib.matchCo(DSUtils.toHashSet(C_VP, C_RRC, C_UCP));
 	
 	static final private Set<String> S_LGS_PHRASE		= DSUtils.toHashSet(C_PP, C_SBAR);
 	static final private Set<String> S_MAIN_CLAUSE		= DSUtils.toHashSet(C_S, C_SQ, C_SINV);
@@ -466,7 +461,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 	
 	static public boolean isWhPhrase(CTNode node)
 	{
-		return M_WHx.matches(node);
+		return M_WHx.test(node);
 	}
 	
 	static public boolean isEditedPhrase(CTNode node)
@@ -485,9 +480,9 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 		return node.getWordForm().startsWith(E_RNR);
 	}
 	
-	static public CTNode getNode(CTNode node, CTNodeMatcher matcher, boolean recursive)
+	static public CTNode getNode(CTNode node, Predicate<CTNode> matcher, boolean recursive)
 	{
-		if (matcher.matches(node))
+		if (matcher.test(node))
 			return node;
 		
 		if (recursive && node.getChildrenSize() == 1)

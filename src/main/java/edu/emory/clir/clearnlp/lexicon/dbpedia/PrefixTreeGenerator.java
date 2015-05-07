@@ -60,7 +60,7 @@ public class PrefixTreeGenerator implements DBPediaXML
 	}
 	
 	/** Note this list is an object. */
-	public PrefixTree<String,NERInfoSet> getPrefixTree(AbstractTokenizer tokenizer)
+	public PrefixTree<String,NERInfoSet> getPrefixTree(AbstractTokenizer tokenizer, boolean lower)
 	{
 		PrefixTree<String,NERInfoSet> tree = new PrefixTree<>();
 		NERInfoSet list;
@@ -70,7 +70,7 @@ public class PrefixTreeGenerator implements DBPediaXML
 		{
 			info = e.getValue();
 			list = getNERInfoSet(e.getKey(), info.getTypes());
-			if (list != null) addAliases(tokenizer, tree, info.getAliases(), list);
+			if (list != null) addAliases(tokenizer, tree, info.getAliases(), list, lower);
 		}
 		
 		return tree;
@@ -89,11 +89,11 @@ public class PrefixTreeGenerator implements DBPediaXML
 		
 		if (set.isEmpty()) return null;
 		NERInfoSet list = new NERInfoSet();
-		for (DBPediaType type : set) list.addCategory(NERTag.fromDBPediaTypeCoNLL03(type));
+		for (DBPediaType type : set) list.addCategory(NERTag.fromDBPediaType(type));
 		return list;
 	}
 	
-	private void addAliases(AbstractTokenizer tokenizer, PrefixTree<String,NERInfoSet> tree, Set<String> aliases, NERInfoSet list)
+	private void addAliases(AbstractTokenizer tokenizer, PrefixTree<String,NERInfoSet> tree, Set<String> aliases, NERInfoSet list, boolean lower)
 	{
 		PrefixNode<String,NERInfoSet> node;
 		List<String> tokens;
@@ -102,7 +102,7 @@ public class PrefixTreeGenerator implements DBPediaXML
 		for (String alias : aliases)
 		{
 			tokens = tokenizer.tokenize(alias);
-			t = trimTokens(tokens);
+			t = trimTokens(tokens, lower);
 			
 			if (t.length > 0)
 			{
@@ -113,7 +113,7 @@ public class PrefixTreeGenerator implements DBPediaXML
 		}
 	}
 	
-	private String[] trimTokens(List<String> tokens)
+	private String[] trimTokens(List<String> tokens, boolean lower)
 	{
 		int i, size, bIdx = -1;
 		
@@ -138,13 +138,16 @@ public class PrefixTreeGenerator implements DBPediaXML
 			}
 		}
 		
-		
 		if (tokens.size() == 1 && StringUtils.containsDigitOnly(tokens.get(0)))
 			tokens.clear();
 		
 		int len = tokens.size();
 		String[] t = new String[len];
-		for (i=0; i<len; i++) t[i] = tokens.get(i);
+		for (i=0; i<len; i++)
+		{
+			t[i] = StringUtils.toSimplifiedForm(tokens.get(i));
+			if (lower) t[i] = StringUtils.toLowerCase(t[i]);
+		}
 		return t;
 	}
 	
@@ -158,16 +161,20 @@ public class PrefixTreeGenerator implements DBPediaXML
 		DBPediaTypeMap typeMap = gson.fromJson(new InputStreamReader(IOUtils.createXZBufferedInputStream(typeMapFile)), DBPediaTypeMap.class);
 		DBPediaInfoMap infoMap = gson.fromJson(new InputStreamReader(IOUtils.createXZBufferedInputStream(infoMapFile)), DBPediaInfoMap.class);
 		AbstractTokenizer tokenizer = NLPUtils.getTokenizer(TLanguage.ENGLISH);
+		boolean lower = true;
+		
 		PrefixTreeGenerator ptg = new PrefixTreeGenerator(typeMap, infoMap, NERTag.DBPediaTypeSet);
-		PrefixTree<String,NERInfoSet> prefixTree = ptg.getPrefixTree(tokenizer);
+		PrefixTree<String,NERInfoSet> prefixTree = ptg.getPrefixTree(tokenizer, lower);
 		ObjectOutputStream out = new ObjectOutputStream(IOUtils.createXZBufferedOutputStream(prefixTreeFile));
 		out.writeObject(prefixTree);
 		out.close();
 		
-		String[] array = "John Emory Democratic Party London Bridge Emory University South Korea Rocky Mountains M16 New Years Eve The Catcher in the Rye Korean Ming Dynasty Euro".split(" ");
+		String s = "John Emory Democratic Party London Bridge Emory University South Korea Rocky Mountains M16 New Years Eve The Catcher in the Rye Korean Ming Dynasty Euro";
+		if (lower) s = StringUtils.toLowerCase(s);
+		String[] array = s.split(" ");
 		
 		for (ObjectIntIntTriple<NERInfoSet> t : prefixTree.getAll(array, 0, String::toString, true, true))
-			System.out.println(t.o+" "+Joiner.join(array, " ", t.i1, t.i2+1));
+			System.out.println(t.o.joinTags("_")+" "+Joiner.join(array, " ", t.i1, t.i2+1));
 		
 //		String[] array = "The Chicago Bulls are an American professional basketball team . They are based in Chicago , Illinois , playing in the Central Division of the Eastern Conference in the National Basketball Association (NBA) . The team was founded on January 26 , 1966 . The Bulls play their home games at the United Center . The Bulls saw their greatest success during the 1990s . They are known for having one of the NBA 's greatest dynasties , winning six NBA championships between 1991 and 1998 with two three-peats . All six championship teams were led by Hall of Famers Michael Jordan , Scottie Pippen and coach Phil Jackson . The Bulls are the only NBA franchise to win multiple championships and never lose an NBA Finals in their history.".split(" ");
 //		ObjectInputStream in = new ObjectInputStream(IOUtils.createXZBufferedInputStream(prefixTreeFile));

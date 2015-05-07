@@ -32,16 +32,22 @@ import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
+import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.constituent.CTNode;
 import edu.emory.clir.clearnlp.constituent.CTReader;
 import edu.emory.clir.clearnlp.constituent.CTTree;
+import edu.emory.clir.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFFrameset;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFMap;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRole;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRoleset;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFType;
+import edu.emory.clir.clearnlp.reader.TSVReader;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.StringUtils;
+import edu.emory.clir.clearnlp.util.arc.SRLArc;
 
 
 /**
@@ -52,8 +58,71 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
+		ObjectIntHashMap<String> map = new ObjectIntHashMap<>();
+		DEPTree tree;
 		
+		reader.open(IOUtils.createFileInputStream("/Users/jdchoi/Documents/Data/general/english/onto.dep"));
 		
+		while ((tree = reader.next()) != null)
+		{
+			for (DEPNode node : tree)
+			{
+				for (SRLArc arc : node.getSemanticHeadArcList())
+				{
+					if (arc.getLabel().startsWith("AM"))
+						map.add(arc.getLabel().substring(3));
+				}
+			}
+		}
+		
+		List<ObjectIntPair<String>> ps = map.toList();
+		Collections.sort(ps, Collections.reverseOrder());
+		
+		for (ObjectIntPair<String> p : ps)
+			System.out.println(p.o+" "+p.i);
+	}
+	
+	public void extractPBFunctionTags() throws Exception
+	{
+		String dir = "/Users/jdchoi/Downloads/frames";
+		PBFMap map = new PBFMap(dir);
+		
+		Map<String,PBFFrameset> framesets = map.getFramesetMap(PBFType.VERB);
+		ObjectIntHashMap<String> argn = new ObjectIntHashMap<>();
+		ObjectIntHashMap<String> argm = new ObjectIntHashMap<>();
+		String f;
+		
+		for (PBFFrameset frameset : framesets.values())
+		{
+			for (PBFRoleset roleset : frameset.getRolesets())
+			{
+				for (PBFRole role : roleset.getRoles())
+				{
+					f = role.getFunctionTag();
+					if (f.isEmpty()) continue;
+							
+					if (StringUtils.containsDigitOnly(role.getArgumentNumber()))
+						argn.add(f.toUpperCase());
+					else
+						argm.add(f.toUpperCase());
+				}
+			}
+		}
+
+		List<ObjectIntPair<String>> ps = argn.toList();
+		Collections.sort(ps, Collections.reverseOrder());
+		
+		System.out.println("ARGN ----------");
+		for (ObjectIntPair<String> p : ps)
+			System.out.println(p.o+" "+p.i);
+		
+		ps = argm.toList();
+		Collections.sort(ps, Collections.reverseOrder());
+		
+		System.out.println("ARGM ----------");
+		for (ObjectIntPair<String> p : ps)
+			System.out.println(p.o+" "+p.i);
 	}
 	
 	public void printRaw(String[] args) throws Exception
