@@ -16,229 +16,147 @@
 package edu.emory.clir.clearnlp.cluster;
 
 
+
 /**
  * @since 3.0.3
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class Kmeans
 {
-//	private final int RAND_SEED = 0;
-//	private int K, N, D;
-//	
-//	private ObjectIntOpenHashMap<String> m_lexica;
-//	private List<int[]> v_points;
-//	private double[] d_centroid;
-//	private double[] d_scala;
+//	private List<SparseVector> s_points;
+//	private final int RAND_SEED = 1;
 //	
 //	public Kmeans()
 //	{
-//		m_lexica = new ObjectIntOpenHashMap<String>();
-//		v_points  = new ArrayList<int[]>();
+//		s_points = new ArrayList<>();
 //	}
 //	
-//	/** @param lexica term-frequency map. */
-//	public void addPoint(ObjectIntHashMap<String> lexica)
+//	public void addPoint(SparseVector point)
 //	{
-//		int index, i = 0, size = lexica.size();
-//		int[] unit = new int[size];
-//		
-//		for (String lexicon : lexica)
-//		{
-//			if (m_lexica.containsKey(lexicon))
-//			{
-//				index = m_lexica.get(lexicon);
-//			}
-//			else
-//			{
-//				index = m_lexica.size();
-//				m_lexica.put(lexicon, index);
-//			}
-//			
-//			unit[i++] = index;
-//		}
-//
-//		Arrays.sort(unit);
-//		v_points.add(unit);
+//		s_points.add(point);
 //	}
 //	
-//	public void addUnit(DEPTree tree)
+//	public SparseVector getPoint(int index)
 //	{
-//		Set<String> lexica = new HashSet<String>();
-//		int i, size = tree.size();
-//		
-//		for (i=1; i<size; i++) {
-//			DEPNode node = tree.get(i);
-//			lexica.add(node.getLemma());
-//			lexica.add(node.getPOSTag());
-//		}
-//		addPoint(lexica);
+//		return s_points.get(index);
 //	}
-//
+//	
 //	/**
-//	 * K-means clustering.
-//	 * @param threshold minimum RSS.
-//	 * @return each row represents a cluster, and
-//	 *         each column represents a pair of (index of a unit vector, similarity to the centroid).
+//	 * @param K the number of clusters to return.
+//	 * @param threshold the minimum RSS.
 //	 */
-//	public List<List<DoubleIntPair>> cluster(int k, double threshold)
+//	public Cluster[] cluster(int K, double threshold)
 //	{
-//		List<List<DoubleIntPair>> currCluster = null;
-//		List<List<DoubleIntPair>> prevCluster = null;
-//		double prevRss = -1, currRss;
+//		ObjectDoublePair<Cluster[]> previous = null, current = new ObjectDoublePair<Cluster[]>(null, Double.MAX_VALUE);
+//		SparseVector[] centroids = initCentroids(K);
+//		int i, max = s_points.size() / K;
 //		
-//		K = k;
-//		N = v_points.size();
-//		D = m_lexica.size();
-//		
-//		initCentroids();
-//		int iter, max = N / K;
-//		
-//		for (iter=0; iter<max; iter++) 
+//		for (i=0; i<max; i++) 
 //		{
-//			System.out.printf("===== Iteration: %d =====\n", iter);
+//			BinUtils.LOG.info(String.format("===== Iteration: %d =====\n", i));
+//
+//			previous = current;
+//			current  = maximize();
+//			estimate(current.o);
 //			
-//			currCluster = getClusters();
-//			updateCentroids(currCluster);
-//			currRss = getRSS(currCluster);
-//			
-//			if (prevRss >= currRss)		return prevCluster;
-//			if (currRss >= threshold)	break;
-//			
-//			prevRss     = currRss;
-//			prevCluster = currCluster;
+//			if (previous.d - current.d < threshold)
+//				break;
 //		}
 //
-//		return currCluster;
+//		return current.o;
 //	}
 //	
 //	/** Initializes random centroids. */
-//	private void initCentroids()
+//	private SparseVector[] initCentroids(int K)
 //	{
-//		IntOpenHashSet set = new IntOpenHashSet();
+//		SparseVector[] centroids = new SparseVector[K];
 //		Random rand = new Random(RAND_SEED);
-//		d_centroid  = new double[K*D];
-//		d_scala     = new double[K];
+//		int k = 0, N = s_points.size();
 //		
-//		while (set.size() < K)
-//			set.add(rand.nextInt(N));
+//		IntHashSet set = new IntHashSet();
+//		while (set.size() < K) set.add(rand.nextInt(N));
 //
-//		int[] unit;
-//		int k = 0;
+//		for (IntCursor c : set)
+//			centroids[k++] = s_points.get(c.value);
 //		
-//		for (IntCursor cur : set)
-//		{
-//			unit = v_points.get(cur.value);
-//			
-//			for (int index : unit)
-//				d_centroid[getCentroidIndex(k, index)] = 1;
-//			
-//			d_scala[k++] = Math.sqrt(unit.length);
-//		}
+//		return centroids;
 //	}
 //	
-//	/** @return centroid of each cluster. */
-//	private void updateCentroids(List<List<DoubleIntPair>> cluster)
+//	private ObjectDoublePair<Cluster[]> maximize(SparseVector[] centroids)
 //	{
-//		List<DoubleIntPair> ck;
-//		int i, k, size;
-//		double scala;
-//		
-//		Arrays.fill(d_centroid, 0);
-//		Arrays.fill(d_scala   , 0);
-//		
-//		System.out.print("Updating centroids: ");
+//		DoubleIntPair max = new DoubleIntPair(0, 0);
+//		Cluster[] cluster = new Cluster[K];
+//		double[] rss = new double[K];
+//		int i, k;
 //		
 //		for (k=0; k<K; k++)
-//		{
-//			ck = cluster.get(k);
-//			
-//			for (DoubleIntPair p : ck)
-//			{
-//				for (int index : v_points.get(p.i))
-//					d_centroid[getCentroidIndex(k, index)] += 1;
-//			}
-//			
-//			size  = ck.size();
-//			scala = 0;
-//			
-//			for (i=k*D; i<(k+1)*D; i++)
-//			{
-//				if (d_centroid[i] > 0)
-//				{
-//					d_centroid[i] /= size;
-//					scala += d_centroid[i] * d_centroid[i];	
-//				}
-//			}
-//			
-//			d_scala[k] = Math.sqrt(scala);
-//			System.out.print(".");
-//		}
+//			cluster[k] = new Cluster();
 //		
-//		System.out.println();
-//	}
-//	
-//	/** Each cluster contains indices of {@link Kmeans#v_points}. */
-//	private List<List<DoubleIntPair>> getClusters()
-//	{
-//		List<List<DoubleIntPair>> cluster = new ArrayList<List<DoubleIntPair>>(K);
-//		DoubleIntPair max = new DoubleIntPair(-1, -1);
-//		int[] unit;
-//		int i, k;	double sim;
-//		
-//		for (k=0; k<K; k++)
-//			cluster.add(new ArrayList<DoubleIntPair>());
-//		
-//		System.out.print("Clustering: ");
+//		BinUtils.LOG.info("Maximizing:\n");
 //		
 //		for (i=0; i<N; i++)
 //		{
-//			unit = v_points.get(i);
-//			max.set(-1, -1);
-//			
-//			for (k=0; k<K; k++)
-//			{
-//				if ((sim = cosine(unit, k)) > max.d)
-//					max.set(sim, k);
-//			}
-//			
-//			cluster.get(max.i).add(new DoubleIntPair(max.d, i));
-//			if (i%10000 == 0)	System.out.print(".");
+//			max = max(s_points.get(i));
+//			cluster[max.i].addPoint(i);
+//			rss[max.i] += max.d;
 //		}
 //		
-//		System.out.println();
-//		
 //		for (k=0; k<K; k++)
-//			System.out.printf("- %4d: %d\n", k, cluster.get(k).size());
+//			BinUtils.LOG.info(String.format("- %4d: size = %d, rss = %5.4f\n", k, cluster[k].size(), rss[k]/cluster[k].size()));
 //		
-//		return cluster;
+//		return new ObjectDoublePair<Cluster[]>(cluster, MathUtils.sum(rss));
 //	}
 //	
-//	/**
-//	 * @param k     [0, K-1].
-//	 * @param index [0, D-1].
-//	 */
-//	private int getCentroidIndex(int k, int index)
+//	private SparseVector[] estimate(Cluster[] clusters)
 //	{
-//		return k * D + index;
-//	}
-//	
-//	private double getRSS(List<List<DoubleIntPair>> cluster)
-//	{
-//		double sim = 0;
-//		System.out.print("Calulating RSS: ");
+//		SparseVector[] centroids = new SparseVector[K];
+//		BinUtils.LOG.info("Estimating:");
 //		
 //		for (int k=0; k<K; k++)
 //		{
-//			for (DoubleIntPair tup : cluster.get(k))
-//				sim += cosine(v_points.get(tup.i), k);
-//			
-//			System.out.print(".");
+//			BinUtils.LOG.info(".");
+//			centroids[k] = estimate(clusters[k], k);
+//		}
+//
+//		BinUtils.LOG.info("\n");
+//		return centroids;
+//	}
+//	
+//	private SparseVector estimate(Cluster cluster, int k)
+//	{
+//		SparseVector centroid = new SparseVector(k);
+//		int len = cluster.size();
+//		
+//		for (IntCursor c : cluster.getPointSet())
+//			centroid.add(s_points.get(c.value));
+//
+//		for (ObjectIntPair<Term> p : centroid.getTermMap())
+//			p.o.setScore(p.o.getScore()/len);
+//		
+//		return centroid;
+//	}
+//	
+//	private double cosineSimilarity(SparseVector point, int k)
+//	{
+//		return 0;
+//	}
+//	
+//	private DoubleIntPair max(SparseVector point)
+//	{
+//		DoubleIntPair max = new DoubleIntPair(0, -10000);
+//		double d;
+//		
+//		for (int k=0; k<K; k++)
+//		{
+//			d = cosineSimilarity(point, k);
+//			if (d > max.d) max.set(d, k); 
 //		}
 //		
-//		System.out.println();
-//		sim /= N;
-//		
-//		System.out.println("RSS = "+sim);
-//		return sim / N;
+//		return max;
+//	}
+//	
+//	private int index(int id, int k)
+//	{
+//		return id * K + k;
 //	}
 }

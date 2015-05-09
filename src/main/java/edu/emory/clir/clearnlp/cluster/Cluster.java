@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.collection.pair;
+package edu.emory.clir.clearnlp.cluster;
 
-import java.io.Serializable;
+import edu.emory.clir.clearnlp.collection.set.IntHashSet;
 
 /**
- * @since 3.0.0
+ * @since 3.1.2
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DoubleIntPair implements Serializable
+public class Cluster
 {
-	private static final long serialVersionUID = -2439322004395455224L;
-
-	public double d;
-	public int i;
+	private IntHashSet index_set;
 	
-	public DoubleIntPair(double d, int i)
+	public Cluster()
 	{
-		set(d, i);
+		index_set = new IntHashSet();
 	}
 	
-	public void set(double d, int i)
+	public void addPoint(int index)
 	{
-		this.d = d;
-		this.i = i;
+		index_set.add(index);
+	}
+	
+	public IntHashSet getPointSet()
+	{
+		return index_set;
+	}
+	
+	public int size()
+	{
+		return index_set.size();
 	}
 }

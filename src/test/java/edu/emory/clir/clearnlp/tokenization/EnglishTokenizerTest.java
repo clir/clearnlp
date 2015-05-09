@@ -16,16 +16,8 @@
 package edu.emory.clir.clearnlp.tokenization;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.BufferedReader;
 
 import org.junit.Test;
-
-import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
-import edu.emory.clir.clearnlp.tokenization.EnglishTokenizer;
-import edu.emory.clir.clearnlp.util.CharUtils;
-import edu.emory.clir.clearnlp.util.IOUtils;
 
 /**
  * @since 3.0.0
@@ -33,36 +25,19 @@ import edu.emory.clir.clearnlp.util.IOUtils;
  */
 public class EnglishTokenizerTest
 {
-//	@Test
-	public void compare() throws Exception
+	@Test
+	public void testPeriods()
 	{
-		BufferedReader in = IOUtils.createBufferedReader("/Users/jdchoi/Desktop/test.txt");
-		EnglishTokenizer t = new EnglishTokenizer();
-		StringBuilder b1 = new StringBuilder();
-		StringBuilder b2 = new StringBuilder();
-		String line;
+		AbstractTokenizer t = new EnglishTokenizer();
+		String s, r;
 		
-		while ((line = in.readLine()) != null)
-		{
-			compareAux(b1, line);
-			
-			for (String s : t.tokenize(line))
-				compareAux(b2, s);
-		}
+		s = "500 million of 1986.[11]";
+		r = "[500, million, of, 1986, ., [, 11, ]]";
+		assertEquals(r, t.tokenize(s).toString());
 		
-		assertTrue(b1.toString().equals(b2.toString()));
-	}
-	
-	private void compareAux(StringBuilder build, String s)
-	{
-		char[] c = s.toCharArray();
-		int i, len = c.length;
-		
-		for (i=0; i<len; i++)
-		{
-			if (!CharUtils.isWhiteSpace(c[i]))
-				build.append(c[i]);
-		}
+		s = "injury-related deaths worldwide.[6]";
+		r = "[injury, -, related, deaths, worldwide, ., [, 6, ]]";
+		assertEquals(r, t.tokenize(s).toString());
 	}
 	
 	@Test

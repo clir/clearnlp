@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.collection.pair;
-
-import java.io.Serializable;
+package edu.emory.clir.clearnlp.cluster;
 
 /**
- * @since 3.0.0
+ * @since 3.1.2
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DoubleIntPair implements Serializable
+public class Term implements Comparable<Term>
 {
-	private static final long serialVersionUID = -2439322004395455224L;
-
-	public double d;
-	public int i;
+	private int   id;
+	private float score;
 	
-	public DoubleIntPair(double d, int i)
+	public Term(int i1, int i2)
 	{
-		set(d, i);
+		set(i1, i2);
 	}
 	
-	public void set(double d, int i)
+	public void set(int id, float score)
 	{
-		this.d = d;
-		this.i = i;
+		setID(id);
+		setScore(score);
+	}
+	
+	public int getID()
+	{
+		return id;
+	}
+
+	public void setID(int id)
+	{
+		this.id = id;
+	}
+
+	public float getScore()
+	{
+		return score;
+	}
+
+	public void setScore(float score)
+	{
+		this.score = score;
+	}
+	
+	public void addScore(float score)
+	{
+		this.score += score;
+	}
+
+	@Override
+	public int compareTo(Term o)
+	{
+		return id - o.id;
 	}
 }

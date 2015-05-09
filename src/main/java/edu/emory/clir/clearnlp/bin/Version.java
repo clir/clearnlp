@@ -44,7 +44,7 @@ public class Version
 {
 	public static void main(String[] args)
 	{
-		System.out.println("ClearNLP Version 3.1.1");
+		System.out.println("ClearNLP Version 3.1.2");
 		System.out.println("Webpage: http://www.clearnlp.com");
 		System.out.println("Owner  : Jinho D. Choi");
 		System.out.println("Contact: support@clearnlp.com");

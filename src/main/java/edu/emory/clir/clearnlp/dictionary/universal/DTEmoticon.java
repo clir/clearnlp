@@ -24,6 +24,7 @@ import edu.emory.clir.clearnlp.dictionary.PathTokenizer;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.MetaUtils;
+import edu.emory.clir.clearnlp.util.StringUtils;
 
 /**
  * @since 3.0.0
@@ -54,6 +55,8 @@ public class DTEmoticon
 	
 	public int[] getEmoticonRange(String s)
 	{
+		s = StringUtils.toLowerCase(s);
+		
 		if (s_emoticon.contains(s))
 			return new int[]{0, s.length()};
 		

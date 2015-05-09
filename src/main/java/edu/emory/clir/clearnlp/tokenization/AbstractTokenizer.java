@@ -226,7 +226,7 @@ abstract public class AbstractTokenizer
 			if (preserveSymbolInBetween(cs, i) || preserveSymbolInDigits(cs, i) || preserveSymbolInAlphabets(cs, i))
 				continue;
 		
-			if (isEllipsis(cs, i) || isSymbolInBetween(cs[i]))
+			if (isEllipsis(cs, i) || isSymbolInBetween(cs[i]) || (i+1<eIndex && isSymbolInBetween(cs[i+1]) && CharUtils.isFinalMark(cs[i])))
 			{
 				j = getSpanIndex(cs, i, eIndex, false);
 				indices.add(new int[]{i, j});
