@@ -43,6 +43,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 	static final public Predicate<CTNode> M_SBAR		= CTLib.matchC(C_SBAR);
 	static final public Predicate<CTNode> M_EDITED		= CTLib.matchC(C_EDITED);
 	
+	static final public Predicate<CTNode> M_SBJ			= CTLib.matchF(F_SBJ);
 	static final public Predicate<CTNode> M_NOM			= CTLib.matchF(F_NOM);
 	static final public Predicate<CTNode> M_PRD			= CTLib.matchF(F_PRD);
 	
@@ -51,8 +52,10 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 	static final public Predicate<CTNode> M_NNx			= CTLib.matchCp(POS_NN);
 	static final public Predicate<CTNode> M_VBx			= CTLib.matchCp(POS_VB);
 	static final public Predicate<CTNode> M_WHx			= CTLib.matchCp("WH");
+	static final public Predicate<CTNode> M_Sx			= CTLib.matchCp(C_S);
 	static final public Predicate<CTNode> M_SBARx		= CTLib.matchCp(C_SBAR);
 	
+	static final public Predicate<CTNode> M_S_SBAR		= CTLib.matchCo(DSUtils.toHashSet(C_S, C_SBAR));
 	static final public Predicate<CTNode> M_NP_NML		= CTLib.matchCo(DSUtils.toHashSet(C_NP, C_NML));
 	static final public Predicate<CTNode> M_VBD_VBN		= CTLib.matchCo(DSUtils.toHashSet(POS_VBD, POS_VBN));
 	static final public Predicate<CTNode> M_VP_RRC_UCP	= CTLib.matchCo(DSUtils.toHashSet(C_VP, C_RRC, C_UCP));

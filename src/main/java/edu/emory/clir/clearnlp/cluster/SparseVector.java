@@ -17,31 +17,42 @@ package edu.emory.clir.clearnlp.cluster;
 
 import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
+import edu.emory.clir.clearnlp.util.MathUtils;
 
 
 /**
  * @since 3.1.2
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SparseVector implements Comparable<SparseVector>
+public class SparseVector
 {
 	private IntObjectHashMap<Term> term_map;
-	private int id;
+	private int document_id;
 	
 	public SparseVector(int id)
 	{
 		term_map = new IntObjectHashMap<>();
-		setID(id);
+		setDocumentID(id);
 	}
 	
-	public int getID()
+	public int getDocumentID()
 	{
-		return id;
+		return document_id;
 	}
 
-	public void setID(int id)
+	public void setDocumentID(int id)
 	{
-		this.id = id;
+		document_id = id;
+	}
+	
+	public Term get(int id)
+	{
+		return term_map.get(id); 
+	}
+	
+	public int size()
+	{
+		return term_map.size();
 	}
 	
 	public IntObjectHashMap<Term> getTermMap()
@@ -63,19 +74,33 @@ public class SparseVector implements Comparable<SparseVector>
 		else			t.addScore(term.getScore());
 	}
 	
-//	public double norm()
-//	{
-//		double d = 0;
-//		
-//		for (int i=term_list.size()-1; i>=0; i--)
-//			d += MathUtils.sq(term_list.get(i).getScore());
-//		
-//		return Math.sqrt(d);
-//	}
-	
-	@Override
-	public int compareTo(SparseVector o)
+	public double dotProduct(SparseVector vector)
 	{
-		return id - o.id;
+		double sum = 0;
+		Term t;
+		
+		for (ObjectIntPair<Term> p : vector.getTermMap())
+		{
+			t = get(p.i);
+			if (t != null) sum += p.o.getScore() * t.getScore();
+		}
+		
+		return sum;
+	}
+	
+	public void divide(int denominator)
+	{
+		for (ObjectIntPair<Term> p : term_map)
+			p.o.setScore(p.o.getScore()/denominator);
+	}
+	
+	public double euclideanNorm()
+	{
+		double d = 0;
+		
+		for (ObjectIntPair<Term> p : term_map)
+			d += MathUtils.sq(p.o.getScore());
+		
+		return Math.sqrt(d);
 	}
 }

@@ -19,9 +19,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
+import edu.emory.clir.clearnlp.constituent.CTTree;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.constant.StringConst;
 
@@ -105,6 +108,21 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 	public int getLocationSize()
 	{
 		return l_locations.size();
+	}
+	
+	/**
+	 * Returns a set of terminal IDs belonging to this argument given the specific tree.
+	 * @param tree the constituent tree.
+	 * @return a set of terminal IDs belonging to this argument.
+	 */
+	public Set<Integer> getTerminalIDSet(CTTree tree)
+	{
+		Set<Integer> set = new HashSet<>();
+		
+		for (PBLocation loc : l_locations)
+			set.addAll(tree.getNode(loc).getTerminalIDSet());
+		
+		return set;
 	}
 		
 	/** Adds the specific location to this argument. */

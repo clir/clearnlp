@@ -16,6 +16,7 @@
 package edu.emory.clir.clearnlp.component.utils;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +56,7 @@ public class GlobalLexica
 	
 	static public void initDistributionalSemanticsWords(List<String> paths)
 	{
-		distributional_semantics_words = paths.stream().map(path -> NLPUtils.getDistributionalSemantics(path)).collect(Collectors.toList());
+		distributional_semantics_words = paths.stream().map(path -> NLPUtils.getDistributionalSemantics(path)).collect(Collectors.toCollection(ArrayList::new));
 	}
 	
 	static public PrefixTree<String,NERInfoSet> getNamedEntityDictionary()

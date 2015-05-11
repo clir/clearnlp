@@ -410,7 +410,7 @@ public class CTNode implements Comparable<CTNode>
 	
 	public Set<Integer> getTerminalIDSet()
 	{
-		return getTerminalList().stream().map(node -> node.getTerminalID()).collect(Collectors.toSet());
+		return getTerminalList().stream().map(node -> node.getTerminalID()).collect(Collectors.toCollection(HashSet::new));
 	}
 	
 	/** @return a list of terminal nodes in the subtree of this node. */
@@ -492,7 +492,7 @@ public class CTNode implements Comparable<CTNode>
 		
 		return dist;
 	}
-	
+
 //	======================== Setters ========================
 	
 	public void setNamedEntityTag(String tag)

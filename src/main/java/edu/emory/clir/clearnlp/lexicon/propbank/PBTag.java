@@ -23,6 +23,7 @@ package edu.emory.clir.clearnlp.lexicon.propbank;
 public interface PBTag
 {
 	String PB_REL  = "rel";
+	String PB_DSP  = "DSP";
 	String PB_C_V  = "C-V";
 	
 	String PB_ARG0 = "ARG0";

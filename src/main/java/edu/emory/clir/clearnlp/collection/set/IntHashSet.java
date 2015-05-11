@@ -55,4 +55,9 @@ public class IntHashSet extends IntOpenHashSet implements Serializable
 		for (int item : array)
 			add(item);
 	}
+	
+	public void addAll(IntHashSet set)
+	{
+		super.addAll(set);
+	}
 }

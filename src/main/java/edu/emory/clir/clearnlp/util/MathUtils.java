@@ -119,6 +119,11 @@ public class MathUtils
 		return d * d;
 	}
 	
+	static public double sq(float f)
+	{
+		return f * f;
+	}
+	
 	static public int signum(double d)
 	{
 		return (int)Math.signum(d);

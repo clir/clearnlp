@@ -88,7 +88,7 @@ public class VectorSpaceModel implements Serializable
 	/** @param documents each document is represented as a list of strings. */
 	public List<List<Term>> toTFIDFs(List<List<String>> documents, int ngram, BiFunction<Term,Integer,Double> f)
 	{
-		List<List<Term>> list = documents.stream().map(document -> toBagOfWords(document, ngram, true)).collect(Collectors.toList()); 
+		List<List<Term>> list = documents.stream().map(document -> toBagOfWords(document, ngram, true)).collect(Collectors.toCollection(ArrayList::new)); 
 		DOCUMENT_SIZE = documents.size();
 		
 		for (List<Term> terms : list)

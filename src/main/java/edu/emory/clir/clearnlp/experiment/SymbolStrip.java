@@ -52,7 +52,7 @@ public class SymbolStrip
 	List<List<Term>> train_vectors;
 	public SymbolStrip()
 	{
-		category_list = IntStream.range(0, CATEGORIES.length).mapToObj(i -> new ArrayList<DoubleIntPair>()).collect(Collectors.toList());
+		category_list = IntStream.range(0, CATEGORIES.length).mapToObj(i -> new ArrayList<DoubleIntPair>()).collect(Collectors.toCollection(ArrayList::new));
 		vs_model = new VectorSpaceModel();
 	}
 	
