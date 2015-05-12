@@ -15,7 +15,8 @@
  */
 package edu.emory.clir.clearnlp.cluster;
 
-import edu.emory.clir.clearnlp.collection.set.IntHashSet;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @since 3.1.2
@@ -23,25 +24,30 @@ import edu.emory.clir.clearnlp.collection.set.IntHashSet;
  */
 public class Cluster
 {
-	private IntHashSet index_set;
+	private Set<SparseVector> point_set;
 	
 	public Cluster()
 	{
-		index_set = new IntHashSet();
+		point_set = new HashSet<>();
 	}
 	
-	public void addPoint(int index)
+	public void addPoint(SparseVector point)
 	{
-		index_set.add(index);
+		point_set.add(point);
 	}
 	
-	public IntHashSet getPointSet()
+	public Set<SparseVector> getPointSet()
 	{
-		return index_set;
+		return point_set;
 	}
 	
 	public int size()
 	{
-		return index_set.size();
+		return point_set.size();
+	}
+	
+	public void merge(Cluster cluster)
+	{
+		point_set.addAll(cluster.getPointSet());
 	}
 }

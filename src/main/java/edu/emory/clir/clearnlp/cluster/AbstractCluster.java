@@ -51,5 +51,5 @@ public abstract class AbstractCluster
 		return s_points;
 	}
 	
-	public abstract Cluster[] cluster();
+	public abstract List<Cluster> cluster();
 }
