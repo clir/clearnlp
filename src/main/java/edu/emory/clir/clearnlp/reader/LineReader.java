@@ -39,4 +39,10 @@ public class LineReader extends AbstractReader<String>
 		
 		return null;
 	}
+	
+	@Override
+	public AbstractReader<String> clone()
+	{
+		return new LineReader();
+	}
 }

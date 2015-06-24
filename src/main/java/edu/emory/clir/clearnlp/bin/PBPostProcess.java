@@ -307,7 +307,7 @@ public class PBPostProcess
 				height     = 0;
 				node       = tree.getNode(terminalId, height);
 				
-				while ((parent = node.getParent()) != null && !parent.isConstituentTag(CTTagEn.TOP) && DSUtils.isSubset(ids, parent.getTerminalIDSet()))
+				while ((parent = node.getParent()) != null && !parent.isConstituentTag(CTTagEn.TOP) && isSubset(ids, parent.getTerminalIDSet()))
 				{
 					node = parent;
 					height++;
@@ -323,6 +323,17 @@ public class PBPostProcess
 				arg.setLocations(lNew);
 			}
 		}
+	}
+	
+	public boolean isSubset(SortedArrayList<Integer> s1, Set<Integer> s2)
+	{
+		for (Integer t : s2)
+		{
+			if (!s1.contains(t))
+				return false;
+		}
+		
+		return true;
 	}
 	
 	/**

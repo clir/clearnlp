@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.kohsuke.args4j.Option;
 
@@ -48,6 +50,8 @@ public class Tokenize
 	private String s_outputExt = "tok";
 	@Option(name="-line", usage="if set, treat each line as one sentence", required=false, metaVar="<boolean>")
 	private boolean b_line = false;
+	@Option(name="-threads", usage="number of threads (default: 2)", required=false, metaVar="<integer>")
+	protected int n_threads = 2;
 	
 	public Tokenize() {}
 	
@@ -55,18 +59,17 @@ public class Tokenize
 	{
 		BinUtils.initArgs(args, this);
 		
-		try
+		AbstractTokenizer tokenizer = NLPUtils.getTokenizer(TLanguage.getType(s_language));
+		ExecutorService executor = Executors.newFixedThreadPool(n_threads);
+		String outputFile;
+		
+		for (String inputFile : FileUtils.getFileList(s_inputPath, s_inputExt, false))
 		{
-			AbstractTokenizer tokenizer = NLPUtils.getTokenizer(TLanguage.getType(s_language));
-			
-			for (String inputFile : FileUtils.getFileList(s_inputPath, s_inputExt, false))
-			{
-				System.out.println(inputFile);
-				if (b_line) tokenizeLines(tokenizer, inputFile, inputFile+"."+s_outputExt);
-				else		tokenize(tokenizer, inputFile, inputFile+"."+s_outputExt);
-			}
+			outputFile = inputFile + StringConst.PERIOD + s_outputExt;
+			executor.submit(new NLPTask(tokenizer, inputFile, outputFile));
 		}
-		catch (IOException e) {e.printStackTrace();}
+		
+		executor.shutdown();
 	}
 	
 	public void tokenize(AbstractTokenizer tokenizer, String inputFile, String outputFile) throws IOException
@@ -92,6 +95,32 @@ public class Tokenize
 		
 		reader.close();
 		out.close();
+	}
+	
+	class NLPTask implements Runnable
+	{
+		private AbstractTokenizer tokenizer;
+		private String input_file;
+		private String output_file;
+		
+		public NLPTask(AbstractTokenizer tokenizer, String inputFile, String outputFile)
+		{
+			this.tokenizer   = tokenizer;
+			this.input_file  = inputFile;
+			this.output_file = outputFile;
+		}
+		
+		@Override
+		public void run()
+		{
+			try
+			{
+				BinUtils.LOG.info(FileUtils.getBaseName(input_file)+"\n");
+				if (b_line) tokenizeLines(tokenizer, input_file, output_file);
+				else		tokenize(tokenizer, input_file, output_file);
+			}
+			catch (Exception e) {e.printStackTrace();}
+		}
 	}
 	
 	static public void main(String[] args)

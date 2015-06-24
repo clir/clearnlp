@@ -67,4 +67,6 @@ abstract public class AbstractAffixMatcher
 	 * @param form the word-form in lower-case.
 	 */
 	abstract public String getBaseForm(Set<String> baseSet, String form, String pos);
+
+	abstract public String getBaseForm(Set<String> baseSet, String lemma);
 }

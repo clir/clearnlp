@@ -34,9 +34,11 @@ import java.util.zip.GZIPInputStream;
 
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
+import edu.emory.clir.clearnlp.component.mode.future.FCEval;
 import edu.emory.clir.clearnlp.constituent.CTNode;
 import edu.emory.clir.clearnlp.constituent.CTReader;
 import edu.emory.clir.clearnlp.constituent.CTTree;
+import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFFrameset;
@@ -44,8 +46,11 @@ import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFMap;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRole;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRoleset;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFType;
+import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
+import edu.emory.clir.clearnlp.util.Splitter;
 import edu.emory.clir.clearnlp.util.StringUtils;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
 
@@ -57,6 +62,127 @@ import edu.emory.clir.clearnlp.util.arc.SRLArc;
 public class Z
 {
 	public Z(String[] args) throws Exception
+	{
+		String root = "/Users/jdchoi/Desktop/allen/mturk-old/";
+		String f0 = root+"AllenFixedVsOpenFutureRuleOld.csv.0.txt.cnlp";
+		String f1 = root+"AllenFixedVsOpenFutureRuleOld.csv.1.txt.cnlp";
+		String f2 = root+"AllenFixedVsOpenFutureRuleOld.csv.2.txt.cnlp";
+		int i, N = 5;
+		
+		PrintStream[] fout = new PrintStream[N];
+		for (i=0; i<N; i++) fout[i] = IOUtils.createBufferedPrintStream(root+"cv"+i+".tst");
+		
+		crossValidate(f0, fout, N);
+		crossValidate(f1, fout, N);
+		crossValidate(f2, fout, N);
+		for (i=0; i<N; i++) fout[i].close();
+	}
+	
+	private void crossValidate(String inputFile, PrintStream[] fout, int N)
+	{
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
+		reader.open(IOUtils.createFileInputStream(inputFile));
+		DEPTree tree;
+		int i = -1;
+		
+		while ((tree = reader.next()) != null)
+		{
+			i = (i+1) % N;
+			fout[i].println(tree.toString(DEPNode::toStringNER)+"\n");
+		}
+		
+		reader.close();
+	}
+	
+	public void addFuture(String[] args) throws Exception
+	{
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 7, 4, 5, 6, -1, -1);
+		reader.open(IOUtils.createFileInputStream(args[0]));
+		PrintStream fout = IOUtils.createBufferedPrintStream(args[0]+".w");
+		DEPTree tree;
+		
+		while ((tree = reader.next()) != null)
+		{
+			tree.get(FCEval.INFO_NODE).putFeat(DEPLib.FEAT_FUTURE, args[1]);
+			fout.println(tree.toString(DEPNode::toStringNER)+"\n");
+		}
+		
+		reader.close();
+		fout.close();
+	}
+	
+	public void simplifyTokens(String[] args) throws Exception
+	{
+		BufferedReader reader = IOUtils.createBufferedReader(args[0]);
+		PrintStream fout = IOUtils.createBufferedPrintStream(args[0]+".wop");
+		Set<String> set = new HashSet<>();
+		StringJoiner joiner;
+		String line;
+		
+		while ((line = reader.readLine()) != null)
+		{
+			joiner = new StringJoiner(" ");
+			
+			for (String s : Splitter.splitSpace(line))
+				if (!StringUtils.containsPunctuationOnly(s))
+					joiner.add(StringUtils.toSimplifiedForm(s));
+			
+			line = StringUtils.toLowerCase(joiner.toString().trim());
+			
+			if (!line.isEmpty() && !set.contains(line))
+			{
+				fout.println(line);
+				set.add(line);
+			}
+		}
+		
+		reader.close();
+		fout.close();
+	}
+	
+	public void countPOS(String[] args) throws Exception
+	{
+		final String inputPath  = args[0];
+		final String outputPath = args[1];
+		
+		ObjectIntHashMap<String> noun = new ObjectIntHashMap<>();
+		ObjectIntHashMap<String> verb = new ObjectIntHashMap<>();
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
+		DEPTree tree;
+		
+		for (String filename : FileUtils.getFileList(inputPath, "cnlp", false))
+		{
+			reader.open(IOUtils.createFileInputStream(filename));
+			System.out.println(filename);
+			
+			while ((tree = reader.next()) != null)
+			{
+				for (DEPNode node : tree)
+				{
+					if (POSLibEn.isCommonOrProperNoun(node.getPOSTag()))
+						noun.add(node.getLemma());
+					else if (POSLibEn.isVerb(node.getPOSTag()))
+						verb.add(node.getLemma());
+				}
+			}
+			
+			reader.close();
+		}
+		
+		print(verb, outputPath+".verb");
+		print(noun, outputPath+".noun");
+	}
+	
+	private void print(ObjectIntHashMap<String> map, String outputFile)
+	{
+		PrintStream fout = IOUtils.createBufferedPrintStream(outputFile);
+		List<ObjectIntPair<String>> list = map.toList();
+		Collections.sort(list);
+		for (ObjectIntPair<String> p : list) fout.println(p.o+"\t"+p.i);
+		fout.close();
+	}
+	
+	public void extractARGM() throws Exception
 	{
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
 		ObjectIntHashMap<String> map = new ObjectIntHashMap<>();
@@ -92,6 +218,7 @@ public class Z
 		ObjectIntHashMap<String> argn = new ObjectIntHashMap<>();
 		ObjectIntHashMap<String> argm = new ObjectIntHashMap<>();
 		String f;
+		Set<String> set = new HashSet<>();
 		
 		for (PBFFrameset frameset : framesets.values())
 		{
@@ -101,9 +228,12 @@ public class Z
 				{
 					f = role.getFunctionTag();
 					if (f.isEmpty()) continue;
+					
+					if ("5".equals(role.getArgumentNumber()))
+						set.add(roleset.getID());
 							
 					if (StringUtils.containsDigitOnly(role.getArgumentNumber()))
-						argn.add(f.toUpperCase());
+						argn.add(role.getArgumentNumber()+"-"+f.toUpperCase());
 					else
 						argm.add(f.toUpperCase());
 				}
@@ -112,6 +242,7 @@ public class Z
 
 		List<ObjectIntPair<String>> ps = argn.toList();
 		Collections.sort(ps, Collections.reverseOrder());
+		System.out.println(set.toString());
 		
 		System.out.println("ARGN ----------");
 		for (ObjectIntPair<String> p : ps)

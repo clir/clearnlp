@@ -115,7 +115,14 @@ public class TSVReader extends AbstractReader<DEPTree>
 		i_xheads			= iXHeads;
 		i_sheads			= iSHeads;
 	}
-
+	
+	@Override
+	public AbstractReader<DEPTree> clone()
+	{
+		return new TSVReader(i_id, i_form, i_lemma, i_posTag, i_namedEntityTag, i_feats, i_headID, i_deprel, i_xheads, i_sheads);
+	}
+	
+	@Override
 	public DEPTree next()
 	{
 		DEPTree tree = null;

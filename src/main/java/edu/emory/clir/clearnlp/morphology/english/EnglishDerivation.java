@@ -26,35 +26,19 @@ import edu.emory.clir.clearnlp.morphology.AbstractAffixMatcher;
  */
 public class EnglishDerivation
 {
-	String      base_pos;
-	Set<String> base_set;
 	List<AbstractAffixMatcher> suffix_matchers;
 	
-	public EnglishDerivation(String basePOS, Set<String> baseSet, List<AbstractAffixMatcher> affixMatchers)
+	public EnglishDerivation(List<AbstractAffixMatcher> affixMatchers)
 	{
-		init(basePOS, baseSet, affixMatchers);
+		init(affixMatchers);
 	}
 	
-	private void init(String basePOS, Set<String> baseSet, List<AbstractAffixMatcher> affixMatchers)
+	private void init(List<AbstractAffixMatcher> affixMatchers)
 	{
-		base_pos        = basePOS;
-		base_set        = baseSet;
 		suffix_matchers = affixMatchers;
 		
-		if      (base_set == null)
-			throw new IllegalArgumentException("The base set must not be null.");
-		else if (suffix_matchers == null)
+		if (suffix_matchers == null)
 			throw new IllegalArgumentException("The suffix matcher list must not be null.");
-	}
-	
-	public String getBasePOS()
-	{
-		return base_pos;
-	}
-	
-	public Set<String> getBaseSet()
-	{
-		return base_set;
 	}
 	
 	public List<AbstractAffixMatcher> getSuffixMatchers()
@@ -62,29 +46,13 @@ public class EnglishDerivation
 		return suffix_matchers;
 	}
 	
-	public boolean isBaseForm(String form)
-	{
-		return base_set.contains(form);
-	}
-	
-	/** @param form the word-form in lower-case. */
-	public String getBaseForm(String form, String pos)
-	{
-		String token;
-		
-		if ((token = getBaseFormFromSuffixes(form, pos)) != null)
-			return token;
-			
-		return null;
-	}
-
-	public String getBaseFormFromSuffixes(String form, String pos)
+	public String getBaseForm(String lemma, Set<String> baseSet)
 	{
 		String base;
 		
 		for (AbstractAffixMatcher matcher : suffix_matchers)
 		{
-			base = matcher.getBaseForm(base_set, form, pos);
+			base = matcher.getBaseForm(baseSet, lemma);
 			if (base != null) return base;
 		}
 		

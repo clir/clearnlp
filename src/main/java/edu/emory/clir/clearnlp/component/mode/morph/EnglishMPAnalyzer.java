@@ -35,6 +35,7 @@ import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dictionary.PathEnglishMPAnalyzer;
 import edu.emory.clir.clearnlp.morphology.AbstractAffixMatcher;
 import edu.emory.clir.clearnlp.morphology.english.EnglishAffixMatcherFactory;
+import edu.emory.clir.clearnlp.morphology.english.EnglishDerivation;
 import edu.emory.clir.clearnlp.morphology.english.EnglishInflection;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.util.DSUtils;
@@ -56,6 +57,7 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 	private EnglishInflection inf_noun;
 	private EnglishInflection inf_adjective;
 	private EnglishInflection inf_adverb;
+	private EnglishDerivation der_n2v;
 	
 	/** Abbreviation replacement rules */
 	private Map<String,String> rule_abbreviation;
@@ -69,6 +71,7 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 	public EnglishMPAnalyzer()
 	{
 		Element inflection = XmlUtils.getDocumentElement(IOUtils.getInputStreamsFromClasspath(INFLECTION_SUFFIX));
+		Element derivationN2V = XmlUtils.getDocumentElement(IOUtils.getInputStreamsFromClasspath(DERIVATION_SUFFIX_N2V));
 		
 		try
 		{
@@ -76,6 +79,8 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 			inf_noun      = getInflectionRules(inflection, NOUN     , POSLibEn.POS_NN);
 			inf_adjective = getInflectionRules(inflection, ADJECTIVE, POSLibEn.POS_JJ);
 			inf_adverb    = getInflectionRules(inflection, ADVERB   , POSLibEn.POS_RB);
+			
+			der_n2v = getDerivationalRules(derivationN2V, NOUN);
 			
 			base_cardinal     = DSUtils.createStringHashSet(IOUtils.getInputStreamsFromClasspath(CARDINAL_BASE));
 			base_ordinal      = DSUtils.createStringHashSet(IOUtils.getInputStreamsFromClasspath(ORDINAL_BASE));
@@ -89,12 +94,15 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 		try
 		{
 			Element inflection = XmlUtils.getDocumentElement(file.getInputStream(new ZipEntry(INFLECTION_SUFFIX)));
+			Element derivationN2V = XmlUtils.getDocumentElement(file.getInputStream(new ZipEntry(DERIVATION_SUFFIX_N2V)));
 			
 			inf_verb      = getInflectionRules(file, inflection, VERB     , POSLibEn.POS_VB);
 			inf_noun      = getInflectionRules(file, inflection, NOUN     , POSLibEn.POS_NN);
 			inf_adjective = getInflectionRules(file, inflection, ADJECTIVE, POSLibEn.POS_JJ);
 			inf_adverb    = getInflectionRules(file, inflection, ADVERB   , POSLibEn.POS_RB);
-
+			
+			der_n2v = getDerivationalRules(derivationN2V, NOUN);
+			
 			base_cardinal     = DSUtils.createStringHashSet(file.getInputStream(new ZipEntry(CARDINAL_BASE)));
 			base_ordinal      = DSUtils.createStringHashSet(file.getInputStream(new ZipEntry(ORDINAL_BASE)));
 			rule_abbreviation = getAbbreviationMap(file.getInputStream(new ZipEntry(ABBREVIATOIN_RULE)));
@@ -111,11 +119,14 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 			Map<String,byte[]> map = IOUtils.toByteMap(zin);
 
 			Element inflection = XmlUtils.getDocumentElement(new ByteArrayInputStream(map.get(INFLECTION_SUFFIX)));
+			Element derivationN2V = XmlUtils.getDocumentElement(new ByteArrayInputStream(map.get(DERIVATION_SUFFIX_N2V)));
 			
 			inf_verb      = getInflectionRules(map, inflection, VERB     , POSLibEn.POS_VB);
 			inf_noun      = getInflectionRules(map, inflection, NOUN     , POSLibEn.POS_NN);
 			inf_adjective = getInflectionRules(map, inflection, ADJECTIVE, POSLibEn.POS_JJ);
 			inf_adverb    = getInflectionRules(map, inflection, ADVERB   , POSLibEn.POS_RB);
+			
+			der_n2v = getDerivationalRules(derivationN2V, NOUN);
 			
 			base_cardinal     = DSUtils.createStringHashSet(new ByteArrayInputStream(map.get(CARDINAL_BASE)));
 			base_ordinal      = DSUtils.createStringHashSet(new ByteArrayInputStream(map.get(ORDINAL_BASE)));
@@ -161,7 +172,14 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 		Set<String> baseSet = DSUtils.createStringHashSet(baseStream);
 		return new EnglishInflection(basePOS, baseSet, exceptionMap, affixMatchers);
 	}
-
+	
+	/** Called by {@link #EnglishMPAnalyzer(ZipFile)}. */
+	private EnglishDerivation getDerivationalRules(Element eDerivation, String type) throws IOException
+	{
+		Element eAffixes = XmlUtils.getFirstElementByTagName(eDerivation, type);
+		return new EnglishDerivation(new EnglishAffixMatcherFactory().createAffixMatchers(eAffixes));
+	}
+	
 	private Map<String,String> getAbbreviationMap(InputStream stream) throws IOException
 	{
 		BufferedReader fin = new BufferedReader(new InputStreamReader(stream));
@@ -190,7 +208,7 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 	@Override
 	public void analyze(DEPNode node)
 	{
-		String lswf = node.getLowerSimplifiedWordForm(); 
+		String lswf = node.getLowerSimplifiedWordForm();
 		String pos  = node.getPOSTag();
 		String lemma;
 		
@@ -213,7 +231,6 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 	/** @param form the lower simplified word-form. */
 	private String getBaseFormFromInflection(String form, String pos)
 	{
-		
 		if (POSLibEn.isVerb(pos))
 			return inf_verb.getBaseForm(form, pos);
 			
@@ -237,5 +254,17 @@ public class EnglishMPAnalyzer extends AbstractMPAnalyzer implements PathEnglish
 	private boolean isOrdinal(String lower)
 	{
 		return lower.equals("0st") || lower.equals("0nd") || lower.equals("0rd") || lower.equals("0th") || base_ordinal.contains(lower);
+	}
+	
+	public String toVerb(DEPNode node)
+	{
+		Set<String> verbSet = inf_verb.getBaseSet();
+		String lemma = node.getLemma();
+		
+		if (verbSet.contains(lemma))
+			return lemma;
+		
+		
+		return der_n2v.getBaseForm(null, null);
 	}
 }

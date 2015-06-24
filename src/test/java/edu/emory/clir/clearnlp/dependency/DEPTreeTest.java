@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import edu.emory.clir.clearnlp.srl.SRLTree;
 import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.Joiner;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
-import edu.emory.clir.clearnlp.util.constant.StringConst;
 
 
 /**
@@ -79,13 +77,6 @@ public class DEPTreeTest
 		DEPNode pred = tree.get(0);
 		SRLTree sTree;
 		
-		
-		
-		System.out.println(tree.toString(DEPNode::toStringDEP)+"\n");
-		System.out.println(tree.getDepthFirstNodeList().stream().map(DEPNode::getWordForm).collect(Collectors.joining(StringConst.SPACE)));
-		
-		
-		
 		// srl-tree
 		String[] arr = {"buy.01 1:A0 2:AM-TMP 5:A1 6:AM-TMP","be.01 5:A1 7:R-A1 9:A2"};
 		int i = 0;
@@ -129,5 +120,18 @@ public class DEPTreeTest
 		
 		assertEquals("1:A0 2:AM-TMP 5:A1 6:AM-TMP", Joiner.join(args.get(3), " "));
 		assertEquals("5:A1 7:R-A1 9:A2", Joiner.join(args.get(8), " "));
+	}
+	
+	@Test
+	@Ignore
+	public void print() throws Exception
+	{
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
+		reader.open(new FileInputStream("src/test/resources/dependency/dependency.cnlp"));
+		DEPTree tree = reader.next();
+		
+		System.out.println(tree.toString());
+//		System.out.println(tree.getNgrams(DEPNode::getWordForm, "_", 2, true));
+//		System.out.println(tree.getNgrams(DEPNode::getWordForm, DEPNode::getPOSTag, "_", 2));
 	}
 }

@@ -40,6 +40,7 @@ public enum FieldType
 	t,		// distance between i to j (dependency parsing, semantic role labeling)
 	pt,		// path between i and j (dependency parsing, semantic role labeling)
 	dsw,	// distributional semantics: word
+	dsls,	// distributional semantics: lower-case, simplified
 
 	as,		// set of ambiguity classes
 	ds,		// set of dependency labels of its dependents
@@ -48,7 +49,8 @@ public enum FieldType
 	
 	b;		// boolean #
 	
-	static public final Pattern P_CLUSTER = Pattern.compile("^"+dsw+"(\\d+)$");
+	static public final Pattern P_DSW     = Pattern.compile("^"+dsw+"(\\d+)$");
+	static public final Pattern P_DSLS    = Pattern.compile("^"+dsls+"(\\d+)$");
 	static public final Pattern P_BOOLEAN = Pattern.compile("^"+b+"(\\d+)$");
 	static public final Pattern P_FEAT    = Pattern.compile("^"+ft+"=(.+)$");
 	static public final Pattern P_PREFIX  = Pattern.compile("^"+pf+"(\\d+)$");
@@ -65,6 +67,6 @@ public enum FieldType
 	
 	static public boolean isSetField(FieldType field)
 	{
-		return field == as || field == ds || field == ds2 || field == orth || field == dsw;
+		return field == as || field == ds || field == ds2 || field == orth || field == dsw || field == dsls;
 	}
 }

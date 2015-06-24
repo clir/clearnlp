@@ -16,8 +16,10 @@
 package edu.emory.clir.clearnlp.dependency;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
 
@@ -877,4 +879,79 @@ public class DEPTree implements Iterable<DEPNode>
 	{
 		return d_tree;
 	}
+	
+	/**
+	 * @param beginIndex inclusive.
+	 * @param endIndex exclusive.
+	 */
+	public String join(Function<DEPNode,String> f, String delim, int beginIndex, int endIndex)
+	{
+		StringJoiner joiner = new StringJoiner(delim);
+		
+		for (int i=beginIndex; i<endIndex; i++)
+			joiner.add(f.apply(get(i)));
+		
+		return joiner.toString();
+	}
+	
+//	====================================== String ======================================
+	
+	public Set<String> getNgrams(Function<DEPNode,String> f, String delim, int n)
+	{
+		Set<String> ngrams = new HashSet<>();
+		int i, j, size = size();
+		
+		for (i=1; i<size; i++)
+			for (j=0; j<n; j++)
+				if (i-j > 0) ngrams.add(join(f, delim, i-j, i+1));
+		
+		return ngrams;
+	}
+	
+	
+	public Set<String> getNgrams(Function<DEPNode,String> f1, Function<DEPNode,String> f2, String delim, int n)
+	{
+		Set<String> ngrams = new HashSet<>();
+		int i, j, k, l, c, size = size();
+		StringJoiner joiner;
+		
+		for (i=1; i<size; i++)
+			for (j=1; j<n; j++)
+				if (i-j > 0)
+					for (l=0; l<=j; l++)
+					{
+						joiner = new StringJoiner(delim);
+						
+						for (k=i-j,c=0; k<=i; k++,c++)
+						{
+							if (l == c)	joiner.add(f1.apply(get(k)));
+							else		joiner.add(f2.apply(get(k)));
+						}
+
+						ngrams.add(joiner.toString());
+					}
+		
+		return ngrams;
+	}
+	
+//	public Set<String> getNgrams(Function<DEPNode,String> f, String delim, int n, boolean excludeSymbols)
+//	{
+//		List<String> list = new ArrayList<>();
+//		String s;
+//		
+//		for (DEPNode node : this)
+//		{
+//			s = f.apply(node);
+//			if (!excludeSymbols || !StringUtils.containsPunctuationOnly(s)) list.add(s);
+//		}
+//		
+//		Set<String> ngrams = new HashSet<>(list);
+//		int i, j, size = list.size();
+//		
+//		for (i=0; i<size; i++)
+//			for (j=1; j<n; j++)
+//				if (i-j >= 0) ngrams.add(Joiner.join(list, delim, i-j, i+1));
+//		
+//		return ngrams;
+//	}
 }

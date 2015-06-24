@@ -21,7 +21,6 @@ import java.util.PriorityQueue;
 
 import edu.emory.clir.clearnlp.classification.instance.StringInstance;
 import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
-import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.stack.IntPStack;
 import edu.emory.clir.clearnlp.collection.triple.ObjectObjectDoubleTriple;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
@@ -61,9 +60,6 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 	}
 	
 //	====================================== BRANCH ======================================
-
-	static public ObjectIntHashMap<String> mmm = new ObjectIntHashMap<>();
-	private String beta_index, best_index;
 	
 	public boolean startBranching()
 	{
@@ -72,8 +68,6 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 		beam_size   = Math.min(beam_size - 1, q_branches.size());
 		max_heads   = d_tree.countHeaded();
 		save_branch = false;
-		
-		best_index = null;
 		return true;
 	}
 	
@@ -97,17 +91,12 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 		{
 			best_tree.set(d_tree.getHeads(), instances, score);
 			max_heads = heads;
-			best_index = beta_index;
 		}
 	}
 	
 	public List<StringInstance> setBest()
 	{
 		d_tree.setHeads(best_tree.o1);
-		
-		if (best_index != null)
-			mmm.add(best_index);
-
 		return best_tree.o2;
 	}
 	
@@ -132,7 +121,7 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 	private void addBranch(DEPLabel fstLabel, DEPLabel sndLabel)
 	{
 		if (!fstLabel.isArc(sndLabel) || !fstLabel.isList(sndLabel))
-			q_branches.add(new DEPBranch(fstLabel, sndLabel));
+			q_branches.add(new DEPBranch(sndLabel));
 	}
 	
 	private class DEPBranch implements Comparable<DEPBranch>
@@ -141,18 +130,16 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 		private IntPStack stack;
 		private IntPStack inter;
 		private int       input;
-		private DEPLabel  fstLabel;
 		private DEPLabel  sndLabel;
 		private double    totalScore;
 		private int       numTransitions;
 		
-		public DEPBranch(DEPLabel fstLabel, DEPLabel sndLabel)
+		public DEPBranch(DEPLabel sndLabel)
 		{
 			heads = d_tree.getHeads(i_input+1);
 			stack = new IntPStack(i_stack);
 			inter = new IntPStack(i_inter);
 			input = i_input;
-			this.fstLabel = fstLabel;
 			this.sndLabel = sndLabel;
 			totalScore = total_score;
 			numTransitions = num_transitions;
@@ -160,7 +147,6 @@ public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 		
 		public void reset()
 		{
-			beta_index = fstLabel.getArc()+"-"+fstLabel.getList()+" "+sndLabel.getArc()+"-"+sndLabel.getList();
 			d_tree.setHeads(heads);
 			i_stack = stack;
 			i_inter = inter;

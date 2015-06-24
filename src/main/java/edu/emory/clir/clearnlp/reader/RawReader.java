@@ -46,4 +46,10 @@ public class RawReader extends AbstractReader<String>
 		
 		return null;
 	}
+	
+	@Override
+	public AbstractReader<String> clone()
+	{
+		return new RawReader();
+	}
 }

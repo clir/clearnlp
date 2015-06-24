@@ -1,0 +1,19 @@
+<configuration>
+    <language>english</language>
+
+    <reader type="tsv">
+        <column index="1"  field="id"/>
+        <column index="2"  field="form"/>
+        <column index="3"  field="lemma"/>
+        <column index="4"  field="pos"/>
+        <column index="5"  field="feats"/>
+        <column index="6"  field="headId"/>
+        <column index="7"  field="deprel"/>
+    </reader>
+
+    <future>
+        <trainer algorithm="adagrad" type="svm" labelCutoff="0" featureCutoff="1" alpha="0.03" rho="0.1" average="false"/>
+        <bootstraps>false</bootstraps>
+    </future>
+</configuration>
+

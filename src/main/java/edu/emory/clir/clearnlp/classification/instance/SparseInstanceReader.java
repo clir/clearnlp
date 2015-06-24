@@ -18,6 +18,7 @@ package edu.emory.clir.clearnlp.classification.instance;
 import java.io.InputStream;
 
 import edu.emory.clir.clearnlp.classification.vector.SparseFeatureVector;
+import edu.emory.clir.clearnlp.reader.AbstractReader;
 
 /**
  * @since 3.0.0
@@ -50,5 +51,11 @@ public class SparseInstanceReader extends AbstractInstanceReader<SparseInstance,
 			vector.addFeature(Integer.parseInt(col[0]), Double.parseDouble(col[1]));
 		else
 			vector.addFeature(Integer.parseInt(col[0]));
+	}
+
+	@Override
+	public AbstractReader<SparseInstance> clone()
+	{
+		return null;
 	}
 }

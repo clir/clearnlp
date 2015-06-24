@@ -18,6 +18,7 @@ package edu.emory.clir.clearnlp.classification.instance;
 import java.io.InputStream;
 
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
+import edu.emory.clir.clearnlp.reader.AbstractReader;
 
 /**
  * @since 3.0.0
@@ -48,7 +49,13 @@ public class StringInstanceReader extends AbstractInstanceReader<StringInstance,
 	{
 		if (vector.hasWeight())
 			vector.addFeature(Integer.parseInt(col[0]), col[1], Double.parseDouble(col[2]));
-		else
+		else	
 			vector.addFeature(Integer.parseInt(col[0]), col[1]);
+	}
+
+	@Override
+	public AbstractReader<StringInstance> clone()
+	{
+		return null;
 	}
 }

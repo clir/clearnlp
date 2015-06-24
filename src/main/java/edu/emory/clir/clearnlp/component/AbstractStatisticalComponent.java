@@ -360,6 +360,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	
 	protected void onlineTrainSingleAdaGrad(List<DEPTree> trees)
 	{
+		// Given the list of gold-standard trees, measure how accurate the current model performs
 		double currScore = onlineScore(trees);
 		if (currScore == 100) return;
 		onlineBootstrap(trees);

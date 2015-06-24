@@ -52,7 +52,12 @@ public class EnglishSuffixMatcher extends AbstractAffixMatcher
 	@Override
 	public String getBaseForm(Set<String> baseSet, String form, String pos)
 	{
-		if (!matchesOriginalPOS(pos)) return null;
+		return matchesOriginalPOS(pos) ? getBaseForm(baseSet, form) : null; 
+	}
+	
+	@Override
+	public String getBaseForm(Set<String> baseSet, String form)
+	{
 		String base;
 		
 		for (AbstractAffixReplacer replacer : l_replacers)

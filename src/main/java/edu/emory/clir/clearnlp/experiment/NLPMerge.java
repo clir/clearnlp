@@ -21,7 +21,6 @@ import java.io.PrintStream;
 import java.util.List;
 
 import edu.emory.clir.clearnlp.bin.NLPDecode;
-import edu.emory.clir.clearnlp.component.configuration.DecodeConfiguration;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.util.BinUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
@@ -43,8 +42,7 @@ public class NLPMerge extends NLPDecode
 		BinUtils.initArgs(args, this);
 		NLPMode mode = NLPMode.valueOf(s_mode);
 		List<String> inputFiles = FileUtils.getFileList(s_inputPath, s_inputExt, false);
-		DecodeConfiguration config = new DecodeConfiguration(IOUtils.createFileInputStream(s_configurationFile));
-		decode(inputFiles, s_outputExt, config, mode);
+		decode(inputFiles, s_outputExt, s_configurationFile, n_threads, mode);
 		
 		try
 		{

@@ -34,6 +34,11 @@ abstract public class AbstractAffixReplacer
 		s_replacements = replacements;
 	}
 	
+	public String getBasePOS()
+	{
+		return s_basePOS;
+	}
+	
 	/**
 	 * Returns the base morpheme of the word form if exists; otherwise, {@code null}.
 	 * @param form the word-form in lower-case.

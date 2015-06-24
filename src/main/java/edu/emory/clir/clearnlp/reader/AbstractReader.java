@@ -80,4 +80,6 @@ abstract public class AbstractReader<T>
 	
 	/** @return the next item if exists; otherwise, {@code null}. */
 	abstract public T next();
+	
+	abstract public AbstractReader<T> clone();
 }

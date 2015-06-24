@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.experiment;
+package edu.emory.clir.clearnlp.component.mode.future;
+
+import java.io.InputStream;
+
+import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
+import edu.emory.clir.clearnlp.component.utils.NLPMode;
 
 /**
+ * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class IndexWiki
+public class FCConfiguration extends AbstractConfiguration
 {
-	public IndexWiki()
+	public FCConfiguration(InputStream in)
 	{
-		
+		super(NLPMode.future, in);
+		init();
 	}
 	
-	static public void main(String[] args)
+	private void init()
 	{
-		
+//		Element eMode = getModeElement();
 	}
 }

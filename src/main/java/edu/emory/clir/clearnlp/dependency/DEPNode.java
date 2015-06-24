@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.function.BiPredicate;
 import java.util.regex.Pattern;
 
 import edu.emory.clir.clearnlp.collection.list.SortedArrayList;
@@ -593,6 +594,17 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return (index < getDependentSize()) ? getDependent(index) : null;
 	}
 	
+	public DEPNode getFirstDependent(BiPredicate<DEPNode,String> p, String tag)
+	{
+		for (DEPNode node : l_dependents)
+		{
+			if (p.test(node, tag))
+				return node;
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Get the first dependency node of the node by label.
 	 * @param label string label of the first-dependency node
@@ -600,13 +612,17 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	 */
 	public DEPNode getFirstDependentByLabel(String label)
 	{
-		for (DEPNode node : l_dependents)
-		{
-			if (node.isLabel(label))
-				return node;
-		}
-		
-		return null;
+		return getFirstDependent((n, t) -> n.isLabel(t), label);
+	}
+	
+	public DEPNode getFirstDependentByPOS(String label)
+	{
+		return getFirstDependent((n, t) -> n.isPOSTag(t), label);
+	}
+	
+	public DEPNode getFirstDependentByLemma(String lemma)
+	{
+		return getFirstDependent((n, t) -> n.isLemma(t), lemma);
 	}
 	
 	/**
@@ -1246,6 +1262,16 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	public boolean containsDependent(String label)
 	{
 		return getFirstDependentByLabel(label) != null;
+	}
+	
+	public boolean containsDependentPOS(String tag)
+	{
+		return getFirstDependentByPOS(tag) != null;
+	}
+	
+	public boolean containsDependentLemma(String lemma)
+	{
+		return getFirstDependentByLemma(lemma) != null;
 	}
 	
 	/**

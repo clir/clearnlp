@@ -19,14 +19,14 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.kohsuke.args4j.Option;
 
-import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.component.AbstractComponent;
 import edu.emory.clir.clearnlp.component.configuration.DecodeConfiguration;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
-import edu.emory.clir.clearnlp.component.mode.dep.state.DEPStateBranch;
 import edu.emory.clir.clearnlp.component.utils.GlobalLexica;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.component.utils.NLPUtils;
@@ -60,6 +60,8 @@ public class NLPDecode
 	protected String s_outputExt = "cnlp";
 	@Option(name="-mode", usage="pos|morph|dep|ner", required=true, metaVar="<string>")
 	protected String s_mode;
+	@Option(name="-threads", usage="number of threads (default: 1)", required=false, metaVar="<integer>")
+	protected int n_threads = 1;
 	
 //	private long time = 0, tokens = 0, trees = 0;
 	
@@ -70,15 +72,16 @@ public class NLPDecode
 		BinUtils.initArgs(args, this);
 		NLPMode mode = NLPMode.valueOf(s_mode);
 		List<String> inputFiles = FileUtils.getFileList(s_inputPath, s_inputExt, false);
-		DecodeConfiguration config = new DecodeConfiguration(IOUtils.createFileInputStream(s_configurationFile));
-		decode(inputFiles, s_outputExt, config, mode);
+		if (n_threads > 2)	decode(inputFiles, s_outputExt, s_configurationFile, n_threads, mode);
+		else				decode(inputFiles, s_outputExt, s_configurationFile, mode);
 //		System.out.printf("Tokens / Sec.: %d\n", Math.round(MathUtils.divide(tokens*1000, time)));
 //		System.out.printf("Sents. / Sec.: %d\n", Math.round(MathUtils.divide(trees *1000, time)));
 	}
 	
-	public void decode(List<String> inputFiles, String ouputExt, DecodeConfiguration config, NLPMode mode)
+	public void decode(List<String> inputFiles, String outputExt, String configurationFile, NLPMode mode)
 	{
-		GlobalLexica.init(IOUtils.createFileInputStream(s_configurationFile));
+		DecodeConfiguration config = new DecodeConfiguration(IOUtils.createFileInputStream(configurationFile));;
+		GlobalLexica.init(IOUtils.createFileInputStream(configurationFile));
 		AbstractReader<?> reader = config.getReader();
 		AbstractTokenizer tokenizer = null;
 		AbstractComponent[] components;
@@ -100,7 +103,7 @@ public class NLPDecode
 		{
 			BinUtils.LOG.info(FileUtils.getBaseName(inputFile)+"\n");
 			reader.open(IOUtils.createFileInputStream(inputFile));
-			fout =  IOUtils.createBufferedPrintStream(inputFile + StringConst.PERIOD + ouputExt);
+			fout = IOUtils.createBufferedPrintStream(inputFile + StringConst.PERIOD + outputExt);
 			
 			switch (reader.getReaderType())
 			{
@@ -112,12 +115,78 @@ public class NLPDecode
 			reader.close();
 			fout.close();
 		}
+	}
+	
+	public void decode(List<String> inputFiles, String outputExt, String configurationFile, int nThreads, NLPMode mode)
+	{
+		DecodeConfiguration config = new DecodeConfiguration(IOUtils.createFileInputStream(s_configurationFile));;
+		GlobalLexica.init(IOUtils.createFileInputStream(configurationFile));
+		ExecutorService executor = Executors.newFixedThreadPool(nThreads);
+		AbstractReader<?> reader = config.getReader();
+		AbstractTokenizer tokenizer = null;
+		AbstractComponent[] components;
+		String outputFile;
 		
-		List<ObjectIntPair<String>> list = DEPStateBranch.mmm.toList();
-		Collections.sort(list, Collections.reverseOrder());
+		if (reader.isReaderType(TReader.TSV))
+		{
+			components = getComponents((TSVReader)reader, config.getLanguage(), mode, config);
+		}
+		else
+		{
+			tokenizer  = NLPUtils.getTokenizer(config.getLanguage());
+			components = getComponents(config.getLanguage(), mode, config);
+		}
 		
-		for (ObjectIntPair<String> p : list)
-			System.out.println(p.o+"\t"+p.i);
+		BinUtils.LOG.info("Decoding:\n");
+		
+		for (String inputFile : inputFiles)
+		{
+			outputFile = inputFile + StringConst.PERIOD + outputExt;
+			executor.submit(new NLPTask(tokenizer, components, reader, mode, inputFile, outputFile));
+		}
+		
+		executor.shutdown();
+	}
+	
+	class NLPTask implements Runnable
+	{
+		private AbstractComponent[] components;
+		private AbstractTokenizer tokenizer;
+		private AbstractReader<?> reader;
+		private String input_file;
+		private PrintStream fout;
+		private NLPMode mode;
+		
+		public NLPTask(AbstractTokenizer tokenizer, AbstractComponent[] components, AbstractReader<?> reader, NLPMode mode, String inputFile, String outputFile)
+		{
+			this.mode = mode;
+			this.tokenizer = tokenizer;
+			this.input_file = inputFile;
+			this.components = components;
+			this.reader = reader.clone();
+			this.reader.open(IOUtils.createFileInputStream(inputFile));
+			this.fout = IOUtils.createBufferedPrintStream(outputFile);
+		}
+		
+		@Override
+		public void run()
+		{
+			try
+			{
+				BinUtils.LOG.info(FileUtils.getBaseName(input_file)+"\n");
+				
+				switch (reader.getReaderType())
+				{
+				case TSV : process((TSVReader) reader, fout, mode, components);				break;
+				case RAW : process((RawReader) reader, fout, mode, components, tokenizer);	break;
+				case LINE: process((LineReader)reader, fout, mode, components, tokenizer);	break;
+				}
+				
+				reader.close();
+				fout.close();
+			}
+			catch (Exception e) {e.printStackTrace();}
+		}
 	}
 	
 	public void process(RawReader reader, PrintStream fout, NLPMode mode, AbstractComponent[] components, AbstractTokenizer tokenizer)

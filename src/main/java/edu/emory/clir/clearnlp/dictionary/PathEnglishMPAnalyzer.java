@@ -24,7 +24,6 @@ public interface PathEnglishMPAnalyzer
 	String ROOT = "edu/emory/clir/clearnlp/dictionary/morphology/english/";
 
 	String INFLECTION_SUFFIX = ROOT + "inflection_suffix.xml";
-	String DERIVATION_SUFFIX = ROOT + "derivation_suffix.xml";
 	String ABBREVIATOIN_RULE = ROOT + "abbreviation.rule";
 	String CARDINAL_BASE     = ROOT + "cardinal.base";
 	String ORDINAL_BASE      = ROOT + "ordinal.base";
@@ -35,4 +34,6 @@ public interface PathEnglishMPAnalyzer
 	String ADVERB        = "adverb";
 	String EXT_BASE      = ".base";
 	String EXT_EXCEPTION = ".exc";
+	
+	String DERIVATION_SUFFIX_N2V = ROOT + "derivation_suffix_n2v.xml";
 }
