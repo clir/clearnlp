@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.future;
+package edu.emory.clir.clearnlp.component.mode.srl;
 
 import java.io.InputStream;
 
 import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
+import edu.emory.clir.clearnlp.component.utils.NLPMode;
 
 /**
- * @since 3.0.0
+ * @since 3.2.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class FCConfiguration extends AbstractConfiguration
+public class SRLConfiguration extends AbstractConfiguration
 {
-	public FCConfiguration(InputStream in)
+//	============================== Initialization ==============================
+	
+	public SRLConfiguration()
 	{
-		super(null, in);
-		init();
+		super(NLPMode.srl);
 	}
 	
-	private void init()
+	public SRLConfiguration(InputStream in)
 	{
-//		Element eMode = getModeElement();
+		super(NLPMode.srl, in);
 	}
 }

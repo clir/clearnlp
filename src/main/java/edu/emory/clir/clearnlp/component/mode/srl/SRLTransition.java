@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.future;
-
-import java.io.InputStream;
-
-import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
+package edu.emory.clir.clearnlp.component.mode.srl;
 
 /**
- * @since 3.0.0
+ * @since 3.1.3
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class FCConfiguration extends AbstractConfiguration
+public interface SRLTransition
 {
-	public FCConfiguration(InputStream in)
-	{
-		super(null, in);
-		init();
-	}
-	
-	private void init()
-	{
-//		Element eMode = getModeElement();
-	}
+	String NO_ARC = "N";
 }

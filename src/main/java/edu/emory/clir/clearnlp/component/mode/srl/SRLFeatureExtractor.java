@@ -19,22 +19,19 @@ import java.io.InputStream;
 
 import org.w3c.dom.Element;
 
+import edu.emory.clir.clearnlp.component.mode.srl.state.AbstractSRLState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
 import edu.emory.clir.clearnlp.feature.common.CommonFeatureTemplate;
 import edu.emory.clir.clearnlp.feature.common.CommonFeatureToken;
 
 /**
- * @since 3.1.3
+ * @since 3.2.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SRLFeatureExtractor extends AbstractFeatureExtractor<CommonFeatureTemplate, CommonFeatureToken, SRLState>
+public class SRLFeatureExtractor extends AbstractFeatureExtractor<CommonFeatureTemplate, CommonFeatureToken, AbstractSRLState>
 {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -9213312216673445978L;
+	private static final long serialVersionUID = 7959999194169624654L;
 
 	/**
 	 * @param in
@@ -59,7 +56,7 @@ public class SRLFeatureExtractor extends AbstractFeatureExtractor<CommonFeatureT
 	 * @see edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor#getFeature(edu.emory.clir.clearnlp.feature.AbstractFeatureToken, edu.emory.clir.clearnlp.component.state.AbstractState, edu.emory.clir.clearnlp.dependency.DEPNode)
 	 */
 	@Override
-	protected String getFeature(CommonFeatureToken token, SRLState state,
+	protected String getFeature(CommonFeatureToken token, AbstractSRLState state,
 			DEPNode node)
 	{
 		// TODO Auto-generated method stub
@@ -70,7 +67,7 @@ public class SRLFeatureExtractor extends AbstractFeatureExtractor<CommonFeatureT
 	 * @see edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor#getFeatures(edu.emory.clir.clearnlp.feature.AbstractFeatureToken, edu.emory.clir.clearnlp.component.state.AbstractState, edu.emory.clir.clearnlp.dependency.DEPNode)
 	 */
 	@Override
-	protected String[] getFeatures(CommonFeatureToken token, SRLState state,
+	protected String[] getFeatures(CommonFeatureToken token, AbstractSRLState state,
 			DEPNode node)
 	{
 		// TODO Auto-generated method stub

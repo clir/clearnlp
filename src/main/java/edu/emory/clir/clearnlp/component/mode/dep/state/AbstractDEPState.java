@@ -59,7 +59,7 @@ public abstract class AbstractDEPState extends AbstractState<DEPArc,DEPLabel> im
 	protected int    num_transitions;
 	protected double total_score;
 	
-//	====================================== Initialization ======================================
+//	====================================== INITIALIZATION ======================================
 	
 	public AbstractDEPState() {super();}
 	
@@ -83,7 +83,7 @@ public abstract class AbstractDEPState extends AbstractState<DEPArc,DEPLabel> im
 		total_score     = 0;
 	}
 
-//	====================================== LABEL ======================================
+//	====================================== ORACLE ======================================
 
 	@Override
 	protected void initOracle()
@@ -97,6 +97,8 @@ public abstract class AbstractDEPState extends AbstractState<DEPArc,DEPLabel> im
 	{
 		d_tree.setHeads(g_oracle);
 	}
+	
+//	====================================== LABEL ======================================
 	
 	@Override
 	public DEPLabel getGoldLabel()

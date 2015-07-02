@@ -15,44 +15,37 @@
  */
 package edu.emory.clir.clearnlp.component.mode.srl;
 
-import edu.emory.clir.clearnlp.component.evaluation.AbstractEval;
+import java.util.List;
+
+import edu.emory.clir.clearnlp.component.evaluation.AbstractF1Eval;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
+import edu.emory.clir.clearnlp.util.arc.SRLArc;
 
 /**
  * @since 3.1.3
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SRLEval extends AbstractEval<String>
+public class SRLEval extends AbstractF1Eval<SRLArc[]>
 {
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.evaluation.AbstractEval#countCorrect(edu.emory.clir.clearnlp.dependency.DEPTree, java.lang.Object[])
-	 */
 	@Override
-	public void countCorrect(DEPTree sTree, String[] gLabels)
+	public void countCorrect(DEPTree sTree, SRLArc[][] gSemanticHeads)
 	{
-		// TODO Auto-generated method stub
+		int i, size = sTree.size();
+		List<SRLArc> sHeads;
+		SRLArc[]     gHeads;
 		
+		for (i=1; i<size; i++)
+		{
+			sHeads = sTree.get(i).getSemanticHeadArcList();
+			gHeads = gSemanticHeads[i];
+			
+			p_total += sHeads.size();
+			r_total += gHeads.length;
+			
+			for (SRLArc g : gHeads)
+				for (SRLArc s : sHeads)
+					if (s.equals(g.getNode(), g.getLabel()))
+						n_correct++;
+		}
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.evaluation.AbstractEval#getScore()
-	 */
-	@Override
-	public double getScore()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.evaluation.AbstractEval#clear()
-	 */
-	@Override
-	public void clear()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
 }
