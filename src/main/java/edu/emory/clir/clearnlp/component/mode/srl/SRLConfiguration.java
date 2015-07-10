@@ -17,8 +17,11 @@ package edu.emory.clir.clearnlp.component.mode.srl;
 
 import java.io.InputStream;
 
+import org.w3c.dom.Element;
+
 import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
+import edu.emory.clir.clearnlp.util.XmlUtils;
 
 /**
  * @since 3.2.0
@@ -26,15 +29,42 @@ import edu.emory.clir.clearnlp.component.utils.NLPMode;
  */
 public class SRLConfiguration extends AbstractConfiguration
 {
-//	============================== Initialization ==============================
+	private int max_depth;
+	private int max_height;
 	
-	public SRLConfiguration()
-	{
-		super(NLPMode.srl);
-	}
+//	============================== Initialization ==============================
 	
 	public SRLConfiguration(InputStream in)
 	{
 		super(NLPMode.srl, in);
+		init();
+	}
+	
+	private void init()
+	{
+		Element eMode = getModeElement();
+		
+		setMaxDepth(XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, "max_depth")));
+		setMaxHeight(XmlUtils.getIntegerTextContent(XmlUtils.getFirstElementByTagName(eMode, "max_height")));
+	}
+	
+	public int getMaxDepth()
+	{
+		return max_depth;
+	}
+	
+	public int getMaxHeight()
+	{
+		return max_height;
+	}
+	
+	public void setMaxDepth(int depth)
+	{
+		max_depth = depth;
+	}
+	
+	public void setMaxHeight(int height)
+	{
+		max_height = height;
 	}
 }

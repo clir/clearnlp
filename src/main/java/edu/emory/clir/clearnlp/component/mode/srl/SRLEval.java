@@ -22,13 +22,13 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
 
 /**
- * @since 3.1.3
+ * @since 3.2.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class SRLEval extends AbstractF1Eval<SRLArc[]>
 {
 	@Override
-	public void countCorrect(DEPTree sTree, SRLArc[][] gSemanticHeads)
+	public void countCorrect(DEPTree sTree, SRLArc[][] goldHeads)
 	{
 		int i, size = sTree.size();
 		List<SRLArc> sHeads;
@@ -37,7 +37,7 @@ public class SRLEval extends AbstractF1Eval<SRLArc[]>
 		for (i=1; i<size; i++)
 		{
 			sHeads = sTree.get(i).getSemanticHeadArcList();
-			gHeads = gSemanticHeads[i];
+			gHeads = goldHeads[i];
 			
 			p_total += sHeads.size();
 			r_total += gHeads.length;

@@ -29,32 +29,32 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
 public class EnglishSRLabeler extends AbstractSRLabeler
 {
 	/** Creates a semantic role labeler for train. */
-	public EnglishSRLabeler(SRLFeatureExtractor[] extractors, Object lexicons)
+	public EnglishSRLabeler(SRLConfiguration configuration, SRLFeatureExtractor[] extractors, Object lexicons)
 	{
-		super(extractors, lexicons);
+		super(configuration, extractors, lexicons);
 	}
 	
 	/** Creates a semantic role labeler for bootstrap or evaluate. */
-	public EnglishSRLabeler(SRLFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
+	public EnglishSRLabeler(SRLConfiguration configuration, SRLFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
-		super(extractors, lexicons, models, bootstrap);
+		super(configuration, extractors, lexicons, models, bootstrap);
 	}
 	
 	/** Creates a semantic role labeler for decode. */
-	public EnglishSRLabeler(ObjectInputStream in)
+	public EnglishSRLabeler(SRLConfiguration configuration, ObjectInputStream in)
 	{
-		super(in);
+		super(configuration, in);
 	}
 	
 	/** Creates a semantic role labeler for decode. */
-	public EnglishSRLabeler(byte[] models)
+	public EnglishSRLabeler(SRLConfiguration configuration, byte[] models)
 	{
-		super(models);
+		super(configuration, models);
 	}
 
 	@Override
 	protected AbstractSRLState getState(DEPTree tree)
 	{
-		return new EnglishSRLState(tree, c_flag);
+		return new EnglishSRLState(tree, c_flag, (SRLConfiguration)t_configuration);
 	}
 }

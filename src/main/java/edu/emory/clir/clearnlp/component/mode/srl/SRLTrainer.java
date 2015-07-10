@@ -48,47 +48,47 @@ public class SRLTrainer extends AbstractNLPTrainer
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForCollect()
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForCollect()
 	{
 		return null;
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object lexicons)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForTrain(Object lexicons)
 	{
 		switch (t_configuration.getLanguage())
 		{
-		case ENGLISH: return new EnglishSRLabeler(f_extractors, lexicons);
+		case ENGLISH: return new EnglishSRLabeler((SRLConfiguration)t_configuration, f_extractors, lexicons);
 		default: return null;
 		}
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
 	{
 		switch (t_configuration.getLanguage())
 		{
-		case ENGLISH: return new EnglishSRLabeler(f_extractors, lexicons, models, true);
+		case ENGLISH: return new EnglishSRLabeler((SRLConfiguration)t_configuration, f_extractors, lexicons, models, true);
 		default: return null;
 		}
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
 	{
 		switch (t_configuration.getLanguage())
 		{
-		case ENGLISH: return new EnglishSRLabeler(f_extractors, lexicons, models, false);
+		case ENGLISH: return new EnglishSRLabeler((SRLConfiguration)t_configuration, f_extractors, lexicons, models, false);
 		default: return null;	
 		}
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForDecode(byte[] models)
 	{
 		switch (t_configuration.getLanguage())
 		{
-		case ENGLISH: return new EnglishSRLabeler(models);
+		case ENGLISH: return new EnglishSRLabeler((SRLConfiguration)t_configuration, models);
 		default: return null;
 		}
 	}

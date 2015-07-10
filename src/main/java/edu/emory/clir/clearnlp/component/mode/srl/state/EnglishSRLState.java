@@ -15,6 +15,7 @@
  */
 package edu.emory.clir.clearnlp.component.mode.srl.state;
 
+import edu.emory.clir.clearnlp.component.mode.srl.SRLConfiguration;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPLibEn;
@@ -28,13 +29,18 @@ import edu.emory.clir.clearnlp.pos.POSLibEn;
  */
 public class EnglishSRLState extends AbstractSRLState
 {
-	public EnglishSRLState(DEPTree tree, CFlag flag)
+	public EnglishSRLState(DEPTree tree, CFlag flag, SRLConfiguration configuration)
 	{
-		super(tree, flag);
+		super(tree, flag, configuration);
 	}
 
 	@Override
 	protected boolean isPredicate(DEPNode node)
+	{
+		return isVerbPredicate(node);
+	}
+	
+	private boolean isVerbPredicate(DEPNode node)
 	{
 		if (!node.getLabel().startsWith(DEPLibEn.DEP_AUX))
 		{

@@ -34,7 +34,6 @@ import java.util.zip.GZIPInputStream;
 
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
-import edu.emory.clir.clearnlp.component.mode.future.FCEval;
 import edu.emory.clir.clearnlp.constituent.CTNode;
 import edu.emory.clir.clearnlp.constituent.CTReader;
 import edu.emory.clir.clearnlp.constituent.CTTree;
@@ -48,6 +47,7 @@ import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFRoleset;
 import edu.emory.clir.clearnlp.lexicon.propbank.frameset.PBFType;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.srl.SRLTree;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.IOUtils;
 import edu.emory.clir.clearnlp.util.Splitter;
@@ -63,22 +63,69 @@ public class Z
 {
 	public Z(String[] args) throws Exception
 	{
-		String root = "/Users/jdchoi/Desktop/allen/mturk-old/";
-		String f0 = root+"AllenFixedVsOpenFutureRuleOld.csv.0.txt.cnlp";
-		String f1 = root+"AllenFixedVsOpenFutureRuleOld.csv.1.txt.cnlp";
-		String f2 = root+"AllenFixedVsOpenFutureRuleOld.csv.2.txt.cnlp";
-		int i, N = 5;
+		matchPropBankTags();
 		
-		PrintStream[] fout = new PrintStream[N];
-		for (i=0; i<N; i++) fout[i] = IOUtils.createBufferedPrintStream(root+"cv"+i+".tst");
-		
-		crossValidate(f0, fout, N);
-		crossValidate(f1, fout, N);
-		crossValidate(f2, fout, N);
-		for (i=0; i<N; i++) fout[i].close();
+//		String root = "/Users/jdchoi/Desktop/allen/mturk-old/";
+//		String f0 = root+"AllenFixedVsOpenFutureRuleOld.csv.0.txt.cnlp";
+//		String f1 = root+"AllenFixedVsOpenFutureRuleOld.csv.1.txt.cnlp";
+//		String f2 = root+"AllenFixedVsOpenFutureRuleOld.csv.2.txt.cnlp";
+//		int i, N = 5;
+//		
+//		PrintStream[] fout = new PrintStream[N];
+//		for (i=0; i<N; i++) fout[i] = IOUtils.createBufferedPrintStream(root+"cv"+i+".tst");
+//		
+//		crossValidate(f0, fout, N);
+//		crossValidate(f1, fout, N);
+//		crossValidate(f2, fout, N);
+//		for (i=0; i<N; i++) fout[i].close();
 	}
 	
-	private void crossValidate(String inputFile, PrintStream[] fout, int N)
+	public void matchPropBankTags() throws Exception
+	{
+		String frameDir = "/Users/jdchoi/Downloads/frames";
+		String inputFile = "/Users/jdchoi/Documents/Data/experiments/general-en/onto.all";
+		
+		PBFMap map = new PBFMap(frameDir);
+		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
+		reader.open(IOUtils.createFileInputStream(inputFile));
+		Pattern argn = Pattern.compile("^A(\\d)");
+		Pattern argm = Pattern.compile("^AM");
+		Set<String> set = new HashSet<>();
+		String pb, n, lemma;
+		PBFRoleset roleset;
+		DEPTree tree;
+		PBFRole role;
+		SRLTree srl;
+		
+		while ((tree = reader.next()) != null)
+		{
+			for (DEPNode node : tree)
+			{
+				pb = node.getFeat(DEPLib.FEAT_PB);
+				if (pb == null || pb.endsWith("LV")) continue;
+				srl = tree.getSRLTree(node);
+				lemma = pb.substring(0, pb.length()-3);
+				roleset = map.getRoleset(PBFType.VERB, lemma, pb);
+				if (roleset == null) continue;
+				
+				for (SRLArc arc : srl.getArgumentArcList(argn))
+				{
+					n = arc.getLabel().substring(1,2);
+					role = roleset.getRole(n);
+					if (role == null) System.out.println(pb+" "+n+" "+arc.getLabel());
+				}
+				
+				for (SRLArc arc : srl.getArgumentArcList(argm))
+					set.add(arc.getLabel());
+			}
+		}
+		
+		List<String> list = new ArrayList<>(set);
+		Collections.sort(list);
+		for (String s : list) System.out.println(s);
+	}
+	
+	void crossValidate(String inputFile, PrintStream[] fout, int N)
 	{
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6);
 		reader.open(IOUtils.createFileInputStream(inputFile));
@@ -92,23 +139,6 @@ public class Z
 		}
 		
 		reader.close();
-	}
-	
-	public void addFuture(String[] args) throws Exception
-	{
-		TSVReader reader = new TSVReader(0, 1, 2, 3, 7, 4, 5, 6, -1, -1);
-		reader.open(IOUtils.createFileInputStream(args[0]));
-		PrintStream fout = IOUtils.createBufferedPrintStream(args[0]+".w");
-		DEPTree tree;
-		
-		while ((tree = reader.next()) != null)
-		{
-			tree.get(FCEval.INFO_NODE).putFeat(DEPLib.FEAT_FUTURE, args[1]);
-			fout.println(tree.toString(DEPNode::toStringNER)+"\n");
-		}
-		
-		reader.close();
-		fout.close();
 	}
 	
 	public void simplifyTokens(String[] args) throws Exception
@@ -205,53 +235,6 @@ public class Z
 		List<ObjectIntPair<String>> ps = map.toList();
 		Collections.sort(ps, Collections.reverseOrder());
 		
-		for (ObjectIntPair<String> p : ps)
-			System.out.println(p.o+" "+p.i);
-	}
-	
-	public void extractPBFunctionTags() throws Exception
-	{
-		String dir = "/Users/jdchoi/Downloads/frames";
-		PBFMap map = new PBFMap(dir);
-		
-		Map<String,PBFFrameset> framesets = map.getFramesetMap(PBFType.VERB);
-		ObjectIntHashMap<String> argn = new ObjectIntHashMap<>();
-		ObjectIntHashMap<String> argm = new ObjectIntHashMap<>();
-		String f;
-		Set<String> set = new HashSet<>();
-		
-		for (PBFFrameset frameset : framesets.values())
-		{
-			for (PBFRoleset roleset : frameset.getRolesets())
-			{
-				for (PBFRole role : roleset.getRoles())
-				{
-					f = role.getFunctionTag();
-					if (f.isEmpty()) continue;
-					
-					if ("5".equals(role.getArgumentNumber()))
-						set.add(roleset.getID());
-							
-					if (StringUtils.containsDigitOnly(role.getArgumentNumber()))
-						argn.add(role.getArgumentNumber()+"-"+f.toUpperCase());
-					else
-						argm.add(f.toUpperCase());
-				}
-			}
-		}
-
-		List<ObjectIntPair<String>> ps = argn.toList();
-		Collections.sort(ps, Collections.reverseOrder());
-		System.out.println(set.toString());
-		
-		System.out.println("ARGN ----------");
-		for (ObjectIntPair<String> p : ps)
-			System.out.println(p.o+" "+p.i);
-		
-		ps = argm.toList();
-		Collections.sort(ps, Collections.reverseOrder());
-		
-		System.out.println("ARGM ----------");
 		for (ObjectIntPair<String> p : ps)
 			System.out.println(p.o+" "+p.i);
 	}

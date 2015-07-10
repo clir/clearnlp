@@ -15,11 +15,11 @@
  */
 package edu.emory.clir.clearnlp.component.mode.srl.state;
 
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Deque;
+import java.util.ArrayList;
 import java.util.List;
 
+import edu.emory.clir.clearnlp.collection.pair.Pair;
+import edu.emory.clir.clearnlp.component.mode.srl.SRLConfiguration;
 import edu.emory.clir.clearnlp.component.mode.srl.SRLTransition;
 import edu.emory.clir.clearnlp.component.state.AbstractState;
 import edu.emory.clir.clearnlp.component.utils.CFlag;
@@ -27,6 +27,8 @@ import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.feature.AbstractFeatureToken;
+import edu.emory.clir.clearnlp.feature.type.FieldType;
+import edu.emory.clir.clearnlp.lexicon.propbank.PBLib;
 import edu.emory.clir.clearnlp.util.arc.SRLArc;
 
 /**
@@ -35,34 +37,27 @@ import edu.emory.clir.clearnlp.util.arc.SRLArc;
  */
 public abstract class AbstractSRLState extends AbstractState<SRLArc[],String> implements SRLTransition
 {
+	private SRLConfiguration t_configuration;
 	private DEPNode d_predicate;
 	
-	private Deque<DEPNode> argument_candidates;
+	private List<Pair<DEPNode,DEPNode>> argument_candidates;
+	private List<String> numbered_arguments;
+	private int argument_index;
 	private int argument_count;
 
 //	====================================== INITIALIZATION ======================================
 	
-	public AbstractSRLState(DEPTree tree, CFlag flag)
+	public AbstractSRLState(DEPTree tree, CFlag flag, SRLConfiguration configuration)
 	{
 		super(tree, flag);
-		init();
+		init(configuration);
 	}
 	
-	private void init()
+	private void init(SRLConfiguration configuration)
 	{
+		t_configuration = configuration;
 		d_predicate = getNode(0);
-		initNextPredicate();
-	}
-	
-	private void initNextPredicate()
-	{
-		d_predicate = nextPredicate();
-		
-		if (d_predicate != null)
-		{
-			argument_candidates = getArgumentCandidates();
-			argument_count = 0;
-		}
+		shift();
 	}
 	
 //	====================================== ORACLE ======================================
@@ -79,6 +74,11 @@ public abstract class AbstractSRLState extends AbstractState<SRLArc[],String> im
 	{
 		d_tree.setSemanticHeads(g_oracle);
 	}
+	
+	public int getModelIndex()
+	{
+		return (d_predicate.getID() > getArgument().getID()) ? 0 : 1;
+	}
 
 //	====================================== LABEL ======================================
 
@@ -91,7 +91,7 @@ public abstract class AbstractSRLState extends AbstractState<SRLArc[],String> im
 				return getModelIndex()+arc.getLabel();
 		}
 				
-		return NO_ARC;
+		return getModelIndex()+NO_ARC;
 	}
 
 	@Override
@@ -101,8 +101,8 @@ public abstract class AbstractSRLState extends AbstractState<SRLArc[],String> im
 		
 		switch (token.getSource())
 		{
-		case  i: index = getArgument().getID() + token.getOffset(); break;
-		case  j: index = d_predicate  .getID() + token.getOffset(); break;
+		case  i: index = d_predicate  .getID() + token.getOffset(); break;
+		case  j: index = getArgument().getID() + token.getOffset(); break;
 		default: new IllegalArgumentException();
 		}
 		
@@ -114,22 +114,17 @@ public abstract class AbstractSRLState extends AbstractState<SRLArc[],String> im
 	@Override
 	public void next(String label)
 	{
-		if (label.equals(NO_ARC))
+		if (!label.equals(NO_ARC))
 		{
-			DEPNode arg = nextArgument();
-			
-			if (arg == null)
-			{
-				if (argument_count > 0) d_predicate.putFeat(DEPLib.FEAT_PB, d_predicate.getLemma());
-				initNextPredicate();
-			}
-		}
-		else
-		{
-			DEPNode arg = getArgument();
-			arg.addSemanticHead(d_predicate, label.substring(1));
 			argument_count++;
-			nextArgument();
+			getArgument().addSemanticHead(d_predicate, label);
+			if (PBLib.isNumberedArgument(label)) numbered_arguments.add(label);
+		}
+		
+		if (!pass())
+		{
+			if (argument_count > 0) d_predicate.putFeat(DEPLib.FEAT_PB, d_predicate.getLemma());
+			shift();
 		}
 	}
 
@@ -137,6 +132,30 @@ public abstract class AbstractSRLState extends AbstractState<SRLArc[],String> im
 	public boolean isTerminate()
 	{
 		return d_predicate == null;
+	}
+	
+	private void shift()
+	{
+		d_predicate = nextPredicate();
+		
+		if (d_predicate != null)
+		{
+			argument_candidates = d_predicate.getArgumentCandidateList(t_configuration.getMaxDepth(), t_configuration.getMaxHeight());
+			
+			if (argument_candidates.isEmpty())
+				shift();
+			else
+			{
+				numbered_arguments = new ArrayList<>();
+				argument_index = 0;
+				argument_count = 0;
+			}
+		}
+	}
+	
+	private boolean pass()
+	{
+		return ++argument_index < argument_candidates.size();
 	}
 	
 //	====================================== NODE ======================================
@@ -148,12 +167,12 @@ public abstract class AbstractSRLState extends AbstractState<SRLArc[],String> im
 	
 	public DEPNode getArgument()
 	{
-		return argument_candidates.getFirst();
+		return argument_candidates.get(argument_index).o1;
 	}
 	
-	public int getModelIndex()
+	public DEPNode getLowestCommonAncestor()
 	{
-		return (d_predicate.getID() > getArgument().getID()) ? 0 : 1;
+		return argument_candidates.get(argument_index).o2;
 	}
 	
 //	====================================== PREDICATE ======================================
@@ -181,33 +200,26 @@ public abstract class AbstractSRLState extends AbstractState<SRLArc[],String> im
 	
 	protected abstract boolean isPredicate(DEPNode node);
 	
-//	====================================== ARGUMENT ======================================
+//	====================================== FEATURES ======================================
 	
-	private DEPNode nextArgument()
+	public String distanceBetweenPredicateAndArgument()
 	{
-		return argument_candidates.isEmpty() ? null : argument_candidates.poll();
+		int dist = Math.abs(d_predicate.getID() - getArgument().getID());
+		
+		if      (dist <=  5)	return "0";
+		else if (dist <= 10)	return "1";
+		else if (dist <= 15)	return "2";
+		else					return "3";
 	}
 	
-	private Deque<DEPNode> getArgumentCandidates()
+	public String getNumberedArgument(int index)
 	{
-		List<DEPNode> list = d_predicate.getSubNodeList();
-		getArgumentCandidatesAncestors(list, d_predicate.getHead());
-		Collections.sort(list);
-		
-		Deque<DEPNode> deque = new ArrayDeque<DEPNode>();
-		int idx = Collections.binarySearch(list, d_predicate), i, size = list.size();
-		for (i=idx-1; i>=0; i--) deque.add(list.get(i));
-		idx = Collections.binarySearch(list, d_predicate, Collections.reverseOrder());
-		for (i=idx+1; i<size; i++) deque.add(list.get(i));
-		
-		return deque;
+		int idx = numbered_arguments.size() - index - 1;
+		return (idx >= 0) ? numbered_arguments.get(idx) : null;
 	}
 	
-	private void getArgumentCandidatesAncestors(List<DEPNode> list, DEPNode node)
+	public String getPath(FieldType field)
 	{
-		if (node == null) return;
-		list.add(node);
-		list.addAll(node.getDependentList());
-		getArgumentCandidatesAncestors(list, node.getHead());
+		return d_predicate.getPath(getArgument(), getLowestCommonAncestor(), field);
 	}
 }

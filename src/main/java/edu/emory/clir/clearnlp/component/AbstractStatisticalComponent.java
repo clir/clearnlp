@@ -47,9 +47,9 @@ import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-abstract public class AbstractStatisticalComponent<LabelType, StateType extends AbstractState<?,LabelType>, EvalType extends AbstractEval<?>, FeatureType extends AbstractFeatureExtractor<?,?,?>> extends AbstractComponent
+abstract public class AbstractStatisticalComponent<LabelType, StateType extends AbstractState<?,LabelType>, EvalType extends AbstractEval<?>, FeatureType extends AbstractFeatureExtractor<?,?,?>, ConfigurationType extends AbstractConfiguration> extends AbstractComponent
 {
-	protected AbstractConfiguration t_configuration;
+	protected ConfigurationType t_configuration;
 	protected FeatureType[] f_extractors;
 	protected StringModel[] s_models;
 	protected EvalType      c_eval;
@@ -58,14 +58,14 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	public AbstractStatisticalComponent() {}
 	
 	/** Constructs a statistical component for collect. */
-	public AbstractStatisticalComponent(AbstractConfiguration configuration)
+	public AbstractStatisticalComponent(ConfigurationType configuration)
 	{
 		setConfiguration(configuration);
 		setFlag(CFlag.COLLECT);
 	}
 	
 	/** Constructs a statistical component for train. */
-	public AbstractStatisticalComponent(AbstractConfiguration configuration, FeatureType[] extractors, Object lexicons, boolean binary, int modelSize)
+	public AbstractStatisticalComponent(ConfigurationType configuration, FeatureType[] extractors, Object lexicons, boolean binary, int modelSize)
 	{
 		setConfiguration(configuration);
 		setFlag(CFlag.TRAIN);
@@ -75,7 +75,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	}
 	
 	/** Constructs a statistical component for bootstrap or evaluate. */
-	public AbstractStatisticalComponent(AbstractConfiguration configuration, FeatureType[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
+	public AbstractStatisticalComponent(ConfigurationType configuration, FeatureType[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
 		setConfiguration(configuration);
 		
@@ -93,14 +93,14 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	}
 	
 	/** Constructs a statistical component for decode. */
-	public AbstractStatisticalComponent(AbstractConfiguration configuration, ObjectInputStream in)
+	public AbstractStatisticalComponent(ConfigurationType configuration, ObjectInputStream in)
 	{
 		setConfiguration(configuration);
 		initDecode(in);
 	}
 	
 	/** Constructs a statistical component for decode. */
-	public AbstractStatisticalComponent(AbstractConfiguration configuration, byte[] models)
+	public AbstractStatisticalComponent(ConfigurationType configuration, byte[] models)
 	{
 		setConfiguration(configuration);
 		initDecode(models);
@@ -140,7 +140,7 @@ abstract public class AbstractStatisticalComponent<LabelType, StateType extends 
 	
 //	====================================== CONFIGURATION ======================================
 	
-	public void setConfiguration(AbstractConfiguration configuration)
+	public void setConfiguration(ConfigurationType configuration)
 	{
 		t_configuration = configuration;
 	}

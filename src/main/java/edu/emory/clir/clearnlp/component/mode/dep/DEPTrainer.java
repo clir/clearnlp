@@ -48,13 +48,13 @@ public class DEPTrainer extends AbstractNLPTrainer
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForCollect()
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForCollect()
 	{
 		return null;
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object lexicons)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForTrain(Object lexicons)
 	{
 		switch (t_configuration.getLanguage())
 		{
@@ -64,7 +64,7 @@ public class DEPTrainer extends AbstractNLPTrainer
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
 	{
 		switch (t_configuration.getLanguage())
 		{
@@ -74,7 +74,7 @@ public class DEPTrainer extends AbstractNLPTrainer
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
 	{
 		switch (t_configuration.getLanguage())
 		{
@@ -84,7 +84,7 @@ public class DEPTrainer extends AbstractNLPTrainer
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForDecode(byte[] models)
 	{
 		switch (t_configuration.getLanguage())
 		{

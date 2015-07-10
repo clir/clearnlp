@@ -134,11 +134,11 @@ public class PBFRoleset implements Serializable, Comparable<PBFRoleset>
 		{
 			m_roles.put(role.getArgumentNumber(), role);
 			
-			for (String vncls : role.getVNClasseSet())
-			{
-				if (!s_vncls.contains(vncls))
-					System.err.printf("VerbNet class mismatch: %s - %s (%s ^ %s)\n", s_id, role.getArgKey(), vncls, s_vncls.toString());
-			}
+//			for (String vncls : role.getVNClasseSet())
+//			{
+//				if (!s_vncls.contains(vncls))
+//					System.err.printf("VerbNet class mismatch: %s - %s (%s ^ %s)\n", s_id, role.getArgKey(), vncls, s_vncls.toString());
+//			}
 		}
 	}
 	

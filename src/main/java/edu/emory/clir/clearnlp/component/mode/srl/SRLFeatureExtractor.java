@@ -17,61 +17,53 @@ package edu.emory.clir.clearnlp.component.mode.srl;
 
 import java.io.InputStream;
 
-import org.w3c.dom.Element;
-
 import edu.emory.clir.clearnlp.component.mode.srl.state.AbstractSRLState;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
-import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
-import edu.emory.clir.clearnlp.feature.common.CommonFeatureTemplate;
+import edu.emory.clir.clearnlp.feature.common.CommonFeatureExtractor;
 import edu.emory.clir.clearnlp.feature.common.CommonFeatureToken;
+import edu.emory.clir.clearnlp.feature.type.FieldType;
 
 /**
  * @since 3.2.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SRLFeatureExtractor extends AbstractFeatureExtractor<CommonFeatureTemplate, CommonFeatureToken, AbstractSRLState>
+public class SRLFeatureExtractor extends CommonFeatureExtractor<AbstractSRLState>
 {
 	private static final long serialVersionUID = 7959999194169624654L;
 
-	/**
-	 * @param in
-	 */
 	public SRLFeatureExtractor(InputStream in)
 	{
 		super(in);
-		// TODO Auto-generated constructor stub
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor#createFeatureTemplate(org.w3c.dom.Element)
-	 */
+	
 	@Override
-	protected CommonFeatureTemplate createFeatureTemplate(Element eFeature)
+	protected String getFeature(CommonFeatureToken token, AbstractSRLState state, DEPNode node)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		switch (token.getField())
+		{
+		case b   : return getBooleanFeatureValue(token, state, node);
+		case t   : return state.distanceBetweenPredicateAndArgument();
+		case path: return state.getPath((FieldType)token.getValue());
+		case argn: return state.getNumberedArgument((Integer)token.getValue());
+		default  : return super.getFeature(token, state, node);
+		}
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor#getFeature(edu.emory.clir.clearnlp.feature.AbstractFeatureToken, edu.emory.clir.clearnlp.component.state.AbstractState, edu.emory.clir.clearnlp.dependency.DEPNode)
-	 */
-	@Override
-	protected String getFeature(CommonFeatureToken token, AbstractSRLState state,
-			DEPNode node)
+	
+	protected String getBooleanFeatureValue(CommonFeatureToken token, AbstractSRLState state, DEPNode node)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		int field = (int)token.getValue();
+		boolean b = false;
+		
+		switch (field)
+		{
+		case  0: b = node.isDependentOf(state.getPredicate());  break;
+		case  1: b = state.getPredicate().isDependentOf(node);  break;
+		case  2: b = node.isDescendantOf(state.getPredicate()); break;
+		case  3: b = state.getPredicate().isDescendantOf(node); break;
+		default: throw new IllegalArgumentException("Unsupported feature: b"+token.getValue());
+		}
+		
+		return b ? token.getBinaryFeatureKey() : null;
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor#getFeatures(edu.emory.clir.clearnlp.feature.AbstractFeatureToken, edu.emory.clir.clearnlp.component.state.AbstractState, edu.emory.clir.clearnlp.dependency.DEPNode)
-	 */
-	@Override
-	protected String[] getFeatures(CommonFeatureToken token, AbstractSRLState state,
-			DEPNode node)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 }

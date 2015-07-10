@@ -28,6 +28,7 @@ import java.util.function.BiPredicate;
 import java.util.regex.Pattern;
 
 import edu.emory.clir.clearnlp.collection.list.SortedArrayList;
+import edu.emory.clir.clearnlp.collection.pair.Pair;
 import edu.emory.clir.clearnlp.collection.set.IntHashSet;
 import edu.emory.clir.clearnlp.feature.type.DirectionType;
 import edu.emory.clir.clearnlp.feature.type.FieldType;
@@ -931,7 +932,6 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return l_dependents.size();
 	}
 	
-	
 	/**
 	 * Get the the valency of the node.
 	 * @param direction DirectionType of l, r, a 
@@ -1040,7 +1040,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		int i, size = getDependentSize();
 		DEPNode node;
 		
-		for (i=size-1; i>=0; i++)
+		for (i=size-1; i>=0; i--)
 		{
 			node = getDependent(i);
 			if (node.getID() < n_id) break;
@@ -1112,10 +1112,10 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 			build.append(delim);
 			build.append(dist);
 		}
-		else if (field == FieldType.p && includeTop)
+		else if (field != FieldType.d && includeTop)
 		{
 			build.append(delim);
-			build.append(top.getPOSTag());
+			build.append(top.getTagFeature(field));
 		}
 		
 		return build.length() == 0 ? null : build.toString();
@@ -1173,6 +1173,18 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		case p : return getPOSTag();
 		case n : return getNamedEntityTag();
 		case d : return getLabel();
+		default: return null;
+		}
+	}
+	
+	public String getFormFeature(FieldType field)
+	{
+		switch (field)
+		{
+		case f : return getWordForm();
+		case m : return getLemma();
+		case f2: return getSimplifiedWordForm();
+		case f3: return getLowerSimplifiedWordForm();
 		default: return null;
 		}
 	}
@@ -1826,28 +1838,72 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		return getSemanticHeadArc(node, pattern) != null;
 	}
 	
+//	/**
+//	 * Get a list of all DEPNode nodes that are potential argument candidate of the node.
+//	 * @param depth the depth of how many level (going up) to search for candidates 
+//	 * @param includeSelf whether to include yourself as a candidate or not
+//	 * @return a list of all DEPNode nodes that are potential argument candidate of the node
+//	 */
+//	public Set<DEPNode> getArgumentCandidateSet(int depth, boolean includeSelf)
+//	{
+//		Set<DEPNode> set = new HashSet<>(getDescendantList(depth));
+//		DEPNode head = getHead();
+//		
+//		while (head != null)
+//		{
+//			set.add(head);
+//			set.addAll(head.getDependentList());
+//			head = head.getHead();
+//		}
+//		
+//		if (includeSelf)	set.add   (this);
+//		else				set.remove(this);
+//		
+//		return set;
+//	}
+	
 	/**
-	 * Get a list of all DEPNode nodes that are potential argument candidate of the node.
-	 * @param depth the depth of how many level (going up) to search for candidates 
-	 * @param includeSelf whether to include yourself as a candidate or not
-	 * @return a list of all DEPNode nodes that are potential argument candidate of the node
+	 * Consider this node as a predicate.
+	 * @param maxDepth  > 0.
+	 * @param maxHeight > 0.
+	 * @return list of (argument, lowest common ancestor) pairs.
 	 */
-	public Set<DEPNode> getArgumentCandidateSet(int depth, boolean includeSelf)
+	public List<Pair<DEPNode,DEPNode>> getArgumentCandidateList(int maxDepth, int maxHeight)
 	{
-		Set<DEPNode> set = new HashSet<>(getDescendantList(depth));
-		DEPNode head = getHead();
+		List<Pair<DEPNode,DEPNode>> list = new ArrayList<>();
+		int i, j, beginIndex, endIndex = 0;
+		DEPNode lca = this;
 		
-		while (head != null)
+		// descendents
+		for (DEPNode node : lca.getDependentList())
+			list.add(new Pair<>(node, lca));
+		
+		for (i=1; i<maxDepth; i++)
 		{
-			set.add(head);
-			set.addAll(head.getDependentList());
-			head = head.getHead();
+			if (endIndex == list.size()) break;
+			beginIndex = endIndex;
+			endIndex   = list.size();
+			
+			for (j=beginIndex; j<endIndex; j++)
+			{
+				for (DEPNode node : list.get(j).o1.getDependentList())
+					list.add(new Pair<>(node, lca));
+			}
 		}
 		
-		if (includeSelf)	set.add   (this);
-		else				set.remove(this);
+		// ancestors
+		for (i=0; i<maxHeight; i++)
+		{
+			lca = lca.getHead();
+			if (lca == null || lca.getID() == DEPLib.ROOT_ID) break;
+			
+			list.add(new Pair<>(lca, lca));
+			
+			for (DEPNode node : lca.getDependentList())
+				if (node != this) list.add(new Pair<>(node, lca));
+		}
 		
-		return set;
+		return list;
 	}
 	
 //	====================================== String ======================================

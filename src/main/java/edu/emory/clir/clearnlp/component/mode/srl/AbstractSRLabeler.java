@@ -30,30 +30,30 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  * @since 3.1.3
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class AbstractSRLabeler extends AbstractStatisticalComponent<String, AbstractSRLState, SRLEval, SRLFeatureExtractor>
+public abstract class AbstractSRLabeler extends AbstractStatisticalComponent<String, AbstractSRLState, SRLEval, SRLFeatureExtractor, SRLConfiguration>
 {
 	/** Creates a semantic role labeler for train. */
-	public AbstractSRLabeler(SRLFeatureExtractor[] extractors, Object lexicons)
+	public AbstractSRLabeler(SRLConfiguration configuration, SRLFeatureExtractor[] extractors, Object lexicons)
 	{
-		super(null, extractors, lexicons, false, 2);
+		super(configuration, extractors, lexicons, false, 2);
 	}
 	
 	/** Creates a semantic role labeler for bootstrap or evaluate. */
-	public AbstractSRLabeler(SRLFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
+	public AbstractSRLabeler(SRLConfiguration configuration, SRLFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
-		super(null, extractors, lexicons, models, bootstrap);
+		super(configuration, extractors, lexicons, models, bootstrap);
 	}
 	
 	/** Creates a semantic role labeler for decode. */
-	public AbstractSRLabeler(ObjectInputStream in)
+	public AbstractSRLabeler(SRLConfiguration configuration, ObjectInputStream in)
 	{
-		super(null, in);
+		super(configuration, in);
 	}
 	
 	/** Creates a semantic role labeler for decode. */
-	public AbstractSRLabeler(byte[] models)
+	public AbstractSRLabeler(SRLConfiguration configuration, byte[] models)
 	{
-		super(null, models);
+		super(configuration, models);
 	}
 	
 //	====================================== LEXICONS ======================================
@@ -95,7 +95,8 @@ public abstract class AbstractSRLabeler extends AbstractStatisticalComponent<Str
 		for (StringInstance instance : instances)
 		{
 			idx = Integer.parseInt(instance.getLabel().substring(0, 1));
-			s_models[idx].addInstances(instances);
+			instance.setLabel(instance.getLabel().substring(1));
+			s_models[idx].addInstance(instance);
 		}
 	}
 	

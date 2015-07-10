@@ -40,10 +40,10 @@ public class PBLib
 	static public final String PREFIX_REFERENT		= "R-";
 	static public final String PREFIX_LINK			= "LINK-";
 	static public final String DELIM_FUNCTION_TAG	= StringConst.HYPHEN;
-	static public final Pattern P_R_ARG				= Pattern.compile("^"+PREFIX_REFERENT+"(.+)");
+	static public final Pattern P_R_ARG	= Pattern.compile("^"+PREFIX_REFERENT+"(.+)");
+	static public final Pattern P_ARGN	= Pattern.compile("^(A|C-A|R-A)(RG)?(\\d|A)");
+	static public final Pattern P_ARGM	= Pattern.compile("^A(RG)?M-(.+)");
 	
-	static private final Pattern P_ARGN			= Pattern.compile("^(A|C-A|R-A)(RG)?(\\d|A)");
-	static private final Pattern P_ARGM			= Pattern.compile("^A(RG)?M-(.+)");
 	static private final Pattern P_LINK			= Pattern.compile("^"+PREFIX_LINK+"(.+)");
 	static private final Pattern P_ARGN_CORE	= Pattern.compile("^A(RG)?(\\d|A)");
 	

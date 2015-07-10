@@ -55,7 +55,7 @@ public class NLPTrain extends AbstractNLPTrain
 		case pos: return new POSTrainer(configuration, features);
 		case dep: return new DEPTrainer(configuration, features);
 		case ner: return new NERTrainer(configuration, features);
-		case srl: return new SRLTrainer(configuration);
+		case srl: return new SRLTrainer(configuration, features);
 		default : throw new IllegalArgumentException("Invalid mode: "+mode.toString()); 
 		}
 	}

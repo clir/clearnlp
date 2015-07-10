@@ -517,7 +517,7 @@ public class PBPostProcess
 					if ((ante = curr.getAntecedent()) != null)
 						arg.addLocation(new PBLocation(ante.getPBLocation(), "*"));
 					
-					if ((node = getCoIndexedWHNode(curr)) != null)
+					if ((node = getCoIndexedWHNode(curr)) != null && !node.getChildrenList().contains(tree.getTerminal(instance.getPredicateID())))
 						cLoc.set(node.getPBLocation(), "*");
 				}
 				else if (curr.getConstituentTag().startsWith("WH"))
@@ -618,11 +618,11 @@ public class PBPostProcess
 				
 				if (DSUtils.isSubset(si, sj) && ni != nj)
 				{
-					lDel.add(aj);
+					if (!aj.isLabel("rel")) lDel.add(aj);
 				}
 				else if (DSUtils.isSubset(sj, si) && ni != nj)
 				{
-					lDel.add(ai);
+					if (!ai.isLabel("rel")) lDel.add(ai);
 				}
 				else if (DSUtils.hasIntersection(si, sj))
 				{

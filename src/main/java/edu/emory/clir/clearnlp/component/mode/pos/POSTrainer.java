@@ -48,31 +48,31 @@ public class POSTrainer extends AbstractNLPTrainer
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForCollect()
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForCollect()
 	{
 		return new DefaultPOSTagger((POSConfiguration)t_configuration);
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object lexicons)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForTrain(Object lexicons)
 	{
 		return new DefaultPOSTagger(f_extractors, lexicons);
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
 	{
 		return new DefaultPOSTagger(f_extractors, lexicons, models, true);
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
 	{
 		return new DefaultPOSTagger(f_extractors, lexicons, models, false);
 	}
 	
 	@Override
-	protected AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models)
+	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForDecode(byte[] models)
 	{
 		return new DefaultPOSTagger(models);
 	}
