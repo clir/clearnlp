@@ -16,48 +16,49 @@
 
 	<!-- 1-gram features -->
 	<feature f0="j-1:p"/>
-	<feature f0="j+1:p"   visible="false"/>
-	<feature f0="j_h:p"   visible="false"/>
 	<feature f0="j_lmd:p"/>
-	<feature f0="j_rmd:p" visible="false"/>
-	<feature f0="j_lns:p" visible="false"/>
+	<feature f0="j_lns:p"/>
 	<feature f0="j_rns:p"/>
-	
+
 	<feature f0="j-1:m"/>
 	<feature f0="j+1:m"/>
-	<feature f0="j_h:m"/>
-	<feature f0="j_lmd:m" visible="false"/>
-	<feature f0="j_rmd:m"/>
-	<feature f0="j_lns:m"/>
 	<feature f0="j_rns:m"/>
+	<feature f0="j_rmd:m"/>
 
-	<feature f0="i-1:p" />
-	<feature f0="i-1:m"/>
+	<feature f0="i-1:p"/>
+	<feature f0="i+1:p"/>
+	<feature f0="i_h:p"/>
 	<feature f0="i_lmd:p"/>
-	<feature f0="i_lmd:m"/>
-	
-	<feature f0="i_h:m"   f1="i_h:p"/>
-	<feature f0="i+1:m"   f1="i+1:p"/>
-	<feature f0="i_rmd:m" f1="i_rmd:p"/>
+	<feature f0="i_rmd:p"/>
+
+	<feature f0="i-1:m"/>
+	<feature f0="i+1:m"/>
 
 	<!-- 2-gram features -->
+	<feature f0="i_lmd:p" f1="i:p"/>
+	<feature f0="i+1:p"   f1="i:m"/>
+
 	<feature f0="j_rns:p" f1="j:p"/>
 	<feature f0="j_lmd:p" f1="j:p"/>
-	<feature f0="i_lmd:p" f1="i:p"/>
+	<feature f0="j_lmd:m" f1="j:p"/>
+	<feature f0="j_lns:m" f1="j:p"/>
+	<feature f0="j_rmd:p" f1="j:m"/>
 
 	<feature f0="j_h:m"   f1="j:d"/>
 	<feature f0="j_lmd:m" f1="j:d"/>
 	<feature f0="j_rmd:m" f1="j:d"/>
+	<feature f0="j_lmd:p" f1="j:d"/>
 	<feature f0="j_rmd:p" f1="j:d"/>
 
 	<!-- path features -->
-	<feature f0="i:path.p"/>
-	<feature f0="i:path.d" f1="i:p"/>
-	<feature f0="i:path.t" f1="i:p"/>
+	<feature f0="j:path.p"/>
+	<feature f0="j:path.d" f1="i:p"/>
+	<feature f0="j:path.t" f1="i:p"/>
 
 	<!-- subcategorization features -->
 	<feature f0="i:subcat.l.d"/>
 	<feature f0="i:subcat.r.d"/>
+	<feature f0="i:subcat.r.d" f1="i:m"/>
 	<feature f0="i_h:subcat.l.d"/>
 	<feature f0="i_h:subcat.r.d"/>
 
@@ -67,8 +68,11 @@
 	<feature f0="i:m" f1="i:argn0" f2="i:argn1"/>
 
 	<!-- extra features -->
-	<feature f0="i:ds"/>
+	<feature f0="i:ds.d"/>
 	<feature f0="j:t" note="distance from P"/>
+
+	<feature f0="i:dsw0"/>
+    <feature f0="j:dsw0"/>
 
 	<!-- binary features -->
 	<feature f0="j:b0" note="j is a dependent of P"/>

@@ -80,7 +80,7 @@ public class CommonFeatureExtractor<StateType extends AbstractState<?,?>> extend
 		case ds  : return toLabelArray(node.getDependentList(), (FieldType)token.getValue());
 		case ds2 : return toLabelArray(node.getGrandDependentList(), (FieldType)token.getValue());
 		case dsw : return GlobalLexica.getDistributionalSemanticFeatures((int)token.getValue(), node.getWordForm());
-		case dsw2: return GlobalLexica.getDistributionalSemanticFeatures((int)token.getValue(), node.getLowerSimplifiedWordForm());
+		case dsls: return GlobalLexica.getDistributionalSemanticFeatures((int)token.getValue(), node.getLowerSimplifiedWordForm());
 		case orth: return getOrthographicFeatures(state, node);
 		default  : return null;
 		}

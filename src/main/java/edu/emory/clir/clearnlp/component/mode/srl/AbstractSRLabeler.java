@@ -90,20 +90,16 @@ public abstract class AbstractSRLabeler extends AbstractStatisticalComponent<Str
 	
 	private void addInstances(AbstractSRLState state, List<StringInstance> instances)
 	{
-		int idx;
-		
 		for (StringInstance instance : instances)
-		{
-			idx = Integer.parseInt(instance.getLabel().substring(0, 1));
-			instance.setLabel(instance.getLabel().substring(1));
-			s_models[idx].addInstance(instance);
-		}
+			s_models[instance.getFeatureVector().getModelID()].addInstance(instance);
 	}
 	
 	@Override
 	protected StringFeatureVector createStringFeatureVector(AbstractSRLState state)
 	{
-		return f_extractors[0].createStringFeatureVector(state);
+		StringFeatureVector vector = f_extractors[0].createStringFeatureVector(state);
+		if (isTrainOrBootstrap()) vector.setModelID(state.getModelIndex());
+		return vector;
 	}
 
 	@Override

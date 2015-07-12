@@ -88,10 +88,10 @@ public abstract class AbstractSRLState extends AbstractState<SRLArc[],String> im
 		for (SRLArc arc : g_oracle[getArgument().getID()])
 		{
 			if (arc.isNode(d_predicate))
-				return getModelIndex()+arc.getLabel();
+				return arc.getLabel();
 		}
 				
-		return getModelIndex()+NO_ARC;
+		return NO_ARC;
 	}
 
 	@Override
@@ -118,7 +118,9 @@ public abstract class AbstractSRLState extends AbstractState<SRLArc[],String> im
 		{
 			argument_count++;
 			getArgument().addSemanticHead(d_predicate, label);
-			if (PBLib.isNumberedArgument(label)) numbered_arguments.add(label);
+			
+			if (PBLib.isNumberedArgument(label))
+				numbered_arguments.add(label);
 		}
 		
 		if (!pass())

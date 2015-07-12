@@ -52,9 +52,9 @@ public class CommonFeatureToken extends AbstractFeatureToken
 			setField(FieldType.dsw);
 			setValue(Integer.parseInt(m.group(1)));
 		}
-		else if ((m = FieldType.P_DSW2.matcher(field)).find())
+		else if ((m = FieldType.P_DSLS.matcher(field)).find())
 		{
-			setField(FieldType.dsw2);
+			setField(FieldType.dsls);
 			setValue(Integer.parseInt(m.group(1)));
 		}
 		else if ((m = FieldType.P_FEAT.matcher(field)).find())

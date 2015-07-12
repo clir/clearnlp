@@ -1023,7 +1023,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 			node = getDependent(i);
 			if (node.getID() > n_id) break;
 			build.append(StringConst.LESS_THAN);
-			build.append(getTagFeature(field));
+			build.append(node.getTagFeature(field));
 		}
 		
 		return build.length() > 0 ? build.toString() : null;
@@ -1045,7 +1045,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 			node = getDependent(i);
 			if (node.getID() < n_id) break;
 			build.append(StringConst.GREATER_THAN);
-			build.append(getTagFeature(field));
+			build.append(node.getTagFeature(field));
 		}
 		
 		return build.length() > 0 ? build.toString() : null;
@@ -1872,7 +1872,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 	{
 		List<Pair<DEPNode,DEPNode>> list = new ArrayList<>();
 		int i, j, beginIndex, endIndex = 0;
-		DEPNode lca = this;
+		DEPNode lca = this, prev;
 		
 		// descendents
 		for (DEPNode node : lca.getDependentList())
@@ -1894,13 +1894,13 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		// ancestors
 		for (i=0; i<maxHeight; i++)
 		{
-			lca = lca.getHead();
+			prev = lca;
+			lca  = lca.getHead();
 			if (lca == null || lca.getID() == DEPLib.ROOT_ID) break;
-			
 			list.add(new Pair<>(lca, lca));
 			
 			for (DEPNode node : lca.getDependentList())
-				if (node != this) list.add(new Pair<>(node, lca));
+				if (node != prev) list.add(new Pair<>(node, lca));
 		}
 		
 		return list;

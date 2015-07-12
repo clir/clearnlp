@@ -2,7 +2,7 @@
     <language>english</language>
 
     <global>
-        <distributional_semantics->brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt.xz</distributional_semantics->
+        <distributional_semantics>brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt.xz</distributional_semantics>
     </global>
 
     <reader type="tsv">
@@ -17,11 +17,11 @@
     </reader>
 
     <srl>
-        <trainer algorithm="adagrad" type="svm" labelCutoff="4" featureCutoff="3" alpha="0.02" rho="0.1" average="false"/>
+        <trainer algorithm="adagrad" type="svm" labelCutoff="4" featureCutoff="2" alpha="0.02" rho="0.1" average="false"/>
         <trainer algorithm="adagrad" type="svm" labelCutoff="4" featureCutoff="3" alpha="0.02" rho="0.1" average="false"/>
         <bootstraps>true</bootstraps>
-        <max_depth>5</max_depth>
-        <max_height>5</max_height>
+        <max_depth>4</max_depth>
+        <max_height>3</max_height>
     </srl>
 </configuration>
 

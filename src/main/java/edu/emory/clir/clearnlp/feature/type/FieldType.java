@@ -39,7 +39,7 @@ public enum FieldType
 	a,		// ambiguity class (part-of-speech tagging, named entity recognition)
 	t,		// distance between i to j (dependency parsing, semantic role labeling)
 	dsw,	// distributional semantics: word
-	dsw2,	// distributional semantics: lower-case, simplified
+	dsls,	// distributional semantics: lower-case, simplified
 	path,	// path between i and j (semantic role labeling)
 	argn,	// numbered argument (semantic role labeling)
 
@@ -52,7 +52,7 @@ public enum FieldType
 	
 	static public final Pattern P_BOOLEAN = Pattern.compile("^"+b+"(\\d+)$");
 	static public final Pattern P_DSW     = Pattern.compile("^"+dsw+"(\\d+)$");
-	static public final Pattern P_DSW2    = Pattern.compile("^"+dsw2+"(\\d+)$");
+	static public final Pattern P_DSLS    = Pattern.compile("^"+dsls+"(\\d+)$");
 	static public final Pattern P_ARGN    = Pattern.compile("^"+argn+"(\\d+)$");
 	static public final Pattern P_FEAT    = Pattern.compile("^"+ft+"=(.+)$");
 	static public final Pattern P_PATH    = Pattern.compile("^"+path+"\\.(.)$");
@@ -70,6 +70,6 @@ public enum FieldType
 	
 	static public boolean isSetField(FieldType field)
 	{
-		return field == as || field == ds || field == ds2 || field == orth || field == dsw || field == dsw2;
+		return field == as || field == ds || field == ds2 || field == orth || field == dsw || field == dsls;
 	}
 }

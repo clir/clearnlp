@@ -45,7 +45,10 @@ public class SRLEval extends AbstractF1Eval<SRLArc[]>
 			for (SRLArc g : gHeads)
 				for (SRLArc s : sHeads)
 					if (s.equals(g.getNode(), g.getLabel()))
+					{
 						n_correct++;
+						break;
+					}
 		}
 	}
 }

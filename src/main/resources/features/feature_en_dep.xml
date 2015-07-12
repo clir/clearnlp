@@ -90,13 +90,13 @@
     <feature f0="i_rmd:p" f1="i:p" f2="j:p"/>
     <feature f0="j_lmd:p" f1="i:p" f2="j:p"/>
 
-    <feature f0="i:d"     f1="j:p" visible="true"/>
-    <feature f0="i_lmd:d" f1="j:p" visible="true"/>
-    <feature f0="i_rmd:d" f1="j:p" visible="true"/>
+    <feature f0="i:d"     f1="j:p"/>
+    <feature f0="i_lmd:d" f1="j:p"/>
+    <feature f0="i_rmd:d" f1="j:p"/>
 
-    <feature f0="i_h:p"   f1="j:p" visible="true"/>
-    <feature f0="i_lmd:p" f1="j:p" visible="true"/>
-    <feature f0="i_rmd:p" f1="j:p" visible="true"/>
+    <feature f0="i_h:p"   f1="j:p"/>
+    <feature f0="i_lmd:p" f1="j:p"/>
+    <feature f0="i_rmd:p" f1="j:p"/>
 
     <!-- 3rd-order features -->
     <feature f0="i_h:d"/>
