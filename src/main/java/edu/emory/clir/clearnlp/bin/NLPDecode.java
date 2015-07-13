@@ -293,7 +293,7 @@ public class NLPDecode
 	{
 		switch (mode)
 		{
-		case ner  : return tree.toString(DEPNode::toStringNER);
+		case ner  : return tree.toString();
 		case srl  : return tree.toString(DEPNode::toStringSRL);
 		case dep  : return tree.toString(DEPNode::toStringDEP);
 		case morph: return tree.toString(DEPNode::toStringMorph);

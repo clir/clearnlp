@@ -162,6 +162,7 @@ public class DEPNode implements Comparable<DEPNode>, Serializable
 		setLabel(null);
 		setHead(null);
 		l_dependents = new SortedArrayList<>();
+		initSemanticHeads();
 	}
 	
 	/** Initializes this node as an artificial root node. */

@@ -34,6 +34,13 @@ public class SRLConfiguration extends AbstractConfiguration
 	
 //	============================== Initialization ==============================
 	
+	public SRLConfiguration(int maxDepth, int maxHeight)
+	{
+		super(NLPMode.srl);
+		max_depth  = maxDepth;
+		max_height = maxHeight;
+	}
+	
 	public SRLConfiguration(InputStream in)
 	{
 		super(NLPMode.srl, in);
