@@ -20,13 +20,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import com.carrotsearch.hppc.CharOpenHashSet;
-
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class CharHashSet extends CharOpenHashSet implements Serializable
+public class CharHashSet extends com.carrotsearch.hppc.CharHashSet implements Serializable
 {
 	private static final long serialVersionUID = -3796053685010557911L;
 	
@@ -54,11 +52,5 @@ public class CharHashSet extends CharOpenHashSet implements Serializable
 	private void writeObject(ObjectOutputStream o) throws IOException
 	{
 		o.writeObject(toArray());
-	}
-	
-	public void addAll(char[] array)
-	{
-		for (char item : array)
-			add(item);
 	}
 }

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.carrotsearch.hppc.IntIntOpenHashMap;
+import com.carrotsearch.hppc.IntIntHashMap;
 
 import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
@@ -273,7 +273,7 @@ public class CTTree
 		List<ObjectIntPair<List<CTNode>>> ps = mOrg.toList();
 		Collections.sort(ps);
 		
-		IntIntOpenHashMap mNew = new IntIntOpenHashMap();
+		IntIntHashMap mNew = new IntIntHashMap();
 		int coIndex = 1, last, i;
 		boolean isAnteFound;
 		List<CTNode> list;
@@ -352,7 +352,7 @@ public class CTTree
 	}
 	
 	/** Called by {@link #normalizeIndices()}. */
-	private void remapGapIndices(IntIntOpenHashMap map, int[] lastIndex, CTNode curr)
+	private void remapGapIndices(IntIntHashMap map, int[] lastIndex, CTNode curr)
 	{
 		int gapIndex = curr.getGappingRelationIndex();
 		

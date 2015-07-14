@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *	 http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.carrotsearch.hppc.ObjectContainer;
+import com.carrotsearch.hppc.cursors.IntObjectCursor;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 
@@ -35,23 +36,23 @@ import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 public class IntObjectHashMap<T> implements Serializable, Iterable<ObjectIntPair<T>>
 {
 	private static final long serialVersionUID = 5327212904932776361L;
-	private IntObjectOpenHashMap<T> g_map;
+	private com.carrotsearch.hppc.IntObjectHashMap<T> g_map;
 	
 	public IntObjectHashMap()
 	{
-		g_map = new IntObjectOpenHashMap<T>();
+		g_map = new com.carrotsearch.hppc.IntObjectHashMap<T>();
 	}
 	
 	public IntObjectHashMap(int initialCapacity)
 	{
-		g_map = new IntObjectOpenHashMap<T>(initialCapacity);
+		g_map = new com.carrotsearch.hppc.IntObjectHashMap<T>(initialCapacity);
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		List<ObjectIntPair<T>> list = (List<ObjectIntPair<T>>)in.readObject();
-		g_map = new IntObjectOpenHashMap<T>(list.size());
+		g_map = new com.carrotsearch.hppc.IntObjectHashMap<T>(list.size());
 		putAll(list);
 	}
 
@@ -134,34 +135,29 @@ public class IntObjectHashMap<T> implements Serializable, Iterable<ObjectIntPair
 	{
 		Iterator<ObjectIntPair<T>> it = new Iterator<ObjectIntPair<T>>()
 		{
-			private final int key_size = g_map.keys.length;
-			private int current_index  = 0;
+			private final Iterator<IntObjectCursor<T>> g_iter = g_map.iterator();
 			
 			@Override
 			public boolean hasNext()
 			{
-				for (; current_index < key_size; current_index++)
-				{
-					if (g_map.allocated[current_index])
-						return true;
-				}
-				
-				return false;
+				return g_iter.hasNext();
 			}
 			
 			@Override
 			public ObjectIntPair<T> next()
 			{
-				if (current_index < key_size)
+				ObjectIntPair<T> p = null;
+				try
 				{
-					ObjectIntPair<T> p = new ObjectIntPair<T>(g_map.values[current_index], g_map.keys[current_index]);
-					current_index++;
-					return p;
+					IntObjectCursor<T> cursor = g_iter.next();
+					p = new ObjectIntPair<T>(cursor.value, cursor.key);
 				}
-				
-				return null;
+				catch (NoSuchElementException e)
+				{
+					
+				}
+				return p;
 			}
-			
 			@Override
 			public void remove() {}
 		};

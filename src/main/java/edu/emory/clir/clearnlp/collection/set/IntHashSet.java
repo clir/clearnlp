@@ -20,13 +20,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import com.carrotsearch.hppc.IntOpenHashSet;
-
 /**
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class IntHashSet extends IntOpenHashSet implements Serializable
+public class IntHashSet extends com.carrotsearch.hppc.IntHashSet implements Serializable
 {
 	private static final long serialVersionUID = 8220093021280571821L;
 	
@@ -48,12 +46,6 @@ public class IntHashSet extends IntOpenHashSet implements Serializable
 	private void writeObject(ObjectOutputStream o) throws IOException
 	{
 		o.writeObject(toArray());
-	}
-	
-	public void addAll(int[] array)
-	{
-		for (int item : array)
-			add(item);
 	}
 	
 	public void addAll(IntHashSet set)
