@@ -515,7 +515,9 @@ public class PBPostProcess
 				if (CTLibEn.isRelativizer(curr))
 				{
 					if ((ante = curr.getAntecedent()) != null)
+					{
 						arg.addLocation(new PBLocation(ante.getPBLocation(), "*"));
+					}
 					
 					if ((node = getCoIndexedWHNode(curr)) != null && !node.getChildrenList().contains(tree.getTerminal(instance.getPredicateID())))
 					{
