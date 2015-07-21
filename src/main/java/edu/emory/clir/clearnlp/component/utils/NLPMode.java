@@ -25,6 +25,5 @@ public enum NLPMode
 	morph,
 	dep,
 	ner,
-	srl,
-	future;
+	srl;
 }

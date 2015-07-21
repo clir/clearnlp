@@ -30,7 +30,7 @@ import edu.emory.clir.clearnlp.feature.common.CommonFeatureExtractor;
  * @since 3.0.3
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class AbstractNERecognizer extends AbstractStatisticalComponent<String, NERState, NEREval, CommonFeatureExtractor<NERState>>
+public abstract class AbstractNERecognizer extends AbstractStatisticalComponent<String, NERState, NEREval, CommonFeatureExtractor<NERState>, NERConfiguration>
 {
 	private NERLexicon ner_lexicon;
 	public AbstractNERecognizer() {};
@@ -39,7 +39,6 @@ public abstract class AbstractNERecognizer extends AbstractStatisticalComponent<
 	public AbstractNERecognizer(NERConfiguration configuration)
 	{
 		super(configuration);
-		t_configuration = configuration;
 		ner_lexicon = new NERLexicon(configuration);
 	}
 	

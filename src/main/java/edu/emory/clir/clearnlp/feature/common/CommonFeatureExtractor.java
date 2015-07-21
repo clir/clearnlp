@@ -65,7 +65,7 @@ public class CommonFeatureExtractor<StateType extends AbstractState<?,?>> extend
 		case d : return node.getLabel();
 		case v : return node.getValency((DirectionType)token.getValue());
 		case ft: return node.getFeat((String)token.getValue());
-		case sc: Pair<DirectionType,FieldType> p = (Pair<DirectionType,FieldType>)token.getValue(); 
+		case subcat: Pair<DirectionType,FieldType> p = (Pair<DirectionType,FieldType>)token.getValue(); 
 				 return node.getSubcategorization(p.o1, p.o2);
 		case b : return getBooleanFeatureValue(token, state, node);
 		default: return null;
@@ -99,17 +99,5 @@ public class CommonFeatureExtractor<StateType extends AbstractState<?,?>> extend
 		}
 		
 		return b ? token.getBinaryFeatureKey() : null;
-	}
-	
-	protected String getFormFeature(CommonFeatureToken token, DEPNode node)
-	{
-		switch (token.getField())
-		{
-		case f : return node.getWordForm();
-		case m : return node.getLemma();
-		case f2: return node.getSimplifiedWordForm();
-		case f3: return node.getLowerSimplifiedWordForm();
-		default: return null;
-		}
 	}
 }

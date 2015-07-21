@@ -72,9 +72,19 @@ public class CommonFeatureToken extends AbstractFeatureToken
 			setField(FieldType.sf);
 			setValue(Integer.parseInt(m.group(1)));
 		}
+		else if ((m = FieldType.P_ARGN.matcher(field)).find())
+		{
+			setField(FieldType.argn);
+			setValue(Integer.parseInt(m.group(1)));
+		}
+		else if ((m = FieldType.P_PATH.matcher(field)).find())
+		{
+			setField(FieldType.path);
+			setValue(FieldType.valueOf(m.group(1)));
+		}
 		else if ((m = FieldType.P_SUBCAT.matcher(field)).find())
 		{
-			setField(FieldType.sc);
+			setField(FieldType.subcat);
 			setValue(new Pair<DirectionType,FieldType>(DirectionType.valueOf(m.group(1)), FieldType.valueOf(m.group(2))));
 		}
 		else if ((m = FieldType.P_VALENCY.matcher(field)).find())
@@ -89,7 +99,7 @@ public class CommonFeatureToken extends AbstractFeatureToken
 		}
 		else if ((m = FieldType.P_GRAND_DEPENDENTS.matcher(field)).find())
 		{
-			setField(FieldType.ds);
+			setField(FieldType.ds2);
 			setValue(FieldType.valueOf(m.group(1)));
 		}
 		else

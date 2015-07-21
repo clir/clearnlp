@@ -33,43 +33,41 @@ import edu.emory.clir.clearnlp.dependency.DEPTree;
  * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, AbstractDEPState, DEPEval, DEPFeatureExtractor> implements DEPTransition
+public abstract class AbstractDEPParser extends AbstractStatisticalComponent<DEPLabel, AbstractDEPState, DEPEval, DEPFeatureExtractor, DEPConfiguration> implements DEPTransition
 {
-	private DEPConfiguration d_configuration;
 	private int[][] label_indices;
 	
 	/** Creates a dependency parser for train. */
 	public AbstractDEPParser(DEPConfiguration configuration, DEPFeatureExtractor[] extractors, Object lexicons)
 	{
 		super(configuration, extractors, lexicons, false, 1);
-		init(configuration);
+		init();
 	}
 	
 	/** Creates a dependency parser for bootstrap or evaluate. */
 	public AbstractDEPParser(DEPConfiguration configuration, DEPFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
 		super(configuration, extractors, lexicons, models, bootstrap);
-		init(configuration);
+		init();
 	}
 	
 	/** Creates a dependency parser for decode. */
 	public AbstractDEPParser(DEPConfiguration configuration, ObjectInputStream in)
 	{
 		super(configuration, in);
-		init(configuration);
+		init();
 	}
 	
 	/** Creates a dependency parser for decode. */
 	public AbstractDEPParser(DEPConfiguration configuration, byte[] models)
 	{
 		super(configuration, models);
-		init(configuration);
+		init();
 	}
 	
-	private void init(DEPConfiguration configuration)
+	private void init()
 	{
 		label_indices = AbstractDEPState.initLabelIndices(s_models[0].getLabels());
-		d_configuration = configuration;
 	}
 	
 //	====================================== LEXICONS ======================================
@@ -84,7 +82,7 @@ public abstract class AbstractDEPParser extends AbstractStatisticalComponent<DEP
 
 	protected void initEval()
 	{
-		c_eval = new DEPEval(((DEPConfiguration)t_configuration).evaluatePunctuation());
+		c_eval = new DEPEval(t_configuration.evaluatePunctuation());
 	}
 	
 //	====================================== PROCESS ======================================
@@ -92,7 +90,7 @@ public abstract class AbstractDEPParser extends AbstractStatisticalComponent<DEP
 	@Override
 	public void process(DEPTree tree)
 	{
-		AbstractDEPState state = new DEPStateBranch(tree, c_flag, d_configuration);
+		AbstractDEPState state = new DEPStateBranch(tree, c_flag, t_configuration);
 		List<StringInstance> instances = process(state);
 		
 		if (state.startBranching())
@@ -154,7 +152,7 @@ public abstract class AbstractDEPParser extends AbstractStatisticalComponent<DEP
 				processHeadlessAll(state, node, max, label_indices[AbstractDEPState. LEFT_ARC] ,  1);
 				
 				if (max.o == null)
-					node.setHead(state.getNode(0), d_configuration.getRootLabel());
+					node.setHead(state.getNode(0), t_configuration.getRootLabel());
 				else
 					node.setHead(state.getNode(max.i), new DEPLabel(max.o).getDeprel());
 			}

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.sentiment;
-
-import edu.emory.clir.clearnlp.component.evaluation.AbstractAccuracyEval;
-import edu.emory.clir.clearnlp.dependency.DEPLib;
-import edu.emory.clir.clearnlp.dependency.DEPNode;
+package edu.emory.clir.clearnlp.component.mode.srl;
 
 /**
- * @since 3.0.0
+ * @since 3.1.3
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SAEval extends AbstractAccuracyEval<String>
+public interface SRLTransition
 {
-	@Override
-	protected boolean isCorrect(DEPNode node, String label)
-	{
-		return label.equals(node.getFeat(DEPLib.FEAT_SA));
-	}
+	String NO_ARC = "N";
 }

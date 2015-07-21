@@ -29,6 +29,7 @@ public class StringFeatureVector extends AbstractFeatureVector
 {
 	private IntArrayList      i_types;
 	private ArrayList<String> s_values;
+	private int model_id;
 	
 	public StringFeatureVector()
 	{
@@ -85,6 +86,16 @@ public class StringFeatureVector extends AbstractFeatureVector
 	public String getValue(int index)
 	{
 		return s_values.get(index);
+	}
+	
+	public int getModelID()
+	{
+		return model_id;
+	}
+	
+	public void setModelID(int id)
+	{
+		model_id = id;
 	}
 	
 	@Override

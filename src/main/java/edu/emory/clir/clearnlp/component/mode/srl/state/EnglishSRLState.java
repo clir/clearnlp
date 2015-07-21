@@ -13,22 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.sentiment;
+package edu.emory.clir.clearnlp.component.mode.srl.state;
 
-import edu.emory.clir.clearnlp.component.mode.srl.AbstractSRLabeler;
+import edu.emory.clir.clearnlp.component.mode.srl.SRLConfiguration;
+import edu.emory.clir.clearnlp.component.utils.CFlag;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPLibEn;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.pos.POSLibEn;
 
 /**
  * @since 3.1.3
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class EnglishSRLabeler extends AbstractSRLabeler
+public class EnglishSRLState extends AbstractSRLState
 {
+	public EnglishSRLState(DEPTree tree, CFlag flag, SRLConfiguration configuration)
+	{
+		super(tree, flag, configuration);
+	}
+
 	@Override
 	protected boolean isPredicate(DEPNode node)
+	{
+		return isVerbPredicate(node);
+	}
+	
+	private boolean isVerbPredicate(DEPNode node)
 	{
 		if (!node.getLabel().startsWith(DEPLibEn.DEP_AUX))
 		{

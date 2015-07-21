@@ -75,12 +75,12 @@ public abstract class AbstractNLPTrain
 		NLPMode      mode         = NLPMode.valueOf(s_mode);
 
 //		Collections.sort(trainFiles);
-		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> p = train(trainFiles, developFiles, s_featureFiles, s_configurationFile, mode);
+		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?,?>> p = train(trainFiles, developFiles, s_featureFiles, s_configurationFile, mode);
 		BinUtils.LOG.info(String.format("Final score: %4.2f\n", p.d));
 		if (s_modelPath != null) saveModel(p.o, s_modelPath);
 	}
 	
-	public ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> train(List<String> trainFiles, List<String> developFiles, String[] featureFiles, String configurationFile, NLPMode mode)
+	public ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?,?>> train(List<String> trainFiles, List<String> developFiles, String[] featureFiles, String configurationFile, NLPMode mode)
 	{
 		InputStream configuration  = IOUtils.createFileInputStream(configurationFile);
 		InputStream[] features     = IOUtils.createFileInputStreams(featureFiles);
@@ -89,7 +89,7 @@ public abstract class AbstractNLPTrain
 		return trainer.train(trainFiles, developFiles);
 	}
 	
-	public void saveModel(AbstractStatisticalComponent<?,?,?,?> component, String modelPath)
+	public void saveModel(AbstractStatisticalComponent<?,?,?,?,?> component, String modelPath)
 	{
 		ObjectOutputStream out;
 		
@@ -112,8 +112,8 @@ public abstract class AbstractNLPTrain
 //		List<String> developFiles = FileUtils.getFileList(s_developPath, s_developExt, false);
 //		NLPMode      mode         = NLPMode.valueOf(s_mode);
 //
-//		List<Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>>> tasks = new ArrayList<>();
-//		Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>> c;
+//		List<Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?,?>,String>>> tasks = new ArrayList<>();
+//		Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?,?>,String>> c;
 //		ExecutorService executor = Executors.newFixedThreadPool(n_threads);
 //		
 //		for (String configurationFile : s_configurationFiles)
@@ -122,13 +122,13 @@ public abstract class AbstractNLPTrain
 //			{
 //				System.out.println(featureFile);
 //				
-//				c = new Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>>()
+//				c = new Callable<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?,?>,String>>()
 //				{
 //					@Override
-//					public ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String> call() throws Exception
+//					public ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?,?>,String> call() throws Exception
 //					{
-//						final ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> p = train(trainFiles, developFiles, Splitter.splitColons(featureFile), configurationFile, mode);
-//						return new ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>(p.o, FileUtils.getBaseName(configurationFile)+", "+FileUtils.getBaseName(featureFile), p.d);
+//						final ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?,?>> p = train(trainFiles, developFiles, Splitter.splitColons(featureFile), configurationFile, mode);
+//						return new ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?,?>,String>(p.o, FileUtils.getBaseName(configurationFile)+", "+FileUtils.getBaseName(featureFile), p.d);
 //					}
 //				};
 //				
@@ -136,8 +136,8 @@ public abstract class AbstractNLPTrain
 //			}
 //		}
 //		
-//		List<Future<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String>>> futures = executor.invokeAll(tasks);
-//		ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?>,String> max = null, t;
+//		List<Future<ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?,?>,String>>> futures = executor.invokeAll(tasks);
+//		ObjectObjectDoubleTriple<AbstractStatisticalComponent<?,?,?,?,?>,String> max = null, t;
 //		int i, size = futures.size();
 //		
 //		for (i=0; i<size; i++)

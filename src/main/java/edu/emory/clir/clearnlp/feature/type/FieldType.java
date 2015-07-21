@@ -34,13 +34,14 @@ public enum FieldType
 	n,		// named entity tag
 	d,		// dependency label to its head
 	v,		// valency
-	sc,		// sub-categorization
+	subcat,		// sub-categorization
 	ft,		// feats
-	a,		// ambiguity class (part-of-speech tagging)
+	a,		// ambiguity class (part-of-speech tagging, named entity recognition)
 	t,		// distance between i to j (dependency parsing, semantic role labeling)
-	pt,		// path between i and j (dependency parsing, semantic role labeling)
 	dsw,	// distributional semantics: word
 	dsls,	// distributional semantics: lower-case, simplified
+	path,	// path between i and j (semantic role labeling)
+	argn,	// numbered argument (semantic role labeling)
 
 	as,		// set of ambiguity classes
 	ds,		// set of dependency labels of its dependents
@@ -49,16 +50,18 @@ public enum FieldType
 	
 	b;		// boolean #
 	
+	static public final Pattern P_BOOLEAN = Pattern.compile("^"+b+"(\\d+)$");
 	static public final Pattern P_DSW     = Pattern.compile("^"+dsw+"(\\d+)$");
 	static public final Pattern P_DSLS    = Pattern.compile("^"+dsls+"(\\d+)$");
-	static public final Pattern P_BOOLEAN = Pattern.compile("^"+b+"(\\d+)$");
+	static public final Pattern P_ARGN    = Pattern.compile("^"+argn+"(\\d+)$");
 	static public final Pattern P_FEAT    = Pattern.compile("^"+ft+"=(.+)$");
+	static public final Pattern P_PATH    = Pattern.compile("^"+path+"\\.(.)$");
 	static public final Pattern P_PREFIX  = Pattern.compile("^"+pf+"(\\d+)$");
 	static public final Pattern P_SUFFIX  = Pattern.compile("^"+sf+"(\\d+)$");
-	static public final Pattern P_SUBCAT  = Pattern.compile("^"+sc+"("+DirectionType.l+"|"+DirectionType.r+"|"+DirectionType.a+")(.)$");
+	static public final Pattern P_SUBCAT  = Pattern.compile("^"+subcat+"\\.("+DirectionType.l+"|"+DirectionType.r+"|"+DirectionType.a+")\\.(.)$");
 	static public final Pattern P_VALENCY = Pattern.compile("^"+v +"("+DirectionType.l+"|"+DirectionType.r+"|"+DirectionType.a+")$");
-	static public final Pattern P_DEPENDENTS       = Pattern.compile("^"+ds +"(.)$");
-	static public final Pattern P_GRAND_DEPENDENTS = Pattern.compile("^"+ds2+"(.)$");
+	static public final Pattern P_DEPENDENTS       = Pattern.compile("^"+ds +"\\.(.)$");
+	static public final Pattern P_GRAND_DEPENDENTS = Pattern.compile("^"+ds2+"\\.(.)$");
 	
 	static public boolean isBooleanField(FieldType field)
 	{

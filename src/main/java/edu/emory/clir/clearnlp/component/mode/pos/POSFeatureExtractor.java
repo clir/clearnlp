@@ -37,7 +37,7 @@ public class POSFeatureExtractor extends CommonFeatureExtractor<POSState>
 	@Override
 	protected String getFeature(CommonFeatureToken token, POSState state, DEPNode node)
 	{
-		String ftr = getFormFeature(token, node);
+		String ftr = node.getFormFeature(token.getField());
 		if (ftr != null) return state.extractWordFormFeature(node) ? ftr : null;
 		
 		switch (token.getField())

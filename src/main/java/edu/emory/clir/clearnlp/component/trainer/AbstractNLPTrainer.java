@@ -16,13 +16,13 @@
 package edu.emory.clir.clearnlp.component.trainer;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.emory.clir.clearnlp.bin.helper.AbstractNLPTrain;
 import edu.emory.clir.clearnlp.classification.model.StringModel;
-import edu.emory.clir.clearnlp.classification.trainer.AbstractOneVsAllTrainer;
-import edu.emory.clir.clearnlp.classification.trainer.AbstractOnlineTrainer;
 import edu.emory.clir.clearnlp.classification.trainer.AbstractTrainer;
+import edu.emory.clir.clearnlp.collection.list.FloatArrayList;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
 import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
@@ -47,12 +47,12 @@ public abstract class AbstractNLPTrainer
 		t_configuration = createConfiguration(configuration);
 	}
 	
-	public ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> train(List<String> trainFiles, List<String> developFiles)
+	public ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?,?>> train(List<String> trainFiles, List<String> developFiles)
 	{
 		Object lexicons = getLexicons(trainFiles);
-		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> prev = train(trainFiles, developFiles, lexicons, null, 0);
+		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?,?>> prev = train(trainFiles, developFiles, lexicons, null, 0);
 		if (!t_configuration.isBootstrap() || AbstractNLPTrain.d_stop > 0) return prev;
-		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> curr;
+		ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?,?>> curr;
 		byte[] backup;
 		int boot = 1;
 		
@@ -83,7 +83,7 @@ public abstract class AbstractNLPTrainer
 	
 	private Object getLexicons(List<String> trainFiles)
 	{
-		AbstractStatisticalComponent<?,?,?,?> component = createComponentForCollect();
+		AbstractStatisticalComponent<?,?,?,?,?> component = createComponentForCollect();
 		Object lexicons = null;
 		
 		if (component != null)
@@ -96,10 +96,10 @@ public abstract class AbstractNLPTrainer
 		return lexicons;
 	}
 	
-	private ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>> train(List<String> trainFiles, List<String> developFiles, Object lexicons, StringModel[] models, int boot)
+	private ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?,?>> train(List<String> trainFiles, List<String> developFiles, Object lexicons, StringModel[] models, int boot)
 	{
 		// train
-		AbstractStatisticalComponent<?,?,?,?> component = (models == null) ? createComponentForTrain(lexicons) : createComponentForBootstrap(lexicons, models);
+		AbstractStatisticalComponent<?,?,?,?,?> component = (models == null) ? createComponentForTrain(lexicons) : createComponentForBootstrap(lexicons, models);
 		BinUtils.LOG.info("Generating training instances: "+boot+"\n");
 		process(component, trainFiles, true);
 		
@@ -108,171 +108,183 @@ public abstract class AbstractNLPTrainer
 		component = createComponentForEvaluate(lexicons, component.getModels());
 		double score = trainPipeline(component, trainers, developFiles);
 		
-		return new ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?>>(component, score); 
+		return new ObjectDoublePair<AbstractStatisticalComponent<?,?,?,?,?>>(component, score); 
 	}
 	
 	/** Initializes the training configuration. */
 	protected abstract AbstractConfiguration createConfiguration(InputStream in);
 	
 	/** Creates an NLP component for collecting lexicons. */
-	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForCollect();
+	protected abstract AbstractStatisticalComponent<?,?,?,?,?> createComponentForCollect();
 	
 	/** Creates an NLP component for training. */
-	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForTrain(Object lexicons);
+	protected abstract AbstractStatisticalComponent<?,?,?,?,?> createComponentForTrain(Object lexicons);
 	
 	/** Creates an NLP component for bootstrap. */
-	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models);
+	protected abstract AbstractStatisticalComponent<?,?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models);
 	
 	/** Creates an NLP component for evaluation. */
-	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models);
+	protected abstract AbstractStatisticalComponent<?,?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models);
 	
 	/** Creates an NLP component for decode. */
-	protected abstract AbstractStatisticalComponent<?,?,?,?> createComponentForDecode(byte[] models);
+	protected abstract AbstractStatisticalComponent<?,?,?,?,?> createComponentForDecode(byte[] models);
 	
-	private double trainPipeline(AbstractStatisticalComponent<?,?,?,?> component, AbstractTrainer[] trainers, List<String> developFiles)
+	private double trainPipeline(AbstractStatisticalComponent<?,?,?,?,?> component, AbstractTrainer[] trainers, List<String> developFiles)
 	{
 		AbstractTrainer trainer;
 		double score = 0;
 		
-		try
+		for (int i=0; i<trainers.length; i++)
 		{
-			for (int i=0; i<trainers.length; i++)
-			{
-				trainer = trainers[i];
-				BinUtils.LOG.info(trainer.trainerInfoFull()+"\n");
-				
-				switch (trainer.getTrainerType())
-				{
-				case ONLINE    : score = trainOnline  (component, (AbstractOnlineTrainer)  trainer, developFiles, i); break;
-				case ONE_VS_ALL: score = trainOneVsAll(component, (AbstractOneVsAllTrainer)trainer, developFiles);    break;
-				}
-			}
+			trainer = trainers[i];
+			BinUtils.LOG.info(trainer.trainerInfoFull()+"\n");
 		}
-		catch (Exception e) {e.printStackTrace();}
+		
+		switch (trainers[0].getTrainerType())
+		{
+		case ONLINE    : score = trainOnline  (component, trainers, developFiles); break;
+		case ONE_VS_ALL: score = trainOneVsAll(component, trainers, developFiles); break;
+		}
 		
 		BinUtils.LOG.info("\n");
 		return score;
 	}
 	
-	private double trainOnline(AbstractStatisticalComponent<?,?,?,?> component, AbstractOnlineTrainer trainer, List<String> developFiles, int modelID) throws Exception
+	private double trainOnline(AbstractStatisticalComponent<?,?,?,?,?> component, AbstractTrainer[] trainers, List<String> developFiles)
 	{
-		StringModel model = component.getModel(modelID);
-		AbstractEval<?> eval = component.getEval();
-		double currScore, prevScore = 0;
-		byte[] prevWeights = null;
+		int i, count, iter = -1, size = trainers.length;
 		
-		for (int iter=1; ; iter++)
+		FloatArrayList[] weights = new FloatArrayList[size];
+		StringModel[] models = component.getModels();
+		AbstractEval<?> eval = component.getEval();
+		boolean[] train = new boolean[size];
+		double currScore, prevScore = 0;
+		
+		Arrays.fill(train, true);
+		
+		do
 		{
-			trainer.train();
-			eval.clear();
-			process(component, developFiles, false);
-			currScore = eval.getScore();
-			BinUtils.LOG.info(String.format("%3d: %s\n", iter, eval.toString()));
+			count = 0;
+			iter++;
 			
-			if (0 < AbstractNLPTrain.d_stop && AbstractNLPTrain.d_stop <= currScore)
-				break;
-			
-			if (prevScore < currScore)
+			for (i=0; i<size; i++)
 			{
-				prevScore = currScore;
-				prevWeights = model.saveWeightVectorToByteArray();
+				if (train[i])
+				{
+					trainers[i].train();
+					eval.clear();
+					process(component, developFiles, false);
+					currScore = eval.getScore();
+					BinUtils.LOG.info(String.format("%3d:%3d: %s\n", iter, i, eval.toString()));
+					
+					if (prevScore < currScore)
+					{
+						count++;
+						prevScore  = currScore;
+						weights[i] = models[i].getWeightVector().cloneWeights();
+					}
+					else
+					{
+						train[i] = false;
+						models[i].getWeightVector().setWeights(weights[i]);
+					}
+				}
 			}
-			else
-			{
-				model.loadWeightVectorFromByteArray(prevWeights);
-				break;
-			}			
 		}
+		while (count > 0);
 		
 		return prevScore;
 	}
 	
-	private double trainOneVsAll(AbstractStatisticalComponent<?,?,?,?> component, AbstractOneVsAllTrainer trainer, List<String> developFiles)
+	private double trainOneVsAll(AbstractStatisticalComponent<?,?,?,?,?> component, AbstractTrainer[] trainers, List<String> developFiles)
 	{
-		AbstractEval<?> eval = component.getEval();
-		trainer.train();
-		process(component, developFiles, false);
-		double currScore = eval.getScore();
-		BinUtils.LOG.info(eval.toString());
-		return currScore;
+//		AbstractEval<?> eval = component.getEval();
+//		trainer.train();
+//		process(component, developFiles, false);
+//		double currScore = eval.getScore();
+//		BinUtils.LOG.info(eval.toString());
+//		return currScore;
+		return 0;
 	}
 	
-//	private double trainOnline(AbstractStatisticalComponent<?,?,?,?> component, AbstractOnlineTrainer[] trainers, List<String> developFiles)
+//	private double trainPipeline(AbstractStatisticalComponent<?,?,?,?,?> component, AbstractTrainer[] trainers, List<String> developFiles)
 //	{
-//		int i, count, iter = 0, size = trainers.length;
+//		AbstractTrainer trainer;
+//		double score = 0;
 //		
-//		FloatArrayList[] weights = new FloatArrayList[size];
-//		StringModel[] models = component.getModels();
-//		AbstractEval<?> eval = component.getEval();
-//		double[] prevScores = new double[size];
-//		boolean[] train = {true, true};
-//		double currScore;
-//		
-//		do
+//		try
 //		{
-//			BinUtils.LOG.info("Iteration: "+(++iter)+"\n");
-//			count = 0;
-//			
-//			for (i=0; i<size; i++)
+//			for (int i=0; i<trainers.length; i++)
 //			{
-//				if (train[i])
+//				trainer = trainers[i];
+//				BinUtils.LOG.info(trainer.trainerInfoFull()+"\n");
+//				
+//				switch (trainer.getTrainerType())
 //				{
-//					trainers[i].train();
-//					eval.clear();
-//					process(component, developFiles, false);
-//					currScore = eval.getScore();
-//					BinUtils.LOG.info(String.format("%3d: %f\n", i, currScore));
-//					
-//					if (prevScores[i] < currScore)
-//					{
-//						count++;
-//						prevScores[i] = currScore;
-//						weights[i] = models[i].getWeightVector().cloneWeights();
-//					}
-//					else
-//					{
-//						train[i] = false;
-//						models[i].getWeightVector().setWeights(weights[i]);
-//					}
+//				case ONLINE    : score = trainOnline  (component, (AbstractOnlineTrainer)  trainer, developFiles, i); break;
+//				case ONE_VS_ALL: score = trainOneVsAll(component, (AbstractOneVsAllTrainer)trainer, developFiles);    break;
 //				}
+//			}
+//		}
+//		catch (Exception e) {e.printStackTrace();}
+//		
+//		BinUtils.LOG.info("\n");
+//		return score;
+//	}
+//	
+//	private double trainOnline(AbstractStatisticalComponent<?,?,?,?,?> component, AbstractOnlineTrainer trainer, List<String> developFiles, int modelID) throws Exception
+//	{
+//		StringModel model = component.getModel(modelID);
+//		AbstractEval<?> eval = component.getEval();
+//		double currScore, prevScore = 0;
+//		byte[] prevWeights = null;
+//		
+//		for (int iter=1; ; iter++)
+//		{
+//			trainer.train();
+//			eval.clear();
+//			process(component, developFiles, false);
+//			currScore = eval.getScore();
+//			BinUtils.LOG.info(String.format("%3d: %s\n", iter, eval.toString()));
+//			
+//			if (0 < AbstractNLPTrain.d_stop && AbstractNLPTrain.d_stop <= currScore)
+//				break;
+//			
+//			if (prevScore < currScore)
+//			{
+//				prevScore = currScore;
+//				prevWeights = model.saveWeightVectorToByteArray();
+//			}
+//			else
+//			{
+//				model.loadWeightVectorFromByteArray(prevWeights);
+//				break;
 //			}			
 //		}
-//		while (count > 0);
 //		
-//		return prevScores[size-1];
+//		return prevScore;
 //	}
 	
-	public void process(AbstractStatisticalComponent<?,?,?,?> component, List<String> filelist, boolean log)
+	public void process(AbstractStatisticalComponent<?,?,?,?,?> component, List<String> filelist, boolean log)
 	{
-//		long[] counts = {0,0};
-		
 		for (String filename : filelist)
 		{
 			process(component, filename);
 			if (log) BinUtils.LOG.info(".");
 		}
 		
-		if (log)	BinUtils.LOG.info("\n\n");
-//		else		BinUtils.LOG.info(String.format("%d", (int)Math.round(1000d * counts[0] / counts[1])));
+		if (log) BinUtils.LOG.info("\n\n");
 	}
 	
-	public void process(AbstractStatisticalComponent<?,?,?,?> component, String filename)
+	public void process(AbstractStatisticalComponent<?,?,?,?,?> component, String filename)
 	{
 		TSVReader reader = (TSVReader)t_configuration.getReader();
 		reader.open(IOUtils.createFileInputStream(filename));
-//		long st, et, tt = 0, wc = 0;
 		DEPTree tree;
 		
 		while ((tree = reader.next()) != null)
-		{
 			component.process(tree);
-//			st = System.currentTimeMillis();
-//			et = System.currentTimeMillis();
-//			tt += et - st;
-//			wc += tree.size() - 1;
-		}
 
 		reader.close();
-//		counts[0] += wc; counts[1] += tt;
 	}
 }

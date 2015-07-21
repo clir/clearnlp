@@ -27,6 +27,7 @@ import org.kohsuke.args4j.Option;
 import edu.emory.clir.clearnlp.component.AbstractComponent;
 import edu.emory.clir.clearnlp.component.configuration.DecodeConfiguration;
 import edu.emory.clir.clearnlp.component.mode.dep.DEPConfiguration;
+import edu.emory.clir.clearnlp.component.mode.srl.SRLConfiguration;
 import edu.emory.clir.clearnlp.component.utils.GlobalLexica;
 import edu.emory.clir.clearnlp.component.utils.NLPMode;
 import edu.emory.clir.clearnlp.component.utils.NLPUtils;
@@ -245,8 +246,8 @@ public class NLPDecode
 		
 		switch (mode)
 		{
-		case srl  :
 		case ner  : list.add(NLPUtils.getNERecognizer(language, config.getModelPath(NLPMode.ner)));
+		case srl  : list.add(NLPUtils.getSRLabeler(language, config.getModelPath(NLPMode.srl), new SRLConfiguration(IOUtils.createFileInputStream(s_configurationFile))));
 		case dep  : list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), new DEPConfiguration(IOUtils.createFileInputStream(s_configurationFile))));
 		case morph: list.add(NLPUtils.getMPAnalyzer(language));
 		case pos  : list.add(NLPUtils.getPOSTagger(language, config.getModelPath(NLPMode.pos)));
@@ -261,10 +262,12 @@ public class NLPDecode
 		
 		switch (mode)
 		{
-		case srl:
 		case ner:
 			if (!reader.hasNamedEntityTags())
 				list.add(NLPUtils.getNERecognizer(language, config.getModelPath(NLPMode.ner)));
+		case srl:
+			if (!reader.hasSemanticHeads())
+				list.add(NLPUtils.getSRLabeler(language, config.getModelPath(NLPMode.srl), new SRLConfiguration(IOUtils.createFileInputStream(s_configurationFile))));
 		case dep:
 			if (!reader.hasDependencyHeads())
 				list.add(NLPUtils.getDEPParser(language, config.getModelPath(NLPMode.dep), new DEPConfiguration(IOUtils.createFileInputStream(s_configurationFile))));
@@ -290,8 +293,8 @@ public class NLPDecode
 	{
 		switch (mode)
 		{
+		case ner  : return tree.toString();
 		case srl  : return tree.toString(DEPNode::toStringSRL);
-		case ner  : return tree.toString(DEPNode::toStringNER);
 		case dep  : return tree.toString(DEPNode::toStringDEP);
 		case morph: return tree.toString(DEPNode::toStringMorph);
 		case pos  : return tree.toString(DEPNode::toStringPOS);

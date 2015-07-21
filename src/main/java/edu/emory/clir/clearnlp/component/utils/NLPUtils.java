@@ -39,6 +39,9 @@ import edu.emory.clir.clearnlp.component.mode.ner.EnglishNERecognizer;
 import edu.emory.clir.clearnlp.component.mode.pos.AbstractPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.DefaultPOSTagger;
 import edu.emory.clir.clearnlp.component.mode.pos.EnglishPOSTagger;
+import edu.emory.clir.clearnlp.component.mode.srl.AbstractSRLabeler;
+import edu.emory.clir.clearnlp.component.mode.srl.EnglishSRLabeler;
+import edu.emory.clir.clearnlp.component.mode.srl.SRLConfiguration;
 import edu.emory.clir.clearnlp.conversion.AbstractC2DConverter;
 import edu.emory.clir.clearnlp.conversion.EnglishC2DConverter;
 import edu.emory.clir.clearnlp.conversion.headrule.HeadRuleMap;
@@ -108,6 +111,22 @@ public class NLPUtils
 	static public AbstractDEPParser getDEPParser(TLanguage language, String modelPath, DEPConfiguration configuration)
 	{
 		return getDEPParser(language, getObjectInputStream(modelPath), configuration);
+	}
+	
+	static public AbstractSRLabeler getSRLabeler(TLanguage language, ObjectInputStream in, SRLConfiguration configuration)
+	{
+		BinUtils.LOG.info("Loading semantic role labeling models.\n");
+		
+		switch (language)
+		{
+		case ENGLISH: return new EnglishSRLabeler(configuration, in);
+		default     : return null;
+		}
+	}
+	
+	static public AbstractSRLabeler getSRLabeler(TLanguage language, String modelPath, SRLConfiguration configuration)
+	{
+		return getSRLabeler(language, getObjectInputStream(modelPath), configuration);
 	}
 	
 	static public AbstractNERecognizer getNERecognizer(TLanguage language, ObjectInputStream in)

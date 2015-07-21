@@ -91,7 +91,7 @@ public class NLPJackknife extends NLPTrain
 		
 		public void run()
 		{
-			AbstractStatisticalComponent<?,?,?,?> component = train(train_files, DSUtils.toArrayList(develop_file), feature_files, configuration_file, nlp_mode).o;
+			AbstractStatisticalComponent<?,?,?,?,?> component = train(train_files, DSUtils.toArrayList(develop_file), feature_files, configuration_file, nlp_mode).o;
 			saveModel(component, s_modelPath+"."+dev_index);
 		}
     }

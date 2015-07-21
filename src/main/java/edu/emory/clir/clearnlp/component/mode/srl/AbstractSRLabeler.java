@@ -15,113 +15,109 @@
  */
 package edu.emory.clir.clearnlp.component.mode.srl;
 
+import java.io.ObjectInputStream;
 import java.util.List;
 
+import edu.emory.clir.clearnlp.classification.instance.StringInstance;
+import edu.emory.clir.clearnlp.classification.model.StringModel;
+import edu.emory.clir.clearnlp.classification.prediction.StringPrediction;
 import edu.emory.clir.clearnlp.classification.vector.StringFeatureVector;
 import edu.emory.clir.clearnlp.component.AbstractStatisticalComponent;
-import edu.emory.clir.clearnlp.dependency.DEPNode;
+import edu.emory.clir.clearnlp.component.mode.srl.state.AbstractSRLState;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
-import edu.emory.clir.clearnlp.feature.AbstractFeatureExtractor;
 
 /**
  * @since 3.1.3
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class AbstractSRLabeler extends AbstractStatisticalComponent<String, SRLState, SRLEval, AbstractFeatureExtractor<?,?,?>>
+public abstract class AbstractSRLabeler extends AbstractStatisticalComponent<String, AbstractSRLState, SRLEval, SRLFeatureExtractor, SRLConfiguration>
 {
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.AbstractStatisticalComponent#getLexicons()
-	 */
-	@Override
-	public Object getLexicons()
+	/** Creates a semantic role labeler for train. */
+	public AbstractSRLabeler(SRLConfiguration configuration, SRLFeatureExtractor[] extractors, Object lexicons)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		super(configuration, extractors, lexicons, false, 2);
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.AbstractStatisticalComponent#setLexicons(java.lang.Object)
-	 */
-	@Override
-	public void setLexicons(Object lexicons)
+	
+	/** Creates a semantic role labeler for bootstrap or evaluate. */
+	public AbstractSRLabeler(SRLConfiguration configuration, SRLFeatureExtractor[] extractors, Object lexicons, StringModel[] models, boolean bootstrap)
 	{
-		// TODO Auto-generated method stub
-		
+		super(configuration, extractors, lexicons, models, bootstrap);
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.AbstractStatisticalComponent#createStringFeatureVector(edu.emory.clir.clearnlp.component.state.AbstractState)
-	 */
-	@Override
-	protected StringFeatureVector createStringFeatureVector(SRLState state)
+	
+	/** Creates a semantic role labeler for decode. */
+	public AbstractSRLabeler(SRLConfiguration configuration, ObjectInputStream in)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		super(configuration, in);
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.AbstractStatisticalComponent#getAutoLabel(edu.emory.clir.clearnlp.component.state.AbstractState, edu.emory.clir.clearnlp.classification.vector.StringFeatureVector)
-	 */
-	@Override
-	protected String getAutoLabel(SRLState state, StringFeatureVector vector)
+	
+	/** Creates a semantic role labeler for decode. */
+	public AbstractSRLabeler(SRLConfiguration configuration, byte[] models)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		super(configuration, models);
 	}
+	
+//	====================================== LEXICONS ======================================
 
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.AbstractStatisticalComponent#initEval()
-	 */
+	@Override
+	public Object getLexicons() {return null;}
+
+	@Override
+	public void setLexicons(Object lexicons) {}
+	
+//	====================================== EVAL ======================================
+
 	@Override
 	protected void initEval()
 	{
-		// TODO Auto-generated method stub
-		
+		c_eval = new SRLEval();
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.AbstractStatisticalComponent#onlineTrain(java.util.List)
-	 */
-	@Override
-	public void onlineTrain(List<DEPTree> trees)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+//	====================================== PROCESS ======================================
 
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.AbstractStatisticalComponent#onlineLexicons(edu.emory.clir.clearnlp.dependency.DEPTree)
-	 */
-	@Override
-	protected void onlineLexicons(DEPTree tree)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.clir.clearnlp.component.AbstractComponent#process(edu.emory.clir.clearnlp.dependency.DEPTree)
-	 */
 	@Override
 	public void process(DEPTree tree)
 	{
+		AbstractSRLState state = getState(tree);
+		List<StringInstance> instances = process(state);
 		
-		
+		if (isTrainOrBootstrap())
+			addInstances(state, instances);
+		else if (isEvaluate())
+			c_eval.countCorrect(tree, state.getOracle());
 	}
 	
-	DEPNode nextPredicate(SRLState state, int beginID)
+	protected abstract AbstractSRLState getState(DEPTree tree);
+	
+	private void addInstances(AbstractSRLState state, List<StringInstance> instances)
 	{
-		DEPNode node;
-		
-		for (; beginID < state.getTreeSize(); beginID++)
-		{
-			node = state.getNode(beginID);
-			if (isPredicate(node)) return node;
-		}
-		
-		return null;
+		for (StringInstance instance : instances)
+			s_models[instance.getFeatureVector().getModelID()].addInstance(instance);
 	}
 	
-	protected abstract boolean isPredicate(DEPNode node);
+	@Override
+	protected StringFeatureVector createStringFeatureVector(AbstractSRLState state)
+	{
+		StringFeatureVector vector = f_extractors[0].createStringFeatureVector(state);
+		if (isTrainOrBootstrap()) vector.setModelID(state.getModelIndex());
+		return vector;
+	}
+
+	@Override
+	protected String getAutoLabel(AbstractSRLState state, StringFeatureVector vector)
+	{
+		StringPrediction p = s_models[state.getModelIndex()].predictBest(vector);
+		return p.getLabel();
+	}
+
+//	====================================== ONLINE TRAIN ======================================
+
+	@Override
+	public void onlineTrain(List<DEPTree> trees)
+	{
+	}
+
+	@Override
+	protected void onlineLexicons(DEPTree tree)
+	{
+	}
 }

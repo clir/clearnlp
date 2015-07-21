@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.clir.clearnlp.component.mode.pos;
+package edu.emory.clir.clearnlp.component.mode.srl;
 
 import java.io.InputStream;
 
@@ -23,57 +23,73 @@ import edu.emory.clir.clearnlp.component.configuration.AbstractConfiguration;
 import edu.emory.clir.clearnlp.component.trainer.AbstractNLPTrainer;
 
 /**
- * @since 3.0.0
+ * @since 3.2.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTrainer extends AbstractNLPTrainer
+public class SRLTrainer extends AbstractNLPTrainer
 {
-	protected POSFeatureExtractor[] f_extractors;
+	protected SRLFeatureExtractor[] f_extractors;
 	
-	public POSTrainer(InputStream configuration)
+	public SRLTrainer(InputStream configuration)
 	{
 		super(configuration);
 	}
 	
-	public POSTrainer(InputStream configuration, InputStream[] features)
+	public SRLTrainer(InputStream configuration, InputStream[] features)
 	{
 		super(configuration);
-		f_extractors = new POSFeatureExtractor[]{new POSFeatureExtractor(features[0])};
+		f_extractors = new SRLFeatureExtractor[]{new SRLFeatureExtractor(features[0])};
 	}
 	
 	@Override
 	protected AbstractConfiguration createConfiguration(InputStream configuration)
 	{
-		return new POSConfiguration(configuration);
+		return new SRLConfiguration(configuration);
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForCollect()
 	{
-		return new DefaultPOSTagger((POSConfiguration)t_configuration);
+		return null;
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForTrain(Object lexicons)
 	{
-		return new DefaultPOSTagger(f_extractors, lexicons);
+		switch (t_configuration.getLanguage())
+		{
+		case ENGLISH: return new EnglishSRLabeler((SRLConfiguration)t_configuration, f_extractors, lexicons);
+		default: return null;
+		}
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForBootstrap(Object lexicons, StringModel[] models)
 	{
-		return new DefaultPOSTagger(f_extractors, lexicons, models, true);
+		switch (t_configuration.getLanguage())
+		{
+		case ENGLISH: return new EnglishSRLabeler((SRLConfiguration)t_configuration, f_extractors, lexicons, models, true);
+		default: return null;
+		}
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForEvaluate(Object lexicons, StringModel[] models)
 	{
-		return new DefaultPOSTagger(f_extractors, lexicons, models, false);
+		switch (t_configuration.getLanguage())
+		{
+		case ENGLISH: return new EnglishSRLabeler((SRLConfiguration)t_configuration, f_extractors, lexicons, models, false);
+		default: return null;	
+		}
 	}
 	
 	@Override
 	protected AbstractStatisticalComponent<?,?,?,?,?> createComponentForDecode(byte[] models)
 	{
-		return new DefaultPOSTagger(models);
+		switch (t_configuration.getLanguage())
+		{
+		case ENGLISH: return new EnglishSRLabeler((SRLConfiguration)t_configuration, models);
+		default: return null;
+		}
 	}
 }

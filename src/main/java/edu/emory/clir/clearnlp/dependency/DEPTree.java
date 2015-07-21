@@ -786,6 +786,24 @@ public class DEPTree implements Iterable<DEPNode>
 		return sHeads;
 	}
 	
+	public void setSemanticHeads(SRLArc[][] semanticArcs)
+	{
+		int i, len = semanticArcs.length;
+		SRLArc[] arcs;
+		DEPNode  node;
+		
+		clearSemanticHeads();
+		
+		for (i=1; i<len; i++)
+		{
+			arcs = semanticArcs[i];
+			node = get(i);
+			
+			for (SRLArc arc : arcs)
+				node.addSemanticHead(arc);
+		}
+	}
+	
 	/**
 	 * Starting at the top of the DEPTree clear all the semantic heads
 	 */
