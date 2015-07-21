@@ -517,8 +517,10 @@ public class PBPostProcess
 					if ((ante = curr.getAntecedent()) != null)
 						arg.addLocation(new PBLocation(ante.getPBLocation(), "*"));
 					
-					if ((node = getCoIndexedWHNode(curr)) != null)
+					if ((node = getCoIndexedWHNode(curr)) != null && !node.getChildrenList().contains(tree.getTerminal(instance.getPredicateID())))
+					{
 						cLoc.set(node.getPBLocation(), "*");
+					}
 				}
 				else if (curr.getConstituentTag().startsWith("WH"))
 				{
