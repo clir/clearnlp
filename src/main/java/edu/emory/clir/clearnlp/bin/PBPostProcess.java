@@ -620,11 +620,11 @@ public class PBPostProcess
 				
 				if (DSUtils.isSubset(si, sj) && ni != nj)
 				{
-					lDel.add(aj);
+					if (!aj.isLabel("rel")) lDel.add(aj);
 				}
 				else if (DSUtils.isSubset(sj, si) && ni != nj)
 				{
-					lDel.add(ai);
+					if (!ai.isLabel("rel")) lDel.add(ai);
 				}
 				else if (DSUtils.hasIntersection(si, sj))
 				{
