@@ -37,7 +37,7 @@ import edu.emory.clir.clearnlp.util.arc.DEPArc;
 public class DEPStateBranch extends AbstractDEPState implements DEPTransition
 {
 	private ObjectObjectDoubleTriple<DEPArc[],List<StringInstance>> best_tree;
-	private PriorityQueue<DEPBranch>  q_branches;
+	private PriorityQueue<DEPBranch> q_branches;
 	private boolean save_branch;
 	private int beam_size;
 	private int max_heads;
