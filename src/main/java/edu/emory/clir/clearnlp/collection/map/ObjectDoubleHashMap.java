@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *	 http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import com.carrotsearch.hppc.ObjectDoubleOpenHashMap;
+import com.carrotsearch.hppc.cursors.ObjectDoubleCursor;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 
@@ -34,23 +35,23 @@ import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 public class ObjectDoubleHashMap<T> implements Serializable, Iterable<ObjectDoublePair<T>>
 {
 	private static final long serialVersionUID = -869739556140492570L;
-	private ObjectDoubleOpenHashMap<T> g_map;
+	private com.carrotsearch.hppc.ObjectDoubleHashMap<T> g_map;
 	
 	public ObjectDoubleHashMap()
 	{
-		g_map = new ObjectDoubleOpenHashMap<T>();
+		g_map = new com.carrotsearch.hppc.ObjectDoubleHashMap<T>();
 	}
 	
 	public ObjectDoubleHashMap(int initialCapacity)
 	{
-		g_map = new ObjectDoubleOpenHashMap<T>(initialCapacity);
+		g_map = new com.carrotsearch.hppc.ObjectDoubleHashMap<T>(initialCapacity);
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		List<ObjectDoublePair<T>> list = (List<ObjectDoublePair<T>>)in.readObject();
-		g_map = new ObjectDoubleOpenHashMap<T>(list.size());
+		g_map = new com.carrotsearch.hppc.ObjectDoubleHashMap<T>(list.size());
 		put(list);
 	}
 
@@ -138,32 +139,27 @@ public class ObjectDoubleHashMap<T> implements Serializable, Iterable<ObjectDoub
 	{
 		Iterator<ObjectDoublePair<T>> it = new Iterator<ObjectDoublePair<T>>()
 		{
-			private final int key_size = g_map.keys.length;
-			private int current_index  = 0;
+			private final Iterator<ObjectDoubleCursor<T>> g_iter = g_map.iterator();
 			
 			@Override
 			public boolean hasNext()
 			{
-				for (; current_index < key_size; current_index++)
-				{
-					if (g_map.allocated[current_index])
-						return true;
-				}
-				
-				return false;
+				return g_iter.hasNext();
 			}
 			
 			@Override
 			public ObjectDoublePair<T> next()
 			{
-				if (current_index < key_size)
-				{
-					ObjectDoublePair<T> p = new ObjectDoublePair<T>(g_map.keys[current_index], g_map.values[current_index]);
-					current_index++;
-					return p;
+				ObjectDoublePair<T> p = null;
+				try {
+					ObjectDoubleCursor<T> cursor = g_iter.next();
+					p = new ObjectDoublePair<T>(cursor.key, cursor.value);
 				}
-				
-				return null;
+				catch (NoSuchElementException e)
+				{
+					
+				}
+				return p;
 			}
 			
 			@Override

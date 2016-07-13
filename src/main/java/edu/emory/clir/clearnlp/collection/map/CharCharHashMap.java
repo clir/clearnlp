@@ -22,8 +22,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import com.carrotsearch.hppc.CharCharOpenHashMap;
+import com.carrotsearch.hppc.cursors.CharCharCursor;
 
 import edu.emory.clir.clearnlp.collection.pair.CharCharPair;
 
@@ -35,23 +36,23 @@ public class CharCharHashMap implements Serializable, Iterable<CharCharPair>
 {
 	private static final long serialVersionUID = -1072021691426162355L;
 	static public char DEFAULT_VALUE = '\u0000';
-	private CharCharOpenHashMap g_map;
+	private com.carrotsearch.hppc.CharCharHashMap g_map;
 	
 	public CharCharHashMap()
 	{
-		g_map = new CharCharOpenHashMap();
+		g_map = new com.carrotsearch.hppc.CharCharHashMap();
 	}
 	
 	public CharCharHashMap(int initialCapacity)
 	{
-		g_map = new CharCharOpenHashMap(initialCapacity);
+		g_map = new com.carrotsearch.hppc.CharCharHashMap(initialCapacity);
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		List<CharCharPair> list = (List<CharCharPair>)in.readObject();
-		g_map = new CharCharOpenHashMap(list.size());
+		g_map = new com.carrotsearch.hppc.CharCharHashMap(list.size());
 		putAll(list);
 	}
 
@@ -119,32 +120,27 @@ public class CharCharHashMap implements Serializable, Iterable<CharCharPair>
 	{
 		Iterator<CharCharPair> it = new Iterator<CharCharPair>()
 		{
-			private final int key_size = g_map.keys.length;
-			private int current_index  = 0;
+			private final Iterator<CharCharCursor> g_iter =  g_map.iterator();
 			
 			@Override
 			public boolean hasNext()
 			{
-				for (; current_index < key_size; current_index++)
-				{
-					if (g_map.allocated[current_index])
-						return true;
-				}
-				
-				return false;
+				return g_iter.hasNext();
 			}
 			
 			@Override
 			public CharCharPair next()
 			{
-				if (current_index < key_size)
-				{
-					CharCharPair p = new CharCharPair(g_map.keys[current_index], g_map.values[current_index]);
-					current_index++;
-					return p;
+				CharCharPair p = null;
+				try{
+					CharCharCursor cursor = g_iter.next();
+					p = new CharCharPair(cursor.key, cursor.value);
 				}
-				
-				return null;
+				catch (NoSuchElementException e)
+				{
+					
+				}
+				return p;
 			}
 			
 			@Override

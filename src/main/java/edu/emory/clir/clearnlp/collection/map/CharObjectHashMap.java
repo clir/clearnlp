@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *	 http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import com.carrotsearch.hppc.CharObjectOpenHashMap;
+import com.carrotsearch.hppc.cursors.CharObjectCursor;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectCharPair;
 
@@ -34,23 +35,23 @@ import edu.emory.clir.clearnlp.collection.pair.ObjectCharPair;
 public class CharObjectHashMap<T> implements Serializable, Iterable<ObjectCharPair<T>>
 {
 	private static final long serialVersionUID = -1072021691426162355L;
-	private CharObjectOpenHashMap<T> g_map;
+	private com.carrotsearch.hppc.CharObjectHashMap<T> g_map;
 	
 	public CharObjectHashMap()
 	{
-		g_map = new CharObjectOpenHashMap<T>();
+		g_map = new com.carrotsearch.hppc.CharObjectHashMap<T>();
 	}
 	
 	public CharObjectHashMap(int initialCapacity)
 	{
-		g_map = new CharObjectOpenHashMap<T>(initialCapacity);
+		g_map = new com.carrotsearch.hppc.CharObjectHashMap<T>(initialCapacity);
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		List<ObjectCharPair<T>> list = (List<ObjectCharPair<T>>)in.readObject();
-		g_map = new CharObjectOpenHashMap<T>(list.size());
+		g_map = new com.carrotsearch.hppc.CharObjectHashMap<T>(list.size());
 		putAll(list);
 	}
 
@@ -124,32 +125,27 @@ public class CharObjectHashMap<T> implements Serializable, Iterable<ObjectCharPa
 	{
 		Iterator<ObjectCharPair<T>> it = new Iterator<ObjectCharPair<T>>()
 		{
-			private final int key_size = g_map.keys.length;
-			private int current_index  = 0;
+			private final Iterator<CharObjectCursor<T>> g_iter =  g_map.iterator();
 			
 			@Override
 			public boolean hasNext()
 			{
-				for (; current_index < key_size; current_index++)
-				{
-					if (g_map.allocated[current_index])
-						return true;
-				}
-				
-				return false;
+				return g_iter.hasNext();
 			}
 			
 			@Override
 			public ObjectCharPair<T> next()
 			{
-				if (current_index < key_size)
-				{
-					ObjectCharPair<T> p = new ObjectCharPair<T>(g_map.values[current_index], g_map.keys[current_index]);
-					current_index++;
-					return p;
+				ObjectCharPair<T> p = null;
+				try{
+					CharObjectCursor<T> cursor = g_iter.next();
+					p = new ObjectCharPair<T>(cursor.value, cursor.key);
 				}
-				
-				return null;
+				catch (NoSuchElementException e)
+				{
+					
+				}
+				return p;
 			}
 			
 			@Override

@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -58,7 +59,9 @@ public class ObjectDoubleHashMapTest
 		for (ObjectDoublePair<String> item : items)
 			assertEquals(item.d, map.get(item.o), 0);
 		
-		assertEquals("[(C,3.5), (B,2.5), (A,1.5)]", map.toList().toString());
+		List<ObjectDoublePair<String>> mapElements = map.toList();
+		Collections.sort(mapElements);
+		assertEquals("[(A,1.5), (B,2.5), (C,3.5)]", mapElements.toString());
 	}
 	
 	@Test

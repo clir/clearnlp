@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *	 http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import com.carrotsearch.hppc.IntIntOpenHashMap;
+import com.carrotsearch.hppc.cursors.IntIntCursor;
 
 import edu.emory.clir.clearnlp.collection.pair.IntIntPair;
 
@@ -34,23 +35,23 @@ import edu.emory.clir.clearnlp.collection.pair.IntIntPair;
 public class IntIntHashMap implements Serializable, Iterable<IntIntPair>
 {
 	private static final long serialVersionUID = 5327212904932776361L;
-	private IntIntOpenHashMap g_map;
+	private com.carrotsearch.hppc.IntIntHashMap g_map;
 	
 	public IntIntHashMap()
 	{
-		g_map = new IntIntOpenHashMap();
+		g_map = new com.carrotsearch.hppc.IntIntHashMap();
 	}
 	
 	public IntIntHashMap(int initialCapacity)
 	{
-		g_map = new IntIntOpenHashMap(initialCapacity);
+		g_map = new com.carrotsearch.hppc.IntIntHashMap(initialCapacity);
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		List<IntIntPair> list = (List<IntIntPair>)in.readObject();
-		g_map = new IntIntOpenHashMap(list.size());
+		g_map = new com.carrotsearch.hppc.IntIntHashMap(list.size());
 		putAll(list);
 	}
 
@@ -130,32 +131,27 @@ public class IntIntHashMap implements Serializable, Iterable<IntIntPair>
 	{
 		Iterator<IntIntPair> it = new Iterator<IntIntPair>()
 		{
-			private final int key_size = g_map.keys.length;
-			private int current_index  = 0;
+			private final Iterator<IntIntCursor> g_iter =  g_map.iterator();
 			
 			@Override
 			public boolean hasNext()
 			{
-				for (; current_index < key_size; current_index++)
-				{
-					if (g_map.allocated[current_index])
-						return true;
-				}
-				
-				return false;
+				return g_iter.hasNext();
 			}
 			
 			@Override
 			public IntIntPair next()
 			{
-				if (current_index < key_size)
-				{
-					IntIntPair p = new IntIntPair(g_map.values[current_index], g_map.keys[current_index]);
-					current_index++;
-					return p;
+				IntIntPair p = null;
+				try{
+					IntIntCursor cursor = g_iter.next();
+					p = new IntIntPair(cursor.value, cursor.key);
 				}
-				
-				return null;
+				catch (NoSuchElementException e)
+				{
+					
+				}
+				return p;
 			}
 			
 			@Override
